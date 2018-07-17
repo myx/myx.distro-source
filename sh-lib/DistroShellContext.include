@@ -100,9 +100,6 @@ if [ -z "$MDSC_ORIGIN" ] ; then
 	if [ -z "$MDSC_ORIGIN" ] && [ -d "$MMDAPP/source/myx/myx.distro-util/sh-lib" ] ; then
 		MDSC_ORIGIN="$MMDAPP/source/myx/myx.distro-util/sh-lib"
 	fi
-	if [ -z "$MDSC_ORIGIN" ] && [ -d "$MMDAPP/source/myx/myx.distro-install/sh-lib" ] ; then
-		MDSC_ORIGIN="$MMDAPP/source/myx/myx.distro-install/sh-lib"
-	fi
 
 	export MDSC_ORIGIN
 	

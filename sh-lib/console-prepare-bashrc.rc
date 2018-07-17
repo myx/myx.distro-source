@@ -2,7 +2,7 @@ echo "Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
 # prepare -> util -> install 
-PATH="$PATH:$MMDAPP/source/myx/myx.distro-source/sh-scripts:$MMDAPP/source/myx/myx.distro-util/sh-scripts:$MMDAPP/source/myx/myx.distro-install/sh-scripts"
+PATH="$PATH:$MMDAPP/source/myx/myx.distro-source/sh-scripts:$MMDAPP/source/myx/myx.distro-util/sh-scripts"
 
 . "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 DistroShellContext --distro-from-source

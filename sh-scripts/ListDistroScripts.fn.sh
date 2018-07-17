@@ -22,13 +22,13 @@ ListDistroScripts(){
 			local FILTER="$MMDAPP/source/"
 			case "$MDSC_OPTION" in
 				--distro-from-distro)
-					local MDPATH="$MMDAPP/source/myx/myx.distro-install/sh-scripts $MMDAPP/source/myx/myx.distro-util/sh-scripts $MMDAPP/source/myx/myx.distro-source/sh-scripts"
+					local MDPATH="$MMDAPP/source/myx/myx.distro-util/sh-scripts $MMDAPP/source/myx/myx.distro-source/sh-scripts"
 				;;
 				--distro-from-output)
-					local MDPATH="$MMDAPP/source/myx/myx.distro-util/sh-scripts $MMDAPP/source/myx/myx.distro-source/sh-scripts $MMDAPP/source/myx/myx.distro-install/sh-scripts"
+					local MDPATH="$MMDAPP/source/myx/myx.distro-util/sh-scripts $MMDAPP/source/myx/myx.distro-source/sh-scripts"
 				;;
 				*)
-					local MDPATH="$MMDAPP/source/myx/myx.distro-source/sh-scripts $MMDAPP/source/myx/myx.distro-util/sh-scripts $MMDAPP/source/myx/myx.distro-install/sh-scripts"
+					local MDPATH="$MMDAPP/source/myx/myx.distro-source/sh-scripts $MMDAPP/source/myx/myx.distro-util/sh-scripts"
 				;;
 			esac
 			;;
