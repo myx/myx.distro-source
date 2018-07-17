@@ -1,0 +1,24 @@
+[ -z "$MMDAPP" ] && echo '$MMDAPP' is not set! >&2 && exit 1
+
+echo "Initializing Source Build, Working in: $MMDAPP" >&2
+
+MakePrepareDistro(){
+
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassClean.include" ;
+	RunJavaClassClean myx/myx.distro-source ru.myx.distro.DistroStaticCommand \
+			--source-root "$MMDAPP/source" \
+			--output-root "$MMDAPP/output" \
+			--import-from-source --prepare-build --print-sequence
+	
+
+	# fetch missing to cache
+	
+	
+
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
+	RunJavaClassSource myx/myx.distro-source ru.myx.distro.DistroStaticCommand \
+			--source-root "$MMDAPP/source" \
+			--output-root "$MMDAPP/output" \
+			--import-from-distro --print-repositories -p "" --print-projects --compile-all
+}
+

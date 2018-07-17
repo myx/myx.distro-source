@@ -1,0 +1,19 @@
+[ -z "$MMDAPP" ] && echo '$MMDAPP' is not set! >&2 && exit 1
+
+RunJavaClassClean(){
+	set -e
+	
+	SRC_NAME=$1; shift
+	CLS_NAME=$1; shift
+	
+	DST_PATH="$MMDAPP/output/cached/$SRC_NAME/java"
+	SRC_PATH="$MMDAPP/source/$SRC_NAME/java"
+	CLS_PATH="$DST_PATH:$SRC_PATH"
+
+	# echo "  >  Running Java Class (Clean): $CLS_NAME"  >&2
+
+	mkdir -p "$DST_PATH"
+
+	javac -d "$DST_PATH" -cp "CLS_PATH" -sourcepath "$SRC_PATH" -g -parameters "$SRC_PATH/$(echo "$CLS_NAME" | sed 's/\./\//g').java"
+	java -cp "$CLS_PATH" "$CLS_NAME" "$@"
+}
