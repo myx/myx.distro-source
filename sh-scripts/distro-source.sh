@@ -53,13 +53,13 @@ exit 0
 ./distro/distro-source.sh --import-from-source --prepare-sequence --select-all-from-source --print-selected
 
 ./distro/distro-source.sh --import-from-source --prepare-build --print '' --print-project-build-classpath ae3.sdk 
-./distro/distro-source.sh --import-from-source --prepare-build --print '' --print-project-build-classpath myx.distro-util
+./distro/distro-source.sh --import-from-source --prepare-build --print '' --print-project-build-classpath myx.distro-deploy
 
-./distro/distro-source.sh --import-from-source --prepare-build --print '' -vv --run-java-from-project myx.distro-util ru.myx.distro.MakePackagesFromFolders --done --print-project-build-classpath ae3.sdk 
+./distro/distro-source.sh --import-from-source --prepare-build --print '' -vv --run-java-from-project myx.distro-deploy ru.myx.distro.MakePackagesFromFolders --done --print-project-build-classpath ae3.sdk 
 
-./distro/distro-source.sh --import-from-source --prepare-build --select-all-from-source --print '' -vv --run-java-from-project myx.distro-util ru.myx.distro.MakePackagesFromFolders --done --print-project-build-classpath ae3.sdk 
+./distro/distro-source.sh --import-from-source --prepare-build --select-all-from-source --print '' -vv --run-java-from-project myx.distro-deploy ru.myx.distro.MakePackagesFromFolders --done --print-project-build-classpath ae3.sdk 
 
-./distro/distro-source.sh --import-from-source --prepare-build --select-all-from-source -vv --run-java-from-project myx.distro-util ru.myx.distro.MakePackagesFromFolders
+./distro/distro-source.sh --import-from-source --prepare-build --select-all-from-source -vv --run-java-from-project myx.distro-deploy ru.myx.distro.MakePackagesFromFolders
 
 ./distro/distro-source.sh --import-from-source --prepare-build --select-all-from-source --make-packages-from-folders --sync-distro-from-cached
 

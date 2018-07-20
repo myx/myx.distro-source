@@ -1,10 +1,6 @@
 
-if [ "`type -t SyncSourceRepositoryToCached`" != "function" ] ; then
-. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/SyncSourceRepositoryToCached.fn.sh"
-fi
-if [ "`type -t DistroSourceCommand`" != "function" ] ; then
-. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh"
-fi
+# Require PrepareRepositorySyncToCached
+Require DistroSourceCommand
 
 PrepareBuildDependencyIndex(){
 	mkdir -p "$MMDAPP/output/distro"

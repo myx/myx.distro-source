@@ -284,13 +284,11 @@ public class Project {
 	}
 
 	{
-
 	    Utils.save(//
 		    console, //
 		    packageOutput.resolve("project-build-sequence.txt"), //
 		    this.getBuildSequence().stream().map(Project::projectFullName)//
 	    );
-
 	}
     }
 

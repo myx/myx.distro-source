@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	DistroShellContext --distro-path-auto
+fi
+
+
 ListAllRepositories(){
 	if [ "$1" = "--no-cache" ] ; then
 		shift
@@ -15,7 +21,7 @@ ListAllRepositories(){
 		local cacheFile="$MDSC_CACHED/repository-names.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			echo "ListAllRepositories: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "ListAllRepositories: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
@@ -43,9 +49,6 @@ case "$0" in
 		#	ListAllRepositories.fn.sh --distro-from-distro
 		#	ListAllRepositories.fn.sh --distro-from-source
 
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-default
-		
 		ListAllRepositories "$@"
 	;;
 esac

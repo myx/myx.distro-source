@@ -14,7 +14,7 @@ ListChangedSourceProjects(){
 		local cacheFile="$MDSC_CACHED/changed-project-names.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			echo "ListChangedSourceProjects: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "ListChangedSourceProjects: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
@@ -45,7 +45,7 @@ case "$0" in
 	*/sh-scripts/ListChangedSourceProjects.fn.sh) 
 
 		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-default
+		DistroShellContext --distro-path-auto
 		
 		ListChangedSourceProjects "$@"
 	;;

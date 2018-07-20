@@ -1,12 +1,12 @@
 [ -z "$MMDAPP" ] && echo '$MMDAPP' is not set! >&2 && exit 1
 
 CompileCachedJavaProject(){
-	local PKG="${1#$MMDAPP/source/}"
-	if [ -z "$PKG" ] ; then
-		echo "SyncSourceProjectToCached: 'PKG' argument is required!" >&2 ; exit 1
+	local projectName="${1#$MMDAPP/source/}"
+	if [ -z "$projectName" ] ; then
+		echo "PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; exit 1
 	fi
 	
-	echo "Compiling project $PKG" >&2
+	echo "Compiling project $projectName" >&2
 	
 	( \
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
@@ -16,12 +16,12 @@ CompileCachedJavaProject(){
 			--source-root "$MMDAPP/cached/sources" \
 			--output-root "$MMDAPP/output" \
 			--import-from-source \
-			--project "$PKG" \
+			--project "$projectName" \
 	)
 
 	return 0
 
-	rsync -azivC --exclude '*.class' --exclude '.*' --delete "$MMDAPP/cached/sources/$PKG/java/" "$MMDAPP/output/cached/$PKG/java"
+	rsync -azivC --exclude '*.class' --exclude '.*' --delete "$MMDAPP/cached/sources/$projectName/java/" "$MMDAPP/output/cached/$projectName/java"
 	
 	( \
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
@@ -31,7 +31,7 @@ CompileCachedJavaProject(){
 			--source-root "$MMDAPP/source" \
 			--output-root "$MMDAPP/output" \
 			--from-output \
-			--project "$PKG" \
+			--project "$projectName" \
 	)
 }
 

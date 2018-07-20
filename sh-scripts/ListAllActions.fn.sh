@@ -7,17 +7,20 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
 fi
 
-
-type ListAllProjects >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListAllProjects.fn.sh"
-
-type ListAllProjectActions >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListAllProjectActions.fn.sh"
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	DistroShellContext --distro-path-auto
+fi
 
 ListAllActions(){
+
+	Require ListAllProjects
+	Require ListProjectActions
+	
 	for PKG in $( ListAllProjects ) ; do
-		ListAllProjectActions "$@" "$PKG"
-	done	
+		ListProjectActions "$@" "$PKG"
+	done
+		
 }
 
 case "$0" in

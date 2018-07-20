@@ -12,26 +12,26 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	DistroShellContext --distro-path-auto
 fi
 
-ListProjectSequence(){
+ListProjectDependants(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ListProjectSequence: 'projectName' argument is required!" >&2 ; return 1
+		echo "ListProjectDependants: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	shift
 
 	if [ "$1" = "--no-cache" ] ; then
 		shift
 	else
-		local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
+		local cacheFile="$MDSC_CACHED/$projectName/project-dependants.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "ListProjectSequence: $projectName: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "ListProjectDependants: $projectName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-			echo "ListProjectSequence: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectSequence "$projectName" --no-cache > "$cacheFile"
+			echo "ListProjectDependants: $projectName: caching projects ($MDSC_OPTION)" >&2
+			ListProjectDependants "$projectName" --no-cache > "$cacheFile"
 			cat "$cacheFile"
 			return 0
 		fi
@@ -41,7 +41,7 @@ ListProjectSequence(){
 	if [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
-		echo "ListProjectSequence: $projectName: using index ($MDSC_OPTION)" >&2
+		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2
 		local MTC="PRJ-SEQ-$projectName="
 		
 		local RESULT=""
@@ -61,7 +61,7 @@ ListProjectSequence(){
 	fi
 	
 	if [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
-		echo "ListProjectSequence: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
+		echo "ListProjectDependants: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
 		
@@ -74,14 +74,14 @@ ListProjectSequence(){
 		return 0
 	fi
 	
-	echo "ListProjectSequence: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ListProjectDependants: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
 }
 
 case "$0" in
-	*/sh-scripts/ListProjectSequence.fn.sh) 
-		# ListProjectSequence.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectSequence.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
+	*/sh-scripts/ListProjectDependants.fn.sh) 
+		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
+		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 
-		ListProjectSequence "$@"
+		ListProjectDependants "$@"
 	;;
 esac

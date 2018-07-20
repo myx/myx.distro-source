@@ -7,8 +7,17 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
 fi
 
+
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	# DistroShellContext --distro-from-source
+fi
+
+
 ListSourceBuildSequence(){
-	"$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" "$@" --import-from-source --select-all --print-sequence --print ""
+	Require DistroSourceCommand
+	DistroSourceCommand "$@" --import-from-source --select-all --print-sequence --print ""
+	# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" "$@" --import-from-source --select-all --print-sequence --print ""
 }
 
 case "$0" in

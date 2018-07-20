@@ -8,6 +8,11 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	DistroShellContext --distro-path-auto
+fi
+
 
 ListAllProjects(){
 	if [ "$1" = "--no-cache" ] ; then
@@ -16,7 +21,7 @@ ListAllProjects(){
 		local cacheFile="$MDSC_CACHED/all-project-names.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			echo "ListAllProjects: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "ListAllProjects: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
@@ -38,16 +43,15 @@ ListAllProjects(){
 		return 0
 	fi
 	
-	type ListAllRepositories >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListAllRepositories.fn.sh"
-	
-	type ListAllRepositoryProjects >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListAllRepositoryProjects.fn.sh"
-	
 	echo "ListAllProjects: scanning all projects ($MDSC_OPTION)" >&2
-	for REPO in $( ListAllRepositories ) ; do
-		ListAllRepositoryProjects "$REPO"
+
+	Require ListAllRepositories
+	Require ListRepositoryProjects
+	
+	ListAllRepositories | while read REPO ; do
+		ListRepositoryProjects "$REPO"
 	done
+	
 	return 0
 }
 
@@ -59,9 +63,6 @@ case "$0" in
 		#	ListAllProjects.fn.sh --distro-from-cached
 		#	ListAllProjects.fn.sh --distro-from-distro
 		#	ListAllProjects.fn.sh --distro-from-source
-
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-default
 		
 		ListAllProjects "$@"
 	;;

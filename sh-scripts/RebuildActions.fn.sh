@@ -9,11 +9,11 @@ fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
-	DistroShellContext --distro-default
+	DistroShellContext --distro-path-auto
 fi
 
 Require ListAllProjects
-Require ListAllProjectActions
+Require ListProjectActions
 
 
 RebuildActions(){
@@ -36,7 +36,7 @@ RebuildActions(){
 	
 	for projectName in $( ListAllProjects ) ; do
 		
-		for ACTION in $( ListAllProjectActions "$projectName" ) ; do
+		for ACTION in $( ListProjectActions "$projectName" ) ; do
 			
 			ACTTGT="$TMP_DIR/${ACTION#$projectName/actions/}"
 			

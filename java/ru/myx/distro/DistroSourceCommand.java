@@ -198,9 +198,9 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 
     public void doMakePackagesFromFolders() throws Exception {
 
-	final Project project = this.repositories.getProject("myx/myx.distro-util");
+	final Project project = this.repositories.getProject("myx/myx.distro-deploy");
 	if (project == null) {
-	    throw new IllegalStateException("Need myx.distro-util project available!");
+	    throw new IllegalStateException("Need myx.distro-deploy project available!");
 	}
 
 	this.doRunJavaFromProject(project, "ru.myx.distro.MakePackagesFromFolders", new ArrayList<>());

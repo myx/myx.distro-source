@@ -2,14 +2,14 @@ Require ListChangedSourceProjects
 Require ListProjectProvides
 
 CompileJavaSources(){
-	local PKG="$1"
-	if [ -z "$PKG" ] ; then
-		echo "MakeProjectSourceArchive: 'PKG' argument is required!" >&2 ; exit 1
+	local projectName="$1"
+	if [ -z "$projectName" ] ; then
+		echo "MakeProjectSourceArchive: 'projectName' argument is required!" >&2 ; exit 1
 	fi
 
 	( \
 		. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/CompileCachedJavaProject.fn.sh" ; \
-		CompileCachedJavaProject $PKG \
+		CompileCachedJavaProject $projectName \
 	)
 	
 	return 0
@@ -28,9 +28,9 @@ CompileJavaSources(){
 }
 
  
-for PKG in $( ListChangedSourceProjects ) ; do
-	if [ ! -z "$( ListProjectProvides "$PKG" "source-process" | grep -e "^compile-java$" )" ] ; then
-		Async "`basename "$PKG"`" CompileJavaSources "$PKG"
+for projectName in $( ListChangedSourceProjects ) ; do
+	if [ ! -z "$( ListProjectProvides "$projectName" "source-process" | grep -e "^compile-java$" )" ] ; then
+		Async "`basename "$projectName"`" CompileJavaSources "$projectName"
 		wait
 	fi
 done

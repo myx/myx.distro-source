@@ -3,7 +3,7 @@ Require ListProjectProvides
 Require ListProjectSequence
 
 MergeScripts(){
-	local projectName="${1#$MMDAPP/source/}"
+	local projectName="$1"
 	if [ -z "$projectName" ] ; then
 		echo "MergeScripts: 'projectName' argument is required!" >&2 ; return 1
 	fi

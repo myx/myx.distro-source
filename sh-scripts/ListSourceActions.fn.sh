@@ -8,13 +8,16 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 
-type ListAllProjects >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListAllProjects.fn.sh"
-	
-type ListSourceProjectActions >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListSourceProjectActions.fn.sh"
-	
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	DistroShellContext --distro-from-source
+fi
+
+
 ListSourceActions(){
+	Require ListAllProjects
+	Require ListSourceProjectActions
+		
 	for PKG in $( ListAllProjects ) ; do
 		ListSourceProjectActions "$PKG"
 	done	

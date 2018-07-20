@@ -7,7 +7,7 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
 fi
 
-ListAllRepositoryProjects(){
+ListRepositoryProjects(){
 	local repositoryName="${1#$MDSC_SOURCE/}"
 	[ -z "$repositoryName" ] && echo '$repositoryName' is not set! >&2 && exit 1
 	
@@ -17,13 +17,13 @@ ListAllRepositoryProjects(){
 		local cacheFile="$MDSC_CACHED/$repositoryName/project-names.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			echo "ListAllRepositoryProjects: $repositoryName: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "ListRepositoryProjects: $repositoryName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] && [ -d "$( dirname "$cacheFile" )" ] ; then
-			echo "ListAllRepositoryProjects: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
-			ListAllRepositoryProjects "$repositoryName" --no-cache > "$cacheFile"
+			echo "ListRepositoryProjects: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
+			ListRepositoryProjects "$repositoryName" --no-cache > "$cacheFile"
 			cat "$cacheFile"
 			return 0
 		fi
@@ -32,7 +32,7 @@ ListAllRepositoryProjects(){
 
 	if [ ! -z "$MDSC_CACHED" ] && [ -f "$MDSC_CACHED/$repositoryName/repository-index.inf" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$MDSC_CACHED/$repositoryName/repository-index.inf" "+%Y%m%d%H%M%S"`" ] ) ; then
-		echo "ListAllRepositoryProjects: $repositoryName: using image ($MDSC_OPTION)" >&2
+		echo "ListRepositoryProjects: $repositoryName: using image ($MDSC_OPTION)" >&2
 		local PKG
 		for PKG in $( cat "$MDSC_CACHED/$repositoryName/repository-index.inf" | grep "PRJS=" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
 			echo "$PKG"
@@ -40,7 +40,7 @@ ListAllRepositoryProjects(){
 		return 0
 	fi
 	
-	echo "ListAllRepositoryProjects: $repositoryName: scanning source folders ($MDSC_OPTION)" >&2
+	echo "ListRepositoryProjects: $repositoryName: scanning source folders ($MDSC_OPTION)" >&2
 	
 	type ListPublicFolders >/dev/null 2>&1 || \
 	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListPublicFolders.fn.sh"
@@ -56,11 +56,11 @@ ListAllRepositoryProjects(){
 }
 
 case "$0" in
-	*/sh-scripts/ListAllRepositoryProjects.fn.sh) 
+	*/sh-scripts/ListRepositoryProjects.fn.sh) 
 
 		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-default
+		DistroShellContext --distro-path-auto
 		
-		ListAllRepositoryProjects "$@"
+		ListRepositoryProjects "$@"
 	;;
 esac

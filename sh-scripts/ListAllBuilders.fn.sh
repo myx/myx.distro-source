@@ -20,8 +20,9 @@ ListAllBuildersRaw(){
 	if [ -z "$1" ] ; then
 		echo "ListAllBuildersRaw: 'stageType' argument is required!" >&2 ; return 1
 	fi
-	for PKG in $( ListAllProjects ) ; do
-		ListProjectBuilders "$PKG" "$@"
+	local projectName
+	for projectName in $( ListAllProjects ) ; do
+		ListProjectBuilders "$projectName" "$@"
 	done
 }
 
@@ -34,9 +35,6 @@ ListAllBuilders(){
 
 case "$0" in
 	*/sh-scripts/ListAllBuilders.fn.sh) 
-
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-from-source
 		
 		ListAllBuilders "$@"
 	;;

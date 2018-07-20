@@ -7,13 +7,21 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
 fi
 
+
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	DistroShellContext --distro-from-source
+fi
+
+
 ListSourceProjectProvides(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
 		echo "ListSourceProjectProvides: 'projectName' argument is required!" >&2 ; return 1
 	fi
-	
-	"$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" \
+
+	Require DistroSourceCommand
+	DistroSourceCommand \
 		--import-from-source \
 		--select-project "$projectName" \
 		--print-provides --print ""

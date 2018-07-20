@@ -2,16 +2,16 @@ Require ListChangedSourceProjects
 Require ListProjectProvides
 
 CheckMakeProjectHostTarball(){
-	local PKG="$1"
-	if [ -z "$PKG" ] ; then
-		echo "CheckMakeProjectHostTarball: 'PKG' argument is required!" >&2 ; exit 1
+	local projectName="$1"
+	if [ -z "$projectName" ] ; then
+		echo "CheckMakeProjectHostTarball: 'projectName' argument is required!" >&2 ; exit 1
 	fi
 	
-	local SRC="$MDSC_SOURCE/$PKG"
+	local SRC="$MDSC_SOURCE/$projectName"
 	
 	if [ -d "$SRC/host/tarball" ] ; then
-		local BUILT_DIR="$MDSC_OUTPUT/$PKG"
-		local PACK_ROOT="`basename "$PKG"`"
+		local BUILT_DIR="$MDSC_OUTPUT/$projectName"
+		local PACK_ROOT="`basename "$projectName"`"
 		mkdir -p "$BUILT_DIR"
 		
 		( \
@@ -29,9 +29,9 @@ CheckMakeProjectHostTarball(){
 	fi
 }
 
-for PKG in $( ListChangedSourceProjects ) ; do
-	if test ! -z "$( ListProjectProvides "$PKG" "source-process" | grep -e "^host-tarball.tbz$" )" ; then
-		Async "`basename "$PKG"`" CheckMakeProjectHostTarball "$PKG"
+for projectName in $( ListChangedSourceProjects ) ; do
+	if test ! -z "$( ListProjectProvides "$projectName" "source-process" | grep -e "^host-tarball.tbz$" )" ; then
+		Async "`basename "$projectName"`" CheckMakeProjectHostTarball "$projectName"
 		wait
 	fi
 done

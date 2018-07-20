@@ -52,7 +52,8 @@ public class Repository {
 	final String checkName = info.getProperty("Name", "").trim();
 	if (checkName.length() == 0) {
 	    // 'Name' is mandatory
-	    System.err.println(Repository.class.getSimpleName() + ": skipped, no 'Name' in repository.inf");
+	    System.err.println(Repository.class.getSimpleName() + ": skipped, no 'Name' in repository.inf ("
+		    + repositoryName + ")");
 	    return null;
 	}
 	if (!checkName.equals(repositoryName)) {
@@ -283,6 +284,28 @@ public class Repository {
 			project.loadFromLocalSource(console, this, projectRoot);
 			console.outProgress('p');
 		    }
+
+		    final Path subProjectsRoot = projectRoot.resolve("source-projects");
+		    if (Files.isDirectory(subProjectsRoot)) {
+			try (final DirectoryStream<Path> subProjects = Files.newDirectoryStream(subProjectsRoot)) {
+			    for (final Path subProjectRoot : subProjects) {
+				if (Project.checkIfProject(subProjectRoot)) {
+				    final Project subProject = Project.staticLoadFromLocalSource(//
+					    this, //
+					    repositoryRoot.relativize(subProjectRoot).toString(), //
+					    subProjectRoot//
+				    );
+				    if (subProject != null) {
+					subProject.loadFromLocalSource(console, this, subProjectRoot);
+					console.outProgress('p');
+				    }
+
+				}
+			    }
+			}
+
+		    }
+
 		    continue;
 
 		}

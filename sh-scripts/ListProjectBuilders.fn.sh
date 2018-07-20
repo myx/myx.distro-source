@@ -9,7 +9,7 @@ fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
-	DistroShellContext --distro-default
+	DistroShellContext --distro-path-auto
 fi
 
 

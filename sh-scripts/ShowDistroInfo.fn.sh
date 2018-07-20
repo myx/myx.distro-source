@@ -22,7 +22,7 @@ case "$0" in
 	*/sh-scripts/ShowDistroInfo.fn.sh) 
 
 		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-default
+		DistroShellContext --distro-path-auto
 		
 		ShowDistroInfo "$@"
 	;;

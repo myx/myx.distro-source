@@ -1,8 +1,8 @@
 echo "Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-# prepare -> util -> install 
-PATH="$PATH:$MMDAPP/source/myx/myx.distro-source/sh-scripts:$MMDAPP/source/myx/myx.distro-util/sh-scripts"
+# source -> deploy
+PATH="$PATH:$MMDAPP/source/myx/myx.distro-source/sh-scripts:$MMDAPP/source/myx/myx.distro-deploy/sh-scripts"
 
 . "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 DistroShellContext --distro-from-source
@@ -40,12 +40,13 @@ complete -W "\`ListDistroScripts\`" "*"
 complete -W "\`ListDistroScripts\`" "which"
 complete -W "\`ListDistroScripts --completion\`" "Require"
 complete -W "\`ListDistroScripts --completion\`" "Distro"
+complete -W "\`ListDistroScripts --completion\`" "Deploy"
 complete -W "\`ListAllActions --completion\`"    "Action"
 
 complete -W "\`DistroListDistroScripts --type prepare\`" "Distro.Prepare"
 complete -W "\`DistroListDistroScripts --type util\`" "Distro.Util"
 
-PS1="MDPC: \`printf "\$MDSC_INMODE"\`: $PS1"
+PS1="MDSSC: \`printf "\$MDSC_INMODE"\`: $PS1"
 export PS1
 
 ### testing

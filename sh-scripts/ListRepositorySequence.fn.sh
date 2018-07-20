@@ -9,7 +9,7 @@ fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
-	DistroShellContext --distro-default
+	DistroShellContext --distro-path-auto
 fi
 
 ListRepositorySequence(){
@@ -25,7 +25,7 @@ ListRepositorySequence(){
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			echo "ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi

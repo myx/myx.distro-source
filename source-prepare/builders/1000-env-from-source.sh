@@ -33,11 +33,5 @@ mkdir -p "$MMDAPP/cached/sources"
 
 echo "$BUILD_STAMP" > "$MMDAPP/cached/build-time-stamp.txt"
 
+Prefix "sync/check" Distro PrepareDistroSyncToCached
 
-Require DistroSourceCommand
-
-DistroSourceCommand \
-	-v \
-	--import-from-source --select-all-from-source \
-	--prepare-source-to-cached-index \
-	--print '' \
