@@ -39,42 +39,58 @@ ListRepositoryProvides(){
 	fi
 	shift
 
-	if [ "$1" = "--print-project" ] ; then
-		shift
-		
-		Require ListRepositorySequence
-		Require ListProjectProvides
-
-		local sequenceProjectName
-		for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
-			ListProjectProvides "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
-		done	
-		return 0
-	fi
-
-	if [ "$1" = "--merge-sequence" ] ; then
-		shift
-		
-		Require ListRepositorySequence
-		Require ListProjectProvides
-
-		local sequenceProjectName
-		for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
-			ListProjectProvides "$sequenceProjectName" --print-project "$@"
-		done	
-		return 0
-	fi
-
 	local useNoCache=""
-	if [ "$1" = "--no-cache" ] ; then
-		shift
-		local useNoCache="--no-cache"
-	fi
+
+	set -e
+
+	while true ; do
+		case "$1" in
+			--print-project)
+				shift
+				
+				Require ListRepositorySequence
+				Require ListProjectProvides
+		
+				local sequenceProjectName
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectProvides "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
+				done	
+				return 0
+				;;
+			--filter-projects)
+				shift
+				local projectFilter="$1" ; shift
+				# echo ">>>" $repositoryName ">>>" $projectFilter >&2
+				# set -x
+				ListRepositoryProvides "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
+				return 0
+				;;
+			--merge-sequence)
+				shift
+				
+				Require ListRepositorySequence
+				Require ListProjectProvides
+		
+				local sequenceProjectName
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectProvides "$sequenceProjectName" --print-project "$@"
+				done	
+				return 0
+				;;
+			--no-cache)
+				shift
+				local useNoCache="--no-cache"
+				;;
+			*)
+				break
+				;;
+		esac
+	done
 
 	local FILTER="$1"
 	if [ ! -z "$FILTER" ] ; then
 		shift
-		ListRepositoryProvides "$repositoryName" $useNoCache "$@" | while read -r LINE ; do
+		for LINE in $( ListRepositoryProvides "$repositoryName" $useNoCache "$@" | myx.common lib/linesToArguments ) ; do
 			ListRepositoryProvides --internal-print-project-provides --filter "$FILTER" $LINE
 		done
 		return 0
@@ -96,7 +112,7 @@ ListRepositoryProvides(){
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositoryProvides: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryProvides "$repositoryName" --no-cache "$@" > "$cacheFile"
+			ListRepositoryProvides $repositoryName --no-cache "$@" > "$cacheFile"
 			cat "$cacheFile"
 			return 0
 		fi

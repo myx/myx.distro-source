@@ -10,11 +10,10 @@ fi
 ListDistroScripts(){
 	case "$1" in
 		--completion)
+			shift
 			( \
-				ListDistroScripts --type prepare ; \
-				ListDistroScripts --type util ; \
-				ListDistroScripts --type install ; \
-			) | sort | uniq | sed "s:.fn.sh::g" 
+				ListDistroScripts "$@" ; \
+			) | sort | uniq | sed 's:\.fn\.sh$::' 
 			return 0
 			;;
 		--all)
@@ -37,7 +36,7 @@ ListDistroScripts(){
 			local MDTYPE="$1" ; shift
 			local MDPATH="$MMDAPP/source/myx/myx.distro-$MDTYPE/sh-scripts"
 			if [ ! -d "$MDPATH" ] ; then
-				echo "DistroListDistroScripts: invalid type: $MDTYPE" >&2
+				echo "ListDistroScripts: invalid type: $MDTYPE" >&2
 				return 1
 			fi
 			local FILTER="$MDPATH/"

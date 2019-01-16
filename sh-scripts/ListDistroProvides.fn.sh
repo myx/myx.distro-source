@@ -13,14 +13,28 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListDistroProvides(){
+	local filterProjects=""
+	while true ; do
+		case "$1" in
+			--filter-projects)
+				shift
+				filterProjects="$filterProjects --filter-projects $1" ; shift
+				;;
+			*)
+				break
+				;;
+		esac
+	done
+
 	set -e
 	
 	Require ListAllRepositories
 	Require ListRepositoryProvides
 
 	local repositoryName
-	ListAllRepositories | while read repositoryName ; do
-		ListRepositoryProvides "$repositoryName" "$@"
+	for repositoryName in $( ListAllRepositories | myx.common lib/linesToArguments ) ; do
+		# echo ">>> " $repositoryName >&2
+		ListRepositoryProvides $repositoryName $filterProjects "$@" || true
 	done
 }
 

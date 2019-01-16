@@ -9,4 +9,4 @@ fi
 
 cd "$MMDAPP"
 export MMDAPP
-bash --rcfile "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-prepare-bashrc.rc"
+bash --rcfile "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"

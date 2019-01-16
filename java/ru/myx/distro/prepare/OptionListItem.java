@@ -113,6 +113,34 @@ public class OptionListItem implements Comparable<OptionListItem> {
 	this.keys.clear();
     }
 
+    public void fillList(final String prefix, final Collection<String> target) {
+	final Iterator<String> keys = this.keys.iterator();
+	if (!keys.hasNext()) {
+	    if (prefix != null) {
+		target.add(prefix + this.name);
+		return;
+	    }
+	    target.add(this.name);
+	    return;
+	}
+	final StringBuilder text = new StringBuilder(32);
+	for (;;) {
+	    if (prefix != null) {
+		text.append(prefix);
+	    }
+	    text.append(this.name);
+	    final String key = keys.next();
+	    if (key != null && !key.isEmpty()) {
+		text.append('\\').append(':').append(key);
+	    }
+	    target.add(text.toString());
+	    text.setLength(0);
+	    if (!keys.hasNext()) {
+		return;
+	    }
+	}
+    }
+
     @Override
     public String toString() {
 	final Iterator<String> keys = this.keys.iterator();
