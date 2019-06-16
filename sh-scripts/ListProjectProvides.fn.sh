@@ -64,6 +64,7 @@ ListProjectProvides(){
 			return 0
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+			mkdir -p "$MDSC_CACHED/$projectName"
 			echo "ListProjectProvides: $projectName: caching projects ($MDSC_OPTION)" >&2
 			ListProjectProvides "$projectName" --no-cache "$@" > "$cacheFile"
 			cat "$cacheFile"
