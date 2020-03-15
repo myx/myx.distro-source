@@ -110,8 +110,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		boolean first = true;
 		for (final Project project : context.buildQueue) {
 		    final String projectName = project.getFullName();
-		    final Set<OptionListItem> provides = project.getProvides();
-		    for (final OptionListItem provide : provides) {
+		    for (final OptionListItem provide : project.getProvides()) {
 			if (first) {
 			    first = false;
 			} else {
@@ -123,6 +122,26 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		System.out.println(builder);
 		return true;
 	    }, "--print-provides");
+
+	    AbstractCommand.registerOperation(operations, context -> {
+		final StringBuilder builder = new StringBuilder(256);
+		boolean first = true;
+		for (final Project project : context.buildQueue) {
+		    final String projectName = project.getFullName();
+		    for (final OptionListItem provide : project.getProvides()) {
+			if (first) {
+			    first = false;
+			} else {
+			    builder.append('\n');
+			}
+			final List<String> items = new ArrayList<>();
+			provide.fillList(projectName + ' ', items);
+			builder.append(String.join("\n", items));
+		    }
+		}
+		System.out.println(builder);
+		return true;
+	    }, "--print-provides-separate-lines");
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		final Map<String, Set<Project>> provides = context.repositories.getProvides();

@@ -18,7 +18,7 @@ App Folders:
 /cached/changed - package names that are changed and need to be built
 /cached/built - package names that are built
 /output - output products
-/distro - distro structure (alternatove to /source, btw)
+/distro - distro structure (alternative to /source, BTW)
 
 
 Project Files & Folders:

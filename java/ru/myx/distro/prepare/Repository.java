@@ -263,7 +263,7 @@ public class Repository {
     }
 
     public void loadFromLocalIndex(final Distro repos, final Properties info) {
-	for (final String projectId : info.getProperty("PRJS", "").split(" ")) {
+	for (final String projectId : info.getProperty("PRJS", "").split("\\s+")) {
 	    final String projectName = projectId.substring(projectId.indexOf('/') + 1).trim();
 	    if (projectName.length() == 0) {
 		continue;

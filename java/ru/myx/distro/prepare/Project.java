@@ -124,9 +124,9 @@ public class Project {
 	// a bit excessive? remove maybe? full project name is obviously well-known
 	// <code>this.lstProvides.add(new OptionListItem(this.getFullName()));</code>
 	if (info != null) {
-	    Project.updateList(info.getProperty("Requires", "").split(" "), this.lstRequires);
-	    Project.updateList(info.getProperty("Provides", "").split(" "), this.lstProvides);
-	    Project.updateList(info.getProperty("Declares", "").split(" "), this.lstProvides);
+	    Project.updateList(info.getProperty("Requires", "").split("\\s+"), this.lstRequires);
+	    Project.updateList(info.getProperty("Provides", "").split("\\s+"), this.lstProvides);
+	    Project.updateList(info.getProperty("Declares", "").split("\\s+"), this.lstProvides);
 	}
 	if (repo != null) {
 	    repo.addKnown(this);
@@ -604,9 +604,9 @@ public class Project {
     }
 
     public void loadFromLocalIndex(final Repository repository, final Properties info) {
-	Project.updateList(info.getProperty("PRJ-PRV-" + this.name, "").split(" "), this.lstProvides);
-	Project.updateList(info.getProperty("PRJ-REQ-" + this.name, "").split(" "), this.lstRequires);
-	Project.updateList(info.getProperty("PRJ-GET-" + this.name, "").split(" "), this.lstContains);
+	Project.updateList(info.getProperty("PRJ-PRV-" + this.name, "").split("\\s+"), this.lstProvides);
+	Project.updateList(info.getProperty("PRJ-REQ-" + this.name, "").split("\\s+"), this.lstRequires);
+	Project.updateList(info.getProperty("PRJ-GET-" + this.name, "").split("\\s+"), this.lstContains);
 
 	for (final OptionListItem provides : this.lstProvides) {
 	    this.repo.addProvides(this, provides);
