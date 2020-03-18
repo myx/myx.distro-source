@@ -25,7 +25,7 @@ RebuildActions(){
 	local TMP_DIR="$(mktemp -d -t "rebuild-actions-")"
 	if [ $? -ne 0 ]; then
 		echo "Can't make temporary install directory $TMP_DIR, exiting..."
-		exit 1
+		return 1
 	fi
 	echo "Using temporary install directory: $TMP_DIR"
 

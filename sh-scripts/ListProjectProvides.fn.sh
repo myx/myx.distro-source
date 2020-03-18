@@ -122,7 +122,7 @@ case "$0" in
 	
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListProjectProvides.fn.sh [--help] <project_name> [--merge-sequence] [--print-project] [--no-cache] [filter_by]" >&2
-			return 1
+			exit 1
 		fi
 		
 		ListProjectProvides "$@"

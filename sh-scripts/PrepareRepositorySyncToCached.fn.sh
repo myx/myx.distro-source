@@ -26,7 +26,7 @@ Require ListRepositoryProjects
 PrepareRepositorySyncToCached(){
 	local repositoryName="${1#$MMDAPP/source/}"
 	if [ -z "$repositoryName" ] ; then
-		echo "PrepareRepositorySyncToCached: 'repositoryName' argument is required!" >&2 ; exit 1
+		echo "PrepareRepositorySyncToCached: 'repositoryName' argument is required!" >&2 ; return 1
 	fi
 	
 	mkdir -p "$MMDAPP/cached/sources/$repositoryName"

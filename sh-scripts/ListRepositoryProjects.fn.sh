@@ -9,7 +9,7 @@ fi
 
 ListRepositoryProjects(){
 	local repositoryName="${1#$MDSC_SOURCE/}"
-	[ -z "$repositoryName" ] && echo '$repositoryName' is not set! >&2 && exit 1
+	[ -z "$repositoryName" ] && echo '$repositoryName' is not set! >&2 && return 1
 	
 	if [ "$2" = "--no-cache" ] ; then
 		shift

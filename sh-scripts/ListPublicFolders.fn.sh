@@ -8,7 +8,7 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListPublicFolders(){
-	[ -z "$1" ] && echo "ListPublicFolders: path is required!" && exit 1
+	[ -z "$1" ] && echo "ListPublicFolders: path is required!" && return 1
 	find "$1" -mindepth 1 -maxdepth 1 -type d | sort
 }
 

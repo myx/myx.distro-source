@@ -4,7 +4,7 @@ Require ListProjectProvides
 CheckMakeProjectHostTarball(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "CheckMakeProjectHostTarball: 'projectName' argument is required!" >&2 ; exit 1
+		echo "CheckMakeProjectHostTarball: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local SRC="$MDSC_SOURCE/$projectName"

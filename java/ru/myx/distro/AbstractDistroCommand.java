@@ -425,7 +425,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 
 	    if (AbstractCommand.class.isAssignableFrom(cls)) {
 		this.console.outDebug("working with an AbstractCommand, class: ", cls.getName());
-		final AbstractCommand command = (AbstractCommand) cls.newInstance();
+		final AbstractCommand command = (AbstractCommand) cls.getDeclaredConstructor().newInstance();
 		command.deriveFrom(this);
 		command.arguments = arguments.iterator();
 		return command.execute(command);

@@ -3,7 +3,7 @@
 CompileCachedJavaProject(){
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; exit 1
+		echo "PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	echo "Compiling project $projectName" >&2

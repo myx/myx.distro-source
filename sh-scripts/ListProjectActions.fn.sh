@@ -21,7 +21,7 @@ ListProjectActions(){
 
 	local projectName="${1#$MDSC_SOURCE/}"
 	if [ -z "$projectName" ] ; then
-		echo "ListProjectActions: 'projectName' argument is required!" >&2 ; exit 1
+		echo "ListProjectActions: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 

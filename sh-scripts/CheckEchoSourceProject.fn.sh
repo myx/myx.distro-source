@@ -12,7 +12,7 @@ type ListPublicFolders >/dev/null 2>&1 || \
 
 CheckEchoSourceProject(){
 	local PKG_PATH="$1"
-	[ -z "$PKG_PATH" ] && echo '$PKG_PATH' is not set! >&2 && exit 1
+	[ -z "$PKG_PATH" ] && echo '$PKG_PATH' is not set! >&2 && return 1
 	[ ! -d "$PKG_PATH" ] && return 0
 
 	local NOT_DEEP="$2"

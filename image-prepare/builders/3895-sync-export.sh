@@ -4,17 +4,17 @@ Require ListProjectProvides
 SyncExportsFromOutput(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "SyncExportsFromOutput: 'projectName' argument is required!" >&2 ; exit 1
+		echo "SyncExportsFromOutput: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local SRC="$2"
 	if [ -z "$SRC" ] ; then
-		echo "SyncExportsFromOutput: 'SRC' argument is required!" >&2 ; exit 1
+		echo "SyncExportsFromOutput: 'SRC' argument is required!" >&2 ; return 1
 	fi
 	
 	local DST="$3"
 	if [ -z "$DST" ] ; then
-		echo "SyncExportsFromOutput: 'DST' argument is required!" >&2 ; exit 1
+		echo "SyncExportsFromOutput: 'DST' argument is required!" >&2 ; return 1
 	fi
 	
 	local SOURCE_DIR="$MDSC_SOURCE/$projectName"

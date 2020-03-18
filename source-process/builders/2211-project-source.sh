@@ -3,9 +3,7 @@ Require ListProjectProvides
 
 MakeProjectSourceArchive(){
 	local projectName="${1#$MMDAPP/source/}"
-	if [ -z "$projectName" ] ; then
-		echo "MakeProjectSourceArchive: 'projectName' argument is required!" >&2 ; exit 1
-	fi
+	[ -z "$projectName" ] && echo "MakeProjectSourceArchive: 'projectName' argument is required!" >&2 && return 1
 	
 	local CHECK_DIR="$MDSC_SOURCE/$projectName"
 	local BUILT_DIR="$MDSC_OUTPUT/$projectName"
