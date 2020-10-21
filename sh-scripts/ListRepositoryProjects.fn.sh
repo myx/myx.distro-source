@@ -57,6 +57,12 @@ ListRepositoryProjects(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryProjects.fn.sh) 
+		
+		# ListRepositoryProjects.fn.sh myx
+		# ListRepositoryProjects.fn.sh --distro-source-only myx 2> /dev/null
+		# ListRepositoryProjects.fn.sh --distro-from-source myx 2> /dev/null
+		# ListRepositoryProjects.fn.sh --distro-from-cached myx 2> /dev/null
+		# ListRepositoryProjects.fn.sh myx --no-cache
 
 		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
 		DistroShellContext --distro-path-auto

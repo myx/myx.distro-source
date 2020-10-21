@@ -28,7 +28,7 @@ ListProjectProvides(){
 			for sequenceProjectName in $( ListProjectSequence "$projectName" ) ; do
 				ListProjectProvides "$sequenceProjectName" "$@"
 			done	
-		) | uniq		
+		) | awk '!x[$0]++'		
 		return 0
 	fi
 
@@ -119,6 +119,18 @@ case "$0" in
 		# ListProjectProvides.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence deploy-keyword
 		# ListProjectProvides.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence --print-project deploy-keyword
 		# ListProjectProvides.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project --merge-sequence deploy-keyword
+	
+		# ListProjectProvides.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 2> /dev/null
+		# ListProjectProvides.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 2> /dev/null
+
+		# ListProjectProvides.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 --merge-sequence 2> /dev/null
+		# ListProjectProvides.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 --merge-sequence 2> /dev/null
+
+		# ListProjectProvides.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 deploy-keyword 2> /dev/null
+		# ListProjectProvides.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 deploy-keyword 2> /dev/null
+
+		# ListProjectProvides.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 --print-project deploy-keyword 2> /dev/null
+		# ListProjectProvides.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 --print-project deploy-keyword 2> /dev/null
 	
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListProjectProvides.fn.sh [--help] <project_name> [--merge-sequence] [--print-project] [--no-cache] [filter_by]" >&2

@@ -275,7 +275,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 	final Set<Project> providers = this.repositories
 		.getProvides(new OptionListItem("source-process", "compile-java"));
 
-	this.console.outWarn("SKIPPED, providers: " + providers);
+	this.console.outWarn("SKIPPED, providers, compile-java: " + providers);
     }
 
     public void doPrepateBuildFetchMissing() throws Exception {
@@ -284,7 +284,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 	final Set<Project> providers = this.repositories
 		.getProvides(new OptionListItem("", "build.java-jar", "build.copy-jars"));
 
-	this.console.outWarn("SKIPPED, providers: " + providers);
+	this.console.outWarn("SKIPPED, providers, fetch-missing: " + providers);
     }
 
     public void doSelectAllFromSource() {

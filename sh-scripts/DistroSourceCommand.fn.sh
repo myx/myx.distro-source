@@ -94,8 +94,19 @@ DistroSourceCommand(){
 
 case "$0" in
 	*/sh-scripts/DistroSourceCommand.fn.sh) 
+		# DistroSourceCommand.fn.sh --import-from-source  --print-all-provides
+		# DistroSourceCommand.fn.sh --import-from-source --select-project lib/util.repository-lib --print-provides
+		# DistroSourceCommand.fn.sh --import-from-source --select-providers ndm/location-c1 --print-provides
+		
+		# DistroSourceCommand.fn.sh --import-from-cached --select-project lib/util.repository-lib --print-provides
+		# DistroSourceCommand.fn.sh --import-from-cached --select-providers ndm/location-c1 --print-provides
+		
+		# DistroSourceCommand.fn.sh --import-from-source --select-providers ndm/location-c1 --print-selected 2> /dev/null
+		# DistroSourceCommand.fn.sh --import-from-cached --select-providers ndm/location-c1 --print-selected 2> /dev/null
+		
 		DistroSourceCommand \
 			"$@" \
 			--print ''
 	;;
 esac
+

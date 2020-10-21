@@ -48,16 +48,17 @@ ListRepositorySequence(){
 	
 		local FILTER="$1"
 		if test -z "$FILTER" ; then
-			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | uniq` ; do
+			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
 				echo $ITEM
-			done
+			done | awk '!x[$0]++'
 		else
-			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | unuq` ; do
+			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
 				if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
 					echo ${ITEM#$FILTER\\:} | tr "|" "\n"
 				fi
-			done
+			done | awk '!x[$0]++'
 		fi
+		return 0
 	fi
 	
 	if [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
@@ -79,8 +80,9 @@ ListRepositorySequence(){
 
 case "$0" in
 	*/sh-scripts/ListRepositorySequence.fn.sh) 
-		# ListRepositorySequence.fn.sh --distro-from-source ndm
-		# ListRepositorySequence.fn.sh --distro-source-only prv
+		# ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null
+		# ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null
+		# ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null
 
 		ListRepositorySequence "$@"
 	;;

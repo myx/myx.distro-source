@@ -19,11 +19,10 @@ ListRepositoryProvides(){
 			shift
 			local FILTER="$1" ; shift
 			local projectName="$1" ; shift
-			for ITEM in "$@" ; do
-				if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-					echo "$projectName ${ITEM#$FILTER\\:}" | tr '|' '\n' 
-				fi
-			done
+			local ITEM="$@"
+		 	if [ "$ITEM" != "${ITEM#$FILTER\\:}" ] ; then
+				echo "$projectName ${ITEM#$FILTER\\:}" | tr '|' '\n'
+			fi
 			return 0
 		fi
 		local projectName="$1" ; shift
@@ -60,8 +59,6 @@ ListRepositoryProvides(){
 			--filter-projects)
 				shift
 				local projectFilter="$1" ; shift
-				# echo ">>>" $repositoryName ">>>" $projectFilter >&2
-				# set -x
 				ListRepositoryProvides "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
 				return 0
 				;;
@@ -90,14 +87,8 @@ ListRepositoryProvides(){
 	local FILTER="$1"
 	if [ ! -z "$FILTER" ] ; then
 		shift
-		for LINE in $( ListRepositoryProvides "$repositoryName" $useNoCache "$@" | myx.common lib/linesToArguments ) ; do
+		ListRepositoryProvides "$repositoryName" $useNoCache "$@" | while read -r LINE ; do
 			ListRepositoryProvides --internal-print-project-provides --filter "$FILTER" $LINE
-		done
-		return 0
-		for ITEM in $( ListRepositoryProvides "$repositoryName" $useNoCache "$@" ) ; do
-			if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-				echo ${ITEM#$FILTER\\:} | tr '|' '\n' 
-			fi
 		done
 		return 0
 	fi
@@ -157,14 +148,28 @@ case "$0" in
 	*/sh-scripts/ListRepositoryProvides.fn.sh)
 		# ListRepositoryProvides.fn.sh --distro-from-source myx
 		# ListRepositoryProvides.fn.sh --distro-source-only myx
-		# ListRepositoryProvides.fn.sh myx --merge-sequence 
-		# ListRepositoryProvides.fn.sh myx deploy-keyword
+		# ListRepositoryProvides.fn.sh --distro-from-cached myx
+		
+		# ListRepositoryProvides.fn.sh --distro-source-only myx --merge-sequence 2> /dev/null
+		# ListRepositoryProvides.fn.sh myx --merge-sequence
+		# ListRepositoryProvides.fn.sh --distro-source-only myx --merge-sequence deploy-keyword 2> /dev/null
+		# ListRepositoryProvides.fn.sh --distro-from-source myx --merge-sequence deploy-keyword 2> /dev/null
+		# ListRepositoryProvides.fn.sh --distro-from-cached myx --merge-sequence deploy-keyword 2> /dev/null
 		# ListRepositoryProvides.fn.sh myx --merge-sequence deploy-keyword
-		# ListRepositoryProvides.fn.sh --distro-from-source prv --no-cache source-prepare
-		# ListRepositoryProvides.fn.sh --distro-from-source prv --merge-sequence --no-cache source-prepare
+		
+		# ListRepositoryProvides.fn.sh myx deploy-keyword
+		
+		### by project name
+		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-projects common
+		# ListRepositoryProvides.fn.sh --distro-from-source myx --filter-projects common
+		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-projects macosx deploy-keyword
+		# ListRepositoryProvides.fn.sh --distro-from-source myx --filter-projects macosx deploy-keyword
+		
+		# !!!! ListRepositoryProvides.fn.sh --distro-from-source myx --no-cache source-prepare
+		# !!!! ListRepositoryProvides.fn.sh --distro-from-source myx --merge-sequence --no-cache source-prepare
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositoryProvides.fn.sh [--help] <repository_name> [--merge-sequence] [--no-cache] [filter_by]" >&2
+			echo "syntax: ListRepositoryProvides.fn.sh [--help] <repository_name> [--merge-sequence/--filter-projects <name_part>] [--no-cache] [filter_by]" >&2
 			exit 1
 		fi
 

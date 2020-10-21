@@ -78,12 +78,6 @@ ListRepositoryRequires(){
 			ListRepositoryRequires --internal-print-project-requires --filter "$FILTER" $LINE
 		done
 		return 0
-		for ITEM in $( ListRepositoryRequires "$repositoryName" $useNoCache "$@" ) ; do
-			if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-				echo ${ITEM#$FILTER\\:} | tr '|' '\n' 
-			fi
-		done
-		return 0
 	fi
 	
 	if [ "$useNoCache" != "--no-cache" ] ; then
@@ -139,13 +133,32 @@ ListRepositoryRequires(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryRequires.fn.sh)
+		# ListRepositoryRequires.fn.sh lib
+		# ListRepositoryRequires.fn.sh --distro-source-only lib
+		# ListRepositoryRequires.fn.sh --distro-from-source lib
+		# ListRepositoryRequires.fn.sh --distro-from-cached lib
+		# ListRepositoryRequires.fn.sh lib --merge-sequence 2> /dev/null
+		# ListRepositoryRequires.fn.sh --distro-source-only lib --merge-sequence 2> /dev/null 
+		# ListRepositoryRequires.fn.sh --distro-from-source lib --merge-sequence 2> /dev/null 
+
+		# !!!! ListRepositoryRequires.fn.sh --distro-source-only myx os-myx.common
+		# !!!! ListRepositoryRequires.fn.sh --distro-from-cached myx os-myx.common
+		# !!!! ListRepositoryRequires.fn.sh --distro-source-only myx deploy-keyword
+		# !!!! ListRepositoryRequires.fn.sh --distro-from-cached myx deploy-keyword
+		# !!!! ListRepositoryRequires.fn.sh --distro-source-only myx macosx
+		# !!!! ListRepositoryRequires.fn.sh --distro-from-cached myx --merge-sequence macosx
+
+		# !!!! ListRepositoryRequires.fn.sh ndm ndm/location-c1
+		# !!!! ListRepositoryRequires.fn.sh --distro-source-only ndm ndm/location-c1
+		# !!!! ListRepositoryRequires.fn.sh --distro-from-source ndm ndm/location-c1
+	
 		# ListRepositoryRequires.fn.sh --distro-from-source myx
+		# ListRepositoryRequires.fn.sh --distro-from-cached myx
 		# ListRepositoryRequires.fn.sh --distro-source-only myx
 		# ListRepositoryRequires.fn.sh myx --merge-sequence 
-		# ListRepositoryRequires.fn.sh myx deploy-keyword
-		# ListRepositoryRequires.fn.sh myx --merge-sequence deploy-keyword
-		# ListRepositoryRequires.fn.sh --distro-from-source prv --no-cache source-prepare
-		# ListRepositoryRequires.fn.sh --distro-from-source prv --merge-sequence --no-cache source-prepare
+		# !!!! ListRepositoryRequires.fn.sh myx --merge-sequence deploy-keyword
+		# !!!! ListRepositoryRequires.fn.sh --distro-from-source prv --no-cache source-prepare
+		# !!!! ListRepositoryRequires.fn.sh --distro-from-source prv --merge-sequence --no-cache source-prepare
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListRepositoryRequires.fn.sh [--help] <repository_name> [--merge-sequence] [--no-cache] [filter_by]" >&2

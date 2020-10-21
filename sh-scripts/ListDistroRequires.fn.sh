@@ -19,7 +19,7 @@ ListDistroRequires(){
 	Require ListRepositoryProvides
 
 	local repositoryName
-	ListAllRepositories | while read repositoryName ; do
+	ListAllRepositories | while read -r repositoryName ; do
 		ListRepositoryProvides "$repositoryName" "$@"
 	done
 }

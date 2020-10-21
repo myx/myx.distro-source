@@ -28,7 +28,7 @@ ListProjectRequires(){
 			for sequenceProjectName in $( ListProjectSequence "$projectName" ) ; do
 				ListProjectRequires "$sequenceProjectName" "$@"
 			done	
-		) | uniq		
+		) | awk '!x[$0]++'		
 		return 0
 	fi
 
@@ -109,15 +109,33 @@ ListProjectRequires(){
 
 case "$0" in
 	*/sh-scripts/ListProjectRequires.fn.sh)
-		# ListProjectRequires.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectRequires.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectRequires.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz 
-		# ListProjectRequires.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --merge-sequence --print-project 
+		# ListProjectRequires.fn.sh --distro-from-source myx/myx.distro-deploy 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-source-only myx/myx.distro-deploy 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-from-source myx/myx.distro-deploy --print-project 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-source-only myx/myx.distro-deploy --print-project 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-from-source myx/myx.distro-deploy --merge-sequence 2> /dev/null 
+		# ListProjectRequires.fn.sh --distro-source-only myx/myx.distro-deploy --merge-sequence 2> /dev/null 
+		# ListProjectRequires.fn.sh --distro-from-source myx/myx.distro-deploy --print-project --merge-sequence 2> /dev/null 
+		# ListProjectRequires.fn.sh --distro-source-only myx/myx.distro-deploy --print-project --merge-sequence 2> /dev/null 
+		# ListProjectRequires.fn.sh --distro-from-source myx/myx.distro-deploy --merge-sequence --print-project 2> /dev/null 
+		# ListProjectRequires.fn.sh --distro-source-only myx/myx.distro-deploy --merge-sequence --print-project 2> /dev/null 
+		# ListProjectRequires.fn.sh myx/myx.distro-deploy
+		
+		# ListProjectRequires.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --merge-sequence --print-project 2> /dev/null 
 		# ListProjectRequires.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --print-project --merge-sequence 
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project deploy-keyword
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence deploy-keyword
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence --print-project deploy-keyword
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project --merge-sequence deploy-keyword
+		
+		# !!!! ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project setup-keys.ndm.myx
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence setup-keys.ndm.myx 2> /dev/null
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence --print-project setup-keys.ndm.myx
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project --merge-sequence setup-keys.ndm.myx
+
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-source-only ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-from-cached ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
+		# ListProjectRequires.fn.sh --distro-from-source ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
+	
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project setup-keys.ndm.myx 2> /dev/null
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project setup-keys.ndm.myx 2> /dev/null
 	
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListProjectRequires.fn.sh [--help] <project_name> [--merge-sequence] [--print-project] [--no-cache] [filter_by]" >&2

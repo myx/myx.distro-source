@@ -128,6 +128,24 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		boolean first = true;
 		for (final Project project : context.buildQueue) {
 		    final String projectName = project.getFullName();
+		    for (final OptionListItem require : project.getRequires()) {
+			if (first) {
+			    first = false;
+			} else {
+			    builder.append('\n');
+			}
+			builder.append(projectName).append(' ').append(require.toString());
+		    }
+		}
+		System.out.println(builder);
+		return true;
+	    }, "--print-requires");
+
+	    AbstractCommand.registerOperation(operations, context -> {
+		final StringBuilder builder = new StringBuilder(256);
+		boolean first = true;
+		for (final Project project : context.buildQueue) {
+		    final String projectName = project.getFullName();
 		    for (final OptionListItem provide : project.getProvides()) {
 			if (first) {
 			    first = false;

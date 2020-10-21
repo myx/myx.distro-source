@@ -44,10 +44,11 @@ case "$0" in
 	*/sh-scripts/ListAllRepositories.fn.sh) 
 		#	ListAllRepositories.fn.sh
 		#	( . "`which ListAllRepositories.fn.sh`" ; ListAllRepositories )
-		#	ListAllRepositories.fn.sh --distro-from-output
-		#	ListAllRepositories.fn.sh --distro-from-cached
-		#	ListAllRepositories.fn.sh --distro-from-distro
-		#	ListAllRepositories.fn.sh --distro-from-source
+		#	ListAllRepositories.fn.sh --distro-source-only 2> /dev/null
+		#	ListAllRepositories.fn.sh --distro-from-source 2> /dev/null
+		#	ListAllRepositories.fn.sh --distro-from-cached 2> /dev/null
+		#	ListAllRepositories.fn.sh --distro-from-distro 2> /dev/null
+		#	ListAllRepositories.fn.sh --distro-from-output 2> /dev/null
 
 		ListAllRepositories "$@"
 	;;
