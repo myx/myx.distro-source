@@ -110,24 +110,6 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		boolean first = true;
 		for (final Project project : context.buildQueue) {
 		    final String projectName = project.getFullName();
-		    for (final OptionListItem provide : project.getProvides()) {
-			if (first) {
-			    first = false;
-			} else {
-			    builder.append('\n');
-			}
-			builder.append(projectName).append(' ').append(provide.toString());
-		    }
-		}
-		System.out.println(builder);
-		return true;
-	    }, "--print-provides");
-
-	    AbstractCommand.registerOperation(operations, context -> {
-		final StringBuilder builder = new StringBuilder(256);
-		boolean first = true;
-		for (final Project project : context.buildQueue) {
-		    final String projectName = project.getFullName();
 		    for (final OptionListItem require : project.getRequires()) {
 			if (first) {
 			    first = false;
@@ -152,6 +134,24 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 			} else {
 			    builder.append('\n');
 			}
+			builder.append(projectName).append(' ').append(provide.toString());
+		    }
+		}
+		System.out.println(builder);
+		return true;
+	    }, "--print-provides");
+
+	    AbstractCommand.registerOperation(operations, context -> {
+		final StringBuilder builder = new StringBuilder(256);
+		boolean first = true;
+		for (final Project project : context.buildQueue) {
+		    final String projectName = project.getFullName();
+		    for (final OptionListItem provide : project.getProvides()) {
+			if (first) {
+			    first = false;
+			} else {
+			    builder.append('\n');
+			}
 			final List<String> items = new ArrayList<>();
 			provide.fillList(projectName + ' ', items);
 			builder.append(String.join("\n", items));
@@ -163,13 +163,16 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		final Map<String, Set<Project>> provides = context.repositories.getProvides();
+		final StringBuilder builder = new StringBuilder(256);
 		for (final String provide : provides.keySet()) {
-		    final StringBuilder builder = new StringBuilder(256);
-		    builder.append(provide).append(' ');
 		    for (final Project project : provides.get(provide)) {
-			builder.append(project.repo.name).append('/').append(project.name);
+			System.out.println(builder//
+				.append(project.repo.name).append('/').append(project.name)//
+				.append(' ')//
+				.append(provide)//
+			);
+			builder.setLength(0);
 		    }
-		    System.out.println(builder);
 		}
 		return true;
 	    }, "--print-all-provides");
@@ -184,16 +187,41 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		    throw new IllegalArgumentException("repository in unknown, name: " + repositoryName);
 		}
 		final Map<String, Set<Project>> provides = repository.getProvides();
+		final StringBuilder builder = new StringBuilder(256);
 		for (final String provide : provides.keySet()) {
-		    final StringBuilder builder = new StringBuilder(256);
-		    builder.append(provide).append(' ');
 		    for (final Project project : provides.get(provide)) {
-			builder.append(project.repo.name).append('/').append(project.name);
+			System.out.println(builder//
+				.append(project.repo.name).append('/').append(project.name)//
+				.append(' ')//
+				.append(provide)//
+			);
+			builder.setLength(0);
 		    }
-		    System.out.println(builder);
 		}
 		return true;
 	    }, "--print-repo-provides");
+
+	    AbstractCommand.registerOperation(operations, context -> {
+		if (!context.arguments.hasNext()) {
+		    throw new IllegalArgumentException("name is expected for --print-repo-provides argument");
+		}
+		final String repositoryName = context.arguments.next();
+		final Repository repository = context.repositories.getRepository(repositoryName);
+		if (repository == null) {
+		    throw new IllegalArgumentException("repository in unknown, name: " + repositoryName);
+		}
+		final Map<String, Set<Project>> provides = repository.getProvides();
+		final StringBuilder builder = new StringBuilder(256);
+		for (final String provide : provides.keySet()) {
+		    builder.append(provide).append('=');
+		    for (final Project project : provides.get(provide)) {
+			builder.append(project.repo.name).append('/').append(project.name).append(':');
+		    }
+		    System.out.println(builder);
+		    builder.setLength(0);
+		}
+		return true;
+	    }, "--print-repo-provide-index");
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		if (!context.arguments.hasNext()) {

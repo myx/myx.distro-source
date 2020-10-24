@@ -47,7 +47,6 @@ case "$0" in
 		#	ListAllRepositories.fn.sh --distro-source-only 2> /dev/null
 		#	ListAllRepositories.fn.sh --distro-from-source 2> /dev/null
 		#	ListAllRepositories.fn.sh --distro-from-cached 2> /dev/null
-		#	ListAllRepositories.fn.sh --distro-from-distro 2> /dev/null
 		#	ListAllRepositories.fn.sh --distro-from-output 2> /dev/null
 
 		ListAllRepositories "$@"

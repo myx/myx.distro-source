@@ -58,6 +58,7 @@ ListProjectDependants(){
 				fi
 			done
 		fi
+		return 0
 	fi
 	
 	if [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
@@ -69,7 +70,7 @@ ListProjectDependants(){
 			-q \
 			--import-from-source \
 			--select-project "$projectName" \
-			--select-required \
+			--select-dependants \
 			--print-sequence
 		return 0
 	fi
@@ -81,6 +82,7 @@ case "$0" in
 	*/sh-scripts/ListProjectDependants.fn.sh) 
 		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
+		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
 
 		ListProjectDependants "$@"
 	;;

@@ -21,12 +21,14 @@ Require ListAllBuilders
 
 RebuildOutputFromCachedBuilderRaw(){
 	set -e
+	
 	local BUILDER="$1"
+	echo "BuildOutputFromCached: $( basename $BUILDER ) builder started" >&2
 	#### want to run in separate process anyways
 	if ( . "$MMDAPP/source/$BUILDER" | cat -u ) ; then
-		echo "done." >&2
+		echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
 	else
-		echo "ERROR: $BUILDER failed!" >&2
+		echo "BuildOutputFromCached: ERROR: $( basename $BUILDER ) failed!" >&2
 	fi
 }
 
@@ -50,14 +52,20 @@ BuildOutputFromCachedRunner(){
 	
 	export OUTPUT_PATH="$MMDAPP/output"
 
-	for BUILDER in $( ListAllBuilders source-process --2 ) ; do
+	local BUILDERS="$( ListAllBuilders source-process --2 )"
+	echo "BuildOutputFromCached: Builders list:" $BUILDERS >&2
+	
+	for BUILDER in $BUILDERS ; do
 		Prefix "c $( basename $BUILDER )" RebuildOutputFromCachedBuilderRaw "$BUILDER"
 		wait
 	done
+
+	echo "BuildOutputFromCached: All Builders passed." >&2
 }
 
 BuildOutputFromCached(){
 	set -e
+	echo "BuildOutputFromCached: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
 	#### want to run in separate process anyways
 	BuildOutputFromCachedRunner "$@" | cat -u
 	wait

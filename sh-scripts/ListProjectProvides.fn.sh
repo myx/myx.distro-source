@@ -97,9 +97,8 @@ ListProjectProvides(){
 			-q \
 			--import-from-source \
 			--select-project "$projectName" \
-			--print-provides \
-			| sed "s|^$projectName ||g" \
-			| sed "s|\:|\\\:|"
+			--print-provides-separate-lines \
+			| sed "s|^$projectName ||g"
 		# have ^^^ to cut project name from the beginning of each line
 			
 		return 0

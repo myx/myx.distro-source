@@ -8,6 +8,29 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListRepositoryProjects(){
+	if [ "$1" = "--internal-recursion-echo-projects" ] ; then
+		shift
+		
+		local PKG_PATH="$1"
+		
+		[ -z "$PKG_PATH" ] && echo '$PKG_PATH' is not set! >&2 && return 1
+		
+		[ ! -d "$PKG_PATH" ] && return 0
+		
+		[ -f "$PKG_PATH/project.inf" ] && echo "$PKG_PATH" && return 0
+		
+		[ -d "$PKG_PATH/ae3-packages" ] && echo "$PKG_PATH" && return 0
+		
+		local SEARCH_DEPTH="$2"
+		if [ "$SEARCH_DEPTH" != "--" ] ; then
+			for CHK_PATH in `find "$PKG_PATH" -mindepth 1 -maxdepth 1 -type d | sort` ; do
+				ListRepositoryProjects --internal-recursion-echo-projects "$CHK_PATH" "-$SEARCH_DEPTH"
+			done	
+		fi
+		
+		return 0
+	fi
+	
 	local repositoryName="${1#$MDSC_SOURCE/}"
 	[ -z "$repositoryName" ] && echo '$repositoryName' is not set! >&2 && return 1
 	
@@ -42,14 +65,8 @@ ListRepositoryProjects(){
 	
 	echo "ListRepositoryProjects: $repositoryName: scanning source folders ($MDSC_OPTION)" >&2
 	
-	type ListPublicFolders >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListPublicFolders.fn.sh"
-	
-	type CheckEchoSourceProject >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/CheckEchoSourceProject.fn.sh"
-	
-	for CHK_PATH in `ListPublicFolders "$MDSC_SOURCE/$repositoryName"` ; do
-		for LINE in `CheckEchoSourceProject "$CHK_PATH"` ; do
+	for CHK_PATH in `find "$MDSC_SOURCE/$repositoryName" -mindepth 1 -maxdepth 1 -type d | sort` ; do
+		for LINE in `ListRepositoryProjects --internal-recursion-echo-projects "$CHK_PATH"` ; do
 			echo "${LINE#$MDSC_SOURCE/}"
 		done
 	done	

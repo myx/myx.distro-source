@@ -20,11 +20,12 @@ RebuildCachedFromSourceBuilderRaw(){
 	set -e
 	
 	local BUILDER="$1"
+	echo "BuildCachedFromSource: $( basename $BUILDER ) builder started" >&2
 	#### want to run in separate process anyways
 	if ( . "$MMDAPP/source/$BUILDER" | cat -u ) ; then
-		echo "done."
+		echo "BuildCachedFromSource: $( basename $BUILDER ) builder done." >&2
 	else
-		echo "ERROR: $BUILDER failed!" >&2
+		echo "BuildCachedFromSource: ERROR: $( basename $BUILDER ) failed!" >&2
 	fi
 }
 
@@ -46,17 +47,23 @@ BuildCachedFromSourceRunner(){
 		return 1
 	fi
 	
-	for BUILDER in $( ListAllBuilders source-prepare --1 ) ; do
+	local BUILDERS="$( ListAllBuilders source-prepare --1 )"
+	echo "BuildCachedFromSource: Builders list:" $BUILDERS >&2
+	
+	for BUILDER in $BUILDERS ; do
 		Prefix "s $( basename $BUILDER )" RebuildCachedFromSourceBuilderRaw "$BUILDER"
 		wait
 	done
+
+	echo "BuildCachedFromSource: All Builders passed." >&2
 }
 
 BuildCachedFromSource(){
 	set -e
+	echo "BuildCachedFromSource: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
 	#### want to run in separate process anyways
 	BuildCachedFromSourceRunner "$@" | cat -u
-	wait
+	wait || true
 }
 
 case "$0" in

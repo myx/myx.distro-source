@@ -11,8 +11,22 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 fi
 
+Require ListAllBuilders
 Require BuildCachedFromSource
 Require BuildOutputFromCached
+
+RebuildDistroFromOutputBuilderRaw(){
+	set -e
+	
+	local BUILDER="$1"
+	echo "BuildDistroFromSource: $( basename $BUILDER ) builder started" >&2
+	#### want to run in separate process anyways
+	if ( . "$MMDAPP/source/$BUILDER" | cat -u ) ; then
+		echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
+	else
+		echo "BuildDistroFromSource: ERROR: $( basename $BUILDER ) failed!" >&2
+	fi
+}
 
 BuildDistroFromOutputRunner(){
 	set -e
@@ -31,10 +45,15 @@ BuildDistroFromOutputRunner(){
 	
 	DistroShellContext --distro-from-output
 	
-	for BUILDER in $( ListAllBuilders image-prepare --3 ) ; do
-		Prefix "o $( basename $BUILDER )" RebuildOutputFromCachedBuilderRaw "$BUILDER"
+	local BUILDERS="$( ListAllBuilders image-prepare --3 )"
+	echo "BuildDistroFromSource: Builders list:" $BUILDERS >&2
+	
+	for BUILDER in $BUILDERS ; do
+		Prefix "s $( basename $BUILDER )" RebuildDistroFromOutputBuilderRaw "$BUILDER"
 		wait
 	done
+
+	echo "BuildDistroFromSource: All Builders passed." >&2
 }
 
 BuildDistroFromSource(){

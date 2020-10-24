@@ -62,6 +62,34 @@ ListRepositoryProvides(){
 				ListRepositoryProvides "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
 				return 0
 				;;
+			--filter-keywords)
+				shift
+				local keywordFilter="$1" ; shift
+
+				Require ListProjectProvides
+
+				ListRepositoryProvides "$repositoryName" | grep -e " deploy-keyword\\\:$keywordFilter$" | awk '{print $1}' | while read -r LINE ; do
+					ListProjectProvides "$LINE" --print-project "$@"
+				done
+				return 0
+				;;
+			--filter-keyword2)
+				shift
+				local keywordFilter="$1" ; shift
+				join \
+					<( ListRepositoryProvides "$repositoryName" --print-project "$@" ) \
+					<( ListRepositoryProvides "$repositoryName" | grep -e " deploy-keyword\\\:$keywordFilter$" | awk '{print $1}' )
+				return 0;
+
+				local projectList="$( ListRepositoryProvides "$repositoryName" "$@" | grep -e " deploy-keyword\\\:$keywordFilter$" | awk '{print $1}' )"
+				ListRepositoryProvides "$repositoryName" "$@" | while read -r LINE ; do
+					echo grep -qe "$(echo $LINE | awk '{print $1}')"
+					if grep -qe "$(echo $LINE | awk '{print $1}')" <<< $projectList ; then
+						echo $LINE
+					fi
+				done
+				return 0
+				;;
 			--merge-sequence)
 				shift
 				
@@ -103,7 +131,7 @@ ListRepositoryProvides(){
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositoryProvides: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryProvides $repositoryName --no-cache "$@" > "$cacheFile"
+			ListRepositoryProvides $repositoryName --no-cache > "$cacheFile"
 			cat "$cacheFile"
 			return 0
 		fi
@@ -134,9 +162,7 @@ ListRepositoryProvides(){
 			-q \
 			--import-from-source \
 			--select-repository "$repositoryName" \
-			--print-provides \
-			| sed "s|\:|\\\:|"
-		# have ^^^ to cut project name from the beginning of each line
+			--print-provides-separate-lines
 			
 		return 0
 	fi
@@ -158,6 +184,11 @@ case "$0" in
 		# ListRepositoryProvides.fn.sh myx --merge-sequence deploy-keyword
 		
 		# ListRepositoryProvides.fn.sh myx deploy-keyword
+		# ListRepositoryProvides.fn.sh myx --filter-projects freebsd
+		# ListRepositoryProvides.fn.sh myx --filter-projects freebsd deploy-export
+		# ListRepositoryProvides.fn.sh myx --filter-keywords macosx
+		# ListRepositoryProvides.fn.sh myx --filter-keywords macosx source-process
+		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-keywords macosx 2> /dev/null 
 		
 		### by project name
 		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-projects common

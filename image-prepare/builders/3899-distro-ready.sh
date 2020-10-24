@@ -2,6 +2,7 @@
 ### this script is included from builder
 ###
 
+echo "distro-ready: publishing distro and export." >&2
 
 echo "BUILD_STAMP: $BUILD_STAMP" >&2
 echo "MDSC_SOURCE: $MDSC_SOURCE" >&2
@@ -14,4 +15,4 @@ Async "sync-export" rsync -a -i --delete "$MMDAPP/output/export/" "$MMDAPP/expor
 
 wait
 
-echo "Stage 3xxx: 'output to distro' finished" >&2
+echo "Stage 3xxx: 'output to distro' finished." >&2

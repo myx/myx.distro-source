@@ -14,6 +14,7 @@ mkdir -p "$MMDAPP/output/distro"
 		--cached-root "$MMDAPP/output/cached" \
 		--import-from-source --select-all-from-source \
 		--print ''  -v \
+		--print-provides \
 		--prepare-build \
 		--print '' \
 )

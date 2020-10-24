@@ -37,7 +37,7 @@ ListAllProjects(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$MDSC_CACHED/distro-index.inf" "+%Y%m%d%H%M%S"`" ] ) ; then
 		echo "ListAllProjects: using image ($MDSC_OPTION)" >&2
 		local PKG
-		for PKG in $( cat "$MDSC_CACHED/distro-index.inf" | grep "PRJS=" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
+		for PKG in $( cat "$MDSC_CACHED/distro-index.inf" | grep -e "^PRJS=" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
 			echo "$PKG"
 		done
 		return 0
@@ -57,12 +57,16 @@ ListAllProjects(){
 
 case "$0" in
 	*/sh-scripts/ListAllProjects.fn.sh) 
+		
 		#	ListAllProjects.fn.sh
 		#	( . "`which ListAllProjects.fn.sh`" ; ListAllProjects )
+		
+		#   ListAllProjects.fn.sh --distro-source-only 2> /dev/null | sort
+		#	ListAllProjects.fn.sh --distro-from-source 2> /dev/null | sort
+		
 		#	ListAllProjects.fn.sh --distro-from-output
 		#	ListAllProjects.fn.sh --distro-from-cached
 		#	ListAllProjects.fn.sh --distro-from-distro
-		#	ListAllProjects.fn.sh --distro-from-source
 		
 		ListAllProjects "$@"
 	;;
