@@ -55,21 +55,33 @@ ListProjectProvides(){
 		return 0
 	fi
 	
-	if [ "$useNoCache" != "--no-cache" ] ; then
+	if [ "$useNoCache" != "--no-cache" ] && [ ! -z "$MDSC_CACHED" ] ; then
+
 		local cacheFile="$MDSC_CACHED/$projectName/project-provides.txt"
-		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+
+		if [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "ListProjectProvides: $projectName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-			mkdir -p "$MDSC_CACHED/$projectName"
+
+		local repositoryName="$(echo "$projectName" | sed 's/\/.*$//')"
+		local repositoryIndexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
+
+		if [ -f "$repositoryIndexFile" ] ; then
 			echo "ListProjectProvides: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectProvides "$projectName" --no-cache "$@" > "$cacheFile"
+			Require ListRepositoryProvides
+			ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' > "$cacheFile"
 			cat "$cacheFile"
 			return 0
 		fi
+
+		mkdir -p "$MDSC_CACHED/$projectName"
+		echo "ListProjectProvides: $projectName: caching project provides ($MDSC_OPTION)" >&2
+		ListProjectProvides "$projectName" --no-cache "$@" > "$cacheFile"
+		cat "$cacheFile"
+		return 0
 	fi
 	
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
