@@ -7,12 +7,10 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && return 1 )
 fi
 
-
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-path-auto
 fi
-
 
 ListDistroProvides(){
 	if [ "$1" = "--internal-print-project-provides" ] ; then
@@ -37,6 +35,18 @@ ListDistroProvides(){
 	local filterProjects=""
 	while true ; do
 		case "$1" in
+			--print-project)
+				shift
+				
+				Require ListDistroSequence
+				Require ListProjectProvides
+		
+				local sequenceProjectName
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectProvides "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
+				done	
+				return 0
+				;;
 			--filter-projects)
 				shift
 				filterProjects="$filterProjects --filter-projects $1" ; shift
@@ -100,6 +110,11 @@ case "$0" in
 		# ListDistroProvides.fn.sh myx --merge-sequence deploy-keyword
 		# ListDistroProvides.fn.sh --distro-from-source prv --no-cache source-prepare
 		# ListDistroProvides.fn.sh --distro-from-source prv --merge-sequence --no-cache source-prepare
+		
+		# ! ListDistroProvides.fn.sh --merge-sequence deploy-keyword
+		# ! ListDistroProvides.fn.sh --filter-keywords deploy-keyword
+		# ! ListDistroProvides.fn.sh --merge-sequence deploy-keyword | grep " myx"
+		
 		
 		# ListDistroProvides.fn.sh --distro-source-only --distro-from-cached deploy-keyword 2> /dev/null | grep " bhyve$"
 		# ListDistroProvides.fn.sh --distro-from-source --distro-from-cached deploy-keyword 2> /dev/null | grep " bhyve$"

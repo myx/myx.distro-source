@@ -318,7 +318,7 @@ public class Project {
 	info.setProperty("PRJ-SEQ-" + this.getFullName(), //
 		this.getBuildSequence().stream()//
 			.map(Project::projectFullName)//
-			.reduce("", (t, u) -> u + " " + t).trim()//
+			.reduce("", (t, u) -> t + " " + u).trim()//
 	);
 	info.setProperty("PRJ-GET-" + this.getFullName(), //
 		this.lstContains.stream()//

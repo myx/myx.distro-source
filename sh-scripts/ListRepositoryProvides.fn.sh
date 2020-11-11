@@ -190,6 +190,9 @@ case "$0" in
 		# ListRepositoryProvides.fn.sh myx --filter-keywords macosx source-process
 		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-keywords macosx 2> /dev/null 
 		
+		# ListRepositoryProvides.fn.sh ndm --print-project --merge-sequence deploy-keyword
+		# ListRepositoryProvides.fn.sh ndm --print-project --merge-sequence deploy-keyword | grep bhyve
+		
 		### by project name
 		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-projects common
 		# ListRepositoryProvides.fn.sh --distro-from-source myx --filter-projects common

@@ -42,7 +42,7 @@ ListProjectSequence(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectSequence: $projectName: using index ($MDSC_OPTION)" >&2
-		local MTC="PRJ-SEQ-$projectName="
+		local MTC="^PRJ-SEQ-$projectName="
 		
 		local RESULT=""
 	
@@ -81,6 +81,7 @@ case "$0" in
 	*/sh-scripts/ListProjectSequence.fn.sh) 
 		# ListProjectSequence.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		# ListProjectSequence.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
+		# ListProjectSequence.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 
 		ListProjectSequence "$@"
 	;;

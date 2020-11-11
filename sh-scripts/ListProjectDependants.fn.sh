@@ -42,7 +42,7 @@ ListProjectDependants(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2
-		local MTC="PRJ-SEQ-$projectName="
+		local MTC="^PRJ-SEQ-$projectName="
 		
 		local RESULT=""
 	
@@ -83,6 +83,8 @@ case "$0" in
 		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
+
+		echo "ListProjectDependants: not implemented?" >&2 ; exit 1
 
 		ListProjectDependants "$@"
 	;;
