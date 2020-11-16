@@ -19,17 +19,51 @@ ListRepositorySequence(){
 	fi
 	shift
 
-	if [ "$1" = "--no-cache" ] ; then
-		shift
-	else
+	local useNoCache=""
+	local filterProjects=""
+
+	set -e
+
+	while true ; do
+		case "$1" in
+			--all)
+				shift
+				;;
+
+			--filter-projects)
+				shift
+				filterProjects="$filterProjects --filter-projects $1" ; shift
+				;;
+
+			--filter-keywords)
+				shift
+				filterProjects="$filterProjects --filter-keywords $1" ; shift
+				;;
+
+			--no-cache)
+				shift
+				local useNoCache="--no-cache"
+				;;
+
+			'')
+				break;
+				;;
+
+			*)
+				echo "ListDistroSequence: invalid option: $1" >&2 ; return 1
+				;;
+		esac
+	done
+
+	if [ "$useNoCache" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
-		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositorySequence: caching projects ($MDSC_OPTION)" >&2
 			ListRepositorySequence "$repositoryName" --no-cache > "$cacheFile"
 			cat "$cacheFile"
@@ -38,7 +72,7 @@ ListRepositorySequence(){
 	fi
 	
 	local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-	if [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+	if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2
@@ -48,20 +82,20 @@ ListRepositorySequence(){
 	
 		local FILTER="$1"
 		if test -z "$FILTER" ; then
-			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
+			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
 				echo $ITEM
 			done | awk '!x[$0]++'
 		else
-			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
-				if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-					echo ${ITEM#$FILTER\\:} | tr "|" "\n"
+			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
+				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
+					echo ${ITEM#${FILTER}:} | tr "|" "\n"
 				fi
 			done | awk '!x[$0]++'
 		fi
 		return 0
 	fi
 	
-	if [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
+	if [ -z "$filterProjects" ] && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
 		echo "ListRepositorySequence: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
@@ -80,9 +114,18 @@ ListRepositorySequence(){
 
 case "$0" in
 	*/sh-scripts/ListRepositorySequence.fn.sh) 
-		# ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null
-		# ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null
-		# ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: ListRepositorySequence.fn.sh <repositoryName> [--no-cache] [[--filter-projects/--filter-keywords filter_by] ...]" >&2
+			echo "syntax: ListRepositorySequence.fn.sh --help" >&2
+			if [ "$1" = "--help" ] ; then
+				echo "examples:" >&2
+				echo "	ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null" >&2
+				echo "	ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null" >&2
+				echo "	ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null" >&2
+				echo "	ListRepositorySequence.fn.sh --distro-from-source --filter-keywords deploy-l6route-config" >&2
+			fi
+			exit 1
+		fi
 
 		ListRepositorySequence "$@"
 	;;

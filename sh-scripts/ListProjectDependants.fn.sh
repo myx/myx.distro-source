@@ -48,13 +48,13 @@ ListProjectDependants(){
 	
 		local FILTER="$1"
 		if test -z "$FILTER" ; then
-			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | sort` ; do
+			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
 				echo $ITEM
 			done
 		else
-			for ITEM in `cat "$indexFile" | grep "$MTC" | sed "s,^.*=,,g" | sort` ; do
-				if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-					echo ${ITEM#$FILTER\\:} | tr "|" "\n"
+			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
+				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
+					echo ${ITEM#${FILTER}:} | tr "|" "\n"
 				fi
 			done
 		fi

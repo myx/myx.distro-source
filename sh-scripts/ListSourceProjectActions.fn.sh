@@ -18,6 +18,16 @@ ListSourceProjectActions(){
 
 case "$0" in
 	*/sh-scripts/ListSourceProjectActions.fn.sh) 
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: ListSourceProjectActions.fn.sh <project>" >&2
+			echo "syntax: ListSourceProjectActions.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				echo "examples:" >&2
+				echo "	ListSourceProjectActions.fn.sh myx/myx.distro-source 2> /dev/null" >&2
+			fi
+			exit 1
+		fi
+		
 		ListSourceProjectActions "$@"
 	;;
 esac

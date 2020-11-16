@@ -37,7 +37,7 @@ ListAllProjects(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$MDSC_CACHED/distro-index.inf" "+%Y%m%d%H%M%S"`" ] ) ; then
 		echo "ListAllProjects: using image ($MDSC_OPTION)" >&2
 		local PKG
-		for PKG in $( cat "$MDSC_CACHED/distro-index.inf" | grep -e "^PRJS=" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
+		for PKG in $( grep -e "^PRJS=" "$MDSC_CACHED/distro-index.inf" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
 			echo "$PKG"
 		done
 		return 0

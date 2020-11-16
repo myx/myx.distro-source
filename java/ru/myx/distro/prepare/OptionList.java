@@ -1,5 +1,7 @@
 package ru.myx.distro.prepare;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 public class OptionList extends TreeSet<OptionListItem> {
@@ -29,7 +31,9 @@ public class OptionList extends TreeSet<OptionListItem> {
 	    if (builder.length() > 0) {
 		builder.append(' ');
 	    }
-	    builder.append(item);
+	    final List<String> items = new ArrayList<>();
+	    item.fillList(null, items);
+	    builder.append(String.join(" ", items));
 	}
 	return builder.toString();
     }

@@ -20,8 +20,8 @@ ListRepositoryRequires(){
 			local FILTER="$1" ; shift
 			local projectName="$1" ; shift
 			for ITEM in "$@" ; do
-				if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-					echo "$projectName ${ITEM#$FILTER\\:}" | tr '|' '\n' 
+				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
+					echo "$projectName ${ITEM#${FILTER}:}" | tr '|' '\n' 
 				fi
 			done
 			return 0
@@ -104,10 +104,10 @@ ListRepositoryRequires(){
 		local MTC="PRJ-REQ-$repositoryName/"
 		# echo ">>>>>> MTC: $MTC" >&2
 		
-		cat "$indexFile" | grep "$MTC" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g' | while read -r LINE ; do
+		grep "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g' | while read -r LINE ; do
 			ListRepositoryRequires --internal-print-project-requires $LINE
 		done
-		# cat "$indexFile" | grep "$MTC" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g'
+		# grep "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g'
 		
 		return 0
 	fi

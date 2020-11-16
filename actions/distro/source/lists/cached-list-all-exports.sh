@@ -14,7 +14,7 @@ type ListProjectProvides >/dev/null 2>&1 || \
 . "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListProjectProvides.fn.sh"
 
 for projectName in `ListAllProjects` ; do
-	for ITEM in `ListProjectProvides "$projectName" "deploy-export"` ; do
+	for ITEM in `ListProjectProvides "$projectName" --filter "deploy-export"` ; do
 		echo "$projectName: $( echo $ITEM | tr '\\' ' ' | sed "s|:| |g" )"
 	done
 done

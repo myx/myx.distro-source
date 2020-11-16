@@ -57,7 +57,7 @@ ListRepositoryProjects(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$MDSC_CACHED/$repositoryName/repository-index.inf" "+%Y%m%d%H%M%S"`" ] ) ; then
 		echo "ListRepositoryProjects: $repositoryName: using image ($MDSC_OPTION)" >&2
 		local PKG
-		for PKG in $( cat "$MDSC_CACHED/$repositoryName/repository-index.inf" | grep "PRJS=" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
+		for PKG in $( grep "PRJS=" "$MDSC_CACHED/$repositoryName/repository-index.inf" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
 			echo "$PKG"
 		done
 		return 0

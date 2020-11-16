@@ -19,85 +19,113 @@ ListProjectProvides(){
 	fi
 	shift
 
-	if [ "$1" = "--merge-sequence" ] ; then
-		shift
-		
-		( \
-			Require ListProjectSequence
-			
-			for sequenceProjectName in $( ListProjectSequence "$projectName" ) ; do
-				ListProjectProvides "$sequenceProjectName" "$@"
-			done	
-		) | awk '!x[$0]++'		
-		return 0
-	fi
-
-	if [ "$1" = "--print-project" ] ; then
-		shift
-		ListProjectProvides "$projectName" "$@" | sed "s|^|$projectName |g"
-		return 0
-	fi
-
 	local useNoCache=""
-	if [ "$1" = "--no-cache" ] ; then
-		shift
-		local useNoCache="--no-cache"
-	fi
+	local useNoIndex=""
+	local filterProjects=""
 
-	local FILTER="$1"
-	if [ ! -z "$FILTER" ] ; then
-		shift
-		for ITEM in $( ListProjectProvides "$projectName" $useNoCache "$@" ) ; do
-			if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-				echo ${ITEM#$FILTER\\:} | tr '|' '\n' 
+	set -e
+
+	while true ; do
+		case "$1" in
+			--print-project)
+				shift
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
+				return 0
+				;;
+
+			--filter)
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListProjectProvides: project provides filter is expected!" >&2 ; return 1
+				fi
+				local filterProvides="$1" ; shift
+
+				for ITEM in $( ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" ) ; do
+					if [ "$ITEM" != "${ITEM#${filterProvides}:}" ] ; then
+						echo ${ITEM#${filterProvides}:} | tr '|' '\n' 
+					fi
+				done
+				return 0
+				;;
+			
+			--merge-sequence)
+				shift
+
+				Require ListProjectSequence
+				
+				for sequenceProjectName in $( ListProjectSequence "$projectName" ) ; do
+					ListProjectProvides "$sequenceProjectName" "$@"
+				done | awk '!x[$0]++'		
+				return 0
+				;;
+				
+			--no-cache)
+				shift
+				local useNoCache="--no-cache"
+				;;
+
+			--no-index)
+				shift
+				local useNoIndex="--no-index"
+				;;
+
+			'')
+				break;
+				;;
+
+			*)
+				echo "ListProjectProvides: invalid option: $1" >&2 ; return 1
+				;;
+		esac
+	done
+
+	if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ "$useNoCache" != "--no-cache" ] ; then
+			local cacheFile="$MDSC_CACHED/$projectName/project-provides.txt"
+	
+			if [ -f "$cacheFile" ] && \
+				( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
+			then
+				[ -z "$MDSC_DETAIL" ] || echo "ListProjectProvides: $projectName: using cached ($MDSC_OPTION)" >&2
+				cat "$cacheFile"
+				return 0
 			fi
-		done
-		return 0
-	fi
 	
-	if [ "$useNoCache" != "--no-cache" ] && [ ! -z "$MDSC_CACHED" ] ; then
-
-		local cacheFile="$MDSC_CACHED/$projectName/project-provides.txt"
-
-		if [ -f "$cacheFile" ] && \
-			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "ListProjectProvides: $projectName: using cached ($MDSC_OPTION)" >&2
+			local repositoryName="$(echo "$projectName" | sed 's/\/.*$//')"
+			local repositoryIndexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
+	
+			if [ -f "$repositoryIndexFile" ] ; then
+				echo "ListProjectProvides: $projectName: caching projects ($MDSC_OPTION)" >&2
+				Require ListRepositoryProvides
+				ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' > "$cacheFile"
+				cat "$cacheFile"
+				return 0
+			fi
+	
+			mkdir -p "$MDSC_CACHED/$projectName"
+			echo "ListProjectProvides: $projectName: caching project provides ($MDSC_OPTION)" >&2
+			ListProjectProvides "$projectName" --no-cache "$@" > "$cacheFile"
 			cat "$cacheFile"
 			return 0
 		fi
-
-		local repositoryName="$(echo "$projectName" | sed 's/\/.*$//')"
-		local repositoryIndexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-
-		if [ -f "$repositoryIndexFile" ] ; then
-			echo "ListProjectProvides: $projectName: caching projects ($MDSC_OPTION)" >&2
-			Require ListRepositoryProvides
-			ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' > "$cacheFile"
-			cat "$cacheFile"
-			return 0
+		
+		if [ "$useNoIndex" != "--no-index" ] ; then
+			local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
+			if [ -f "$indexFile" ] && \
+				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
+			then
+				
+				echo "ListProjectProvides: $projectName: using index ($MDSC_OPTION)" >&2
+				local MTC="PRJ-PRV-$projectName="
+				
+				for LINE in $( grep "$MTC" "$indexFile" | sed -a 's:^.*=::g' -e 's|\\:|:|g' | sort ) ; do
+					echo $LINE
+				done
+				# grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort
+				
+				return 0
+			fi
 		fi
-
-		mkdir -p "$MDSC_CACHED/$projectName"
-		echo "ListProjectProvides: $projectName: caching project provides ($MDSC_OPTION)" >&2
-		ListProjectProvides "$projectName" --no-cache "$@" > "$cacheFile"
-		cat "$cacheFile"
-		return 0
-	fi
-	
-	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
-	if [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
-		( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-		
-		echo "ListProjectProvides: $projectName: using index ($MDSC_OPTION)" >&2
-		local MTC="PRJ-PRV-$projectName="
-		# echo ">>>>>> MTC: $MTC"
-		
-		for LINE in $( cat "$indexFile" | grep "$MTC" | sed "s:^.*=::g" | sort ) ; do
-			echo $LINE
-		done
-		# cat "$indexFile" | grep "$MTC" | sed "s:^.*=::g" | sort
-		
-		return 0
 	fi
 	
 	if [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
@@ -144,7 +172,23 @@ case "$0" in
 		# ListProjectProvides.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 --print-project deploy-keyword 2> /dev/null
 	
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectProvides.fn.sh [--help] <project_name> [--merge-sequence] [--print-project] [--no-cache] [filter_by]" >&2
+			echo "syntax: ListProjectProvides.fn.sh <project_name> [--merge-sequence] [--print-project] [--no-cache] [filter_by]" >&2
+			echo "syntax: ListProjectProvides.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				echo "  Search:" >&2
+				echo "    --all / --filter-projects <glob> / --filter-keywords <keyword>" >&2
+				echo "  Examples:" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common --print-project" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --merge-sequence" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --merge-sequence --print-project" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common --filter deploy-export" >&2
+				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --merge-sequence --print-project --filter deploy-export" >&2
+				echo "	  ListProjectProvides.fn.sh prv/hosts/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project" >&2
+				echo "	  ListProjectProvides.fn.sh prv/hosts/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence" >&2
+				echo "	  ListProjectProvides.fn.sh prv/hosts/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project " >&2
+			fi
 			exit 1
 		fi
 		

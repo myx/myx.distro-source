@@ -43,7 +43,7 @@ SyncExportsFromCached(){
 
 local projectName
 for projectName in $( ListChangedSourceProjects ) ; do
-	for ITEM in $( ListProjectProvides "$projectName" "deploy-export" ) ; do
+	for ITEM in $( ListProjectProvides "$projectName" --filter "deploy-export" ) ; do
 		SyncExportsFromCached "$projectName" $( echo $ITEM | tr '\\' ' ' | sed "s|:| |g" )
 	done
 done

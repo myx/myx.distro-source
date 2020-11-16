@@ -4,9 +4,13 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && return 1 )
 fi
 
+if ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	DistroShellContext --distro-path-auto
+fi
 
 ListProjectActions(){
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
@@ -35,10 +39,17 @@ ListProjectActions(){
 
 case "$0" in
 	*/sh-scripts/ListProjectActions.fn.sh) 
-		#	ListProjectActions.fn.sh --distro-from-source myx/myx.distro-source
-
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-path-auto
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: ListProjectActions.fn.sh <project>" >&2
+			echo "syntax: ListProjectActions.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				echo "examples:" >&2
+				echo "	ListProjectActions.fn.sh --distro-from-source myx/myx.distro-source 2> /dev/null" >&2
+				echo "	ListProjectActions.fn.sh --distro-source-only myx/myx.distro-source 2> /dev/null" >&2
+				echo "	ListProjectActions.fn.sh --distro-from-cached myx/myx.distro-source 2> /dev/null" >&2
+			fi
+			exit 1
+		fi
 		
 		ListProjectActions "$@"
 	;;

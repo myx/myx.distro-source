@@ -30,7 +30,7 @@ CheckMakeProjectHostTarball(){
 }
 
 for projectName in $( ListChangedSourceProjects ) ; do
-	if test ! -z "$( ListProjectProvides "$projectName" "source-process" | grep -e "^host-tarball.tbz$" )" ; then
+	if test ! -z "$( ListProjectProvides "$projectName" --filter "source-process" | grep -e "^host-tarball.tbz$" )" ; then
 		Async "`basename "$projectName"`" CheckMakeProjectHostTarball "$projectName"
 		wait
 	fi

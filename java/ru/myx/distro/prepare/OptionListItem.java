@@ -131,7 +131,7 @@ public class OptionListItem implements Comparable<OptionListItem> {
 	    text.append(this.name);
 	    final String key = keys.next();
 	    if (key != null && !key.isEmpty()) {
-		text.append('\\').append(':').append(key);
+		text.append(':').append(key);
 	    }
 	    target.add(text.toString());
 	    text.setLength(0);

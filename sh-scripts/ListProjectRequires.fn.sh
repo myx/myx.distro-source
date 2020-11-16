@@ -48,8 +48,8 @@ ListProjectRequires(){
 	if [ ! -z "$FILTER" ] ; then
 		shift
 		for ITEM in $( ListProjectRequires "$projectName" $useNoCache "$@" ) ; do
-			if test "$ITEM" != "${ITEM#$FILTER\\:}" ; then
-				echo ${ITEM#$FILTER\\:} | tr '|' '\n' 
+			if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
+				echo ${ITEM#${FILTER}:} | tr '|' '\n' 
 			fi
 		done
 		return 0
@@ -79,10 +79,10 @@ ListProjectRequires(){
 		local MTC="PRJ-REQ-$projectName="
 		# echo ">>>>>> MTC: $MTC"
 		
-		for LINE in $( cat "$indexFile" | grep "$MTC" | sed "s:^.*=::g" | sort ) ; do
+		for LINE in $( grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort ) ; do
 			echo $LINE
 		done
-		# cat "$indexFile" | grep "$MTC" | sed "s:^.*=::g" | sort
+		# grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort
 		
 		return 0
 	fi
