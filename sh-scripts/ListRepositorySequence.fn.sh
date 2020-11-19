@@ -13,6 +13,9 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListRepositorySequence(){
+	
+	[ -z "$MDSC_DETAIL" ] || echo ">>> ListRepositorySequence $@" >&2
+
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
 		echo "ListRepositorySequence: 'repositoryName' argument is required!" >&2 ; return 1

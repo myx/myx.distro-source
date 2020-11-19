@@ -8,6 +8,9 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListRepositoryProjects(){
+	
+	[ -z "$MDSC_DETAIL" ] || echo ">>> ListRepositoryProjects $@" >&2
+
 	if [ "$1" = "--internal-recursion-echo-projects" ] ; then
 		shift
 		

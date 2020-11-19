@@ -178,6 +178,29 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    }, "--print-all-provides");
 
 	    AbstractCommand.registerOperation(operations, context -> {
+		final StringBuilder builder = new StringBuilder(256);
+		boolean first = true;
+		for (final Project project : context.buildQueue) {
+		    final String projectName = project.getFullName();
+
+		    final Map<String, Project> checked = new HashMap<>();
+		    final List<Project> sequence = new LinkedList<>();
+		    project.buildCalculateSequence(sequence, checked);
+
+		    for (final Project sequenceProject : sequence) {
+			if (first) {
+			    first = false;
+			} else {
+			    builder.append('\n');
+			}
+			builder.append(projectName).append(' ').append(sequenceProject.getFullName());
+		    }
+		}
+		System.out.println(builder);
+		return true;
+	    }, "--print-sequence-separate-lines");
+
+	    AbstractCommand.registerOperation(operations, context -> {
 		if (!context.arguments.hasNext()) {
 		    throw new IllegalArgumentException("name is expected for --print-repo-provides argument");
 		}

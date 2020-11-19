@@ -21,11 +21,6 @@ ListDistroProvides(){
 	local projectsSelected=""
 	
 	case "$1" in
-		--internal-print-project-provides)
-			# <project> <provide> [<provide>...]
-			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
-			return 0
-		;;
 		--internal-print-project-provides-filter)
 			# <filter> <project> <provide> [<provide>...]
 			shift
@@ -83,12 +78,12 @@ ListDistroProvides(){
 						if [ -f "$cacheFile" ] && \
 							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 						then
-							[ -z "$MDSC_DETAIL" ] || echo "ListDistroProvides: using cached ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "ListDistroProvides: --all-provides using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
 						fi
 			
-						echo "ListDistroProvides: caching projects ($MDSC_OPTION)" >&2
+						echo "ListDistroProvides: --all-provides caching projects ($MDSC_OPTION)" >&2
 						ListDistroProvides --explicit-noop --no-cache --all-provides > "$cacheFile"
 						cat "$cacheFile"
 						return 0
@@ -97,12 +92,12 @@ ListDistroProvides(){
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 							
-							echo "ListDistroProvides: using index ($MDSC_OPTION)" >&2
-							local MTC="^PRJ-PRV-"
+							echo "ListDistroProvides: --all-provides using index ($MDSC_OPTION)" >&2
 							
-							grep -e "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do
-								break
-								ListDistroProvides --internal-print-project-provides $LINE
+							local projectName
+							local extraText
+							grep -e "^PRJ-PRV-" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r projectName extraText ; do
+								echo "$extraText" | tr ' ' '\n' | sed -e "s:^:$projectName :"
 							done
 							
 							return 0
@@ -111,7 +106,7 @@ ListDistroProvides(){
 				fi
 				
 				if [ "$MDSC_INMODE" = "source" ] ; then
-					echo "ListDistroProvides: extracting from source (java) ($MDSC_OPTION)" >&2
+					echo "ListDistroProvides: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
 					
@@ -141,11 +136,69 @@ ListDistroProvides(){
 					return 1
 				fi
 	
+				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+							
+							echo "ListDistroProvides: --all-provides-merged using index ($MDSC_OPTION)" >&2
+
+							local indexProvides="` \
+								grep -e "^PRJ-PRV-" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\\\:|:|g' \
+							`"
+							local indexSequence="` \
+								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
+							`"
+							
+							join -o 2.1,1.1,1.2 -1 1 -2 2 <( \
+								echo "$indexProvides" | while read -r projectName extraText ; do
+									for extraText in $extraText ; do
+										echo "$projectName" "$extraText"
+									done
+								done | sort -k 1
+							) <( \
+								echo "$indexSequence" | while read -r projectName extraText ; do
+									for extraText in $extraText ; do
+										echo "$projectName" "$extraText"
+									done
+								done | sort -k 2
+							) | sort
+							return 0 # 2s
+						fi
+					fi
+				fi
+
+				if [ "$MDSC_INMODE" = "source" ] ; then
+					echo "ListDistroProvides: --all-provides-merged extracting from source (java) ($MDSC_OPTION)" >&2
+			
+					Require DistroSourceCommand
+					
+					local indexProvides="` \
+						DistroSourceCommand \
+							-q \
+							--import-from-source \
+							--select-all \
+							--print-provides-separate-lines \
+						| sort -k 1
+					`"
+
+					local indexSequence="` \
+						DistroSourceCommand \
+							-q \
+							--import-from-source \
+							--select-all \
+							--print-sequence-separate-lines \
+						| sort -k 2
+					`"
+					
+					join -o 2.1,1.1,1.2 -1 1 -2 2 <( echo "$indexProvides" ) <( echo "$indexSequence" ) | sort
+					return 0
+				fi
+
 				Require ListDistroSequence
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence --all $useNoCache $useNoIndex ) ; do
+				for sequenceProjectName in $( ListDistroSequence $useNoCache $useNoIndex --all ) ; do
 					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
@@ -195,7 +248,7 @@ ListDistroProvides(){
 				awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 					echo "$projectsSelected" \
 				) <( \
-					ListDistroProvides --all-provides \
+					ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
 				)
 				return 0
 			;;

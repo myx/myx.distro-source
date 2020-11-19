@@ -13,6 +13,9 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListRepositoryProvides(){
+	
+	[ -z "$MDSC_DETAIL" ] || echo ">>> ListRepositoryProvides $@" >&2
+
 	case "$1" in
 		--internal-print-project-provides)
 			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %

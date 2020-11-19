@@ -13,6 +13,9 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListProjectSequence(){
+	
+	[ -z "$MDSC_DETAIL" ] || echo ">>> ListProjectSequence $@" >&2
+
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
 		echo "ListProjectSequence: 'projectName' argument is required!" >&2 ; return 1

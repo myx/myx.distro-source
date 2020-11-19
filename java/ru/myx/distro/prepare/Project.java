@@ -121,8 +121,7 @@ public class Project {
 	this.repo = repo;
 	this.name = name.trim();
 	this.lstProvides.add(new OptionListItem(this.getName()));
-	// a bit excessive? remove maybe? full project name is obviously well-known
-	// <code>this.lstProvides.add(new OptionListItem(this.getFullName()));</code>
+	this.lstProvides.add(new OptionListItem(this.getFullName()));
 	if (info != null) {
 	    Project.updateList(info.getProperty("Requires", "").split("\\s+"), this.lstRequires);
 	    Project.updateList(info.getProperty("Provides", "").split("\\s+"), this.lstProvides);
