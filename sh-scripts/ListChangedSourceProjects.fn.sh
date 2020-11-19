@@ -26,19 +26,19 @@ ListChangedSourceProjects(){
 		fi
 	fi
 	
-	type ListAllProjects >/dev/null 2>&1 || \
-	. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListAllProjects.fn.sh"
+	Require ListDistroProjects
 
 	if [ -d "$MDSC_CACHED/changed" ] ; then
-		for PKG in $( ListAllProjects ) ; do
-			if [ -f "$MDCS_CACHED/changed/$PKG" ] ; then
-				echo "$PKG"
+		local projectName=""
+		for projectName in ` ListDistroProjects --all-projects ` ; do
+			if [ -f "$MDCS_CACHED/changed/$projectName" ] ; then
+				echo "$projectName"
 			fi
 		done	
 		return 0
 	fi
 	
-	ListAllProjects
+	ListDistroProjects --all-projects
 }
 
 case "$0" in

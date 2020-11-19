@@ -12,7 +12,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	DistroShellContext --distro-path-auto
 fi
 
-Require ListAllProjects
+Require ListDistroProjects
 Require ListProjectActions
 
 
@@ -34,7 +34,7 @@ RebuildActions(){
 	local ACTTGT
 	local ACTSRC
 	
-	for projectName in $( ListAllProjects ) ; do
+	for projectName in ` ListDistroProjects --all-projects ` ; do
 		
 		for ACTION in $( ListProjectActions "$projectName" ) ; do
 			

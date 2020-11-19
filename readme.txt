@@ -60,7 +60,7 @@ list all provides (features and deploy data):{
 	distro-source.sh --quiet --import-from-cached --select-all --print-provides-separate-lines --print ""
 	distro-source.sh --quiet --import-from-distro --select-all --print-provides-separate-lines --print ""
 	distro-image.sh --output-root ./output --import-from-cached --select-all --print-provides-separate-lines --print ""
-	ListDistroProvides.fn.sh --all
+	ListDistroProvides.fn.sh --all-provides
 }
 
 

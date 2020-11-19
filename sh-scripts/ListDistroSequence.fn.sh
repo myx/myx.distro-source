@@ -25,16 +25,6 @@ ListDistroSequence(){
 				shift
 				;;
 
-			--filter-projects)
-				shift
-				filterProjects="$filterProjects --filter-projects $1" ; shift
-				;;
-
-			--filter-keywords)
-				shift
-				filterProjects="$filterProjects --filter-keywords $1" ; shift
-				;;
-
 			--no-cache)
 				shift
 				local useNoCache="--no-cache"
@@ -75,17 +65,9 @@ ListDistroSequence(){
 		
 		local RESULT=""
 	
-		if test -z "$filterProjects" ; then
-			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
-				echo $ITEM
-			done | awk '!x[$0]++'
-		else
-			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
-				if test "$ITEM" != "${ITEM#${filterProjects}:}" ; then
-					echo ${ITEM#${filterProjects}:} | tr "|" "\n"
-				fi
-			done | awk '!x[$0]++'
-		fi
+		for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
+			echo $ITEM
+		done | awk '!x[$0]++'
 		return 0
 	fi
 	
@@ -109,14 +91,13 @@ ListDistroSequence(){
 case "$0" in
 	*/sh-scripts/ListDistroSequence.fn.sh) 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroSequence.fn.sh --all [--no-cache] [[--filter-projects/--filter-keywords filter_by] ...]" >&2
+			echo "syntax: ListDistroSequence.fn.sh --all [--no-cache]" >&2
 			echo "syntax: ListDistroSequence.fn.sh --help" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2
 				echo "	ListDistroSequence.fn.sh --distro-from-source --all" >&2
 				echo "	ListDistroSequence.fn.sh --distro-from-cached --all" >&2
 				echo "	ListDistroSequence.fn.sh --distro-source-only --all" >&2
-				echo "	ListDistroSequence.fn.sh --distro-from-source --filter-keywords deploy-l6route-config" >&2
 			fi
 			exit 1
 		fi

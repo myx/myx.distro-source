@@ -14,22 +14,7 @@ fi
 
 ListRepositoryRequires(){
 	if [ "$1" = "--internal-print-project-requires" ] ; then
-		shift
-		if [ "$1" = "--filter" ] ; then
-			shift
-			local FILTER="$1" ; shift
-			local projectName="$1" ; shift
-			for ITEM in "$@" ; do
-				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
-					echo "$projectName ${ITEM#${FILTER}:}" | tr '|' '\n' 
-				fi
-			done
-			return 0
-		fi
-		local projectName="$1" ; shift
-		for ITEM in "$@" ; do
-			echo "$projectName $ITEM"
-		done
+		echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
 		return 0
 	fi
 
@@ -71,15 +56,6 @@ ListRepositoryRequires(){
 		local useNoCache="--no-cache"
 	fi
 
-	local FILTER="$1"
-	if [ ! -z "$FILTER" ] ; then
-		shift
-		ListRepositoryRequires "$repositoryName" $useNoCache "$@" | while read -r LINE ; do
-			ListRepositoryRequires --internal-print-project-requires --filter "$FILTER" $LINE
-		done
-		return 0
-	fi
-	
 	if [ "$useNoCache" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-requires.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \

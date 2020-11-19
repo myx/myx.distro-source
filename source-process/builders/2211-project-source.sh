@@ -14,7 +14,7 @@ MakeProjectSourceArchive(){
 }
 
 for projectName in $( ListChangedSourceProjects ) ; do
-	if test ! -z "$( ListProjectProvides "$projectName" --filter "source-process" | grep -e "^project-source.tgz$" )" ; then
+	if test ! -z "$( ListProjectProvides "$projectName" --print-provides-only --filter-and-cut "source-process" | grep -e "^project-source.tgz$" )" ; then
 		Async "`basename "$projectName"`" MakeProjectSourceArchive "$projectName"
 		wait
 	fi

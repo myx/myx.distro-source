@@ -14,10 +14,10 @@ fi
 
 ListAllActions(){
 
-	Require ListAllProjects
+	Require ListDistroProjects
 	Require ListProjectActions
 	
-	for PKG in $( ListAllProjects ) ; do
+	for PKG in ` ListDistroProjects --all-projects ` ; do
 		ListProjectActions "$@" "$PKG"
 	done
 		

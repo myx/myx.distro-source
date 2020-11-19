@@ -12,7 +12,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 Require ListAllRepositories
-Require ListAllProjects
+Require ListDistroProjects
 Require ListAllBuilders
 
 

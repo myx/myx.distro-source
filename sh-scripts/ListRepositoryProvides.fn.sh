@@ -13,24 +13,22 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListRepositoryProvides(){
-	if [ "$1" = "--internal-print-project-provides" ] ; then
-		shift
-		if [ "$1" = "--filter" ] ; then
+	case "$1" in
+		--internal-print-project-provides)
+			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
+			return 0
+		;;
+		--internal-print-project-provides-filter)
 			shift
 			local FILTER="$1" ; shift
 			local projectName="$1" ; shift
 			local ITEM="$@"
 		 	if [ "$ITEM" != "${ITEM#${FILTER}:}" ] ; then
-				echo "$projectName ${ITEM#${FILTER}:}" | tr '|' '\n'
+				echo "$projectName ${ITEM#${FILTER}:}"
 			fi
 			return 0
-		fi
-		local projectName="$1" ; shift
-		for ITEM in "$@" ; do
-			echo "$projectName $ITEM"
-		done
-		return 0
-	fi
+		;;
+	esac
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -40,11 +38,28 @@ ListRepositoryProvides(){
 
 	set -e
 
+	case "$1" in
+		--print-provides-only)
+			shift
+			ListRepositoryProvides "$repositoryName" "$@" | awk '{print $2}'
+			return 0
+		;;
+	esac
+
 	local useNoCache=""
 	local useNoIndex=""
 
 	while true ; do
 		case "$1" in
+			--filter-projects)
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListRepositoryProvides: project name filter is expected!" >&2 ; return 1
+				fi
+				local projectFilter="$1" ; shift
+				ListRepositoryProvides "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
+				return 0
+			;;
 			--print-project)
 				shift
 				
@@ -57,49 +72,6 @@ ListRepositoryProvides(){
 				done	
 				return 0
 			;;
-			--filter-projects)
-				shift
-				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryProvides: project name filter is expected!" >&2 ; return 1
-				fi
-				local projectFilter="$1" ; shift
-				ListRepositoryProvides "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
-				return 0
-			;;
-			--filter-keywords)
-				shift
-				if [ -z "$1" ] ; then
-					echo "ERROR: project deploy keyword is exepected!" >&2 ; return 1
-				fi
-				local keywordFilter="$1" ; shift
-
-				Require ListProjectProvides
-
-				ListRepositoryProvides "$repositoryName" | grep -e " deploy-keyword:$keywordFilter$" | awk '{print $1}' | while read -r LINE ; do
-					ListProjectProvides "$LINE" --print-project "$@"
-				done
-				return 0
-			;;
-			--filter-keyword2)
-				shift
-				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryProvides: project deploy keyword is expected!" >&2 ; return 1
-				fi
-				local keywordFilter="$1" ; shift
-				join \
-					<( ListRepositoryProvides "$repositoryName" --print-project "$@" ) \
-					<( ListRepositoryProvides "$repositoryName" | grep -e " deploy-keyword:$keywordFilter$" | awk '{print $1}' )
-				return 0;
-
-				local projectList="$( ListRepositoryProvides "$repositoryName" "$@" | grep -e " deploy-keyword:$keywordFilter$" | awk '{print $1}' )"
-				ListRepositoryProvides "$repositoryName" "$@" | while read -r LINE ; do
-					echo grep -qe "$(echo $LINE | awk '{print $1}')"
-					if grep -qe "$(echo $LINE | awk '{print $1}')" <<< $projectList ; then
-						echo $LINE
-					fi
-				done
-				return 0
-			;;
 			--merge-sequence)
 				shift
 				
@@ -108,7 +80,7 @@ ListRepositoryProvides(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectProvides "$sequenceProjectName" --print-project --merge-sequence $useNoCache $useNoIndex "$@"
+					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@"
 				done	
 				return 0
 			;;
@@ -120,7 +92,7 @@ ListRepositoryProvides(){
 				local filterProvides="$1" ; shift
 
 				ListRepositoryProvides "$repositoryName" $useNoCache $useNoIndex "$@" | while read -r LINE ; do
-					ListRepositoryProvides --internal-print-project-provides --filter "$filterProvides" $LINE
+					ListRepositoryProvides --internal-print-project-provides-filter "$filterProvides" $LINE
 				done
 				return 0
 			;;
@@ -136,7 +108,7 @@ ListRepositoryProvides(){
 				break;
 			;;
 			*)
-				echo "ListDistroProvides: invalid option: $1" >&2 ; return 1
+				echo "ListRepositoryProvides: invalid option: $1" >&2 ; return 1
 			;;
 		esac
 	done
@@ -201,40 +173,12 @@ ListRepositoryProvides(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryProvides.fn.sh)
-		# ListRepositoryProvides.fn.sh --distro-from-source myx
-		# ListRepositoryProvides.fn.sh --distro-source-only myx
-		# ListRepositoryProvides.fn.sh --distro-from-cached myx
-		
-		# ListRepositoryProvides.fn.sh --distro-source-only myx --merge-sequence 2> /dev/null
-		# ListRepositoryProvides.fn.sh myx --merge-sequence
-		# ListRepositoryProvides.fn.sh --distro-source-only myx --merge-sequence deploy-keyword 2> /dev/null
-		# ListRepositoryProvides.fn.sh --distro-from-source myx --merge-sequence deploy-keyword 2> /dev/null
-		# ListRepositoryProvides.fn.sh --distro-from-cached myx --merge-sequence deploy-keyword 2> /dev/null
-		# ListRepositoryProvides.fn.sh myx --merge-sequence deploy-keyword
-		
-		# ListRepositoryProvides.fn.sh myx deploy-keyword
-		# ListRepositoryProvides.fn.sh myx --filter-projects freebsd
-		# ListRepositoryProvides.fn.sh myx --filter-projects freebsd deploy-export
-		# ListRepositoryProvides.fn.sh myx --filter-keywords macosx
-		# ListRepositoryProvides.fn.sh myx --filter-keywords macosx source-process
-		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-keywords macosx 2> /dev/null 
-		
-		# ListRepositoryProvides.fn.sh ndm --print-project --merge-sequence deploy-keyword
-		# ListRepositoryProvides.fn.sh ndm --print-project --merge-sequence deploy-keyword | grep bhyve
-		
-		### by project name
-		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-projects common
-		# ListRepositoryProvides.fn.sh --distro-from-source myx --filter-projects common
-		# ListRepositoryProvides.fn.sh --distro-source-only myx --filter-projects macosx deploy-keyword
-		# ListRepositoryProvides.fn.sh --distro-from-source myx --filter-projects macosx deploy-keyword
-		
-		# !!!! ListRepositoryProvides.fn.sh --distro-from-source myx --no-cache source-prepare
-		# !!!! ListRepositoryProvides.fn.sh --distro-from-source myx --merge-sequence --no-cache source-prepare
-
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [--merge-sequence/--filter-projects <name_part>] [--no-cache] [--filter filter_by]" >&2
+			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [--print-provides-only] [<search>] [--no-cache] [--filter filter_by]" >&2
 			echo "syntax: ListRepositoryProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
+				echo "  Search:" >&2
+				echo "    --all / --filter-projects <glob> / --filter-keywords <keyword>" >&2
 				echo "  examples:" >&2
 				echo "    ListRepositoryProvides.fn.sh --distro-from-source myx 2> /dev/null | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh --distro-from-cached myx 2> /dev/null | sort" >&2
@@ -245,6 +189,7 @@ case "$0" in
 				echo "    ListRepositoryProvides.fn.sh prv --filter deploy-ssh-target 2> /dev/null | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh prv --filter deploy-l6route-config 2> /dev/null | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh --distro-source-only prv --filter deploy-l6route-config 2> /dev/null | sort" >&2
+				echo "    ListRepositoryProvides.fn.sh ndm --print-project --merge-sequence --filter deploy-keyword" >&2
 			fi
 			exit 1
 		fi

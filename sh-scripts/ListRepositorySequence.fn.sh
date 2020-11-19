@@ -30,16 +30,6 @@ ListRepositorySequence(){
 				shift
 				;;
 
-			--filter-projects)
-				shift
-				filterProjects="$filterProjects --filter-projects $1" ; shift
-				;;
-
-			--filter-keywords)
-				shift
-				filterProjects="$filterProjects --filter-keywords $1" ; shift
-				;;
-
 			--no-cache)
 				shift
 				local useNoCache="--no-cache"
@@ -50,7 +40,7 @@ ListRepositorySequence(){
 				;;
 
 			*)
-				echo "ListDistroSequence: invalid option: $1" >&2 ; return 1
+				echo "ListRepositorySequence: invalid option: $1" >&2 ; return 1
 				;;
 		esac
 	done
@@ -115,14 +105,13 @@ ListRepositorySequence(){
 case "$0" in
 	*/sh-scripts/ListRepositorySequence.fn.sh) 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositorySequence.fn.sh <repositoryName> [--no-cache] [[--filter-projects/--filter-keywords filter_by] ...]" >&2
+			echo "syntax: ListRepositorySequence.fn.sh <repositoryName> [--no-cache]" >&2
 			echo "syntax: ListRepositorySequence.fn.sh --help" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2
 				echo "	ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null" >&2
 				echo "	ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null" >&2
 				echo "	ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null" >&2
-				echo "	ListRepositorySequence.fn.sh --distro-from-source --filter-keywords deploy-l6route-config" >&2
 			fi
 			exit 1
 		fi

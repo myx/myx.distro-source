@@ -15,7 +15,7 @@ type Prefix >/dev/null 2>&1 || \
 	. "`myx.common which lib/prefix`"
 
 Require ListAllRepositories
-Require ListAllProjects
+Require ListDistroProjects
 Require ListAllBuilders
 
 

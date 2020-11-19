@@ -54,7 +54,7 @@ MergeScripts(){
 }
 
 for projectName in $( ListChangedSourceProjects ) ; do
-	for ITEM in $( ListProjectProvides "$projectName" --filter "source-process-merge-scripts" ) ; do
+	for ITEM in $( ListProjectProvides "$projectName" --print-provides-only --filter-and-cut "source-process-merge-scripts" ) ; do
 		Async -2 MergeScripts "$projectName" ` echo $ITEM | tr '\\' ' ' | sed "s|:| |g" `
 		wait
 	done

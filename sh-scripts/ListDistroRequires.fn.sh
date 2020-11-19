@@ -16,11 +16,14 @@ ListDistroRequires(){
 	set -e
 	
 	Require ListAllRepositories
-	Require ListRepositoryProvides
+	Require ListRepositoryRequires
+
+	# ListAllRepositories | xargs -I % bash -c "ListRepositoryRequires.fn.sh %"
+	# return 0
 
 	local repositoryName
 	ListAllRepositories | while read -r repositoryName ; do
-		ListRepositoryProvides "$repositoryName" "$@"
+		ListRepositoryRequires "$repositoryName" "$@"
 	done
 }
 

@@ -12,7 +12,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	DistroShellContext --distro-from-source
 fi
 
-Require ListAllProjects
+Require ListDistroProjects
 Require ListProjectBuilders
 
 ListAllBuildersRaw(){
@@ -21,7 +21,7 @@ ListAllBuildersRaw(){
 		echo "ListAllBuildersRaw: 'stageType' argument is required!" >&2 ; return 1
 	fi
 	local projectName
-	for projectName in $( ListAllProjects ) ; do
+	for projectName in ` ListDistroProjects --all-projects ` ; do
 		ListProjectBuilders "$projectName" "$@"
 	done
 }
