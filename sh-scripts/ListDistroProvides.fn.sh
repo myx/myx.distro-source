@@ -37,7 +37,7 @@ ListDistroProvides(){
 			ListDistroProvides "$@" | awk '{print $2}' | awk '!x[$0]++'
 			return 0
 		;;
-		--all-provides|--all-provides-merged)
+		--all-provides|--all-provides-merged|--add-*-column)
 		;;
 		--explicit-noop)
 			shift
@@ -46,7 +46,7 @@ ListDistroProvides(){
 			shift
 			local projectsSelected="$MMDENVSELECTION"
 			if [ -z "$projectsSelected" ] ; then
-				echo "ERROR: ListDistroProvides: no projects selected!" >&2
+				echo "ERROR: ListDistroProvides: --select-from-env no projects selected!" >&2
 				return 1
 			fi
 		;;
@@ -61,6 +61,9 @@ ListDistroProvides(){
 	local useNoIndex=""
 
 	local indexFile="$MDSC_CACHED/distro-index.inf"
+	local indexAllProvides=""
+	local indexOwnProvides=""
+	local indexColumns=""
 
 	while true ; do
 		case "$1" in
@@ -203,6 +206,82 @@ ListDistroProvides(){
 				done | awk '!x[$0]++'
 				return 0
 			;;
+			--add-own-provides-column)
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProvides: project provides filter is expected!" >&2
+					return 1
+				fi
+				local columnMatcher="$1" ; shift
+				if [ -z "$indexOwnProvides" ] ; then
+					local indexOwnProvides="` ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides `"
+				fi
+				
+				local indexCurrent="` \
+					if [ -z "$indexColumns" ] ; then
+						if [ -z "$projectsSelected" ] ; then
+							echo "$indexOwnProvides" | cut -d" " -f1 | sort
+						else
+							echo "$projectsSelected" | sort
+						fi
+					else
+						echo "$indexColumns" | sort
+					fi
+				`"
+
+				case "$columnMatcher" in
+					*:)
+						local indexFiltered="` echo "$indexOwnProvides" | grep -e "^.* $columnMatcher.*$" | sed -e "s| $columnMatcher| |" | awk '$0 && !x[$0]++' | sort `"
+					;;
+					*)
+						local indexFiltered="` echo "$indexOwnProvides" | grep -e "^.* $columnMatcher$" | awk '$0 && !x[$0]++' | sort `"
+					;;
+				esac
+				
+				local indexColumns="` join -11 -21 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
+				if [ -z "$indexColumns" ] ; then
+					echo "ERROR: ListDistroProvides: --add-provides-column no projects selected!" >&2
+					return 1
+				fi
+			;;
+			--add-merged-provides-column)
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProvides: project provides filter is expected!" >&2
+					return 1
+				fi
+				local columnMatcher="$1" ; shift
+				if [ -z "$indexAllProvides" ] ; then
+					local indexAllProvides="` ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides-merged `"
+				fi
+
+				local indexCurrent="` \
+					if [ -z "$indexColumns" ] ; then
+						if [ -z "$projectsSelected" ] ; then
+							echo "$indexAllProvides" | cut -d" " -f1 | awk '!x[$0]++' | sort
+						else
+							echo "$projectsSelected" | sort
+						fi
+					else
+						echo "$indexColumns" | sort
+					fi
+				`"
+
+				case "$columnMatcher" in
+					*:)
+						local indexFiltered="` echo "$indexAllProvides" | cut -d" " -f1,3 | grep -e "^.* $columnMatcher.*$" | sed -e "s| $columnMatcher| |" | awk '$0 && !x[$0]++' | sort `"
+					;;
+					*)
+						local indexFiltered="` echo "$indexAllProvides" | cut -d" " -f1,3 | grep -e "^.* $columnMatcher$" | awk '$0 && !x[$0]++' | sort `"
+					;;
+				esac
+
+				local indexColumns="` join <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
+				if [ -z "$indexColumns" ] ; then
+					echo "ERROR: ListDistroProvides: --add-merged-provides-column no projects selected!" >&2
+					return 1
+				fi
+			;;
 			--merge-sequence)
 				shift
 				if [ -z "$projectsSelected" ] ; then
@@ -240,17 +319,22 @@ ListDistroProvides(){
 				local useNoIndex="--no-index"
 			;;
 			'')
-				if [ -z "$projectsSelected" ] ; then
-					echo "ERROR: ListDistroProvides: no projects selected!" >&2
-					return 1
+				if [ ! -z "$indexColumns" ] ; then
+					echo "$indexColumns"
+					return 0
 				fi
 				
-				awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
-					echo "$projectsSelected" \
-				) <( \
-					ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
-				)
-				return 0
+				if [ ! -z "$projectsSelected" ] ; then
+					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
+						echo "$projectsSelected" \
+					) <( \
+						ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
+					)
+					return 0
+				fi
+
+				echo "ERROR: ListDistroProvides: no projects selected!" >&2
+				return 1
 			;;
 			*)
 				echo "ListDistroProvides: invalid option: $1" >&2

@@ -29,6 +29,14 @@ ListDistroProjects(){
 
 	while true ; do
 		case "$1" in
+			--select-from-env)
+				shift
+				local MMDSELECTION="$MMDENVSELECTION"
+				if [ -z "$MMDSELECTION" ] ; then
+					echo "ERROR: ListDistroProjects: --select-from-env no projects selected!" >&2
+					return 1
+				fi
+			;;
 			--all-projects)
 				shift
 				if [ ! -z "$1" ] ; then
@@ -323,7 +331,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				export MMDENVSELECTION="$MMDSELECTION"
-				echo $executeDefault --select-from-env $useNoCache $useNoIndex "$@" >&2
+				[ -z "$MDSC_DETAIL" ] || echo ">>> ListDistroProjects:" $executeDefault --select-from-env $useNoCache $useNoIndex "$@" >&2
 				$executeDefault --select-from-env $useNoCache $useNoIndex "$@"
 				return 0
 			;;
