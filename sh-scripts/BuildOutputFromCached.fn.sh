@@ -16,7 +16,7 @@ type Prefix >/dev/null 2>&1 || \
 
 Require ListAllRepositories
 Require ListDistroProjects
-Require ListAllBuilders
+Require ListDistroBuilders
 
 
 RebuildOutputFromCachedBuilderRaw(){
@@ -52,7 +52,7 @@ BuildOutputFromCachedRunner(){
 	
 	export OUTPUT_PATH="$MMDAPP/output"
 
-	local BUILDERS="$( ListAllBuilders source-process --2 )"
+	local BUILDERS="$( ListDistroBuilders source-process --2 )"
 	echo "BuildOutputFromCached: Builders list:" $BUILDERS >&2
 	
 	for BUILDER in $BUILDERS ; do

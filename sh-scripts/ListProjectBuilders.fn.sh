@@ -38,13 +38,16 @@ ListProjectBuilders(){
 case "$0" in
 	*/sh-scripts/ListProjectBuilders.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectBuilders.fn.sh <project>" >&2
+			echo "syntax: ListProjectBuilders.fn.sh <project> <source-prepare|source-process|image-prepare|image-share|image-deploy>" >&2
 			echo "syntax: ListProjectBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2
-				echo "	ListProjectBuilders.fn.sh --distro-from-source myx/myx.distro-source 2> /dev/null" >&2
-				echo "	ListProjectBuilders.fn.sh --distro-source-only myx/myx.distro-source 2> /dev/null" >&2
-				echo "	ListProjectBuilders.fn.sh --distro-from-cached myx/myx.distro-source 2> /dev/null" >&2
+				echo "	ListProjectBuilders.fn.sh --distro-from-source myx/myx.distro-source source-prepare 2> /dev/null" >&2
+				echo "	ListProjectBuilders.fn.sh --distro-source-only myx/myx.distro-source source-prepare 2> /dev/null" >&2
+				echo "	ListProjectBuilders.fn.sh --distro-from-cached myx/myx.distro-source source-prepare 2> /dev/null" >&2
+				echo "	ListProjectBuilders.fn.sh myx/myx.distro-source source-prepare" >&2
+				echo "	ListProjectBuilders.fn.sh myx/myx.distro-source source-process" >&2
+				echo "	ListProjectBuilders.fn.sh myx/myx.distro-source image-prepare" >&2
 			fi
 			exit 1
 		fi

@@ -13,7 +13,7 @@ fi
 
 Require ListAllRepositories
 Require ListDistroProjects
-Require ListAllBuilders
+Require ListDistroBuilders
 
 
 RebuildCachedFromSourceBuilderRaw(){
@@ -47,7 +47,7 @@ BuildCachedFromSourceRunner(){
 		return 1
 	fi
 	
-	local BUILDERS="$( ListAllBuilders source-prepare --1 )"
+	local BUILDERS="$( ListDistroBuilders source-prepare --1 )"
 	echo "BuildCachedFromSource: Builders list:" $BUILDERS >&2
 	
 	for BUILDER in $BUILDERS ; do

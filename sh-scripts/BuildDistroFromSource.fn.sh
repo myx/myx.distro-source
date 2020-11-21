@@ -11,7 +11,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 fi
 
-Require ListAllBuilders
+Require ListDistroBuilders
 Require BuildCachedFromSource
 Require BuildOutputFromCached
 
@@ -45,7 +45,7 @@ BuildDistroFromOutputRunner(){
 	
 	DistroShellContext --distro-from-output
 	
-	local BUILDERS="$( ListAllBuilders image-prepare --3 )"
+	local BUILDERS="$( ListDistroBuilders image-prepare --3 )"
 	echo "BuildDistroFromSource: Builders list:" $BUILDERS >&2
 	
 	for BUILDER in $BUILDERS ; do
