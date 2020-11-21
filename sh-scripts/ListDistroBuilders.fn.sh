@@ -22,8 +22,10 @@ ListDistroBuilders(){
 	fi
 	local projectName
 	for projectName in ` ListDistroProjects --all-projects ` ; do
-		ListProjectBuilders "$projectName" "$@"
-	done
+		ListProjectBuilders "$projectName" "$@" | while read -r builderName ; do
+			echo "$builderName" "` basename "$builderName" `" 
+		done
+	done | sort -k2 | cut -d" " -f1
 }
 
 case "$0" in

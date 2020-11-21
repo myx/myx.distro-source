@@ -22,15 +22,21 @@ ListProjectBuilders(){
 	if [ -z "$stageType" ] ; then
 		echo "ListSourceProjectProvides: 'stageType' argument is required!" >&2 ; return 1
 	fi
+	if [ "$stageType" = "--all" ] ; then
+		for stageType in source-prepare source-process image-prepare image-share image-deploy ; do
+			ListProjectBuilders "$projectName" "$stageType" "$3"
+		done
+		return 0
+	fi
 	local buildersPath="$MMDAPP/source/$projectName/$stageType/builders"
 	[ -d "$buildersPath" ] || return 0
 	### only 1xxx - source-prepare, source-to-cached by default
 	local stageFilter="${3#--}"
 	for LINE in $( \
-			find "$buildersPath" -mindepth 1 -type f -name $( \
-					[ -z "$stageFilter" ] && echo "????-*.sh" || echo "$stageFilter???-*.sh" \
-			) | sort \
-		) ; do
+		find "$buildersPath" -mindepth 1 -type f -name $( \
+			[ -z "$stageFilter" ] && echo "????-*.sh" || echo "$stageFilter???-*.sh" \
+		) | sort \
+	) ; do
 		echo "${LINE#$MMDAPP/source/}"
 	done
 }
