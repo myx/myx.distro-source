@@ -1,6 +1,3 @@
-Require ListChangedSourceProjects
-Require ListProjectProvides
-
 SyncExportsFromOutput(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
@@ -39,9 +36,7 @@ SyncExportsFromOutput(){
 	echo "ERROR: export file not found: $SRC" 
 }
 
-local projectName
-for projectName in $( ListChangedSourceProjects ) ; do
-	for ITEM in $( ListProjectProvides "$projectName" --print-provides-only --filter-and-cut "deploy-export" ) ; do
-		SyncExportsFromOutput "$projectName" $( echo $ITEM | tr '\\' ' ' | sed "s|:| |g" )
-	done
+Require ListDistroProvides
+ListDistroProvides --select-changed --filter-and-cut "deploy-export" | sed "s|:| |g" | while read -r projectName sourceName targetName ; do
+	SyncExportsFromOutput "$projectName" "$sourceName" "$targetName"
 done

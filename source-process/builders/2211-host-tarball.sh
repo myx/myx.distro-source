@@ -1,6 +1,3 @@
-Require ListChangedSourceProjects
-Require ListProjectProvides
-
 CheckMakeProjectHostTarball(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
@@ -29,9 +26,9 @@ CheckMakeProjectHostTarball(){
 	fi
 }
 
-for projectName in $( ListChangedSourceProjects ) ; do
-	if test ! -z "$( ListProjectProvides "$projectName" --print-provides-only --filter-and-cut "source-process" | grep -e "^host-tarball.tbz$" )" ; then
-		Async "`basename "$projectName"`" CheckMakeProjectHostTarball "$projectName"
-		wait
-	fi
+
+Require ListDistroProvides
+ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " host-tarball.tbz$" | cut -d" " -f1 | sort | uniq | while read -r projectName ; do
+	Async "`basename "$projectName"`" CheckMakeProjectHostTarball "$projectName"
+	wait
 done

@@ -14,7 +14,7 @@ fi
 
 ListDistroSequence(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo ">>> ListDistroSequence $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> ListDistroSequence $@" >&2
 
 	local useNoCache=""
 	local useNoIndex=""
@@ -59,7 +59,7 @@ ListDistroSequence(){
 					if [ -f "$cacheFile" ] && \
 						( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 					then
-						[ -z "$MDSC_DETAIL" ] || echo "ListDistroSequence: --all using cached ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroSequence: --all using cached ($MDSC_OPTION)" >&2
 						cat "$cacheFile"
 						return 0
 					fi

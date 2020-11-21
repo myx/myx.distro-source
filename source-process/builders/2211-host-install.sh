@@ -7,9 +7,8 @@ PrepareProjectHostInstallData(){
 	echo "$projectName: HOST INSTALL!"
 }
 
-for projectName in $( ListChangedSourceProjects ) ; do
-	CHECK_DIR="$MDSC_SOURCE/$projectName/host/install"
-	if [ -d "$CHECK_DIR" ] ; then
+ListChangedSourceProjects | while read -r projectName ; do
+	if [ -d "$MDSC_SOURCE/$projectName/host/install" ] ; then
 		PrepareProjectHostInstallData $projectName
 	fi
 done

@@ -14,7 +14,7 @@ fi
 
 ListRepositoryProvides(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo ">>> ListRepositoryProvides $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryProvides $@" >&2
 
 	case "$1" in
 		--internal-print-project-provides)
@@ -123,7 +123,7 @@ ListRepositoryProvides(){
 			if [ -f "$cacheFile" ] && \
 				( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 			then
-				[ -z "$MDSC_DETAIL" ] || echo "ListRepositoryProvides: using cached ($MDSC_OPTION)" >&2
+				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProvides: using cached ($MDSC_OPTION)" >&2
 				cat "$cacheFile"
 				return 0
 			fi
@@ -139,7 +139,7 @@ ListRepositoryProvides(){
 			if [ -f "$indexFile" ] && \
 				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
 			then
-				[ -z "$MDSC_DETAIL" ] || echo "ListRepositoryProvides: using index ($MDSC_OPTION)" >&2
+				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProvides: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-PRV-$repositoryName/"
 				
 				grep "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do

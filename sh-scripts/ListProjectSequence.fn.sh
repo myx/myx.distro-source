@@ -14,7 +14,7 @@ fi
 
 ListProjectSequence(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo ">>> ListProjectSequence $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> ListProjectSequence $@" >&2
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
@@ -46,7 +46,7 @@ ListProjectSequence(){
 						if [ -f "$cacheFile" ] && \
 							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 						then
-							[ -z "$MDSC_DETAIL" ] || echo "ListProjectSequence: $projectName: --print-provides using cached ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "| ListProjectSequence: $projectName: --print-provides using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
 						fi
@@ -95,7 +95,7 @@ ListProjectSequence(){
 			if [ -f "$cacheFile" ] && \
 				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 			then
-				[ -z "$MDSC_DETAIL" ] || echo "ListProjectSequence: $projectName: using cached ($MDSC_OPTION)" >&2
+				[ -z "$MDSC_DETAIL" ] || echo "| ListProjectSequence: $projectName: using cached ($MDSC_OPTION)" >&2
 				cat "$cacheFile"
 				return 0
 			fi

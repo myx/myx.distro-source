@@ -1,6 +1,3 @@
-Require ListChangedSourceProjects
-Require ListProjectProvides
-
 CompileJavaSources(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
@@ -27,10 +24,10 @@ CompileJavaSources(){
 	)
 }
 
- 
-for projectName in $( ListChangedSourceProjects ) ; do
-	if [ ! -z "$( ListProjectProvides "$projectName" --print-provides-only --filter-and-cut "source-process" | grep -e "^compile-java$" )" ] ; then
-		Async "`basename "$projectName"`" CompileJavaSources "$projectName"
-		wait
-	fi
+
+
+Require ListDistroProvides
+ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " compile-java$" | cut -d" " -f1 | sort | uniq | while read -r projectName ; do
+	Async "`basename "$projectName"`" CompileJavaSources "$projectName"
+	wait
 done

@@ -16,11 +16,11 @@ fi
 
 ListDistroProjects(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo ">>> ListDistroProjects $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> ListDistroProjects $@" >&2
 
 	set -e
 
-	local MMDSELECTION=""
+	local selectProjects=""
 
 	local executeDefault=""
 	
@@ -31,8 +31,8 @@ ListDistroProjects(){
 		case "$1" in
 			--select-from-env)
 				shift
-				local MMDSELECTION="$MMDENVSELECTION"
-				if [ -z "$MMDSELECTION" ] ; then
+				local selectProjects="$MDSC_SELECT_PROJECTS"
+				if [ -z "$selectProjects" ] ; then
 					echo "ERROR: ListDistroProjects: --select-from-env no projects selected!" >&2
 					return 1
 				fi
@@ -40,7 +40,7 @@ ListDistroProjects(){
 			--all-projects)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 					return 1
 				fi
 				
@@ -49,12 +49,12 @@ ListDistroProjects(){
 						local cacheFile="$MDSC_CACHED/all-project-names.txt"
 						if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-							[ -z "$MDSC_DETAIL" ] || echo "ListDistroProjects: using cached ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
 						fi
 						if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-							echo "ListDistroProjects: caching projects ($MDSC_OPTION)" >&2
+							echo "| ListDistroProjects: caching projects ($MDSC_OPTION)" >&2
 							ListDistroProjects --no-cache --all-projects > "$cacheFile"
 							cat "$cacheFile"
 							return 0
@@ -65,37 +65,37 @@ ListDistroProjects(){
 						if [ -f "$indexFile" ] && \
 							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
 						then
-							echo "ListDistroProjects: using image ($MDSC_OPTION)" >&2
-							local PKG
-							for PKG in $( grep -e "^PRJS=" "$indexFile" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
-								echo "$PKG"
+							echo "| ListDistroProjects: using image ($MDSC_OPTION)" >&2
+							local projectName
+							for projectName in $( grep -e "^PRJS=" "$indexFile" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
+								echo "$projectName"
 							done
 							return 0
 						fi
 					fi
 				fi
 				
-				echo "ListDistroProjects: scanning all projects ($MDSC_OPTION)" >&2
+				echo "| ListDistroProjects: scanning all projects ($MDSC_OPTION)" >&2
 			
 				Require ListAllRepositories
 				Require ListRepositoryProjects
 				
-				ListAllRepositories | while read REPO ; do
-					ListRepositoryProjects "$REPO"
+				ListAllRepositories | while read repositoryName ; do
+					ListRepositoryProjects "$repositoryName"
 				done
 				
 				return 0
 			;;
 			--print-selected)
 				shift
-				echo "$MMDSELECTION"
+				echo "$selectProjects"
 			;;
 			--select-all)
 				##
 				## Replaces selection with 'all projects'
 				##
 				shift
-				local MMDSELECTION="`ListDistroProjects $useNoCache $useNoIndex --all-projects`"
+				local selectProjects="`ListDistroProjects $useNoCache $useNoIndex --all-projects`"
 			;;
 			--select-sequence)
 				##
@@ -104,23 +104,23 @@ ListDistroProjects(){
 				shift
 				
 				Require ListDistroSequence
-				local MMDSELECTION="`ListDistroSequence $useNoCache $useNoIndex --all`"
+				local selectProjects="`ListDistroSequence $useNoCache $useNoIndex --all`"
 			;;
 			--select-none)
 				##
 				## Replaces selection with 'no projects selected'
 				##
 				shift
-				local MMDSELECTION=""
+				local selectProjects=""
 			;;
 			--select-changed)
 				##
 				## Unions selection with 'changed projects'
 				##
 				shift
-				
+
 				Require ListChangedSourceProjects
-				local MMDSELECTION="` cat <( echo "$MMDSELECTION" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' `"
+				local selectProjects="` cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' `"
 			;;
 
 			--select-projects|--select-provides|--select-merged-provides|--select-keywords|--select-merged-keywords)
@@ -131,9 +131,13 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				local MMDSELECTION="` \
+				if [ -z "$MDSC_IDAPRV" ] ; then
+					Require ListDistroProvides
+					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
+				fi
+				local selectProjects="` \
 					cat \
-						<( echo "$MMDSELECTION" ) \
+						<( echo "$selectProjects" ) \
 						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" ) \
 					| awk '$0 && !x[$0]++' \
 				`"
@@ -146,10 +150,14 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				local MMDSELECTION="` \
+				if [ -z "$MDSC_IDOPRV" ] ; then
+					Require ListDistroProvides
+					ListDistroProvides --set-env MDSC_IDOPRV --all-provides
+				fi
+				local selectProjects="` \
 					grep -Fx -f \
 						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" ) \
-						<( echo "$MMDSELECTION" ) \
+						<( echo "$selectProjects" ) \
 					| awk '$0 && !x[$0]++' \
 				`"
 			;;
@@ -161,10 +169,14 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				local MMDSELECTION="` \
+				if [ -z "$MDSC_IDOPRV" ] ; then
+					Require ListDistroProvides
+					ListDistroProvides --set-env MDSC_IDOPRV --all-provides
+				fi
+				local selectProjects="` \
 					grep -Fvx -f \
 						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" ) \
-						<( echo "$MMDSELECTION" ) \
+						<( echo "$selectProjects" ) \
 					| awk '$0 && !x[$0]++' \
 				`"
 			;;
@@ -179,7 +191,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 				local projectFilter="$1" ; shift
@@ -197,7 +209,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 				local providesFilter="$1" ; shift
@@ -228,7 +240,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 				local providesFilter="$1" ; shift
@@ -256,7 +268,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 
@@ -277,7 +289,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 
@@ -316,22 +328,22 @@ ListDistroProjects(){
 				fi
 				local executeCommand="$1" ; shift
 
-				export MMDENVSELECTION="$MMDSELECTION"
+				export MDSC_SELECT_PROJECTS="$selectProjects"
 				$executeCommand --select-from-env $useNoCache $useNoIndex "$@"
 				return 0
 			;;
 			*)
 				if [ -z "$executeDefault" ] ; then
 					if [ -z "$1" ] ; then
-						echo "$MMDSELECTION"
+						echo "$selectProjects"
 						return 0
 					fi
 
-					echo "ListDistroProjects: invalid option ($1), expecting <command name> <args...>: $1" >&2
+					echo "ERROR: ListDistroProjects: invalid option ($1), expecting <command name> <args...>: $1" >&2
 					return 1
 				fi
-				export MMDENVSELECTION="$MMDSELECTION"
-				[ -z "$MDSC_DETAIL" ] || echo ">>> ListDistroProjects:" $executeDefault --select-from-env $useNoCache $useNoIndex "$@" >&2
+				export MDSC_SELECT_PROJECTS="$selectProjects"
+				[ -z "$MDSC_DETAIL" ] || echo "* ListDistroProjects:" $executeDefault --select-from-env $useNoCache $useNoIndex "$@" >&2
 				$executeDefault --select-from-env $useNoCache $useNoIndex "$@"
 				return 0
 			;;

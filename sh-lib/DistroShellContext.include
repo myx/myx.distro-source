@@ -10,22 +10,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 			;;
 			--is-spec-option)
 				case "$2" in
-					"--distro-path-auto")
-						return 0
-					;;
-					"--distro-source-only")
-						return 0
-					;;
-					"--distro-from-source")
-						return 0
-					;;
-					"--distro-from-cached")
-						return 0
-					;;
-					"--distro-from-output")
-						return 0
-					;;
-					"--distro-from-distro")
+					--distro-path-auto|--distro-source-only|--distro-from-source|--distro-from-cached|--distro-from-output|--distro-from-distro)
 						return 0
 					;;
 				esac
@@ -39,8 +24,6 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 					[ -z "$MDSC_DETAIL" ] || echo "DistroShellContext: input spec: $1" >&2
 					. "$MDSC_ORIGIN/DistroShellContextSetInputSpec.include"		
 					return 0
-					# shift
-					# continue
 				fi
 			;;
 		esac

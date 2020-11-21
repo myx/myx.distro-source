@@ -10,7 +10,7 @@ CheckMakeProjectDataFolder(){
 	fi
 }
 
-for PKG in $( ListChangedSourceProjects ) ; do
+ListChangedSourceProjects | while read -r PKG ; do
 	Async "`basename "$PKG"`" CheckMakeProjectDataFolder "$PKG"
 	wait
 done

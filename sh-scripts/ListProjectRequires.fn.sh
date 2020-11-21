@@ -59,7 +59,7 @@ ListProjectRequires(){
 		local cacheFile="$MDSC_CACHED/$projectName/project-requires.txt"
 		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "ListProjectRequires: $projectName: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "| ListProjectRequires: $projectName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi

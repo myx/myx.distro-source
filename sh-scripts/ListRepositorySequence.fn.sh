@@ -14,7 +14,7 @@ fi
 
 ListRepositorySequence(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo ">>> ListRepositorySequence $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositorySequence $@" >&2
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -52,7 +52,7 @@ ListRepositorySequence(){
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
 		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "| ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
