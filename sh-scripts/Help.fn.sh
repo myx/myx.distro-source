@@ -9,9 +9,16 @@ fi
 
 
 Help(){
-	echo "Syntax: Distro <commandName> ...<arguments>" >&2
-	echo "	Start with:" >&2
-	echo "		Distro ShowDistroInfo.fn.sh" >&2
+	echo "Syntax:" >&2
+	echo "	Action <distroCommand>" >&2
+	echo "	Distro <distroCommand>" >&2
+	echo "	Deploy <distroCommand>" >&2
+	if [ "$1" = "--all" ] || [ "$1" = "--help" ] ; then
+		echo "	Require <distroCommandName>" >&2
+		echo "	#SetEnv <exportVariableName> <command>[ <args...>]" >&2
+		echo "	#SetVar <normalVariableName> <command>[ <args...>]" >&2
+		echo "	#SetLcl <localVariableName> <command>[ <args...>]" >&2
+	fi
 }
 
 case "$0" in

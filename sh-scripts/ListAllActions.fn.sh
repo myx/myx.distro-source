@@ -17,8 +17,8 @@ ListAllActions(){
 	Require ListDistroProjects
 	Require ListProjectActions
 	
-	for PKG in ` ListDistroProjects --all-projects ` ; do
-		ListProjectActions "$@" "$PKG"
+	for projectName in ` ListDistroProjects --all-projects ` ; do
+		ListProjectActions "$@" "$projectName"
 	done
 		
 }

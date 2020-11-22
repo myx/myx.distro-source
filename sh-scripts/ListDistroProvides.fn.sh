@@ -173,7 +173,7 @@ ListDistroProvides(){
 				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-							
+
 							echo "| ListDistroProvides: --all-provides-merged using index ($MDSC_OPTION)" >&2
 
 							local indexProvides="` \
@@ -182,7 +182,7 @@ ListDistroProvides(){
 							local indexSequence="` \
 								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
 							`"
-							
+
 							join -o 2.1,1.1,1.2 -1 1 -2 2 <( \
 								echo "$indexProvides" | while read -r projectName extraText ; do
 									for extraText in $extraText ; do
