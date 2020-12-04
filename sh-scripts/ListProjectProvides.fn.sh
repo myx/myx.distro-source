@@ -28,21 +28,18 @@ ListProjectProvides(){
 
 	set -e
 
-	case "$1" in
-		--print-provides-only)
-			shift
-			ListProjectProvides "$projectName" "$@" | awk '{print $2}'
-			return 0
-		;;
-		--print-project)
-			shift
-			ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
-			return 0
-		;;
-	esac
-
 	while true ; do
 		case "$1" in
+			--print-provides-only)
+				shift
+				ListProjectProvides "$projectName" "$@" | awk '{print $2}' | awk '!x[$0]++'
+				return 0
+			;;
+			--print-project)
+				shift
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
+				return 0
+			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
@@ -70,7 +67,7 @@ ListProjectProvides(){
 
 				for sequenceProjectName in $( ListProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
 					ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex "$@"
-				done | awk '!x[$2]++'	
+				done | awk '!x[$0]++'	
 				return 0
 				;;
 				

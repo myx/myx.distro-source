@@ -11,9 +11,6 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 fi
 
-type Prefix >/dev/null 2>&1 || \
-	. "`myx.common which lib/prefix`"
-
 Require ListAllRepositories
 Require ListDistroProjects
 Require ListDistroBuilders
@@ -29,6 +26,7 @@ RebuildOutputFromCachedBuilderRaw(){
 		echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "BuildOutputFromCached: ERROR: $( basename $BUILDER ) failed!" >&2
+		return 1
 	fi
 }
 
@@ -73,6 +71,9 @@ BuildOutputFromCached(){
 
 case "$0" in
 	*/sh-scripts/BuildOutputFromCached.fn.sh) 
+		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
+		DistroShellContext --distro-from-cached
+		
 		BuildOutputFromCached "$@"
 	;;
 esac

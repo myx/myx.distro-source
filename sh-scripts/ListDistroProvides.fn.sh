@@ -111,7 +111,7 @@ ListDistroProvides(){
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 							
-							echo "| ListDistroProvides: --all-provides using index ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using index" >&2
 							
 							local projectName
 							local extraText
@@ -174,7 +174,7 @@ ListDistroProvides(){
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
-							echo "| ListDistroProvides: --all-provides-merged using index ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides-merged using index ($MDSC_OPTION)" >&2
 
 							local indexProvides="` \
 								grep -e "^PRJ-PRV-" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\\\:|:|g' \
@@ -401,6 +401,7 @@ case "$0" in
 				echo "  Search:" >&2
 				echo "    --select-{all|sequence|changed|none} " >&2
 				echo "    --{select|filter|remove}-{projects|[merged-]provides|[merged-]keywords} <glob>" >&2
+				echo "    --{select|filter|remove}-repository-projects <repositoryName>" >&2
 				echo "  examples:" >&2
 				echo "    ListDistroProvides.fn.sh --distro-from-source --all-provides 2> /dev/null | sort" >&2
 				echo "    ListDistroProvides.fn.sh --distro-from-cached --all-provides | sort" >&2

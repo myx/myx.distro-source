@@ -11,9 +11,9 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 fi
 
-Require ListDistroBuilders
 Require BuildCachedFromSource
 Require BuildOutputFromCached
+Require ListDistroBuilders
 
 RebuildDistroFromOutputBuilderRaw(){
 	set -e
@@ -25,6 +25,7 @@ RebuildDistroFromOutputBuilderRaw(){
 		echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "BuildDistroFromSource: ERROR: $( basename $BUILDER ) failed!" >&2
+		return 1
 	fi
 }
 

@@ -7,6 +7,7 @@ echo "Stage 3xxx: output to distro started" >&2
 echo "BUILD_STAMP: $BUILD_STAMP" >&2
 echo "MDSC_SOURCE: $MDSC_SOURCE" >&2
 echo "MDSC_CACHED: $MDSC_CACHED" >&2
+echo "MDSC_OUTPUT: $MDSC_OUTPUT" >&2
 echo "OUTPUT_PATH: $OUTPUT_PATH" >&2
 echo "DISTRO_PATH: $DISTRO_PATH" >&2
 echo "EXPORT_PATH: $EXPORT_PATH" >&2

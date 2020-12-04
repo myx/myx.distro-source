@@ -32,18 +32,18 @@ case "$0" in
 	*/sh-scripts/ListDistroBuilders.fn.sh) 
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroBuilders.fn.sh <source-prepare|source-process|image-prepare|image-share|image-deploy>" >&2
+			echo "syntax: ListDistroBuilders.fn.sh <source-prepare|source-process|image-prepare|image-process|image-install>" >&2
 			echo "syntax: ListDistroBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Examples:" >&2
 				echo "    ListDistroBuilders.fn.sh --distro-from-source source-prepare 2> /dev/null | sort" >&2
 				echo "    ListDistroBuilders.fn.sh --distro-from-cached source-prepare | sort" >&2
 				echo "    ListDistroBuilders.fn.sh --distro-source-only source-prepare | sort" >&2
-				echo "    ListDistroBuilders.fn.sh source-prepare" >&2
-				echo "    ListDistroBuilders.fn.sh source-process" >&2
-				echo "    ListDistroBuilders.fn.sh image-prepare" >&2
-				echo "    ListDistroBuilders.fn.sh image-share" >&2
-				echo "    ListDistroBuilders.fn.sh image-deploy" >&2
+				echo "    ListDistroBuilders.fn.sh source-prepare --1" >&2
+				echo "    ListDistroBuilders.fn.sh source-process --2" >&2
+				echo "    ListDistroBuilders.fn.sh image-prepare --3" >&2
+				echo "    ListDistroBuilders.fn.sh image-process --4" >&2
+				echo "    ListDistroBuilders.fn.sh image-install --5" >&2
 			fi
 			exit 1
 		fi

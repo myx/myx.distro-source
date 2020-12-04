@@ -7,6 +7,7 @@ echo "Stage 1xxx: source to cached started" >&2
 echo "BUILD_STAMP: $BUILD_STAMP" >&2
 echo "MDSC_SOURCE: $MDSC_SOURCE" >&2
 echo "MDSC_CACHED: $MDSC_CACHED" >&2
+echo "MDSC_OUTPUT: $MDSC_OUTPUT" >&2
 
 if [ -z "$BUILD_STAMP" ] ; then
 	echo "ERROR: BUILD_STAMP is invalid or not set!" >&2 ; return 1

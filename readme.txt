@@ -27,8 +27,9 @@ project.inf - project description file
 actions/** - usable actions (predefined parameters for other scripts
 source-prepare/builders/* - builders to work on project sets while building source-prepare
 source-process/builders/* - builders to work on project sets while building source-process
+image-prepare/builders/* - builders to work on project sets while building image-prepare
+image-process/builders/* - builders to work on project sets while building image-process
 image-install/builders/* - builders to work on project sets while building image-install
-image-deploy/builders/* - builders to work on project sets while building image-deploy
 sh-libs/**
 sh-scripts/**
 
@@ -41,9 +42,9 @@ Default build steps:
 				output contains and actual meta-data.
 	3xxx - image-prepare, output to distro (mode: image, prepare | util)
 				distro contains indices and exported items (in their project's locations)
-	4xxx - image-share, distro to deploy (prepare | util | install )
+	4xxx - image-process, distro to deploy (prepare | util | install )
 				share repositories
-	5xxx - image-deploy, distro to deploy (prepare | util | install )
+	5xxx - image-install, distro to deploy (prepare | util | install )
 				deploy tasks are executed upon
 
 2101-install-start-setup-environment

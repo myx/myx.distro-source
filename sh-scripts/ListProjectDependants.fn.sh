@@ -38,7 +38,7 @@ ListProjectDependants(){
 	fi
 	
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
-	if [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+	if [ "0" = "1" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2
@@ -61,7 +61,7 @@ ListProjectDependants(){
 		return 0
 	fi
 	
-	if [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
+	if [ "0" = "1" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
 		echo "ListProjectDependants: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand

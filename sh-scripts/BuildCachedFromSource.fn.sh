@@ -26,6 +26,7 @@ RebuildCachedFromSourceBuilderRaw(){
 		echo "BuildCachedFromSource: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "BuildCachedFromSource: ERROR: $( basename $BUILDER ) failed!" >&2
+		return 1
 	fi
 }
 
@@ -68,6 +69,9 @@ BuildCachedFromSource(){
 
 case "$0" in
 	*/sh-scripts/BuildCachedFromSource.fn.sh) 
+		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
+		DistroShellContext --distro-from-source
+		
 		BuildCachedFromSource "$@"
 	;;
 esac

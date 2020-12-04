@@ -23,7 +23,7 @@ ListProjectBuilders(){
 		echo "ListSourceProjectProvides: 'stageType' argument is required!" >&2 ; return 1
 	fi
 	if [ "$stageType" = "--all" ] ; then
-		for stageType in source-prepare source-process image-prepare image-share image-deploy ; do
+		for stageType in source-prepare source-process image-prepare image-process image-install ; do
 			ListProjectBuilders "$projectName" "$stageType" "$3"
 		done
 		return 0
@@ -44,7 +44,7 @@ ListProjectBuilders(){
 case "$0" in
 	*/sh-scripts/ListProjectBuilders.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectBuilders.fn.sh <project> <source-prepare|source-process|image-prepare|image-share|image-deploy>" >&2
+			echo "syntax: ListProjectBuilders.fn.sh <project> <source-prepare|source-process|image-prepare|image-process|image-install>" >&2
 			echo "syntax: ListProjectBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2

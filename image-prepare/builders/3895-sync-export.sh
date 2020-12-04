@@ -19,20 +19,31 @@ SyncExportsFromOutput(){
 
 	local EXPORT_DST="$MMDAPP/output/export/$DST"
 
+	if [ "0" = "1" ] && [ -f "$EXPORT_DST" ] ; then
+		if [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$EXPORT_DST" "+%Y%m%d%H%M%S"`" ] ; then
+			echo "SyncExportsFromOutput: "$SRC" skipped, present and fresh"
+			return 0
+		fi
+		if [ -e "$SOURCE_DIR/$SRC" ] && [ "$SOURCE_DIR/$SRC" -ot "$EXPORT_DST" ] ; then
+			echo "SyncExportsFromOutput: "$SRC" skipped, present and up to date"
+			return 0
+		fi
+	fi
+
 	if test -e "$CACHED_DIR/$SRC" ; then
 		printf 'sync-export: %s %s (cached) \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 		mkdir -p "`dirname "$EXPORT_DST"`"
 		rsync -ai --delete "$CACHED_DIR/$SRC" "$EXPORT_DST"
 		return 0
 	fi
-	
+
 	if test -e "$SOURCE_DIR/$SRC" ; then
 		printf 'sync-export: %s %s (source) \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 		mkdir -p "`dirname "$EXPORT_DST"`"
 		rsync -ai --delete "$SOURCE_DIR/$SRC" "$EXPORT_DST"
 		return 0
 	fi
-	
+
 	echo "ERROR: export file not found: $SRC" 
 }
 

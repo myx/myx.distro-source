@@ -123,7 +123,7 @@ ListDistroProjects(){
 				local selectProjects="` cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' `"
 			;;
 
-			--select-projects|--select-provides|--select-merged-provides|--select-keywords|--select-merged-keywords)
+			--select-projects|--select-provides|--select-merged-provides|--select-keywords|--select-merged-keywords|--select-repository-projects)
 				## Unions with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -142,7 +142,7 @@ ListDistroProjects(){
 					| awk '$0 && !x[$0]++' \
 				`"
 			;;
-			--filter-projects|--filter-provides|--filter-merged-provides|--filter-keywords|--filter-merged-keywords)
+			--filter-projects|--filter-provides|--filter-merged-provides|--filter-keywords|--filter-merged-keywords|--filter-repository-projects)
 				## Intersects with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -161,7 +161,7 @@ ListDistroProjects(){
 					| awk '$0 && !x[$0]++' \
 				`"
 			;;
-			--remove-projects|--remove-provides|--remove-merged-provides|--remove-keywords|--remove-merged-keywords)
+			--remove-projects|--remove-provides|--remove-merged-provides|--remove-keywords|--remove-merged-keywords|--remove-repository-projects)
 				## Subtracts from selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -300,6 +300,24 @@ ListDistroProjects(){
 				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '{print $1}' | awk '$1 && !x[$1]++'
 				return 0
 			;;
+			--repository-projects)
+				##
+				## Prints projects whose name matches the glob
+				##
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProjects: --repository-projects projectName filter is expected!" >&2
+					return 1
+				fi
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: ListDistroProjects: no options allowed after --repository-projects option" >&2
+					return 1
+				fi
+				local projectFilter="$1" ; shift
+
+				ListDistroProjects $useNoCache $useNoIndex --all-projects | grep -e "^$projectFilter/.*$"
+				return 0
+			;;
 
 
 
@@ -372,6 +390,7 @@ case "$0" in
 				echo "  Search:" >&2
 				echo "    --select-{all|sequence|changed|none} " >&2
 				echo "    --{select|filter|remove}-{projects|[merged-]provides|[merged-]keywords} <glob>" >&2
+				echo "    --{select|filter|remove}-repository-projects <repositoryName>" >&2
 				echo "  Examples:" >&2
 				
 				echo "    ListDistroProjects.fn.sh --distro-from-source --select-all 2> /dev/null | sort" >&2
