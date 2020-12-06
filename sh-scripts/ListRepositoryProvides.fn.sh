@@ -21,16 +21,6 @@ ListRepositoryProvides(){
 			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
 			return 0
 		;;
-		--internal-print-project-provides-filter)
-			shift
-			local FILTER="$1" ; shift
-			local projectName="$1" ; shift
-			local ITEM="$@"
-		 	if [ "$ITEM" != "${ITEM#${FILTER}:}" ] ; then
-				echo "$projectName ${ITEM#${FILTER}:}"
-			fi
-			return 0
-		;;
 	esac
 
 	local repositoryName="$1"
@@ -94,9 +84,13 @@ ListRepositoryProvides(){
 				fi
 				local filterProvides="$1" ; shift
 
-				ListRepositoryProvides "$repositoryName" $useNoCache $useNoIndex "$@" | while read -r LINE ; do
-					ListRepositoryProvides --internal-print-project-provides-filter "$filterProvides" $LINE
-				done
+				local filterProvides="$1" projectName projectProvides ; shift
+				ListRepositoryProvides "$repositoryName" $useNoCache $useNoIndex "$@" \
+				| while read -r projectName projectProvides ; do
+				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
+						echo "$projectName ${projectProvides#${filterProvides}:}"
+					fi
+				done | awk '!x[$0]++'
 				return 0
 			;;
 			--no-cache)

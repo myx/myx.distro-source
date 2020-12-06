@@ -45,19 +45,18 @@ ListProjectProvides(){
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListProjectProvides: project provides filter is expected!" >&2 ; return 1
 				fi
-				local filterProvides="$1" ; shift
+				local filterProvides="$1" projectProvides ; shift
 
-				for ITEM in $( ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" ) ; do
-					if [ "$ITEM" != "${ITEM#${filterProvides}:}" ] ; then
-						echo $projectName ${ITEM#${filterProvides}:} 
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" \
+				| while read -r projectProvides ; do
+				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
+						echo "$projectName ${projectProvides#${filterProvides}:}"
 					fi
-				done
+				done | awk '!x[$0]++'
 				return 0
-				;;
-			
+			;;
 			--merge-sequence)
 				shift
-
 				Require ListProjectSequence
 
 				if [ -z "$1" ] ; then
@@ -65,29 +64,27 @@ ListProjectProvides(){
 					return 0
 				fi
 
-				for sequenceProjectName in $( ListProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
+				local sequenceProjectName
+				ListProjectSequence "$projectName" $useNoCache $useNoIndex \
+				| while read -r sequenceProjectName ; do
 					ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex "$@"
 				done | awk '!x[$0]++'	
 				return 0
-				;;
-				
+			;;
 			--no-cache)
 				shift
 				local useNoCache="--no-cache"
-				;;
-
+			;;
 			--no-index)
 				shift
 				local useNoIndex="--no-index"
-				;;
-
+			;;
 			'')
 				break;
-				;;
-
+			;;
 			*)
 				echo "ListProjectProvides: invalid option: $1" >&2 ; return 1
-				;;
+			;;
 		esac
 	done
 

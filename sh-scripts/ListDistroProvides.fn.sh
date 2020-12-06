@@ -19,17 +19,6 @@ ListDistroProvides(){
 	set -e
 
 	case "$1" in
-		--internal-print-project-provides-filter)
-			# <filter> <project> <provide> [<provide>...]
-			shift
-			local FILTER="$1" ; shift
-			local projectName="$1" ; shift
-			local ITEM="$@"
-		 	if [ "$ITEM" != "${ITEM#${FILTER}:}" ] ; then
-				echo "$projectName ${ITEM#${FILTER}:}"
-			fi
-			return 0
-		;;
 		--all-provides|--all-provides-merged|--add-*-column)
 		;;
 		--explicit-noop)
@@ -341,10 +330,12 @@ ListDistroProvides(){
 					echo "ERROR: ListDistroProvides: project provides filter is expected!" >&2
 					return 1
 				fi
-				local filterProvides="$1" ; shift
-
-				ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides | while read -r LINE ; do
-					ListDistroProvides --internal-print-project-provides-filter $filterProvides $LINE
+				local filterProvides="$1" projectName projectProvides ; shift
+				ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
+				| while read -r projectName projectProvides ; do
+				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
+						echo "$projectName ${projectProvides#${filterProvides}:}"
+					fi
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -419,6 +410,10 @@ case "$0" in
 				echo "    ListDistroProvides.fn.sh --select-merged-provides source-process: 2> /dev/null" >&2
 				echo "    ListDistroProvides.fn.sh --select-merged-provides source-process: --merge-sequence 2> /dev/null" >&2
 				echo "    ListDistroProvides.fn.sh --select-merged-keywords l6 --filter-projects myx --merge-sequence 2> /dev/null" >&2
+				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut source-prepare" >&2
+				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut source-process" >&2
+				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-prepare" >&2
+				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-install" >&2
 			fi
 			exit 1
 		fi
