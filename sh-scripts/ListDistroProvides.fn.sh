@@ -233,10 +233,10 @@ ListDistroProvides(){
 				done | awk '!x[$0]++'
 				return 0
 			;;
-			--add-own-provides-column)
-				shift
+			--add-own-provides-column|--filter-own-provides-column)
+				local lastOperation=$1 ; shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: project provides filter is expected!" >&2
+					echo "ERROR: ListDistroProvides: $lastOperation project provides filter is expected!" >&2
 					return 1
 				fi
 				local columnMatcher="$1" ; shift
@@ -265,16 +265,25 @@ ListDistroProvides(){
 					;;
 				esac
 				
-				local indexColumns="` join -11 -21 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) | awk '$0 && !x[$0]++' `"
+				case "$lastOperation" in
+					--add-own-provides-column)
+						# -e'-' -o "1.*,2.*"
+						local indexColumns="` join -a 1 -11 -21 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) | awk '$0 && !x[$0]++' `"
+					;;
+					--filter-own-provides-column)
+						local indexColumns="` join -11 -21 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) | awk '$0 && !x[$0]++' `"
+					;;
+				esac
+				
 				if [ -z "$indexColumns" ] ; then
-					echo "ERROR: ListDistroProvides: --add-provides-column no projects selected!" >&2
+					echo "ERROR: ListDistroProvides: $lastOperation no projects selected!" >&2
 					return 1
 				fi
 			;;
-			--add-merged-provides-column)
-				shift
+			--add-merged-provides-column|--filter-merged-provides-column)
+				local lastOperation=$1 ; shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: project provides filter is expected!" >&2
+					echo "ERROR: ListDistroProvides: $lastOperation project provides filter is expected!" >&2
 					return 1
 				fi
 				local columnMatcher="$1" ; shift
@@ -303,9 +312,18 @@ ListDistroProvides(){
 					;;
 				esac
 
-				local indexColumns="` join <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
+				case "$lastOperation" in
+					--add-merged-provides-column)
+						# -e'-' -o "1.+,2.+" 
+						local indexColumns="` join -a 1 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
+					;;
+					--filter-merged-provides-column)
+						local indexColumns="` join <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
+					;;
+				esac
+				
 				if [ -z "$indexColumns" ] ; then
-					echo "ERROR: ListDistroProvides: --add-merged-provides-column no projects selected!" >&2
+					echo "ERROR: ListDistroProvides: $lastOperation no projects selected!" >&2
 					return 1
 				fi
 			;;
