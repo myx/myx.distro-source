@@ -52,6 +52,19 @@ Default build steps:
 Default 'install' 
 
 
+----------------
+	--source-prepare: \
+	--source-prepare:increment: \
+	--source-process: \
+	--source-publish: \ ? --source-process:publish:
+	--image-prepare: \
+	--image-publish: \
+	--image-install: \
+	--image-upgrade: \
+	--deploy-prepare: \
+	--deploy-export: \
+	--execute-remote: \
+----------------
 
 
 Commands:

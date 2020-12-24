@@ -184,8 +184,8 @@ case "$0" in
 				echo "    ListRepositoryProvides.fn.sh myx --filter-projects clean | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh prv --filter-projects myx --filter-projects l6b2 --no-cache --no-index | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh prv --filter deploy-ssh-target 2> /dev/null | sort" >&2
-				echo "    ListRepositoryProvides.fn.sh prv --filter deploy-l6route-config 2> /dev/null | sort" >&2
-				echo "    ListRepositoryProvides.fn.sh --distro-source-only prv --filter deploy-l6route-config 2> /dev/null | sort" >&2
+				echo "    ListRepositoryProvides.fn.sh prv --filter image-execute:deploy-l6route-config 2> /dev/null | sort" >&2
+				echo "    ListRepositoryProvides.fn.sh --distro-source-only prv --filter image-execute:deploy-l6route-config 2> /dev/null | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh ndm --print-project --merge-sequence --filter deploy-keyword" >&2
 			fi
 			exit 1

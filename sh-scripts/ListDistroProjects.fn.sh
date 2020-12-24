@@ -407,7 +407,7 @@ case "$0" in
 				echo "    ListDistroProjects.fn.sh --select-merged-provides deploy-keyword:l6 --filter-provides deploy-ssh-target: 2> /dev/null | sort" >&2
 
 				echo "    ListDistroProjects.fn.sh --projects ndss | sort" >&2
-				echo "    ListDistroProjects.fn.sh --provides deploy-l6route-config: | sort" >&2
+				echo "    ListDistroProjects.fn.sh --provides image-execute:deploy-l6route-config: | sort" >&2
 				echo "    ListDistroProjects.fn.sh --provides deploy-keyword:l6 | sort" >&2
 				echo "    ListDistroProjects.fn.sh --keywords deploy-keyword:l6 | sort" >&2
 			fi

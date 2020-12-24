@@ -422,8 +422,8 @@ case "$0" in
 				echo "    ListDistroProvides.fn.sh --select-keywords myx | sort" >&2
 				echo "    ListDistroProvides.fn.sh --select-keywords l6 | sort" >&2
 				echo "    ListDistroProvides.fn.sh --select-provides deploy-ssh-target: 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-merged-provides deploy-l6route-config: 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --distro-source-only --select-merged-provides deploy-l6route-config 2> /dev/null | sort" >&2
+				echo "    ListDistroProvides.fn.sh --select-merged-provides image-execute:deploy-l6route-config: 2> /dev/null | sort" >&2
+				echo "    ListDistroProvides.fn.sh --distro-source-only --select-merged-provides image-execute:deploy-l6route-config 2> /dev/null | sort" >&2
 				echo "    ListDistroProvides.fn.sh --select-projects l6b2 --merge-sequence 2> /dev/null" >&2
 				echo "    ListDistroProvides.fn.sh --select-merged-provides source-process: 2> /dev/null" >&2
 				echo "    ListDistroProvides.fn.sh --select-merged-provides source-process: --merge-sequence 2> /dev/null" >&2
