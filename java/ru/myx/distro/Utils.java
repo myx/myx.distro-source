@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
@@ -78,7 +79,12 @@ public class Utils {
 	    return false;
 	}
 	{
-	    final Path tempFile = Files.createTempFile(path.getParent(), path.getFileName().toString(), "");
+	    final Path tempFile = Files.createTempFile(//
+		    path.getParent(), //
+		    path.getFileName().toString(), //
+		    "", //
+		    PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwx---"))//
+	    );
 	    Files.write(tempFile, //
 		    contents, //
 		    StandardOpenOption.CREATE, //
