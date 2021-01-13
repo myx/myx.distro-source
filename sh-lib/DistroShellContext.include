@@ -91,11 +91,11 @@ if [ -z "$MDSC_ORIGIN" ] ; then
 
 	export MDSC_DETAIL
 
-	if [ -z "$MDSC_ORIGIN" ] && [ -d "$MMDAPP/distro/myx/myx.distro-source/sh-lib" ] ; then
-		MDSC_ORIGIN="$MMDAPP/distro/myx/myx.distro-source/sh-lib"
+	if [ -z "$MDSC_ORIGIN" ] && [ -d "$MMDAPP/source/myx/myx.distro-source/sh-lib" ] ; then
+		MDSC_ORIGIN="$MMDAPP/source/myx/myx.distro-source/sh-lib"
 	fi
-	if [ -z "$MDSC_ORIGIN" ] && [ -d "$MMDAPP/source/myx/myx.distro-deploy/sh-lib" ] ; then
-		MDSC_ORIGIN="$MMDAPP/source/myx/myx.distro-deploy/sh-lib"
+	if [ -z "$MDSC_ORIGIN" ] && [ -d "$MMDAPP/distro/myx/myx.distro-deploy/sh-lib" ] ; then
+		MDSC_ORIGIN="$MMDAPP/distro/myx/myx.distro-deploy/sh-lib"
 	fi
 
 	export MDSC_ORIGIN
