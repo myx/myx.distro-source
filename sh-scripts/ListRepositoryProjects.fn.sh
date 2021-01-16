@@ -4,13 +4,13 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 ListRepositoryProjectsInternalRecursionEchoProjects(){
 	local PKG_PATH="$1"
 	
-	[ -z "$PKG_PATH" ] && echo '$PKG_PATH' is not set! >&2 && return 1
+	[ -z "$PKG_PATH" ] && echo 'ERROR: $PKG_PATH' is not set! >&2 && return 1
 	
 	[ ! -d "$PKG_PATH" ] && return 0
 	
@@ -33,7 +33,7 @@ ListRepositoryProjects(){
 	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryProjects $@" >&2
 
 	local repositoryName="${1#$MDSC_SOURCE/}"
-	[ -z "$repositoryName" ] && echo '$repositoryName' is not set! >&2 && return 1
+	[ -z "$repositoryName" ] && echo 'ERROR: $repositoryName' is not set! >&2 && return 1
 	
 	if [ "$2" = "--no-cache" ] ; then
 		shift

@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && return 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -39,7 +39,7 @@ ListDistroSequence(){
 				;;
 
 			*)
-				echo "ListDistroSequence: invalid option: $1" >&2 ; return 1
+				echo "ERROR: ListDistroSequence: invalid option: $1" >&2 ; return 1
 				;;
 		esac
 	done
@@ -48,7 +48,7 @@ ListDistroSequence(){
 		--all)
 			shift
 			if [ ! -z "$1" ] ; then
-				echo "ListDistroSequence: no options allowed after --all option ($MDSC_OPTION, $@)" >&2
+				echo "ERROR: ListDistroSequence: no options allowed after --all option ($MDSC_OPTION, $@)" >&2
 				return 1
 			fi
 
@@ -101,13 +101,13 @@ ListDistroSequence(){
 				return 0
 			fi
 			
-			echo "ListDistroSequence: can't list distro sequence (mode: $MDSC_INMODE)" >&2 ; return 1
+			echo "ERROR: ListDistroSequence: can't list distro sequence (mode: $MDSC_INMODE)" >&2 ; return 1
 			;;
 
 		--all-projects)
 			shift
 			if [ ! -z "$1" ] ; then
-				echo "ListDistroSequence: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
+				echo "ERROR: ListDistroSequence: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 				return 1
 			fi
 

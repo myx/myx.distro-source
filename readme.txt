@@ -53,18 +53,30 @@ Default 'install'
 
 
 ----------------
-	--source-prepare: \
+	--source-prepare: \ "source"
 	--source-prepare:increment: \
-	--source-process: \
+	--source-process: \ "source" -> "cached"
 	--source-publish: \ ? --source-process:publish:
-	--image-prepare: \
-	--image-publish: \
+	--image-prepare: \ "source" + "cached" -> "distro"
+	--image-process: \
+	--image-publish: \ ? --image-process:publish:
+	--image-receive: \ pull "distro" without having source
 	--image-install: \
 	--image-upgrade: \
 	--deploy-prepare: \
 	--deploy-export: \
-	--execute-remote: \
+	--deploy-settings: \
+	--deploy-reinstall: \
+	--deploy-actions: \
+	--execute-remote: \ ? --deploy-settings:execute-command:
+	--monitor-checks: \
 ----------------
+
+
+	image-install:exec-update-before:host/install/<installOrUpdateScriptName> \
+	image-prepare:sync-source-files:<projectName>:<directoryPath>:<targetLocation> \
+	image-install:deploy-patch-script:cloud.ndm/setup.common-ndns.ndm:host/scripts/ndns.ndm-patch-on-deploy.txt \
+
 
 
 Commands:

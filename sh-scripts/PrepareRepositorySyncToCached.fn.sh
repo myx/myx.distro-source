@@ -4,11 +4,11 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "`which rsync`" ] ; then
-	echo "$0: rsync is required!" >&2
+	echo "ERROR: $0: rsync utility is required!" >&2
 	exit 1
 fi
 
@@ -26,7 +26,7 @@ Require ListRepositoryProjects
 PrepareRepositorySyncToCached(){
 	local repositoryName="${1#$MMDAPP/source/}"
 	if [ -z "$repositoryName" ] ; then
-		echo "PrepareRepositorySyncToCached: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: PrepareRepositorySyncToCached: 'repositoryName' argument is required!" >&2 ; return 1
 	fi
 	
 	mkdir -p "$MMDAPP/cached/sources/$repositoryName"

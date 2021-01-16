@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 
@@ -17,7 +17,7 @@ fi
 ListSourceProjectProvides(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ListSourceProjectProvides: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListSourceProjectProvides: 'projectName' argument is required!" >&2 ; return 1
 	fi
 
 	Require DistroSourceCommand

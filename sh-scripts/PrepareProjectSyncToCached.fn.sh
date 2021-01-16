@@ -4,11 +4,11 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "`which rsync`" ] ; then
-	echo "$0: rsync is required!" >&2
+	echo "ERROR: $0: rsync utility is required!" >&2
 	exit 1
 fi
 
@@ -20,7 +20,7 @@ PrepareProjectSyncToCached(){
 	
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local projectSrc="$MMDAPP/source/$projectName"

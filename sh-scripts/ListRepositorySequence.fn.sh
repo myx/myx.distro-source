@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && return 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -18,7 +18,7 @@ ListRepositorySequence(){
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
-		echo "ListRepositorySequence: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListRepositorySequence: 'repositoryName' argument is required!" >&2 ; return 1
 	fi
 	shift
 
@@ -43,7 +43,7 @@ ListRepositorySequence(){
 				;;
 
 			*)
-				echo "ListRepositorySequence: invalid option: $1" >&2 ; return 1
+				echo "ERROR: ListRepositorySequence: invalid option: $1" >&2 ; return 1
 				;;
 		esac
 	done
@@ -102,7 +102,7 @@ ListRepositorySequence(){
 		return 0
 	fi
 	
-	echo "ListRepositorySequence: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListRepositorySequence: project.inf file is required (at: $indexFile)" >&2 ; return 1
 }
 
 case "$0" in

@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -18,7 +18,7 @@ Require ListProjectBuilders
 ListDistroBuilders(){
 	local stageType="$1"
 	if [ -z "$1" ] ; then
-		echo "ListDistroBuilders: 'stageType' argument is required!" >&2 ; return 1
+		echo "ERROR: ListDistroBuilders: 'stageType' argument is required!" >&2 ; return 1
 	fi
 	local projectName
 	for projectName in ` ListDistroProjects --all-projects ` ; do

@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && return 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -15,7 +15,7 @@ fi
 ListProjectDependants(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ListProjectDependants: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListProjectDependants: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	shift
 
@@ -75,7 +75,7 @@ ListProjectDependants(){
 		return 0
 	fi
 	
-	echo "ListProjectDependants: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListProjectDependants: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
 }
 
 case "$0" in
@@ -84,7 +84,7 @@ case "$0" in
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
 
-		echo "ListProjectDependants: not implemented?" >&2 ; exit 1
+		echo "ERROR: ListProjectDependants: not implemented?" >&2 ; exit 1
 
 		ListProjectDependants "$@"
 	;;

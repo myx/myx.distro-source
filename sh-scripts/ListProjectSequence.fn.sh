@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && return 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -18,7 +18,7 @@ ListProjectSequence(){
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ListProjectSequence: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListProjectSequence: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	shift
 
@@ -83,7 +83,7 @@ ListProjectSequence(){
 				break;
 			;;
 			*)
-				echo "ListProjectSequence: invalid option: $1" >&2 ; return 1
+				echo "ERROR: ListProjectSequence: invalid option: $1" >&2 ; return 1
 			;;
 		esac
 	done
@@ -143,7 +143,7 @@ ListProjectSequence(){
 		return 0
 	fi
 	
-	echo "ListProjectSequence: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListProjectSequence: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
 }
 
 case "$0" in

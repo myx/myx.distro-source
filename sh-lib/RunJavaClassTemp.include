@@ -1,4 +1,4 @@
-[ -z "$MMDAPP" ] && echo '$MMDAPP' is not set! >&2 && exit 1
+[ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
 
 RunJavaClassTemp(){
 	set -e
@@ -8,7 +8,7 @@ RunJavaClassTemp(){
 	
 	export TMP_DIR="`mktemp -d "/tmp/java-run-XXXXXXX"`"
 	if [ $? -ne 0 ]; then
-		echo "Can't make temporary install directory $TMP_DIR, exiting..."
+		echo "ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
 		return 1
 	fi
 

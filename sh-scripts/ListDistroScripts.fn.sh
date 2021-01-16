@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 ListDistroScripts(){
@@ -36,7 +36,7 @@ ListDistroScripts(){
 			local MDTYPE="$1" ; shift
 			local MDPATH="$MMDAPP/source/myx/myx.distro-$MDTYPE/sh-scripts"
 			if [ ! -d "$MDPATH" ] ; then
-				echo "ListDistroScripts: invalid type: $MDTYPE" >&2
+				echo "ERROR: ListDistroScripts: invalid type: $MDTYPE" >&2
 				return 1
 			fi
 			local FILTER="$MDPATH/"

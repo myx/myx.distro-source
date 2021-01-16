@@ -1,9 +1,9 @@
-[ -z "$MMDAPP" ] && echo '$MMDAPP' is not set! >&2 && exit 1
+[ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
 
 CompileCachedJavaProject(){
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	echo "Compiling project $projectName" >&2

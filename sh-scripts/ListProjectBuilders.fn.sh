@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -16,11 +16,11 @@ fi
 ListProjectBuilders(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ListSourceProjectProvides: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListSourceProjectProvides: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	local stageType="$2"
 	if [ -z "$stageType" ] ; then
-		echo "ListSourceProjectProvides: 'stageType' argument is required!" >&2 ; return 1
+		echo "ERROR: ListSourceProjectProvides: 'stageType' argument is required!" >&2 ; return 1
 	fi
 	if [ "$stageType" = "--all" ] ; then
 		for stageType in source-prepare source-process image-prepare image-process image-install ; do

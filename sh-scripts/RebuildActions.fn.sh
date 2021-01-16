@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -24,7 +24,7 @@ RebuildActions(){
 
 	local TMP_DIR="$(mktemp -d -t "rebuild-actions-")"
 	if [ $? -ne 0 ]; then
-		echo "Can't make temporary install directory $TMP_DIR, exiting..."
+		echo "ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
 		return 1
 	fi
 	echo "Using temporary install directory: $TMP_DIR"

@@ -10,11 +10,13 @@ echo "MDSC_CACHED: $MDSC_CACHED" >&2
 echo "MDSC_OUTPUT: $MDSC_OUTPUT" >&2
 
 if [ -z "$BUILD_STAMP" ] ; then
-	echo "ERROR: BUILD_STAMP is invalid or not set!" >&2 ; return 1
+	echo "ERROR: BUILD_STAMP is invalid or not set!" >&2
+	return 1
 fi
 
 if [ -z "$MDSC_SOURCE" ] || [ "$MDSC_SOURCE" != "$MMDAPP/source" ] ; then
-	echo "ERROR: MDSC_SOURCE is invalid or not set!" >&2 ; return 1
+	echo "ERROR: MDSC_SOURCE is invalid or not set!" >&2
+	return 1
 fi
 
 if [ ! -d "$MDSC_SOURCE" ] ; then

@@ -1,7 +1,7 @@
 CompileJavaSources(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "MakeProjectSourceArchive: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: MakeProjectSourceArchive: 'projectName' argument is required!" >&2 ; return 1
 	fi
 
 	( \
