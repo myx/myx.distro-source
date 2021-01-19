@@ -117,9 +117,7 @@ case "$0" in
 		# DistroSourceCommand.fn.sh --import-from-source --select-providers ndm/location-c1 --print-selected 2> /dev/null
 		# DistroSourceCommand.fn.sh --import-from-cached --select-providers ndm/location-c1 --print-selected 2> /dev/null
 		
-		DistroSourceCommand \
-			"$@" \
-			--print ''
+		DistroSourceCommand "$@" --print ''
 	;;
 esac
 

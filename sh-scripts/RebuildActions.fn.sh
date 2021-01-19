@@ -93,7 +93,7 @@ RebuildActions(){
 		done
 	done	
 	
-	rsync -rltoDC `[ "--no-delete" == "$1" ] || echo "--delete"` --chmod=ug+rw --omit-dir-times "$TMP_DIR/" "$MMDAPP/actions"
+	rsync -rltoDC $( [ "--no-delete" == "$1" ] || echo "--delete" ) --chmod=ug+rwx --omit-dir-times "$TMP_DIR/" "$MMDAPP/actions"
 	rm -rf "$TMP_DIR"
 }
 
