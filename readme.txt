@@ -24,7 +24,7 @@ App Folders:
 Project Files & Folders:
 
 project.inf - project description file
-actions/** - usable actions (predefined parameters for other scripts
+actions/** - usable actions (predefined parameters for other scripts)
 source-prepare/builders/* - builders to work on project sets while building source-prepare
 source-process/builders/* - builders to work on project sets while building source-process
 image-prepare/builders/* - builders to work on project sets while building image-prepare
@@ -71,11 +71,6 @@ Default 'install'
 	--execute-remote: \ ? --deploy-settings:execute-command:
 	--monitor-checks: \
 ----------------
-
-
-	image-install:exec-update-before:host/install/<installOrUpdateScriptName> \
-	image-prepare:sync-source-files:<projectName>:<directoryPath>:<targetLocation> \
-	image-install:deploy-patch-script:cloud.ndm/setup.common-ndns.ndm:host/scripts/ndns.ndm-patch-on-deploy.txt \
 
 
 
