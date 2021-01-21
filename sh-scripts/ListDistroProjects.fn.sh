@@ -131,7 +131,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				if [ -z "$MDSC_IDAPRV" ] ; then
+				if [ -z "${MDSC_IDAPRV:0:1}" ] ; then
 					Require ListDistroProvides
 					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
 				fi
@@ -150,9 +150,9 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				if [ -z "$MDSC_IDOPRV" ] ; then
+				if [ -z "${MDSC_IDAPRV:0:1}" ] ; then
 					Require ListDistroProvides
-					ListDistroProvides --set-env MDSC_IDOPRV --all-provides
+					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
 				fi
 				local selectProjects="` \
 					grep -Fx -f \
@@ -169,9 +169,9 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				if [ -z "$MDSC_IDOPRV" ] ; then
+				if [ -z "${MDSC_IDAPRV:0:1}" ] ; then
 					Require ListDistroProvides
-					ListDistroProvides --set-env MDSC_IDOPRV --all-provides
+					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
 				fi
 				local selectProjects="` \
 					grep -Fvx -f \

@@ -66,12 +66,12 @@ ListDistroProvides(){
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					if [ ! -z "$MDSC_IDOPRV" ] ; then
+					if [ ! -z "${MDSC_IDOPRV:0:1}" ] ; then
 						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDOPRV"
 						return 0
 					fi
-					if [ ! -z "$MDSC_IDAPRV" ] ; then 
+					if [ ! -z "${MDSC_IDAPRV:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using --all-provides-merged ($MDSC_OPTION)" >&2
 						export MDSC_IDOPRV="` echo "$MDSC_IDAPRV" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDOPRV"
@@ -134,6 +134,8 @@ ListDistroProvides(){
 					return 0
 				fi
 				
+				echo "| ListDistroProvides: --all-provides extracting from source (shell) ($MDSC_OPTION)" >&2
+
 				Require ListAllRepositories
 				Require ListRepositoryProvides
 			
@@ -152,7 +154,7 @@ ListDistroProvides(){
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					if [ ! -z "$MDSC_IDAPRV" ] ; then 
+					if [ ! -z "${MDSC_IDAPRV:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides-merged using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDAPRV"
 						return 0
@@ -223,6 +225,8 @@ ListDistroProvides(){
 					join -o 2.1,1.1,1.2 -1 1 -2 2 <( echo "$indexProvides" ) <( echo "$indexSequence" ) | sort
 					return 0
 				fi
+
+				echo "| ListDistroProvides: --all-provides-merged extracting from source (shell) ($MDSC_OPTION)" >&2
 
 				Require ListDistroSequence
 				Require ListProjectProvides
