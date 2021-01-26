@@ -16,7 +16,7 @@ Require ListAllActions
 Action(){
 	local actionCommand="$1" ; shift
 	if [ -z "$actionCommand" ] ; then
-		. "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpAction.include"
+		( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpAction.include" )
 		return 1
 	fi
 	case "$actionCommand" in
@@ -39,7 +39,7 @@ Action(){
 Deploy(){
 	local distroCommand="$1" ; shift
 	if [ -z "$distroCommand" ] ; then
-		. "$MDSC_SOURCE/myx/myx.distro-deploy/sh-lib/HelpDeploy.include"
+		( . "$MDSC_SOURCE/myx/myx.distro-deploy/sh-lib/HelpDeploy.include" )
 		return 1
 	fi
 	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
@@ -53,7 +53,7 @@ Deploy(){
 Source(){
 	local distroCommand="$1" ; shift
 	if [ -z "$distroCommand" ] ; then
-		. "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpSource.include"
+		( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpSource.include" )
 		return 1
 	fi
 	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
