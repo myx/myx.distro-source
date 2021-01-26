@@ -24,16 +24,23 @@ Require PrepareProjectSyncToCached
 Require ListRepositoryProjects
 
 PrepareRepositorySyncToCached(){
+	set -e
+
+	local MDSC_CMD='PrepareRepositorySyncToCached'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	
 	local repositoryName="${1#$MMDAPP/source/}"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: PrepareRepositorySyncToCached: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'repositoryName' argument is required!" >&2
+		return 1
 	fi
 	
 	mkdir -p "$MMDAPP/cached/sources/$repositoryName"
 	rsync -a -i --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf"
 
-	for PKG in `ListRepositoryProjects "$repositoryName"` ; do
-		Prefix "`basename $PKG`" PrepareProjectSyncToCached "$PKG"
+	local packageName
+	for packageName in `ListRepositoryProjects "$repositoryName"` ; do
+		Prefix "`basename $packageName`" PrepareProjectSyncToCached "$packageName"
 	done
 }
 

@@ -1,12 +1,17 @@
 [ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
 
 CompileCachedJavaProject(){
+
+	local MDSC_CMD='CompileCachedJavaProject'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		return 1
 	fi
 	
-	echo "Compiling project $projectName" >&2
+	echo "$MDSC_CMD: Compiling project $projectName" >&2
 	
 	( \
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;

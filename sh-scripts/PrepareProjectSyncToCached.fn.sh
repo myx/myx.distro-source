@@ -17,10 +17,13 @@ type Async >/dev/null 2>&1 || \
 
 PrepareProjectSyncToCached(){
 	set -e
+
+	local MDSC_CMD='PrepareProjectSyncToCached'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 	
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: PrepareProjectSyncToCached: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local projectSrc="$MMDAPP/source/$projectName"
@@ -30,7 +33,7 @@ PrepareProjectSyncToCached(){
 
 	local projectChg="$MMDAPP/cached/changed/$projectName"
 	if [ -f "$projectChg" ] ; then
-		echo "already marked as changed." 
+		echo "already marked as changed." >&2 
 	fi
 	
 	if local ROUTPUT="`rsync -a -i --delete --exclude '.*' --exclude 'CVS' "$projectSrc/" "$projectDst"`" ; then

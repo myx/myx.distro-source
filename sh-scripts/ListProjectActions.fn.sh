@@ -13,28 +13,52 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListProjectActions(){
-	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 
-	local CUT
-	if [ "$1" = "--completion" ] ; then
-		shift
-		local CUT="${1#$MDSC_SOURCE/}/actions/"
-	else
-		local CUT=""
-	fi
+	local MDSC_CMD='ListProjectActions'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
+	local forCompletion=""
+	while true ; do
+		case "$1" in
+			--completion)
+				shift
+				local forCompletion="true"
+			;;
+			*)
+				break
+			;;
+		esac
+	done
 
 	local projectName="${1#$MDSC_SOURCE/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListProjectActions: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		return 1
+	fi
+
+	local findLocations=""
+	
+	[ ! -d "$MDSC_SOURCE/$projectName/actions" ] \
+	|| local findLocations="$findLocations \"$MDSC_SOURCE/$projectName/actions\""
+	
+	[ "$MDSC_SOURCE" = "$MMDAPP/source" ] \
+	|| [ ! -d "$MMDAPP/source/$projectName/actions" ] \
+	|| local findLocations="$findLocations \"$MMDAPP/source/$projectName/actions\""
+
+	if [ -z "${findLocations:0:1}" ] ; then
+		return 0
 	fi
 	
-
-	( \
-		[ -d "$MDSC_SOURCE/$projectName/actions" ] && \
-			( find "$MDSC_SOURCE/$projectName/actions" -mindepth 1 -type f -not -name '.*' | sed "s:^$MDSC_SOURCE/$CUT::g" ) ; \
-		[ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -d "$MMDAPP/source/$projectName/actions" ] && \
-			( find "$MMDAPP/source/$projectName/actions" -mindepth 1 -type f -not -name '.*' | sed "s:^$MMDAPP/source/$CUT::g" ) \
-	) | sort | uniq
+	if [ ! -z "$forCompletion" ] ; then
+		local sedEx="-e \"s:^$MMDAPP/source/$projectName/actions/::g\" -e \"s:^$MDSC_SOURCE/$projectName/actions/::g\""
+	else
+		local sedEx="-e \"s:^$MMDAPP/source/::g\" -e \"s:^$MDSC_SOURCE/::g\""
+	fi
+	
+	[ "full" != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
+	eval "find $findLocations -mindepth 1 -type f -not -name '.*'" | eval sed $sedEx | sort | uniq
+	return 0
 }
 
 case "$0" in

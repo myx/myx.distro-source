@@ -17,9 +17,13 @@ Require PrepareRepositorySyncToCached
 
 
 PrepareDistroSyncToCached(){
+	[ -z "$MDSC_DETAIL" ] || echo "> PrepareDistroSyncToCached $@" >&2
+
 	if [ "$MDSC_INMODE" = "source" ] ; then
-		for REPO in $( ListAllRepositories ) ; do
-			Async -2 PrepareRepositorySyncToCached "$REPO"
+		local repositoryName
+		ListAllRepositories \
+		| while read -r repositoryName ; do
+			Async -2 PrepareRepositorySyncToCached "$repositoryName"
 		done
 		wait
 	else

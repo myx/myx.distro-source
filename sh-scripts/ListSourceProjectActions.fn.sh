@@ -9,11 +9,26 @@ fi
 
 
 ListSourceProjectActions(){
-	local ACT_PATH="$MMDAPP/source/${1#$MMDAPP/source/}/actions"
-	[ -d "$ACT_PATH" ] || return 0
-	for LINE in `find "$ACT_PATH" -mindepth 1 -type f | sort` ; do
-		echo "${LINE#$MMDAPP/source/}"
-	done
+
+	local MDSC_CMD='ListSourceProjectActions'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	# override to source, explicit
+	local MDSC_SOURCE="$MMDAPP/source"
+
+	local projectName="${1#$MDSC_SOURCE/}"
+	if [ -z "$projectName" ] ; then
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		return 1
+	fi
+	
+	( \
+	[ -d "$MDSC_SOURCE/$projectName/actions" ] && \
+		find "$MDSC_SOURCE/$projectName/actions" -mindepth 1 -type f \
+		| sed "s:^$MDSC_SOURCE/::g" \
+	) | sort
+	
+	return 0
 }
 
 case "$0" in
