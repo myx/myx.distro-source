@@ -13,8 +13,8 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListDistroProvides(){
-	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListDistroProvides $@" >&2
+	local MDSC_CMD='ListDistroProvides'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	set -e
 
@@ -27,18 +27,18 @@ ListDistroProvides(){
 		--select-from-env)
 			shift
 			if [ -z "$MDSC_SELECT_PROJECTS" ] ; then
-				echo "ERROR: ListDistroProvides: --select-from-env no projects selected!" >&2
+				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
 				return 1
 			fi
 		;;
 		--set-env)
 			shift
 			if [ -z "$1" ] ; then
-				echo "ERROR: ListDistroProvides: --set-env argument expected!" >&2
+				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
 				return 1
 			fi
 			local envName="$1" ; shift
-			eval "$envName='` ListDistroProvides --explicit-noop "$@" `'"
+			eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
 			return 0
 		;;
 		--*)
@@ -61,67 +61,66 @@ ListDistroProvides(){
 			--all-provides)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
+					echo "ERROR: $MDSC_CMD: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
 					return 1
 				fi
 
+				##
+				## check cache ready
+				##
 				if [ "$useNoCache" != "--no-cache" ] ; then
 					if [ ! -z "${MDSC_IDOPRV:0:1}" ] ; then
-						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using env-cached ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDOPRV"
 						return 0
 					fi
 					if [ ! -z "${MDSC_IDAPRV:0:1}" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using --all-provides-merged ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using --all-provides-merged ($MDSC_OPTION)" >&2
 						export MDSC_IDOPRV="` echo "$MDSC_IDAPRV" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDOPRV"
 						return 0
 					fi
 					if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-provides.txt"
-						
-						if [ -f "$cacheFile" ] && \
-							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
-						then
-							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using cached ($MDSC_OPTION)" >&2
+						if [ -f "$cacheFile" ] && ( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
 						fi
 			
-						echo "| ListDistroProvides: --all-provides caching projects ($MDSC_OPTION)" >&2
-						export MDSC_IDOPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides `"
-						echo "$MDSC_IDOPRV" > "$cacheFile"
-						cat "$cacheFile"
+						##
+						## Build cache index file, no MDSC_IDxxx variables
+						##
+						echo "| $MDSC_CMD: --all-provides caching projects ($MDSC_OPTION)" >&2
+						ListDistroProvides --explicit-noop --no-cache --all-provides | tee "$cacheFile"
 						return 0
 					fi
 				fi
 	
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-							
-							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides using index" >&2
-							
-							local projectName
-							local extraText
-							grep -e "^PRJ-PRV-" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r projectName extraText ; do
-								echo "$extraText" | tr ' ' '\n' | sed -e "s:^:$projectName :"
-							done
-							
-							return 0
-						fi
+				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+						
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using index" >&2
+						
+						local projectName extraText
+						grep -e "^PRJ-PRV-" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' \
+						| while read -r projectName extraText ; do
+							echo "$extraText" | tr ' ' '\n' | sed -e "s:^:$projectName :"
+						done
+						
+						return 0
 					fi
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides env-caching projects ($MDSC_OPTION)" >&2
+					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDOPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides `"
 					echo "$MDSC_IDOPRV"
 					return 0
 				fi
 
 				if [ "$MDSC_INMODE" = "source" ] ; then
-					echo "| ListDistroProvides: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
+					echo "| $MDSC_CMD: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
 					
@@ -134,7 +133,7 @@ ListDistroProvides(){
 					return 0
 				fi
 				
-				echo "| ListDistroProvides: --all-provides extracting from source (shell) ($MDSC_OPTION)" >&2
+				echo "| $MDSC_CMD: --all-provides extracting from source (shell) ($MDSC_OPTION)" >&2
 
 				Require ListAllRepositories
 				Require ListRepositoryProvides
@@ -149,23 +148,38 @@ ListDistroProvides(){
 			--all-provides-merged)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
+					echo "ERROR: $MDSC_CMD: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
 					return 1
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
 					if [ ! -z "${MDSC_IDAPRV:0:1}" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides-merged using env-cached ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDAPRV"
 						return 0
 					fi
+					if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+						local cacheFile="$MDSC_CACHED/distro-merged-provides.txt"
+						if [ -f "$cacheFile" ] && ( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using cached ($MDSC_OPTION)" >&2
+							cat "$cacheFile"
+							return 0
+						fi
+			
+						##
+						## Build cache index file, no MDSC_IDxxx variables
+						##
+						echo "| $MDSC_CMD: --all-provides-merged caching projects ($MDSC_OPTION)" >&2
+						ListDistroProvides --explicit-noop --no-cache --all-provides-merged | tee "$cacheFile"
+						return 0
+					fi
 				fi
-	
+
 				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
-							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides-merged using index ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using index ($MDSC_OPTION)" >&2
 
 							local indexProvides="` \
 								grep -e "^PRJ-PRV-" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\\\:|:|g' \
@@ -193,14 +207,14 @@ ListDistroProvides(){
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProvides: --all-provides-megred env-caching projects ($MDSC_OPTION)" >&2
+					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-megred env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDAPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides-merged `"
 					echo "$MDSC_IDAPRV"
 					return 0
 				fi
 
 				if [ "$MDSC_INMODE" = "source" ] ; then
-					echo "| ListDistroProvides: --all-provides-merged extracting from source (java) ($MDSC_OPTION)" >&2
+					echo "| $MDSC_CMD: --all-provides-merged extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
 					
@@ -226,7 +240,7 @@ ListDistroProvides(){
 					return 0
 				fi
 
-				echo "| ListDistroProvides: --all-provides-merged extracting from source (shell) ($MDSC_OPTION)" >&2
+				echo "| $MDSC_CMD: --all-provides-merged extracting from source (shell) ($MDSC_OPTION)" >&2
 
 				Require ListDistroSequence
 				Require ListProjectProvides
@@ -240,7 +254,7 @@ ListDistroProvides(){
 			--add-own-provides-column|--filter-own-provides-column)
 				local lastOperation=$1 ; shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: $lastOperation project provides filter is expected!" >&2
+					echo "ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
 					return 1
 				fi
 				local columnMatcher="$1" ; shift
@@ -280,14 +294,14 @@ ListDistroProvides(){
 				esac
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "ERROR: ListDistroProvides: $lastOperation no projects selected!" >&2
+					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
 					return 1
 				fi
 			;;
 			--add-merged-provides-column|--filter-merged-provides-column)
 				local lastOperation=$1 ; shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: $lastOperation project provides filter is expected!" >&2
+					echo "ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
 					return 1
 				fi
 				local columnMatcher="$1" ; shift
@@ -327,14 +341,14 @@ ListDistroProvides(){
 				esac
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "ERROR: ListDistroProvides: $lastOperation no projects selected!" >&2
+					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
 					return 1
 				fi
 			;;
 			--merge-sequence)
 				shift
 				if [ -z "$MDSC_SELECT_PROJECTS" ] ; then
-					echo "ERROR: ListDistroProvides: --merge-sequence, no projects selected!" >&2
+					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
 					return 1
 				fi
 				
@@ -349,7 +363,7 @@ ListDistroProvides(){
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProvides: project provides filter is expected!" >&2
+					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2
 					return 1
 				fi
 				local filterProvides="$1" projectName projectProvides ; shift
@@ -384,11 +398,11 @@ ListDistroProvides(){
 					return 0
 				fi
 
-				echo "ERROR: ListDistroProvides: no projects selected!" >&2
+				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
 				return 1
 			;;
 			*)
-				echo "ERROR: ListDistroProvides: invalid option: $1" >&2
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
 				return 1
 			;;
 		esac
