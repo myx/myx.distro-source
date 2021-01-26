@@ -17,5 +17,8 @@ source-prepare, source-process, image-prepare commands:
 	image-prepare:clone-source-file:.:src/mpa192:page-default.html:page-$$$.html:$$$:200:201:204
 	image-prepare:clone-source-file:*:src/mpa192:page-default.html:page-$$$.html:$$$:200:201:204
 
-	image-prepare:target-patch-script:<sourceName>:host/scripts/<scriptName>:<targetHostPath>
-	image-prepare:target-patch-script:.:host/scripts/patch-on-deploy.txt:/usr/local/myservice/settings
+	image-prepare:target-patch-script:<scriptSourceName>:host/scripts/<scriptName>:<targetDeployPath>
+	image-prepare:target-patch-script:<scriptSourceName>:host/scripts/<scriptName>:<targetDeployPath>/*
+	image-prepare:target-patch-script:.:host/scripts/patch-on-deploy.txt:/data/settings/web
+	image-prepare:target-patch-script:.:host/scripts/patch-on-deploy.txt:/data/www/*
+	
