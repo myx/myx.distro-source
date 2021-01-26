@@ -13,8 +13,8 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListDistroSequence(){
-	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListDistroSequence $@" >&2
+	local MDSC_CMD='ListDistroSequence'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local useNoCache=""
 	local useNoIndex=""
@@ -39,7 +39,7 @@ ListDistroSequence(){
 				;;
 
 			*)
-				echo "ERROR: ListDistroSequence: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
 				;;
 		esac
 	done
@@ -48,7 +48,7 @@ ListDistroSequence(){
 		--all)
 			shift
 			if [ ! -z "$1" ] ; then
-				echo "ERROR: ListDistroSequence: no options allowed after --all option ($MDSC_OPTION, $@)" >&2
+				echo "ERROR: $MDSC_CMD: no options allowed after --all option ($MDSC_OPTION, $@)" >&2
 				return 1
 			fi
 
@@ -59,12 +59,12 @@ ListDistroSequence(){
 					if [ -f "$cacheFile" ] && \
 						( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 					then
-						[ -z "$MDSC_DETAIL" ] || echo "| ListDistroSequence: --all using cached ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all using cached ($MDSC_OPTION)" >&2
 						cat "$cacheFile"
 						return 0
 					fi
 
-					echo "ListDistroSequence: caching projects ($MDSC_OPTION)" >&2
+					echo "$MDSC_CMD: caching projects ($MDSC_OPTION)" >&2
 
 					ListDistroSequence --no-cache --all > "$cacheFile"
 					cat "$cacheFile"
@@ -76,7 +76,7 @@ ListDistroSequence(){
 				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 					if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
-						echo "ListDistroSequence: --all using index ($MDSC_OPTION)" >&2
+						echo "$MDSC_CMD: --all using index ($MDSC_OPTION)" >&2
 						
 						for ITEM in `grep "^PRJ-SEQ-" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
 							echo $ITEM
@@ -88,7 +88,7 @@ ListDistroSequence(){
 			fi
 			
 			if [ "$MDSC_INMODE" = "source" ] ; then
-				echo "ListDistroSequence: --all extracting from source (java) ($MDSC_OPTION)" >&2
+				echo "$MDSC_CMD: --all extracting from source (java) ($MDSC_OPTION)" >&2
 		
 				Require DistroSourceCommand
 				
@@ -101,13 +101,13 @@ ListDistroSequence(){
 				return 0
 			fi
 			
-			echo "ERROR: ListDistroSequence: can't list distro sequence (mode: $MDSC_INMODE)" >&2 ; return 1
+			echo "ERROR: $MDSC_CMD: can't list distro sequence (mode: $MDSC_INMODE)" >&2 ; return 1
 			;;
 
 		--all-projects)
 			shift
 			if [ ! -z "$1" ] ; then
-				echo "ERROR: ListDistroSequence: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
+				echo "ERROR: $MDSC_CMD: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 				return 1
 			fi
 
@@ -117,7 +117,7 @@ ListDistroSequence(){
 				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 					if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
-						echo "ListDistroSequence: --all-projects using index ($MDSC_OPTION)" >&2
+						echo "$MDSC_CMD: --all-projects using index ($MDSC_OPTION)" >&2
 
 						local sequenceProject
 						local projectSequence
@@ -136,7 +136,7 @@ ListDistroSequence(){
 			fi
 			
 			if [ "$MDSC_INMODE" = "source" ] ; then
-				echo "ListDistroProvides: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
+				echo "$MDSC_CMD: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
 		
 				Require DistroSourceCommand
 				
