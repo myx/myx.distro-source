@@ -5,6 +5,11 @@ Require DistroSourceCommand
 PrepareBuildDependencyIndex(){
 	mkdir -p "$MMDAPP/output/distro"
 	
+	# Require CompileCachedJavaProject
+	# CompileCachedJavaProject myx/myx.distro-deploy
+	
+	# if [ "0" = "1" ] ; then
+	
 	##
 	## temp? fix - java runtime compile doesn't work 
 	##
@@ -17,8 +22,8 @@ PrepareBuildDependencyIndex(){
 	for projectName in $projectList ; do
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
 		local projectSources="$MMDAPP/cached/sources/$projectName/java"
-		local javaClassPath="${javaClassPath:-"-classpath \""} $projectClasses"
-		local javaSourcePath="${javaSourcePath:-"-sourcepath \""} $projectSources"
+		local javaClassPath="$projectClasses;$javaClassPath"
+		local javaSourcePath="$projectSources;$javaSourcePath"
 	done
 	[ -z "$javaClassPath" ] || local javaClassPath="$javaClassPath\""
 	[ -z "$javaSourcePath" ] || local javaSourcePath="$javaSourcePath\""
@@ -26,13 +31,13 @@ PrepareBuildDependencyIndex(){
 	for projectName in $projectList ; do
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
 		local projectSources="$MMDAPP/cached/sources/$projectName/java"
-		local projectQueue="$( find "$projectSources" -type f -name '*.java' )"
+		local projectQueue="$( find "$projectSources" -type f -name '*.java' | sed 's|$projectSources||g' )"
 		if [ ! -z "${projectQueue:0:1}" ] ; then
 			local checkSourceFile checkClassFile
 			local sourceFilesQueue="$( \
 				echo "$projectQueue" \
 				| while read -r checkSourceFile ; do
-					checkClassFile="$( echo "$projectClasses${checkSourceFile%'$projectSources'}" | sed 's:\.java$:\.class:g' )"
+					checkClassFile="$projectClasses${checkSourceFile%'.java'}.class"
 					if [ ! -f "$checkClassFile" ] || [ "$checkSourceFile" -nt "$checkClassFile" ] ; then
 						printf "$checkSourceFile "
 					fi
@@ -40,7 +45,8 @@ PrepareBuildDependencyIndex(){
 			)" 
 			if [ ! -z "$sourceFilesQueue" ] ; then
 				echo "Compiling: $projectName..." >&2
-				eval "javac -nowarn -d '$projectClasses' $javaClassPath $javaSourcePath -g -parameters $sourceFilesQueue 2> /dev/null || true"
+				javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue || true
+				echo "javac -nowarn -d '$projectClasses' -classpath $javaClassPath -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue 2> /dev/null || true"
 				echo "Done compiling: $projectName." >&2
 			fi
 		fi
@@ -51,6 +57,7 @@ PrepareBuildDependencyIndex(){
 	## /end
 	##
 	
+	# fi
 	
 	( \
 		DistroSourceCommand \
