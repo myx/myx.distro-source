@@ -8,7 +8,7 @@ PrepareBuildDependencyIndex(){
 	# Require CompileCachedJavaProject
 	# CompileCachedJavaProject myx/myx.distro-deploy
 	
-	# if [ "0" = "1" ] ; then
+	if [ "0" = "1" ] ; then
 	
 	##
 	## temp? fix - java runtime compile doesn't work 
@@ -57,7 +57,7 @@ PrepareBuildDependencyIndex(){
 	## /end
 	##
 	
-	# fi
+	fi
 	
 	( \
 		DistroSourceCommand \
