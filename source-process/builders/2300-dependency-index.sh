@@ -44,7 +44,7 @@ PrepareBuildDependencyIndex(){
 			if [ ! -z "$sourceFilesQueue" ] ; then
 				echo "Compiling: $projectName..." >&2
 				javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue || true
-				echo "javac -nowarn -d '$projectClasses' -classpath $javaClassPath -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue 2> /dev/null || true"
+				echo "javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue 2> /dev/null || true"
 				echo "Done compiling: $projectName." >&2
 			fi
 		fi
