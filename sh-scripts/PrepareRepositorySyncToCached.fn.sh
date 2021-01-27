@@ -36,7 +36,8 @@ PrepareRepositorySyncToCached(){
 	fi
 	
 	mkdir -p "$MMDAPP/cached/sources/$repositoryName"
-	rsync -a -i --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf"
+	rsync -ai --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf" 2>&1 \
+	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
 
 	local packageName
 	for packageName in `ListRepositoryProjects "$repositoryName"` ; do

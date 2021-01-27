@@ -36,7 +36,8 @@ PrepareProjectSyncToCached(){
 		echo "already marked as changed." >&2 
 	fi
 	
-	if local ROUTPUT="`rsync -a -i --delete --exclude '.*' --exclude 'CVS' "$projectSrc/" "$projectDst"`" ; then
+	if local ROUTPUT="$( rsync -ai --delete --exclude '.*' --exclude 'CVS' "$projectSrc/" "$projectDst" 2>&1 \
+	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true) )" ; then
 		if [ -z "$ROUTPUT" ] ; then
 			echo "not changed on this run."
 		else
@@ -61,7 +62,8 @@ PrepareProjectSyncToCached(){
 							echo "$embeddedName: already marked as changed." 
 						fi
 						
-						if local EOUTPUT="`rsync -a -i --delete --exclude '.*' --exclude 'CVS' "$embeddedSrc/" "$embeddedDst"`" ; then
+						if local EOUTPUT="$( rsync -ai --delete --exclude '.*' --exclude 'CVS' "$embeddedSrc/" "$embeddedDst" 2>&1 \
+						| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true) )" ; then
 							if [ -z "$EOUTPUT" ] ; then
 								echo "$embeddedName: not changed on this run."
 							else
