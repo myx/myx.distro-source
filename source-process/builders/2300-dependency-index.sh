@@ -25,8 +25,6 @@ PrepareBuildDependencyIndex(){
 		local javaClassPath="$projectClasses;$javaClassPath"
 		local javaSourcePath="$projectSources;$javaSourcePath"
 	done
-	[ -z "$javaClassPath" ] || local javaClassPath="$javaClassPath\""
-	[ -z "$javaSourcePath" ] || local javaSourcePath="$javaSourcePath\""
 
 	for projectName in $projectList ; do
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
