@@ -33,14 +33,14 @@ SyncExportsFromCached(){
 	if test -e "$SOURCE_DIR/$SRC" ; then
 		printf 'sync-export: %s %s (source) \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 		mkdir -p "`dirname "$EXPORT_DST"`"
-		rsync -ai --delete "$SOURCE_DIR/$SRC" "$EXPORT_DST"
+		rsync -ai --delete "$SOURCE_DIR/$SRC" "$EXPORT_DST" 2>&1 | grep -v --fixed-strings --line-buffered '>f..t....... ' >&2
 		return 0
 	fi
 
 	if test -e "$CACHED_DIR/$SRC" ; then
 		printf 'sync-export: %s %s (cached) \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 		mkdir -p "`dirname "$EXPORT_DST"`"
-		rsync -ai --delete "$CACHED_DIR/$SRC" "$EXPORT_DST"
+		rsync -ai --delete "$CACHED_DIR/$SRC" "$EXPORT_DST" 2>&1 | grep -v --fixed-strings --line-buffered '>f..t....... ' >&2
 		return 0
 	fi
 

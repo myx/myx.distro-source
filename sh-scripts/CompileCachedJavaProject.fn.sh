@@ -26,7 +26,8 @@ CompileCachedJavaProject(){
 
 	return 0
 
-	rsync -azivC --exclude '*.class' --exclude '.*' --delete "$MMDAPP/cached/sources/$projectName/java/" "$MMDAPP/output/cached/$projectName/java"
+	rsync -azivC --exclude '*.class' --exclude '.*' --delete "$MMDAPP/cached/sources/$projectName/java/" "$MMDAPP/output/cached/$projectName/java" \
+		2>&1 | grep -v --fixed-strings --line-buffered '>f..t....... ' >&2
 	
 	( \
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
