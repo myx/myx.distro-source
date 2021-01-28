@@ -30,46 +30,72 @@ RebuildActions(){
 	echo "Using temporary install directory: $TMP_DIR"
 
 	local projectName
-	local ACTION
-	local ACTTGT
-	local ACTSRC
+	local actionFullName
+	local actionLocation
+	local actionSourceFile
 	
-	for projectName in ` ListDistroProjects --all-projects ` ; do
+	for projectName in $( ListDistroProjects --all-projects ) ; do
 		
-		for ACTION in $( ListProjectActions "$projectName" ) ; do
+		for actionFullName in $( ListProjectActions "$projectName" ) ; do
 			
-			ACTTGT="$TMP_DIR/${ACTION#$projectName/actions/}"
+			actionLocation="$TMP_DIR/${actionFullName#$projectName/actions/}"
 			
-			if [ -f "$MDSC_SOURCE/$ACTION" ] ; then
-				if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$ACTION" ] ; then
-					ACTSRC="$MMDAPP/source/$ACTION"
+			if [ -f "$MDSC_SOURCE/$actionFullName" ] ; then
+				if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$actionFullName" ] ; then
+					actionSourceFile="$MMDAPP/source/$actionFullName"
 				else
-					ACTSRC="$MDSC_SOURCE/$ACTION"
+					actionSourceFile="$MDSC_SOURCE/$actionFullName"
 				fi
 			else
-				ACTSRC="$MMDAPP/source/$ACTION"
+				actionSourceFile="$MMDAPP/source/$actionFullName"
 			fi
 			
-			printf "Processing: %s \n \t \t \t <= %s\n" "${ACTTGT#$TMP_DIR/}" "${ACTION}" >&2
+			printf "Processing: %s \n \t \t \t <= %s\n" "${actionLocation#$TMP_DIR/}" "${actionFullName}" >&2
 
-			mkdir -p "`dirname "$ACTTGT"`"
+			mkdir -p "$( dirname "$actionLocation" )"
 
-			case "$ACTION" in
+			case "$actionFullName" in
 		        *.sh)
 					## source code of script being created:
-					( echo "#/bin/sh" ; echo "export MMDAPP='$MMDAPP'" ; echo ". '$ACTSRC'" ) > "$ACTTGT"
-					chmod ug=rx,o=r "$ACTTGT" 
+					if true ; then
+						echo '#/bin/sh'
+						
+						echo 'ActionExecutionWrap(){'
+						echo 	"local actionFullName='$actionFullName'"
+						echo 	'[ "full" != "$MDSC_DETAIL" ] || set -x'
+						
+						echo 	'if [ ! -z "$MMDAPP" ] ; then'
+						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: using context settings: $MMDAPP" >&2'
+						echo 	'elif [ "$0" != "${0%"/$actionFullName"}" ] ; then'
+						echo 		'export MMDAPP="${0%"/source/$actionFullName"}"'
+						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings: $MMDAPP" >&2'
+						echo 	'else'
+						echo 		'echo "! Action $actionFullName: ERROR: cant calculate distro root directory!" >&2'
+						echo		'return 1'
+						echo 	'fi'
+						
+						echo 	'if [ ! -d "$MMDAPP/source" ] ; then'
+						echo 		'echo "! Action $actionFullName: ERROR: source directory does not exist!" >&2'
+						echo		'return 1'
+						echo 	'fi'
+						
+						echo 	'. "$MMDAPP/source/$actionFullName"' 
+						echo '}'
+						
+						echo 'ActionExecutionWrap "$@"'
+					fi > "$actionLocation"
+					chmod ug=rx,o=r "$actionLocation" 
 					;;
 		        *.url)
-		        	# ( grep -q '\[InternetShortcut\]' "$ACTSRC" ) && echo "GREP=EYS"
-		        	# [ "`wc -l < "$ACTSRC"`" -gt 1 ] && echo "WCS"
-		        	# echo "$ACTSRC: `wc -l < "$ACTSRC"`"
-					if ( grep -q '\[InternetShortcut\]' "$ACTSRC" ) || [ "`wc -l < "$ACTSRC"`" -gt 1 ] ; then
+		        	# ( grep -q '\[InternetShortcut\]' "$actionSourceFile" ) && echo "GREP=EYS"
+		        	# [ "`wc -l < "$actionSourceFile"`" -gt 1 ] && echo "WCS"
+		        	# echo "$actionSourceFile: `wc -l < "$actionSourceFile"`"
+					if ( grep -q '\[InternetShortcut\]' "$actionSourceFile" ) || [ "`wc -l < "$actionSourceFile"`" -gt 1 ] ; then
 						## sym-link is being created:
-						ln -fsv "$ACTSRC" "$ACTTGT"
-						chmod -h ug=rx,o=r "$ACTTGT" 
+						ln -fsv "$actionSourceFile" "$actionLocation"
+						chmod -h ug=rx,o=r "$actionLocation" 
 					else
-			        	local SRCCODE="`cat "$ACTSRC"`"
+			        	local SRCCODE="`cat "$actionSourceFile"`"
 			        	local WRKPATH
 			        	if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$projectName/$SRCCODE" ] ; then
 			        		local SRCCODE="file://$MMDAPP/source/$projectName/$SRCCODE"
@@ -80,14 +106,14 @@ RebuildActions(){
 			        	fi
 
 						## source code of script being created:
-						( echo "[InternetShortcut]" ; echo "URL=$SRCCODE" ; echo "WorkingDirectory=$WRKPATH" ) > "$ACTTGT"
-						chmod ug=rx,o=r "$ACTTGT" 
+						( echo "[InternetShortcut]" ; echo "URL=$SRCCODE" ; echo "WorkingDirectory=$WRKPATH" ) > "$actionLocation"
+						chmod ug=rx,o=r "$actionLocation" 
 					fi 
 					;;
 		        *)
 					## sym-link is being created:
-					ln -fsv "$ACTSRC" "$ACTTGT"
-					chmod -h ug=rx,o=r "$ACTTGT" 
+					ln -fsv "$actionSourceFile" "$actionLocation"
+					chmod -h ug=rx,o=r "$actionLocation" 
 		            ;;
 			esac
 		done
