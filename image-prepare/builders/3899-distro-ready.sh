@@ -10,8 +10,8 @@ echo "DISTRO_PATH: $DISTRO_PATH" >&2
 echo "EXPORT_PATH: $EXPORT_PATH" >&2
 echo "OUTPUT_PATH: $OUTPUT_PATH" >&2
 
-Async "sync-distro" rsync -a -i --delete "$MMDAPP/output/distro/" "$MMDAPP/distro"
-Async "sync-export" rsync -a -i --delete "$MMDAPP/output/export/" "$MMDAPP/export"
+Async "sync-distro" rsync -ai --delete "$MMDAPP/output/distro/" "$MMDAPP/distro"
+Async "sync-export" rsync -ai --delete "$MMDAPP/output/export/" "$MMDAPP/export"
 
 wait
 
