@@ -61,14 +61,18 @@ RebuildActions(){
 						echo '#/bin/sh'
 						
 						echo 'ActionExecutionWrap(){'
+						echo 	"local actionScript='${actionFullName#"$projectName/actions/"}'"
 						echo 	"local actionFullName='$actionFullName'"
 						echo 	'[ "full" != "$MDSC_DETAIL" ] || set -x'
 						
 						echo 	'if [ ! -z "$MMDAPP" ] ; then'
 						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: using context settings: $MMDAPP" >&2'
-						echo 	'elif [ "$0" != "${0%"/$actionFullName"}" ] ; then'
+						echo 	'elif [ "$0" != "${0%"/source/$actionFullName"}" ] ; then'
 						echo 		'export MMDAPP="${0%"/source/$actionFullName"}"'
-						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings: $MMDAPP" >&2'
+						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings from source: $MMDAPP" >&2'
+						echo 	'elif [ "$0" != "${0%"/actions/$actionScript"}" ] ; then'
+						echo 		'export MMDAPP="${0%"/actions/$actionScript"}"'
+						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings from action: $MMDAPP" >&2'
 						echo 	'else'
 						echo 		'echo "! Action $actionFullName: ERROR: cant calculate distro root directory!" >&2'
 						echo		'return 1'
