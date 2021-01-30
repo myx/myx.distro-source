@@ -66,8 +66,7 @@ ListDistroSequence(){
 
 					echo "$MDSC_CMD: caching projects ($MDSC_OPTION)" >&2
 
-					ListDistroSequence --no-cache --all > "$cacheFile"
-					cat "$cacheFile"
+					ListDistroSequence --no-cache --all | tee "$cacheFile"
 
 					return 0
 				fi

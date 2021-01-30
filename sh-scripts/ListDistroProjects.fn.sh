@@ -55,8 +55,7 @@ ListDistroProjects(){
 						fi
 						if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 							echo "| ListDistroProjects: caching projects ($MDSC_OPTION)" >&2
-							ListDistroProjects --no-cache --all-projects > "$cacheFile"
-							cat "$cacheFile"
+							ListDistroProjects --no-cache --all-projects | tee "$cacheFile"
 							return 0
 						fi
 					fi

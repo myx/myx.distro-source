@@ -56,8 +56,7 @@ ListProjectSequence(){
 						echo "ListProjectSequence: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
 						for sequenceProjectName in $( ListProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
 							ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex --print-project "$@"
-						done | awk '!x[$2]++' > "$cacheFile"
-						cat "$cacheFile"
+						done | awk '!x[$2]++' | tee "$cacheFile"
 						return 0
 					fi
 				fi			
@@ -100,9 +99,14 @@ ListProjectSequence(){
 				return 0
 			fi
 
+			if [ ! -d "$MDSC_CACHED/$projectName" ] ; then
+				echo "ListProjectSequence: $projectName: bypass ($MDSC_OPTION)" >&2
+				ListProjectSequence "$projectName" --no-cache
+				return 0
+			fi
+
 			echo "ListProjectSequence: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectSequence "$projectName" --no-cache > "$cacheFile"
-			cat "$cacheFile"
+			ListProjectSequence "$projectName" --no-cache | tee "$cacheFile"
 			return 0
 		fi
 

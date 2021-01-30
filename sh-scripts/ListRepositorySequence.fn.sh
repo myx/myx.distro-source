@@ -58,8 +58,7 @@ ListRepositorySequence(){
 		fi
 		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositorySequence: caching projects ($MDSC_OPTION)" >&2
-			ListRepositorySequence "$repositoryName" --no-cache > "$cacheFile"
-			cat "$cacheFile"
+			ListRepositorySequence "$repositoryName" --no-cache | tee "$cacheFile"
 			return 0
 		fi
 	fi

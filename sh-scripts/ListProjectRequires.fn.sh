@@ -65,8 +65,7 @@ ListProjectRequires(){
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListProjectRequires: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectRequires "$projectName" --no-cache "$@" > "$cacheFile"
-			cat "$cacheFile"
+			ListProjectRequires "$projectName" --no-cache "$@" | tee "$cacheFile"
 			return 0
 		fi
 	fi

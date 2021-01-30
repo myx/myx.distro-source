@@ -31,8 +31,7 @@ ListProjectDependants(){
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListProjectDependants: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectDependants "$projectName" --no-cache > "$cacheFile"
-			cat "$cacheFile"
+			ListProjectDependants "$projectName" --no-cache | tee "$cacheFile"
 			return 0
 		fi
 	fi

@@ -106,15 +106,13 @@ ListProjectProvides(){
 			if [ -f "$repositoryIndexFile" ] ; then
 				echo "ListProjectProvides: $projectName: caching projects ($MDSC_OPTION)" >&2
 				Require ListRepositoryProvides
-				ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' > "$cacheFile"
-				cat "$cacheFile"
+				ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' | tee "$cacheFile"
 				return 0
 			fi
 	
 			mkdir -p "$MDSC_CACHED/$projectName"
 			echo "ListProjectProvides: $projectName: caching project provides ($MDSC_OPTION)" >&2
-			ListProjectProvides "$projectName" --no-cache "$@" > "$cacheFile"
-			cat "$cacheFile"
+			ListProjectProvides "$projectName" --no-cache "$@" | tee "$cacheFile"
 			return 0
 		fi
 		

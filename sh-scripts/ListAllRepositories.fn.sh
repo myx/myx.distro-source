@@ -27,8 +27,7 @@ ListAllRepositories(){
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListAllRepositories: caching repositories ($MDSC_OPTION)" >&2
-			ListAllRepositories --no-cache > "$cacheFile"
-			cat "$cacheFile"
+			ListAllRepositories --no-cache | tee "$cacheFile"
 			return 0
 		fi
 	fi

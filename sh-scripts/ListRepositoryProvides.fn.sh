@@ -123,8 +123,7 @@ ListRepositoryProvides(){
 			fi
 
 			echo "ListRepositoryProvides: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryProvides $repositoryName --no-cache > "$cacheFile"
-			cat "$cacheFile"
+			ListRepositoryProvides $repositoryName --no-cache | tee "$cacheFile"
 			return 0
 		fi
 		

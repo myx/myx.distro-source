@@ -66,8 +66,7 @@ ListRepositoryRequires(){
 		fi
 		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositoryRequires: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryRequires "$repositoryName" --no-cache "$@" > "$cacheFile"
-			cat "$cacheFile"
+			ListRepositoryRequires "$repositoryName" --no-cache "$@" | tee "$cacheFile"
 			return 0
 		fi
 	fi
