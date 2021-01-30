@@ -4,6 +4,17 @@
 
 source-prepare, source-process, image-prepare commands:
 
+	image-prepare:context-variable:<variableName>:{create|change|ensure|update|remove|re-set|delete}[:<valueNoSpaces>...]
+	image-prepare:context-variable:<variableName>:{create|change|insert|update|remove|define|delete}[:<valueNoSpaces>...]
+	image-prepare:context-variable:DPL_HOST_TYPE:re-set:standalone
+	image-prepare:context-variable:DPL_HOST_TYPE:change:guest
+	image-prepare:context-variable:DPL_HOST_TYPE:delete
+	image-prepare:context-variable:DPL_LANGUAGES:re-set:en
+	image-prepare:context-variable:DPL_LANGUAGES:insert:ru
+	image-prepare:context-variable:DPL_LANGUAGES:insert:lv
+	image-prepare:context-variable:DPL_LANGUAGES:update:en
+	image-prepare:context-variable:DPL_LANGUAGES:remove:lv
+
 	image-prepare:sync-source-files:<sourceName>:<directoryPath>:<targetLocation>
 	image-prepare:sync-source-files:cloud-ndxs/web-ndmp-js-webapp:src/ndmpa193:data/settings/web/ndmp.musicafe.ru
 	image-prepare:sync-source-files:.:src/ndmpa193:data/settings/web/ndmp.musicafe.ru
