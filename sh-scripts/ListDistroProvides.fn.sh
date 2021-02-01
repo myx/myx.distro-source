@@ -190,7 +190,7 @@ ListDistroProvides(){
 								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
 							`"
 
-							join -o 2.1,1.1,2.2,1.2,1.3 -1 2 -2 3 <( \
+							join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( \
 								echo "$indexProvides" | while read -r projectName extraText ; do
 									for extraText in $extraText ; do
 										echo "$projectName" "$extraText"
@@ -202,7 +202,7 @@ ListDistroProvides(){
 										echo "$projectName" "$extraText"
 									done
 								done | cat -n | sort -k 3
-							) | sort -k 1,2 | cut -d" " -f 3-
+							) | sort -n -k 1,2 | cut -d" " -f 3-
 							
 							return 0 # 2s
 						fi
@@ -239,8 +239,8 @@ ListDistroProvides(){
 						| cat -n | sort -k 3
 					`"
 					
-					join -o 2.1,1.1,2.2,1.2,1.3 -1 2 -2 3 <( echo "$indexProvides" ) <( echo "$indexSequence" ) \
-					| sort -k 1,2 | cut -d" " -f 3-
+					join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexProvides" ) <( echo "$indexSequence" ) \
+					| sort -n -k 1,2 | cut -d" " -f 3-
 					
 					return 0
 				fi
@@ -263,40 +263,60 @@ ListDistroProvides(){
 					return 1
 				fi
 				local columnMatcher="$1" ; shift
-				if [ -z "$indexOwnProvides" ] ; then
+				if [ -z "${indexOwnProvides:0:1}" ] ; then
 					local indexOwnProvides="` ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides `"
 				fi
 				
+				
 				local indexCurrent="` \
-					if [ -z "$indexColumns" ] ; then
-						if [ -z "$MDSC_SELECT_PROJECTS" ] ; then
-							echo "$indexOwnProvides" | cut -d" " -f1 | sort
+					if [ -z "${indexColumns:0:1}" ] ; then
+						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+							echo "$indexOwnProvides" | cut -d" " -f1
 						else
-							echo "$MDSC_SELECT_PROJECTS" | sort
+							echo "$MDSC_SELECT_PROJECTS"
 						fi
 					else
-						echo "$indexColumns" | sort
-					fi
+						echo "$indexColumns"
+					fi \
+					| cat -n \
+					| sort -k 2 \
+				`"
+				
+				local indexFiltered="` \
+					case "$columnMatcher" in
+						*:)
+							echo "$indexOwnProvides" | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
+						;;
+						*)
+							echo "$indexOwnProvides" | grep -e "^\S* $columnMatcher$"
+						;;
+					esac \
+					| awk '$0 && !x[$0]++' \
+					| cat -n \
+					| sort -k 2 \
 				`"
 
-				case "$columnMatcher" in
-					*:)
-						local indexFiltered="` echo "$indexOwnProvides" | grep -e "^.* $columnMatcher.*$" | sed -e "s| $columnMatcher| |" | awk '$0 && !x[$0]++' | sort `"
-					;;
-					*)
-						local indexFiltered="` echo "$indexOwnProvides" | grep -e "^.* $columnMatcher$" | awk '$0 && !x[$0]++' | sort `"
-					;;
-				esac
-				
-				case "$lastOperation" in
-					--add-own-provides-column)
-						# -e'-' -o "1.*,2.*"
-						local indexColumns="` join -a 1 -11 -21 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) | awk '$0 && !x[$0]++' `"
-					;;
-					--filter-own-provides-column)
-						local indexColumns="` join -11 -21 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) | awk '$0 && !x[$0]++' `"
-					;;
-				esac
+				local indexColumns="` \
+					case "$lastOperation" in
+						--add-own-provides-column)
+							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
+							local indexVirtual="$( \
+								( \
+									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||' ; \
+									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|' \
+								) \
+								| sort -k 2 \
+							)"
+							join -12 -22 <( echo "$indexVirtual" ) <( echo "$indexCurrent" )
+						;;
+						--filter-own-provides-column)
+							join -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
+						;;
+					esac \
+					| sort -n -k 2,4 \
+					| cut -d" " -f 1,5-,3 \
+					| awk '$0 && !x[$0]++' \
+				`"
 				
 				if [ -z "$indexColumns" ] ; then
 					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
@@ -315,35 +335,54 @@ ListDistroProvides(){
 				fi
 
 				local indexCurrent="` \
-					if [ -z "$indexColumns" ] ; then
-						if [ -z "$MDSC_SELECT_PROJECTS" ] ; then
-							echo "$indexAllProvides" | cut -d" " -f1 | awk '!x[$0]++' | sort
+					if [ -z "${indexColumns:0:1}" ] ; then
+						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+							echo "$indexAllProvides" | cut -d" " -f1 | awk '!x[$0]++'
 						else
-							echo "$MDSC_SELECT_PROJECTS" | sort
+							echo "$MDSC_SELECT_PROJECTS"
 						fi
 					else
-						echo "$indexColumns" | sort
-					fi
+						echo "$indexColumns"
+					fi \
+					| cat -n \
+					| sort -k 2 \
 				`"
 
-				case "$columnMatcher" in
-					*:)
-						local indexFiltered="` echo "$indexAllProvides" | cut -d" " -f1,3 | grep -e "^.* $columnMatcher.*$" | sed -e "s| $columnMatcher| |" | awk '$0 && !x[$0]++' | sort `"
-					;;
-					*)
-						local indexFiltered="` echo "$indexAllProvides" | cut -d" " -f1,3 | grep -e "^.* $columnMatcher$" | awk '$0 && !x[$0]++' | sort `"
-					;;
-				esac
+				local indexFiltered="` \
+					case "$columnMatcher" in
+						*:)
+							echo "$indexAllProvides" | cut -d" " -f1,3 | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
+						;;
+						*)
+							echo "$indexAllProvides" | cut -d" " -f1,3 | grep -e "^\S* $columnMatcher$"
+						;;
+					esac \
+					| awk '$0 && !x[$0]++' \
+					| cat -n \
+					| sort -k 2 \
+				`"
 
-				case "$lastOperation" in
-					--add-merged-provides-column)
-						# -e'-' -o "1.+,2.+" 
-						local indexColumns="` join -a 1 <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
-					;;
-					--filter-merged-provides-column)
-						local indexColumns="` join <( echo "$indexCurrent" ) <( echo "$indexFiltered" ) `"
-					;;
-				esac
+				local indexColumns="` \
+					case "$lastOperation" in
+						--add-merged-provides-column)
+							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
+							local indexVirtual="$( \
+								( \
+									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||' ; \
+									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|' \
+								) \
+								| sort -k 2 \
+							)"
+							join -12 -22 <( echo "$indexVirtual" ) <( echo "$indexCurrent" )
+						;;
+						--filter-merged-provides-column)
+							join -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
+						;;
+					esac \
+					| sort -n -k 2,4 \
+					| cut -d" " -f 1,5-,3 \
+					| awk '$0 && !x[$0]++' \
+				`"
 				
 				if [ -z "$indexColumns" ] ; then
 					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
