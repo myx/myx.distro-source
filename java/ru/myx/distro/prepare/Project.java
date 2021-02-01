@@ -138,37 +138,32 @@ public class Project {
 	}
     }
 
-    public void buildCalculateSequence(final List<Project> sequence, final Map<String, Project> checked) {
-	if (checked.putIfAbsent(this.getFullName(), this) != null) {
+    public void buildCalculateSequence(final List<Project> sequence, final Map<String, Project> seen) {
+	if (seen.putIfAbsent(this.getFullName(), this) != null) {
 	    return;
 	}
 
 	final Map<String, Project> know = new TreeMap<>();
+	final LinkedList<Project> selected = new LinkedList<>();
 	final LinkedList<Project> queue = new LinkedList<>();
-	final LinkedList<Project> ready = new LinkedList<>();
 	queue.addLast(this);
 
 	final Distro distro = this.repo.distro;
 
 	queue: for (;;) {
-	    final Project project = queue.pollFirst();
+	    final Project project = queue.peekFirst();
 	    if (project == null) {
 		// done
-		sequence.addAll(ready);
+		sequence.addAll(selected);
+		selected.clear();
 		return;
 	    }
 
-	    if (checked.putIfAbsent(project.getFullName(), project) == null) {
-		sequence.addAll(ready);
-		ready.clear();
-	    }
-
 	    if (know.containsKey(project.getFullName())) {
+		queue.removeFirst();
 		continue queue;
 	    }
 
-	    queue.addFirst(project);
-	    int added = 0;
 	    for (final OptionListItem requires : project.lstRequires) {
 		final Set<Project> providers = distro.getProvides(requires);
 		if (providers == null) {
@@ -177,17 +172,16 @@ public class Project {
 		}
 
 		for (final Project provider : providers) {
-		    if (checked.putIfAbsent(provider.getFullName(), provider) == null) {
-			queue.addFirst(provider);
-			++added;
+		    if (seen.putIfAbsent(provider.getFullName(), provider) == null) {
+			queue.addLast(provider);
+			continue queue;
 		    }
 		}
 	    }
-	    if (added == 0) {
-		queue.pollFirst();
-		if (know.putIfAbsent(project.getFullName(), project) == null) {
-		    ready.addLast(project);
-		}
+
+	    queue.removeFirst();
+	    if (know.putIfAbsent(project.getFullName(), project) == null) {
+		selected.addLast(project);
 	    }
 
 	    continue queue;

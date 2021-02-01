@@ -590,7 +590,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	this.buildQueue.clear();
 
 	queue: for (;;) {
-	    final Project project = queue.pollFirst();
+	    final Project project = queue.peekFirst();
 	    if (project == null) {
 		this.console.outDebug("BQ-DONE");
 		this.buildQueue.addAll(selected);
@@ -598,17 +598,10 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		break queue;
 	    }
 
-	    if (seen.putIfAbsent(project.getFullName(), project) == null) {
-		this.buildQueue.addAll(selected);
-		selected.clear();
-	    }
-
 	    if (know.containsKey(project.getFullName())) {
+		queue.removeFirst();
 		continue queue;
 	    }
-
-	    queue.addFirst(project);
-	    int added = 0;
 
 	    for (final OptionListItem requires : project.getRequires()) {
 		final Set<Project> providers = this.repositories.getProvides(requires);
@@ -620,16 +613,14 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		for (final Project provider : providers) {
 		    if (seen.putIfAbsent(provider.getFullName(), provider) == null) {
 			queue.addFirst(provider);
-			++added;
+			continue queue;
 		    }
 		}
 	    }
 
-	    if (added == 0) {
-		queue.pollFirst();
-		if (know.putIfAbsent(project.getFullName(), project) == null) {
-		    selected.addLast(project);
-		}
+	    queue.removeFirst();
+	    if (know.putIfAbsent(project.getFullName(), project) == null) {
+		selected.addLast(project);
 	    }
 
 	    continue queue;

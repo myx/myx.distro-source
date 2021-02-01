@@ -1,10 +1,10 @@
 package ru.myx.distro.prepare;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.TreeSet;
 
-public class OptionList extends TreeSet<OptionListItem> {
+public class OptionList extends LinkedHashSet<OptionListItem> {
 
     private static final long serialVersionUID = 4464004437970547444L;
 
@@ -13,11 +13,13 @@ public class OptionList extends TreeSet<OptionListItem> {
 
     @Override
     public boolean add(final OptionListItem item) {
-	final OptionListItem existing = this.floor(item);
-	if (existing == null || !existing.getName().equals(item.getName())) {
-	    return super.add(item);
+	// final OptionListItem existing = this.floor(item);
+	for (OptionListItem existing : this) {
+	    if (existing != null && existing.getName().equals(item.getName())) {
+		return existing.keys.addAll(item.keys);
+	    }
 	}
-	return existing.keys.addAll(item.keys);
+	return super.add(item);
     }
 
     @Override
