@@ -314,7 +314,10 @@ ListDistroProvides(){
 						;;
 					esac \
 					| sort -n -k 2,4 \
-					| cut -d" " -f 1,5-,3 \
+					| while read -r key int1 column int2 columns ; do
+						# | cut -d" " -f 1,5-,3
+						echo $key $columns $column
+					done \
 					| awk '$0 && !x[$0]++' \
 				`"
 				
@@ -330,7 +333,7 @@ ListDistroProvides(){
 					return 1
 				fi
 				local columnMatcher="$1" ; shift
-				if [ -z "$indexAllProvides" ] ; then
+				if [ -z "${indexAllProvides:0:1}" ] ; then
 					local indexAllProvides="` ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides-merged `"
 				fi
 
@@ -380,7 +383,10 @@ ListDistroProvides(){
 						;;
 					esac \
 					| sort -n -k 2,4 \
-					| cut -d" " -f 1,5-,3 \
+					| while read -r key int1 column int2 columns ; do
+						# | cut -d" " -f 1,5-,3
+						echo $key $columns $column
+					done \
 					| awk '$0 && !x[$0]++' \
 				`"
 				
