@@ -1,5 +1,6 @@
 package ru.myx.distro.prepare;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
@@ -10,10 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import ru.myx.distro.ClasspathBuilder;
@@ -136,37 +139,59 @@ public class Project {
     }
 
     public void buildCalculateSequence(final List<Project> sequence, final Map<String, Project> checked) {
-	if (checked.putIfAbsent(this.name, this) != null) {
+	if (checked.putIfAbsent(this.getFullName(), this) != null) {
 	    return;
 	}
 
+	final Map<String, Project> know = new TreeMap<>();
+	final LinkedList<Project> queue = new LinkedList<>();
+	final LinkedList<Project> ready = new LinkedList<>();
+	queue.addLast(this);
+
 	final Distro distro = this.repo.distro;
 
-	for (final OptionListItem requires : this.lstRequires) {
-	    final String projectRequired = requires.getName();
-	    /** full project name is unique and not checked against provides lists */
-	    if (projectRequired.indexOf('/') > 0) {
-		final Project project = distro.getProject(projectRequired);
-		if (project != null && projectRequired.equals(project.getFullName())) {
-		    project.buildCalculateSequence(sequence, checked);
-		    continue;
-		}
+	queue: for (;;) {
+	    final Project project = queue.pollFirst();
+	    if (project == null) {
+		// done
+		sequence.addAll(ready);
+		return;
 	    }
-	    final Set<Project> projects = distro.getProvides().get(projectRequired);
-	    if (projects == null) {
-		if ("java".equals(projectRequired)) {
-		    // FIXME
-		    continue;
-		}
-		throw new IllegalArgumentException(
-			"Required project is unknown, name: " + projectRequired + " for " + this.name);
-	    }
-	    for (final Project project : projects) {
-		project.buildCalculateSequence(sequence, checked);
-	    }
-	}
 
-	sequence.add(this);
+	    if (checked.putIfAbsent(project.getFullName(), project) == null) {
+		sequence.addAll(ready);
+		ready.clear();
+	    }
+
+	    if (know.containsKey(project.getFullName())) {
+		continue queue;
+	    }
+
+	    queue.addFirst(project);
+	    int added = 0;
+	    for (final OptionListItem requires : project.lstRequires) {
+		final Set<Project> providers = distro.getProvides(requires);
+		if (providers == null) {
+		    throw new IllegalArgumentException(
+			    "required item is unknown, name: " + requires + " for " + this.name);
+		}
+
+		for (final Project provider : providers) {
+		    if (checked.putIfAbsent(provider.getFullName(), provider) == null) {
+			queue.addFirst(provider);
+			++added;
+		    }
+		}
+	    }
+	    if (added == 0) {
+		queue.pollFirst();
+		if (know.putIfAbsent(project.getFullName(), project) == null) {
+		    ready.addLast(project);
+		}
+	    }
+
+	    continue queue;
+	}
     }
 
     public void buildPrepareCompileIndex(final ConsoleOutput console, final Path projectOutput,
@@ -426,24 +451,26 @@ public class Project {
 	    if (Files.isDirectory(source)) {
 		final Path output = javaCompiler.outputRoot.resolve("cached").resolve(this.repo.name).resolve(this.name)
 			.resolve("jars");
-		for (final Path path : Files.newDirectoryStream(source)) {
-		    final String name = path.getFileName().toString();
-		    if (!name.endsWith(".zip") && !name.endsWith(".jar")) {
-			continue;
+		try (DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(source)) {
+		    for (final Path path : newDirectoryStream) {
+			final String name = path.getFileName().toString();
+			if (!name.endsWith(".zip") && !name.endsWith(".jar")) {
+			    continue;
+			}
+			if (!Files.isRegularFile(path)) {
+			    continue;
+			}
+			final Path target = output.resolve(name);
+			if (Files.isRegularFile(target) && Files.getLastModifiedTime(target).toMillis() >= Files
+				.getLastModifiedTime(path).toMillis()) {
+			    javaCompiler.log("JAR: newer, target: " + target);
+			    System.err.print(".");
+			    continue;
+			}
+			Files.createDirectories(target.getParent());
+			Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);
+			System.err.print("c");
 		    }
-		    if (!Files.isRegularFile(path)) {
-			continue;
-		    }
-		    final Path target = output.resolve(name);
-		    if (Files.isRegularFile(target) && Files.getLastModifiedTime(target).toMillis() >= Files
-			    .getLastModifiedTime(path).toMillis()) {
-			javaCompiler.log("JAR: newer, target: " + target);
-			System.err.print(".");
-			continue;
-		    }
-		    Files.createDirectories(target.getParent());
-		    Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);
-		    System.err.print("c");
 		}
 	    }
 	}
@@ -592,7 +619,9 @@ public class Project {
 	    throw new IllegalStateException("index not found, project: " + this.name + ", path=" + infoFile);
 	}
 	final Properties info = new Properties();
-	info.load(Files.newBufferedReader(infoFile));
+	try (BufferedReader newBufferedReader = Files.newBufferedReader(infoFile)) {
+	    info.load(newBufferedReader);
+	}
 
 	final String name = info.getProperty("PROJ", "");
 	if (!this.name.equals(name)) {
@@ -624,17 +653,19 @@ public class Project {
 	{
 	    final Path source = projectRoot.resolve("jars");
 	    if (Files.isDirectory(source)) {
-		for (final Path path : Files.newDirectoryStream(source)) {
-		    final String name = path.getFileName().toString();
-		    if (!name.endsWith(".zip") && !name.endsWith(".jar")) {
-			continue;
+		try (DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(source)) {
+		    for (final Path path : newDirectoryStream) {
+			final String name = path.getFileName().toString();
+			if (!name.endsWith(".zip") && !name.endsWith(".jar")) {
+			    continue;
+			}
+			if (!Files.isRegularFile(path)) {
+			    continue;
+			}
+			this.lstProvides.add(new OptionListItem("classpath.jars", "jars/" + name));
+			this.lstContains.add("jars/" + name);
+			console.outProgress('l');
 		    }
-		    if (!Files.isRegularFile(path)) {
-			continue;
-		    }
-		    this.lstProvides.add(new OptionListItem("classpath.jars", "jars/" + name));
-		    this.lstContains.add("jars/" + name);
-		    console.outProgress('l');
 		}
 	    }
 	}

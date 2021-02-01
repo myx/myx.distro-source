@@ -76,13 +76,10 @@ ListRepositoryRequires(){
 		( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListRepositoryRequires: using index ($MDSC_OPTION)" >&2
-		local MTC="PRJ-REQ-$repositoryName/"
-		# echo ">>>>>> MTC: $MTC" >&2
 		
-		grep "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g' | while read -r LINE ; do
+		grep "^PRJ-REQ-$repositoryName/" "$indexFile" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g' | while read -r LINE ; do
 			ListRepositoryRequires --internal-print-project-requires $LINE
 		done
-		# grep "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-REQ-::' -e 's:=: :g'
 		
 		return 0
 	fi

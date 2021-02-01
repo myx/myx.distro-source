@@ -1,5 +1,6 @@
 package ru.myx.distro.prepare;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -240,7 +241,9 @@ public class Repository {
 	    final Path infoFile = repositoryRoot.resolve("repository-index.inf");
 	    if (Files.isRegularFile(infoFile)) {
 		final Properties info = new Properties();
-		info.load(Files.newBufferedReader(infoFile));
+		try (BufferedReader newBufferedReader = Files.newBufferedReader(infoFile)) {
+		    info.load(newBufferedReader);
+		}
 
 		final String name = info.getProperty("REPO", "");
 		if (!this.name.equals(name)) {

@@ -75,13 +75,10 @@ ListProjectRequires(){
 		( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectRequires: $projectName: using index ($MDSC_OPTION)" >&2
-		local MTC="PRJ-REQ-$projectName="
-		# echo ">>>>>> MTC: $MTC"
 		
-		for LINE in $( grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort ) ; do
+		for LINE in $( grep "^PRJ-REQ-$projectName=" "$indexFile" | sed "s:^.*=::g" ) ; do
 			echo $LINE
 		done
-		# grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort
 		
 		return 0
 	fi

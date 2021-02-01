@@ -599,48 +599,36 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    }
 
 	    if (seen.putIfAbsent(project.getFullName(), project) == null) {
-		this.console.outDebug("BQ-FLSH: ", project, ", selected: ", selected);
 		this.buildQueue.addAll(selected);
 		selected.clear();
 	    }
 
 	    if (know.containsKey(project.getFullName())) {
-		this.console.outDebug("BQ-SKIP: ", project, ", selected: ", selected);
 		continue queue;
 	    }
-	    {
-		this.console.outDebug("BQ-NEXT: ", project, ", selected: ", selected);
-		queue.addFirst(project);
-		int added = 0;
 
-		for (final OptionListItem requires : project.getRequires()) {
+	    queue.addFirst(project);
+	    int added = 0;
 
-		    this.console.outDebug("  RQ-NEXT: ", requires);
-		    final Set<Project> providers = this.repositories.getProvides(requires);
-		    if (providers == null) {
-			throw new IllegalArgumentException("required item is unknown, name: " + requires + ", "
-				+ this.repositories.getProject(requires.getName()));
-		    }
-
-		    for (final Project provider : providers) {
-			// this.console.outDebug(" PV-NEXT: ", provider, ", known: ", known);
-			if (seen.putIfAbsent(provider.getFullName(), provider) == null) {
-			    // this.console.outDebug("BQ-QUE3: ", provider, ", selected: ", selected);
-			    queue.addFirst(provider);
-			    ++added;
-			}
-		    }
-
+	    for (final OptionListItem requires : project.getRequires()) {
+		final Set<Project> providers = this.repositories.getProvides(requires);
+		if (providers == null) {
+		    throw new IllegalArgumentException("required item is unknown, name: " + requires + ", "
+			    + this.repositories.getProject(requires.getName()));
 		}
 
-		if (added == 0) {
-		    queue.pollFirst();
-		    if (know.putIfAbsent(project.getFullName(), project) == null) {
-			selected.addLast(project);
-			// this.console.outDebug("BQ-SEL0: ", project, ", selected: ", selected);
+		for (final Project provider : providers) {
+		    if (seen.putIfAbsent(provider.getFullName(), provider) == null) {
+			queue.addFirst(provider);
+			++added;
 		    }
-		    // this.buildQueue.addAll(selected);
-		    // selected.clear();
+		}
+	    }
+
+	    if (added == 0) {
+		queue.pollFirst();
+		if (know.putIfAbsent(project.getFullName(), project) == null) {
+		    selected.addLast(project);
 		}
 	    }
 

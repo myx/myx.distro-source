@@ -190,19 +190,20 @@ ListDistroProvides(){
 								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
 							`"
 
-							join -o 2.1,1.1,1.2 -1 1 -2 2 <( \
+							join -o 2.1,1.1,2.2,1.2,1.3 -1 2 -2 3 <( \
 								echo "$indexProvides" | while read -r projectName extraText ; do
 									for extraText in $extraText ; do
 										echo "$projectName" "$extraText"
 									done
-								done | sort -k 1
+								done | cat -n | sort -k 2
 							) <( \
 								echo "$indexSequence" | while read -r projectName extraText ; do
 									for extraText in $extraText ; do
 										echo "$projectName" "$extraText"
 									done
-								done | sort -k 2
-							) | sort
+								done | cat -n | sort -k 3
+							) | sort -k 1,2 | cut -d" " -f 3-
+							
 							return 0 # 2s
 						fi
 					fi
@@ -226,7 +227,7 @@ ListDistroProvides(){
 							--import-from-source \
 							--select-all \
 							--print-provides-separate-lines \
-						| sort -k 1
+						| cat -n | sort -k 2
 					`"
 
 					local indexSequence="` \
@@ -235,10 +236,12 @@ ListDistroProvides(){
 							--import-from-source \
 							--select-all \
 							--print-sequence-separate-lines \
-						| sort -k 2
+						| cat -n | sort -k 3
 					`"
 					
-					join -o 2.1,1.1,1.2 -1 1 -2 2 <( echo "$indexProvides" ) <( echo "$indexSequence" ) | sort
+					join -o 2.1,1.1,2.2,1.2,1.3 -1 2 -2 3 <( echo "$indexProvides" ) <( echo "$indexSequence" ) \
+					| sort -k 1,2 | cut -d" " -f 3-
+					
 					return 0
 				fi
 
