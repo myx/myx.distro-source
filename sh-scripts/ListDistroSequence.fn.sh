@@ -77,7 +77,7 @@ ListDistroSequence(){
 						
 						echo "$MDSC_CMD: --all using index ($MDSC_OPTION)" >&2
 						
-						for ITEM in `grep "^PRJ-SEQ-" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
+						for ITEM in ` grep "^PRJ-SEQ-" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
 							echo $ITEM
 						done | awk '!x[$0]++'
 
@@ -122,9 +122,8 @@ ListDistroSequence(){
 						local projectSequence
 						local currentProject
 
-						echo "` \
-							grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' -e 's|\\:|:|g' \
-						`" | while read -r sequenceProject projectSequence ; do
+						grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' -e 's|\\:|:|g' \
+						| while read -r sequenceProject projectSequence ; do
 							for currentProject in $projectSequence ; do
 								echo "$sequenceProject" "$currentProject"
 							done
@@ -135,7 +134,7 @@ ListDistroSequence(){
 			fi
 			
 			if [ "$MDSC_INMODE" = "source" ] ; then
-				echo "$MDSC_CMD: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
+				echo "$MDSC_CMD: --all-projects extracting from source (java) ($MDSC_OPTION)" >&2
 		
 				Require DistroSourceCommand
 				

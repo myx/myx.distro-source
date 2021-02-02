@@ -41,17 +41,14 @@ ListProjectDependants(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2
-		local MTC="^PRJ-SEQ-$projectName="
-		
-		local RESULT=""
 	
 		local FILTER="$1"
 		if test -z "$FILTER" ; then
-			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
+			for ITEM in `grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
 				echo $ITEM
 			done
 		else
-			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
+			for ITEM in `grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
 				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
 					echo ${ITEM#${FILTER}:} | tr "|" "\n"
 				fi

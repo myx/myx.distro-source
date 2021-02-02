@@ -138,13 +138,12 @@ public class Project {
 	}
     }
 
-    public void buildCalculateSequence(final List<Project> sequence, final Map<String, Project> seen) {
+    public List<Project> buildCalculateSequence(final List<Project> sequence, final Map<String, Project> seen) {
 	if (seen.putIfAbsent(this.getFullName(), this) != null) {
-	    return;
+	    return sequence;
 	}
 
 	final Map<String, Project> know = new TreeMap<>();
-	final LinkedList<Project> selected = new LinkedList<>();
 	final LinkedList<Project> queue = new LinkedList<>();
 	queue.addLast(this);
 
@@ -154,9 +153,7 @@ public class Project {
 	    final Project project = queue.peekFirst();
 	    if (project == null) {
 		// done
-		sequence.addAll(selected);
-		selected.clear();
-		return;
+		return sequence;
 	    }
 
 	    if (know.containsKey(project.getFullName())) {
@@ -173,7 +170,7 @@ public class Project {
 
 		for (final Project provider : providers) {
 		    if (seen.putIfAbsent(provider.getFullName(), provider) == null) {
-			queue.addLast(provider);
+			queue.addFirst(provider);
 			continue queue;
 		    }
 		}
@@ -181,7 +178,7 @@ public class Project {
 
 	    queue.removeFirst();
 	    if (know.putIfAbsent(project.getFullName(), project) == null) {
-		selected.addLast(project);
+		sequence.add(project);
 	    }
 
 	    continue queue;
@@ -550,8 +547,7 @@ public class Project {
     public List<Project> getBuildSequence() {
 	final Map<String, Project> checked = new HashMap<>();
 	final List<Project> sequence = new ArrayList<>();
-	this.buildCalculateSequence(sequence, checked);
-	return sequence;
+	return this.buildCalculateSequence(sequence, checked);
     }
 
     @Override

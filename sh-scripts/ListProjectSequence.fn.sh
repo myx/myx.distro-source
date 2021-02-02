@@ -115,14 +115,15 @@ ListProjectSequence(){
 				echo "ListProjectSequence: $projectName: using index ($MDSC_OPTION)" >&2
 				
 				local FILTER="$1"
+				local currentProject
 				if [ -z "$FILTER" ] ; then
-					for ITEM in `grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed "s,^.*=,,g"` ; do
-						echo $ITEM
+					for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
+						echo $currentProject
 					done
 				else
-					for ITEM in `grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed "s,^.*=,,g"` ; do
-						if [ "$ITEM" != "${ITEM#${FILTER}:}" ] ; then
-							echo ${ITEM#${FILTER}:} | tr "|" "\n"
+					for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
+						if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
+							echo ${currentProject#${FILTER}:} | tr "|" "\n"
 						fi
 					done
 				fi

@@ -182,12 +182,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		boolean first = true;
 		for (final Project project : context.buildQueue) {
 		    final String projectName = project.getFullName();
-
-		    final Map<String, Project> checked = new HashMap<>();
-		    final List<Project> sequence = new LinkedList<>();
-		    project.buildCalculateSequence(sequence, checked);
-
-		    for (final Project sequenceProject : sequence) {
+		    for (final Project sequenceProject : project.getBuildSequence()) {
 			if (first) {
 			    first = false;
 			} else {
@@ -582,7 +577,6 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
     public void doSelectRequired() {
 	this.console.outDebug("select required, queue: ", this.buildQueue);
 
-	final QueueSelection selected = new QueueSelection();
 	final LinkedList<Project> queue = new LinkedList<>(this.buildQueue);
 	final Map<String, Project> seen = new TreeMap<>();
 	final Map<String, Project> know = new TreeMap<>();
@@ -593,8 +587,6 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    final Project project = queue.peekFirst();
 	    if (project == null) {
 		this.console.outDebug("BQ-DONE");
-		this.buildQueue.addAll(selected);
-		selected.clear();
 		break queue;
 	    }
 
@@ -620,7 +612,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 
 	    queue.removeFirst();
 	    if (know.putIfAbsent(project.getFullName(), project) == null) {
-		selected.addLast(project);
+		this.buildQueue.add(project);
 	    }
 
 	    continue queue;

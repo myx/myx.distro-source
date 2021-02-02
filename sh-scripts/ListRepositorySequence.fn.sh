@@ -68,19 +68,17 @@ ListRepositorySequence(){
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2
-		local MTC="^PRJ-SEQ-$repositoryName/"
 		
-		local RESULT=""
-	
 		local FILTER="$1"
-		if test -z "$FILTER" ; then
-			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
-				echo $ITEM
+		local currentProject
+		if [ -z "$FILTER" ] ; then
+			for currentProject in ` grep "^PRJ-SEQ-$repositoryName/" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
+				echo $currentProject
 			done | awk '!x[$0]++'
 		else
-			for ITEM in `grep "$MTC" "$indexFile" | sed "s,^.*=,,g" | awk '!x[$0]++'` ; do
-				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
-					echo ${ITEM#${FILTER}:} | tr "|" "\n"
+			for currentProject in ` grep "^PRJ-SEQ-$repositoryName/" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
+				if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
+					echo ${currentProject#${FILTER}:} | tr "|" "\n"
 				fi
 			done | awk '!x[$0]++'
 		fi
