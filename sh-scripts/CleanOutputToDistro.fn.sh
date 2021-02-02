@@ -9,11 +9,11 @@ fi
 
 CleanOutputToDistro(){
 
-	echo "Cleaning Output directory" >&2
+	echo "CleanOutputToDistro: 🧻 Cleaning Output directory" >&2
 	rm -rf "$MMDAPP/export" "$MMDAPP/distro"
 	
 	if type DistroShellContext >/dev/null 2>&1 ; then
-		echo "Cleaning DistroShell in-line caches" >&2
+		echo "CleanOutputToDistro: 🧹 Cleaning DistroShell in-line caches" >&2
 		DistroShellContext --uncache
 	fi
 }
