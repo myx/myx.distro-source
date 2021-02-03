@@ -13,7 +13,7 @@ ListDistroScripts(){
 			shift
 			( \
 				ListDistroScripts "$@" ; \
-			) | sort | uniq | sed 's:\.fn\.sh$::' 
+			) | sort -u | sed 's:\.fn\.sh$::' 
 			return 0
 			;;
 		--all)

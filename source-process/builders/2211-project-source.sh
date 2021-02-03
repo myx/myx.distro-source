@@ -11,7 +11,7 @@ MakeProjectSourceArchive(){
 }
 
 Require ListDistroProvides
-ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " project-source.tgz$" | cut -d" " -f1 | sort | uniq | while read -r projectName ; do
+ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " project-source.tgz$" | cut -d" " -f1 | sort -u | while read -r projectName ; do
 	Async "`basename "$projectName"`" MakeProjectSourceArchive "$projectName"
 	wait
 done

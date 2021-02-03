@@ -57,7 +57,7 @@ ListProjectActions(){
 	fi
 	
 	[ "full" != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
-	eval "find $findLocations -mindepth 1 -type f -not -name '.*'" | eval sed $sedEx | sort | uniq
+	eval "find $findLocations -mindepth 1 -type f -not -name '.*'" | eval sed $sedEx | sort -u
 	return 0
 }
 
