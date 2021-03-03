@@ -112,7 +112,7 @@ while true ; do
 	fi 
 	if DistroShellContext --is-spec-option "$1" ; then
 		[ -z "$MDSC_DETAIL" ] || echo "DistroShellContext: input spec: $1" >&2
-		. "$MDSC_ORIGIN/DistroShellContextSetInputSpec.include"		
+		. "$MDSC_ORIGIN/DistroShellContextSetInputSpec.include"
 		shift
 		continue
 	fi
