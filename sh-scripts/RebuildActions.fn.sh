@@ -123,7 +123,7 @@ RebuildActions(){
 		done
 	done	
 	
-	rsync -irltoDC $( [ "--no-delete" == "$1" ] || echo "--delete" ) --chmod=ug+rwx --omit-dir-times "$TMP_DIR/" "$MMDAPP/actions" 2>&1 \
+	rsync -irltoODC $( [ "--no-delete" == "$1" ] || echo "--delete" ) --chmod=ug+rwx "$TMP_DIR/" "$MMDAPP/actions" 2>&1 \
 	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
 	rm -rf "$TMP_DIR"
 }
