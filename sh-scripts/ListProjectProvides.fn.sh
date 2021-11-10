@@ -125,7 +125,7 @@ ListProjectProvides(){
 				echo "ListProjectProvides: $projectName: using index ($MDSC_OPTION)" >&2
 				local MTC="PRJ-PRV-$projectName="
 				
-				for LINE in $( grep "$MTC" "$indexFile" | sed -e 's:^.*=::g' -e 's|\\:|:|g' | sort ) ; do
+				for LINE in $( grep "$MTC" "$indexFile" | sed -e 's:^.*=::g' -e 's|\\:|:|g' ) ; do
 					echo $projectName $LINE
 				done
 				# grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort

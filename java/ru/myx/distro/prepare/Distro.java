@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -19,7 +20,11 @@ import ru.myx.distro.Utils;
 public final class Distro {
     private final Map<String, Project> byProjectName = new HashMap<>();
 
-    private final Map<String, Set<Project>> byProvides = new HashMap<>();
+    private final Map<String, Set<Project>> byDeclares = new LinkedHashMap<>();
+
+    private final Map<String, Set<Project>> byKeywords = new LinkedHashMap<>();
+
+    private final Map<String, Set<Project>> byProvides = new LinkedHashMap<>();
 
     private final Map<String, Repository> byRepositoryName = new HashMap<>();
 
@@ -38,6 +43,24 @@ public final class Distro {
     boolean addKnown(final Repository repo) {
 	this.byRepositoryName.put(repo.getName(), repo);
 	return true;
+    }
+
+    public void addDeclares(final Project project, final OptionListItem provides) {
+	Set<Project> set = this.byDeclares.get(provides.getName());
+	if (set == null) {
+	    set = new HashSet<>();
+	    this.byDeclares.put(provides.getName(), set);
+	}
+	set.add(project);
+    }
+
+    public void addKeywords(final Project project, final OptionListItem provides) {
+	Set<Project> set = this.byKeywords.get(provides.getName());
+	if (set == null) {
+	    set = new HashSet<>();
+	    this.byKeywords.put(provides.getName(), set);
+	}
+	set.add(project);
     }
 
     public void addProvides(final Project project, final OptionListItem provides) {
@@ -229,10 +252,40 @@ public final class Distro {
 	}
     }
 
+    public Map<String, Set<Project>> getDeclares() {
+	final Map<String, Set<Project>> result = new LinkedHashMap<>();
+	result.putAll(this.byDeclares);
+	return result;
+    }
+
+    public Map<String, Set<Project>> getKeywords() {
+	final Map<String, Set<Project>> result = new LinkedHashMap<>();
+	result.putAll(this.byKeywords);
+	return result;
+    }
+
     public Map<String, Set<Project>> getProvides() {
-	final Map<String, Set<Project>> result = new HashMap<>();
+	final Map<String, Set<Project>> result = new LinkedHashMap<>();
 	result.putAll(this.byProvides);
 	return result;
+    }
+
+    public Set<Project> getDeclares(final OptionListItem name) {
+	final String requireString = name.getName();
+	final Project projectExact = this.getProject(requireString);
+	if (projectExact != null) {
+	    return Collections.singleton(projectExact);
+	}
+	return this.byDeclares.get(requireString);
+    }
+
+    public Set<Project> getKeywords(final OptionListItem name) {
+	final String requireString = name.getName();
+	final Project projectExact = this.getProject(requireString);
+	if (projectExact != null) {
+	    return Collections.singleton(projectExact);
+	}
+	return this.byKeywords.get(requireString);
     }
 
     public Set<Project> getProvides(final OptionListItem name) {

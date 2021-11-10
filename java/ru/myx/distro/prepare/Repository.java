@@ -7,11 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 
 import ru.myx.distro.Utils;
 
@@ -71,7 +71,11 @@ public class Repository {
 
     private final Map<String, Project> byName = new HashMap<>();
 
-    private final Map<String, Set<Project>> byProvides = new HashMap<>();
+    private final Map<String, Set<Project>> byKeywords = new LinkedHashMap<>();
+
+    private final Map<String, Set<Project>> byDeclares = new LinkedHashMap<>();
+
+    private final Map<String, Set<Project>> byProvides = new LinkedHashMap<>();
 
     public final String fetch;
 
@@ -94,10 +98,28 @@ public class Repository {
 	return true;
     }
 
+    public void addDeclares(final Project project, final OptionListItem declares) {
+	Set<Project> set = this.byDeclares.get(declares.getName());
+	if (set == null) {
+	    set = new LinkedHashSet<>();
+	    this.byDeclares.put(declares.getName(), set);
+	}
+	set.add(project);
+    }
+
+    public void addKeywords(final Project project, final OptionListItem keywords) {
+	Set<Project> set = this.byKeywords.get(keywords.getName());
+	if (set == null) {
+	    set = new LinkedHashSet<>();
+	    this.byKeywords.put(keywords.getName(), set);
+	}
+	set.add(project);
+    }
+
     public void addProvides(final Project project, final OptionListItem provides) {
 	Set<Project> set = this.byProvides.get(provides.getName());
 	if (set == null) {
-	    set = new HashSet<>();
+	    set = new LinkedHashSet<>();
 	    this.byProvides.put(provides.getName(), set);
 	}
 	set.add(project);
@@ -166,7 +188,8 @@ public class Repository {
 	    );
 	}
 	{
-	    final Collection<String> lines = new TreeSet<>();
+	    // final Collection<String> lines = new TreeSet<>();
+	    final Collection<String> lines = new LinkedHashSet<>();
 	    for (final Project project : this.byName.values()) {
 		lines.add(project.getFullName() + ' ' + project.name);
 		for (final OptionListItem item : project.getProvides()) {
@@ -222,8 +245,20 @@ public class Repository {
 	return this.byName.values();
     }
 
+    public Map<String, Set<Project>> getDeclares() {
+	final Map<String, Set<Project>> result = new LinkedHashMap<>();
+	result.putAll(this.byDeclares);
+	return result;
+    }
+
+    public Map<String, Set<Project>> getKeywords() {
+	final Map<String, Set<Project>> result = new LinkedHashMap<>();
+	result.putAll(this.byKeywords);
+	return result;
+    }
+
     public Map<String, Set<Project>> getProvides() {
-	final Map<String, Set<Project>> result = new HashMap<>();
+	final Map<String, Set<Project>> result = new LinkedHashMap<>();
 	result.putAll(this.byProvides);
 	return result;
     }

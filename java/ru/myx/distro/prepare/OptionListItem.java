@@ -2,8 +2,8 @@ package ru.myx.distro.prepare;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 /**
  *
@@ -20,7 +20,7 @@ public class OptionListItem implements Comparable<OptionListItem> {
     Collection<String> keys;
 
     public OptionListItem(final String listItemSpec) {
-	this.keys = new TreeSet<>();
+	this.keys = new LinkedHashSet<>();
 	final int pos = listItemSpec.indexOf(':');
 	if (pos == -1) {
 	    this.name = listItemSpec;
@@ -35,7 +35,7 @@ public class OptionListItem implements Comparable<OptionListItem> {
     }
 
     public OptionListItem(final String listItemName, final String listItemKeywords) {
-	this.keys = new TreeSet<>();
+	this.keys = new LinkedHashSet<>();
 	this.name = listItemName;
 	if (listItemKeywords != null) {
 	    final StringTokenizer st = new StringTokenizer(listItemKeywords, "|");
@@ -46,7 +46,7 @@ public class OptionListItem implements Comparable<OptionListItem> {
     }
 
     public OptionListItem(final String listItemName, final String... listItemKeywords) {
-	this.keys = new TreeSet<>();
+	this.keys = new LinkedHashSet<>();
 	this.name = listItemName;
 	if (listItemKeywords != null) {
 	    for (final String key : listItemKeywords) {

@@ -135,7 +135,7 @@ ListRepositoryProvides(){
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProvides: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-PRV-$repositoryName/"
 				
-				grep "$MTC" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do
+				grep "$MTC" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do
 					ListRepositoryProvides --internal-print-project-provides $LINE
 				done
 			

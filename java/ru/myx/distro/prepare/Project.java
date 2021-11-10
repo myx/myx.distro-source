@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import ru.myx.distro.ClasspathBuilder;
 import ru.myx.distro.Utils;
@@ -37,6 +37,14 @@ public class Project {
 	    return false;
 	}
 	return true;
+    }
+
+    public static String projectFullName(final Project project) {
+	return project.repo.name + '/' + project.name;
+    }
+
+    public static String projectName(final Project project) {
+	return project.getName();
     }
 
     static Project staticLoadFromLocalIndex(final Repository repo, final String projectName, final Path projectRoot)
@@ -107,28 +115,35 @@ public class Project {
 
     private final List<String> lstContains = new ArrayList<>();
 
+    private final OptionList lstDeclares = new OptionList();
+
+    private final OptionList lstKeywords = new OptionList();
+
     private final OptionList lstProvides = new OptionList();
 
     private final OptionList lstRequires = new OptionList();
 
     public final String name;
 
-    public final Repository repo;
-
     /**
      * Initialized only for projects loaded from local source
      */
     public Path projectSourceRoot = null;
 
+    public final Repository repo;
+
     Project(final String name, final Properties info, final Repository repo) {
 	this.repo = repo;
 	this.name = name.trim();
+	this.lstDeclares.add(new OptionListItem(this.getFullName()));
+	this.lstKeywords.add(new OptionListItem(this.getName()));
 	this.lstProvides.add(new OptionListItem(this.getName()));
 	this.lstProvides.add(new OptionListItem(this.getFullName()));
 	if (info != null) {
-	    Project.updateList(info.getProperty("Requires", "").split("\\s+"), this.lstRequires);
+	    Project.updateList(info.getProperty("Declares", "").split("\\s+"), this.lstDeclares);
+	    Project.updateList(info.getProperty("Keywords", "").split("\\s+"), this.lstKeywords);
 	    Project.updateList(info.getProperty("Provides", "").split("\\s+"), this.lstProvides);
-	    Project.updateList(info.getProperty("Declares", "").split("\\s+"), this.lstProvides);
+	    Project.updateList(info.getProperty("Requires", "").split("\\s+"), this.lstRequires);
 	}
 	if (repo != null) {
 	    repo.addKnown(this);
@@ -273,8 +288,10 @@ public class Project {
 	{
 	    final Properties info = new Properties();
 	    info.setProperty("Name", this.getFullName());
-	    info.setProperty("Requires", this.lstRequires.toString());
+	    info.setProperty("Declares", this.lstDeclares.toString());
+	    info.setProperty("Keywords", this.lstKeywords.toString());
 	    info.setProperty("Provides", this.lstProvides.toString());
+	    info.setProperty("Requires", this.lstRequires.toString());
 
 	    Utils.save(//
 		    console, //
@@ -301,7 +318,8 @@ public class Project {
 	}
 
 	{
-	    final Collection<String> lines = new TreeSet<>();
+	    // final Collection<String> lines = new TreeSet<>();
+	    final Collection<String> lines = new LinkedHashSet<>();
 	    final Project project = this;
 	    {
 		lines.add(/* project.getFullName() + ' ' + */project.name);
@@ -326,10 +344,14 @@ public class Project {
     }
 
     void buildPrepareDistroIndexFillProjectInfo(final Properties info) throws Exception {
-	info.setProperty("PRJ-REQ-" + this.getFullName(), //
-		this.lstRequires.toString());
+	info.setProperty("PRJ-DCL-" + this.getFullName(), //
+		this.lstDeclares.toString());
+	info.setProperty("PRJ-KWD-" + this.getFullName(), //
+		this.lstKeywords.toString());
 	info.setProperty("PRJ-PRV-" + this.getFullName(), //
 		this.lstProvides.toString());
+	info.setProperty("PRJ-REQ-" + this.getFullName(), //
+		this.lstRequires.toString());
 	info.setProperty("PRJ-SEQ-" + this.getFullName(), //
 		this.getBuildSequence().stream()//
 			.map(Project::projectFullName)//
@@ -341,7 +363,7 @@ public class Project {
 	);
     }
 
-    public boolean buildSource(final RepositoryBuildSourceContext ctx) throws Exception {
+    public boolean buildSource(final DistroBuildSourceContext ctx) throws Exception {
 
 	final ProjectBuildSourceContext projectContext = new ProjectBuildSourceContext(this, ctx);
 
@@ -388,7 +410,7 @@ public class Project {
 	return true;
     }
 
-    public boolean buildSource(final DistroBuildSourceContext ctx) throws Exception {
+    public boolean buildSource(final RepositoryBuildSourceContext ctx) throws Exception {
 
 	final ProjectBuildSourceContext projectContext = new ProjectBuildSourceContext(this, ctx);
 
@@ -528,12 +550,26 @@ public class Project {
 	return true;
     }
 
-    public final String getName() {
-	return this.name;
+    public List<Project> getBuildSequence() {
+	final Map<String, Project> checked = new HashMap<>();
+	final List<Project> sequence = new ArrayList<>();
+	return this.buildCalculateSequence(sequence, checked);
     }
 
     public final String getFullName() {
 	return this.repo.name + '/' + this.name;
+    }
+
+    public final String getName() {
+	return this.name;
+    }
+
+    public OptionList getDeclares() {
+	return this.lstDeclares;
+    }
+
+    public OptionList getKeywords() {
+	return this.lstKeywords;
     }
 
     public OptionList getProvides() {
@@ -542,12 +578,6 @@ public class Project {
 
     public OptionList getRequires() {
 	return this.lstRequires;
-    }
-
-    public List<Project> getBuildSequence() {
-	final Map<String, Project> checked = new HashMap<>();
-	final List<Project> sequence = new ArrayList<>();
-	return this.buildCalculateSequence(sequence, checked);
     }
 
     @Override
@@ -622,9 +652,21 @@ public class Project {
     }
 
     public void loadFromLocalIndex(final Repository repository, final Properties info) {
+	Project.updateList(info.getProperty("PRJ-DCL-" + this.name, "").split("\\s+"), this.lstDeclares);
+	Project.updateList(info.getProperty("PRJ-KWD-" + this.name, "").split("\\s+"), this.lstKeywords);
 	Project.updateList(info.getProperty("PRJ-PRV-" + this.name, "").split("\\s+"), this.lstProvides);
 	Project.updateList(info.getProperty("PRJ-REQ-" + this.name, "").split("\\s+"), this.lstRequires);
 	Project.updateList(info.getProperty("PRJ-GET-" + this.name, "").split("\\s+"), this.lstContains);
+
+	for (final OptionListItem declares : this.lstDeclares) {
+	    this.repo.addDeclares(this, declares);
+	    this.repo.distro.addDeclares(this, declares);
+	}
+
+	for (final OptionListItem keywords : this.lstKeywords) {
+	    this.repo.addKeywords(this, keywords);
+	    this.repo.distro.addKeywords(this, keywords);
+	}
 
 	for (final OptionListItem provides : this.lstProvides) {
 	    this.repo.addProvides(this, provides);
@@ -634,6 +676,16 @@ public class Project {
 
     public void loadFromLocalSource(final ConsoleOutput console, final Repository repository, final Path projectRoot)
 	    throws Exception {
+
+	for (final OptionListItem declares : this.lstDeclares) {
+	    this.repo.addDeclares(this, declares);
+	    this.repo.distro.addDeclares(this, declares);
+	}
+
+	for (final OptionListItem keywords : this.lstKeywords) {
+	    this.repo.addKeywords(this, keywords);
+	    this.repo.distro.addKeywords(this, keywords);
+	}
 
 	for (final OptionListItem provides : this.lstProvides) {
 	    this.repo.addProvides(this, provides);
@@ -688,13 +740,5 @@ public class Project {
     @Override
     public String toString() {
 	return this.repo.name + "/" + this.name;
-    }
-
-    public static String projectName(final Project project) {
-	return project.getName();
-    }
-
-    public static String projectFullName(final Project project) {
-	return project.repo.name + '/' + project.name;
     }
 }
