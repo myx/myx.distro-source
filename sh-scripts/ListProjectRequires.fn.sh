@@ -120,18 +120,18 @@ case "$0" in
 		# ListProjectRequires.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --merge-sequence --print-project 2> /dev/null 
 		# ListProjectRequires.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --print-project --merge-sequence 
 		
-		# !!!! ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project setup-keys.ndm.myx
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence setup-keys.ndm.myx 2> /dev/null
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence --print-project setup-keys.ndm.myx
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project --merge-sequence setup-keys.ndm.myx
+		# !!!! ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project accounts/user.ndm-myx
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence accounts/user.ndm-myx 2> /dev/null
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence --print-project accounts/user.ndm-myx
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project --merge-sequence accounts/user.ndm-myx
 
 		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
 		# ListProjectRequires.fn.sh --distro-source-only ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
 		# ListProjectRequires.fn.sh --distro-from-cached ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
 		# ListProjectRequires.fn.sh --distro-from-source ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project 2> /dev/null
 	
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project setup-keys.ndm.myx 2> /dev/null
-		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project setup-keys.ndm.myx 2> /dev/null
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project accounts/user.ndm-myx 2> /dev/null
+		# ListProjectRequires.fn.sh ndm/cloud.knt/setup.host-captive1-c1.ndm9.xyz --merge-sequence --print-project accounts/user.ndm-myx 2> /dev/null
 	
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListProjectRequires.fn.sh [--help] <project_name> [--merge-sequence] [--print-project] [--no-cache] [filter_by]" >&2
