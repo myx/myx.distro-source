@@ -19,6 +19,9 @@ source-prepare, source-process, image-prepare commands:
 	image-prepare:sync-source-files:cloud-xdxs/web-mp-js-webapp:src/mpa193:data/settings/web/mp.mcafe.ru
 	image-prepare:sync-source-files:.:src/mpa193:data/settings/web/mp.mcafe.ru
 	image-prepare:sync-source-files:*:src/mpa193:data/settings/web/mp.mcafe.ru
+	image-prepare:sync-source-files:**:src/mpa193:data/settings/web/mp.mcafe.ru
+
+	^^^ <sourceName> '.' - this (declarant) project's source, '*' - this (declarant) and derived projects' sources, '**' - all sequence projects' sources regardless of being derived from declarant
 
 	image-prepare:clone-source-file:<sourceName>:<directoryPath>:<sourceFileName>:<targetNamePattern>:<variableName>:<valueX...>
 	image-prepare:clone-source-file:cloud-xdxs/web-mp-js-webapp:src/ndmpa192:page-default.html:page-$$$.html:$$$:200:201:204
