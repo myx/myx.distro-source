@@ -15,8 +15,9 @@ source-prepare, source-process, image-prepare commands:
 	image-prepare:context-variable:DPL_LANGUAGES:update:en
 	image-prepare:context-variable:DPL_LANGUAGES:remove:lv
 
-	image-prepare:sync-source-files:<sourceName>:<directoryPath>:<targetLocation>
+	image-prepare:sync-source-files:<sourceName>:<directoryPath>:<targetLocation>[:<filterGlob>]
 	image-prepare:sync-source-files:cloud-xdxs/web-mp-js-webapp:src/mpa193:data/settings/web/mp.mcafe.ru
+	image-prepare:sync-source-files:cloud-xdxs/web-mp-js-webapp:src/mpa193:data/settings/web/mp.mcafe.ru:*.html
 	image-prepare:sync-source-files:.:src/mpa193:data/settings/web/mp.mcafe.ru
 	image-prepare:sync-source-files:*:src/mpa193:data/settings/web/mp.mcafe.ru
 	image-prepare:sync-source-files:**:src/mpa193:data/settings/web/mp.mcafe.ru
