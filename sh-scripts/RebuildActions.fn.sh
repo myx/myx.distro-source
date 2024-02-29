@@ -22,7 +22,7 @@ RebuildActions(){
 		return 1
 	fi
 
-	local TMP_DIR="$( mktemp -d -t "rebuild-actions-" )"
+	local TMP_DIR="$( mktemp -d -t "rebuild-actions-XXXXXXXX" )"
 	if [ $? -ne 0 ]; then
 		echo "ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
 		return 1
