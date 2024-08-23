@@ -40,14 +40,15 @@ Builders Examples (actual builders):
 App Folders:
 
 	/
-	/source - source codes
-	/source/repo[/group]/project - structure
+	/source - source codes, all repositories and projects
+	/source/repo[/group]/project - project tree structure
 	/cached - build system space
 	/cached/sources - synched source for source->distro builders
 	/cached/changed - package names that are changed and need to be built
 	/cached/built - package names that are built
 	/output - output products
 	/distro - distro structure (alternative to /source, BTW)
+	/actions - workspace actions - non-editable (generated)
 
 
 source-prepare, source-process, image-prepare commands:
