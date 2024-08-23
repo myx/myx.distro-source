@@ -7,7 +7,7 @@ Default build steps (order in which operations are performed. Source: 1..3, Dist
 				projects and actual meta-data (distro indices: pre-parsed names, 
 				reqires, etc...).
 	2xxx - source-process, cached to output (mode: source, stage: prepare)
-				output contains and actual meta-data.
+				output contains all actual meta-data.
 	3xxx - image-prepare, output to distro (mode: image, prepare | util)
 				distro contains indices and exported items (in their project's locations)
 	4xxx - image-process, distro to deploy (prepare | util | install )
