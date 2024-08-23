@@ -84,7 +84,7 @@ source-prepare, source-process, image-prepare commands:
 		image-install:context-variable:DPL_LANGUAGES:import:.:ssh/rsa.pub
 		image-install:context-variable:DPL_LANGUAGES:source:.:ssh/rsa.pub
 
-		^^^ <sourceName> '.' - this (declarant) project's source, '*' - this (declarant) and derived projects' sources, '**' - all sequence projects' sources regardless of being derived from declarant
+		^^^ <sourceName> '.' - this (declarant) project's source
 
 
 	image-prepare:sync-source-files:
