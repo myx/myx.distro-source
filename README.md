@@ -37,6 +37,21 @@ Builders Examples (actual builders):
 	source/myx/myx.distro-distro/image-process/builders/4911-deploy-apply.sh
 	source/myx/myx.distro-distro/image-install/builders/5911-deploy-apply.sh
 
+Variables available in actions, build-step scripts and console (source mode):
+
+	MMDAPP - workspace root (something like: "/Volumes/ws-2017/myx-work")
+	MDSC_INMODE - cosole mode ("source")
+	MDSC_ORIGIN - primary source of console commands (something like: "/Volumes/ws-2017/myx-work/source/myx/myx.distro-source/sh-lib")
+	MDSC_OPTION - console mode settings (something like: "--distro-from-source")
+	MDSC_SOURCE - current source root (something like: "/Volumes/ws-2017/myx-work/source")
+	MDSC_CACHED - current cache root (something like: "/Volumes/ws-2017/myx-work/cached/enhance")
+	MDSC_OUTPUT - current target root (something like: "/Volumes/ws-2017/myx-work/cached/source")
+	MDSC_DETAIL - debug settings, values: <empty>, "true", "full"
+	BUILD_STAMP - current build timestamp (build steps only)
+	useSshUser - override from ssh user calculated from project sequence variables
+	useSshHome - override from ssh home calculated from project sequence variables
+	useSshArgs - extra arguments for ssh conection (something like: "-o ForwardAgent=yes -o AddKeysToAgent=yes")
+
 App Folders:
 
 	/
