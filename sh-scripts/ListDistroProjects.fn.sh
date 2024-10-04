@@ -399,7 +399,9 @@ case "$0" in
 				echo "    ListDistroProjects.fn.sh --all-projects | sort" >&2
 				echo "    ListDistroProjects.fn.sh --select-sequence | sort" >&2
 				echo "    ListDistroProjects.fn.sh --select-all | sort" >&2
+				echo "    ListDistroProjects.fn.sh --select-none | sort" >&2
 				echo "    ListDistroProjects.fn.sh --select-changed | sort" >&2
+				echo "    ListDistroProjects.fn.sh --select-from-env | sort" >&2
 
 				echo "    ListDistroProjects.fn.sh --select-projects my --select-projects common --select-projects ndss --remove-projects prv --filter-projects tbd | sort" >&2
 				echo "    ListDistroProjects.fn.sh --select-merged-keywords l6 --filter-provides deploy-ssh-target: 2> /dev/null | sort" >&2
