@@ -1,0 +1,506 @@
+[ -z "$MDSC_DETAIL" ] || echo "+ DistroSource: library included" >&2
+
+# checks and updates MDSC_PRJ_NAME variable with project in focus
+# $3 is empty or 'local' or 'export'
+DistroSelectProject(){
+	local MDSC_CMD='DistroSelectProject'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	if [ "$1" != "MDSC_PRJ_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_PRJ_NAME!" >&2
+		return 1
+	fi
+	if [ -z "$2" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: project name required!" >&2
+		return 1
+	fi
+	if [ "$2" = "$MDSC_PRJ_NAME" ] ; then
+		[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: same project ($2)" >&2
+		return 0
+	fi
+	if [ "$2" = "--reset" ] ; then
+		if [ -z "$MDSC_PRJ_NAME" ] ; then
+			[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: already clean" >&2
+			return 0
+		fi
+		[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: reset project (previous selection: $MDSC_PRJ_NAME)" >&2
+		export MDSC_PRJ_NAME=""
+		# export MDSC_PRJ_MPRV=""
+		# export MDSC_PRJ_BSEQ=""
+		return 0
+	fi
+	case "$3" in
+		export)
+			export MDSC_PRJ_NAME="$2"
+			# export MDSC_PRJ_MPRV=""
+			# export MDSC_PRJ_BSEQ=""
+			[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: project selected and exported ($2)" >&2
+			return 0
+		;;
+		'')
+			MDSC_PRJ_NAME="$2"
+			# MDSC_PRJ_MPRV=""
+			# MDSC_PRJ_BSEQ=""
+			[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: project selected ($2)" >&2
+			return 0
+		;;
+		*)
+			echo "$MDSC_CMD: ⛔ ERROR: invalid extra option: $3" >&2
+			return 1
+		;;
+	esac
+}
+
+
+# prints project merged provides
+DistroSourceProjectProvidesMerged(){
+	local MDSC_CMD='DistroSourceProjectProvidesMerged'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	if [ -z "$MDSC_PRJ_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
+		return 1
+	fi
+	local checkFile="$MDSC_CACHED/distro-provides.txt"
+	local cacheFile="$MDSC_CACHED/$MDSC_PRJ_NAME/project-provides-merged.txt"
+	if [ -f "$checkFile" ] ; then
+		if [ -f "$cacheFile" ] ; then
+			# remake if it is too young (re: one second precision of -nt)
+			if [ "$cacheFile" -nt "$checkFile" ] ; then
+				cat "$cacheFile"
+				return 0
+			fi
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: stale index, making index file ($MDSC_OPTION)" >&2
+		else
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
+		fi
+	
+		set -e
+		DistroSourceEnsureProvidesMergedFile MDSC_IDAPRV_NAME
+		grep -e "^$MDSC_PRJ_NAME " "$MDSC_IDAPRV_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' | tee "$cacheFile"
+		return 0
+	fi
+	
+	echo "$MDSC_CMD: ⛔ ERROR: can't come up with a name" >&2
+	return 1
+}
+
+## echoes specified or selected project sequence index file name
+##
+DistroSourceProjectSequenceFile(){
+	local MDSC_CMD='DistroSourceProjectSequenceFile'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	local MDSC_PRJ_NAME="${MDSC_PRJ_NAME:-}"
+
+	while true ; do	
+		case "$1" in
+			--project)
+				shift ; local MDSC_PRJ_NAME="$1" ; shift ; continue ;;
+			*)
+				break ;;
+		esac
+	done
+
+	if [ -z "$MDSC_PRJ_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
+		return 1
+	fi
+	local checkFile="$MDSC_CACHED/distro-provides.txt"
+	local cacheFile="$MDSC_CACHED/$MDSC_PRJ_NAME/project-build-sequence.txt"
+	if [ -f "$checkFile" ] ; then
+		if [ -f "$cacheFile" ] ; then
+			# remake if it is too young (re: one second precision of -nt)
+			if [ "$cacheFile" -nt "$checkFile" ] ; then
+				echo "$cacheFile"
+				return 0
+			fi
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: stale index, making index file ($MDSC_OPTION)" >&2
+		else
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
+		fi
+	
+		set -e
+		DistroSourceEnsureProvidesMergedFile MDSC_IDAPRV_NAME
+		grep -e "^$MDSC_PRJ_NAME " "$MDSC_IDAPRV_NAME" | cut -d" " -f2 | awk '!x[$0]++' > "$cacheFile"
+		echo "$cacheFile"
+		return 0
+	fi
+	
+	# Require ListProjectSequence
+	# ListProjectSequence "$MDSC_PRJ_NAME"
+	
+	echo "$MDSC_CMD: ⛔ ERROR: can't come up with a name" >&2
+	return 1
+}
+
+# sets MDSC_IDAPRV_NAME variable to all merged provides table file name
+DistroSourceEnsureProvidesMergedFile(){
+	local MDSC_CMD='DistroSourceEnsureProvidesMergedFile'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	if [ "$1" != "MDSC_IDAPRV_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_IDAPRV_NAME" >&2
+		return 1
+	fi
+	if [ ! -z "${MDSC_IDAPRV_NAME:0:1}" ] ; then
+		[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using env-cached ($MDSC_OPTION)" >&2
+		return 0
+	fi
+	local checkFile="$MDSC_CACHED/distro-provides.txt"
+	local cacheFile="$MDSC_CACHED/distro-merged-provides.txt"
+	if [ -f "$checkFile" ] ; then
+		if [ -f "$cacheFile" ] ; then
+			# remake if it is too young (re: one second precision of -nt)
+			if [ "$cacheFile" -nt "$checkFile" ] ; then
+				MDSC_IDAPRV_NAME="$cacheFile"
+				return 0
+			fi
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: stale index, making index file ($MDSC_OPTION)" >&2
+		else
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
+		fi
+	
+		set -e
+		Require ListDistroProvides
+		MDSC_IDAPRV_NAME="$cacheFile"
+		ListDistroProvides --explicit-noop --no-cache --all-provides-merged > "$MDSC_IDAPRV_NAME.tmp"
+		mv -f "$MDSC_IDAPRV_NAME.tmp" "$MDSC_IDAPRV_NAME"
+		return 0
+	fi
+	
+	echo "$MDSC_CMD: ⛔ ERROR: can't ensure provides-merged index" >&2
+	return 1
+}
+
+# sets MDSC_IDOPRV_NAME variable to all merged provides table file name
+DistroSourceEnsureProvidesOwnedFile(){
+	local MDSC_CMD='DistroSourceEnsureProvidesOwnedFile'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	if [ "$1" != "MDSC_IDOPRV_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_IDOPRV_NAME" >&2
+		return 1
+	fi
+	if [ ! -z "${MDSC_IDOPRV_NAME:0:1}" ] ; then
+		[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using env-cached ($MDSC_OPTION)" >&2
+		return 0
+	fi
+	local checkFile="$MDSC_CACHED/distro-index.inf"
+	local cacheFile="$MDSC_CACHED/distro-provides.txt"
+	if [ -f "$checkFile" ] ; then
+		if [ -f "$cacheFile" ] ; then
+			if [ "$( date -u -r "$checkFile" "+%Y%m%d%H%M%S" )" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ; then
+				MDSC_IDOPRV_NAME="$cacheFile"
+				return 0
+			fi
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: stale index, making index file ($MDSC_OPTION)" >&2
+		else
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
+		fi
+	
+		set -e
+		Require ListDistroProvides
+		MDSC_IDOPRV_NAME="$cacheFile"
+		ListDistroProvides --explicit-noop --all-provides > "$MDSC_IDOPRV_NAME.tmp"
+		mv -f "$MDSC_IDOPRV_NAME.tmp" "$MDSC_IDOPRV_NAME"
+		return 0
+	fi
+	
+	echo "$MDSC_CMD: ⛔ ERROR: can't ensure provides-owned index" >&2
+	return 1
+}
+
+#
+# call with --install|--prepare [--export|--local] argument
+DistroSourceProjectContextVariables(){
+	local MDSC_CMD='DistroSourceProjectContextVariables'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	if [ -z "$MDSC_PRJ_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
+		return 1
+	fi
+
+	local prefix="" filter=""
+
+	while true ; do 
+		case "$1" in
+			--install)
+				shift
+				filter="grep -e \" image-install:context-variable:\""
+			;;
+			--prepare)
+				shift
+				filter="grep -e \" image-prepare:context-variable:\""
+			;;
+			--export)
+				prefix="export " ; shift
+			;;
+			--local)
+				prefix="local " ; shift
+			;;
+			'')
+				break
+			;;
+			*)
+				echo "$MDSC_CMD: ⛔ ERROR: Invalid option: $1" >&2
+				return 1
+			;;
+		esac
+	done
+
+	local variableName operationType variableValue
+
+	local buildBuffer="`
+		DistroSourceProjectProvidesMerged \
+		| eval $filter \
+		| sed 's/:/ /; s/:/ /; s/:/ /; s/:/ /' | cut -d" " -f1,4- \
+		| while read -r declaredAt variableName operationType variableValue ; do
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: input: $variableName $operationType $variableValue" >&2
+			printf '\n## ## %s\n' "$variableName"
+			case "$operationType" in
+			
+				# if variable is not defined - creates variable/array with given value 
+				create)
+					printf	'[ ! -z "$VAR_%s" ] || VAR_%s=%q\n' \
+						"$variableName" \
+						"$variableName" "$variableValue"
+				;;
+				
+				# if variable is defined - sets it's value to given one
+				change)
+					printf '[ -z "$VAR_%s" ] || VAR_%s=%q\n' \
+						"$variableName" \
+						"$variableName" "$variableValue"
+				;;
+				
+				# if variable is not defined - creates array with given value 
+				# if variable is defined - ensures array contains given value 
+				ensure)
+					printf	'[ -z "$VAR_%s" ] && VAR_%s="%q" || echo "$VAR_%s" | grep -q -x "%q" || VAR_%s="$VAR_%s\\n%q"\n' \
+						"$variableName" \
+						"$variableName" "$variableValue" \
+						"$variableName" "$variableValue" \
+						"$variableName" "$variableName" "$variableValue"
+				;;
+				
+				# if variable is not defined - creates array with given value 
+				# if variable is defined - appends given value to array regardless if it's already present 
+				append|insert)
+					printf	'[ -z "$VAR_%s" ] && VAR_%s="%q" || VAR_%s="$VAR_%s\\n%q"\n' \
+						"$variableName" \
+						"$variableName" "$variableValue" \
+						"$variableName" "$variableName" "$variableValue"
+				;;
+				
+				# if variable is defined - ensures array contains given value 
+				update)
+					printf	'[ -z "$VAR_%s" ] || VAR_%s="$( echo "$VAR_%s" | grep -x -v %q ; echo %q )"\n'\
+						"$variableName" \
+						"$variableName" "$variableName" "$variableValue" "$variableValue"
+					continue
+					
+					printf	'[ -z "$VAR_%s" ] || VAR_%s="$( printf '%s\n%s' "$VAR_%s" %q )"\n'\
+						"$variableName" \
+						'%s' '%s' "$variableName" "$variableName" "$variableValue"
+				;;
+				
+				# if variable is defined - removes given value from array. Un-defines variable if no value given.
+				remove)
+					if [ -z "$variableValue" ] ; then
+						printf 'VAR_%s=""\n' 									"$variableName"
+					else
+						printf	'[ -z "$VAR_%s" ] || VAR_%s="$( echo "$VAR_%s" | grep -x -v %q )"\n' \
+							"$variableName" \
+							"$variableName" "$variableName" "$variableValue"
+					fi
+				;;
+
+				# if variable is not defined - creates variable with given value 
+				# if variable is defined - sets variable to given value (same) 
+				re-set|define|upsert)
+					printf 'VAR_%s=%q\n'\
+						"$variableName" "$variableValue"
+				;;
+
+				# define from project relative file
+				import|source)
+					local variableValue=$( echo "$variableValue" | tr ':' ' ' \
+					| while read -r sourceName sourcePath ; do
+						[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: import: check: $declaredAt $sourceName $sourcePath" >&2
+						DistroSourceCheckSourcePath --file "$declaredAt" "$sourceName" "$sourcePath" \
+						| cut -d" " -f2-
+					done \
+					| while read -r sourceName scriptFile ; do
+						# [ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: import: parse: $sourceName $scriptFile" >&2
+						cat "$MMDAPP/source/$sourceName/$scriptFile"
+					done )
+					printf 'VAR_%s=%q\n'\
+						"$variableName" "$variableValue"
+				;;
+				
+				# Un-defines variable. Only when variable value matches, if variableValue specified.
+				delete)
+					if [ -z "$variableValue" ] ; then
+						printf 'VAR_%s=""\n' \
+							"$variableName"
+					else
+						printf '[ "%s" != "$VAR_%s" ] || VAR_%s=""\n' \
+							"$variableValue" "$variableName" \
+							"$variableName"
+					fi
+				;;
+				
+				*)
+					echo "$MDSC_CMD: 🙋 WARNING: unknown context variable operation: $operationType:$variableName:$variableValue" >&2
+				;;
+			esac
+		done
+	`"
+	
+	if [ -z "${buildBuffer:0:1}" ] ; then
+		return 0
+	fi
+	
+	local variableNames="$( echo "$buildBuffer" | grep -e '^## ## ' | sed -e 's|^## ## ||g' | sort -u )"
+	
+	local buildBuffer="`
+		for variableName in $variableNames ; do
+			printf 'local VAR_%s\n' "$variableName"
+		done
+		echo "$buildBuffer"
+		for variableName in $variableNames ; do
+			#printf 'printf %s %q "%s"\n' "'$prefix%s=\\"%q\\"\n'" "$variableName" "\\\$VAR_$variableName"
+			#printf 'printf %s %q "%s"\n' "'$prefix%s=\\"%s\\"\n'" "$variableName" "\\\$VAR_$variableName"
+			printf 'printf %q %s "\$VAR_%s"\n' "$prefix%s=\\"%s\\"\n" "$variableName" "$variableName"
+		done
+	`"
+	
+	# hope for a new process
+	echo | ( eval "$buildBuffer" )
+	
+	return 0
+}
+
+# echoes none/all matching deploy source folders or files
+# arguments: --path/--file declaredAt sourceName sourcePath <extraArguments>
+# output: declaredAt sourceName sourcePath <extraArguments>
+DistroSourceCheckSourcePath(){
+	local MDSC_CMD='DistroSourceCheckSourcePath'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	local MDSC_PRJ_NAME="${MDSC_PRJ_NAME:-}"
+
+	while true ; do	
+		case "$1" in
+			--project)
+				shift ; MDSC_PRJ_NAME="$1" ; shift ; continue ;;
+			--path)
+				shift ;	local check="-d" ; continue ;;
+			--file)
+				shift ;	local check="-f" ; continue ;;
+			*)
+				break ;;
+		esac
+	done
+
+	if [ -z "$MDSC_PRJ_NAME" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
+		return 1
+	fi
+	
+	local declaredAt="$1" ; shift
+	local sourceName="$1" ; shift
+	local sourcePath="$1" ; shift
+	local checkProject commandOutput
+
+	if [ -z "$sourceName" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: arguments missing" >&2
+		return 1
+	fi
+
+	if [ "$sourceName" = "*" -o "$sourceName" = "**" ] ; then
+		commandOutput="$( \
+			while read -r checkProject ; do
+				[ "full" != "$MDSC_DETAIL" ] || echo ">> $MDSC_CMD check wildcard path: " $check "$MDSC_SOURCE/$checkProject/$sourcePath" >&2
+				if [ $check "$MDSC_SOURCE/$checkProject/$sourcePath" ] ; then
+					if [ "$sourceName" = "**" ] || grep -q -x "$declaredAt" "$( DistroSourceProjectSequenceFile --project "$checkProject" )" ; then
+						echo "$declaredAt" "$checkProject" "$sourcePath" "$@"
+					fi
+				fi
+			done < "$( DistroSourceProjectSequenceFile )" \
+		)"
+	
+		if [ ! -z "${commandOutput:0:1}" ] ; then
+			echo "$commandOutput"
+			return 0
+		fi
+		
+		echo "$MDSC_CMD: 🙋 WARNING: wild-card path is not found: $declaredAt:$sourceName:$sourcePath" >&2
+		return 1
+	fi
+	
+	if [ "$sourceName" = "." ] ; then
+		sourceName="$declaredAt"
+	fi
+	
+	if [ $check "$MDSC_SOURCE/$sourceName/$sourcePath" ] ; then
+		[ "full" != "$MDSC_DETAIL" ] || echo ">> $MDSC_CMD found exact path: " $check "$MDSC_SOURCE/$sourceName/$sourcePath" >&2
+		echo "$declaredAt" "$sourceName" "$sourcePath" "$@"
+		return 0
+	fi
+
+	DistroSourceEnsureProvidesOwnedFile MDSC_IDOPRV_NAME
+	commandOutput="$( \
+		grep " $sourceName$" "$MDSC_IDOPRV_NAME" | cut -d" " -f1 | awk '!x[$0]++' \
+		| while read -r checkProject ; do
+			[ "full" != "$MDSC_DETAIL" ] || echo ">> $MDSC_CMD check exact path: " $check "$MDSC_SOURCE/$checkProject/$sourcePath" >&2
+			if [ $check "$MDSC_SOURCE/$checkProject/$sourcePath" ] ; then
+				[ "full" != "$MDSC_DETAIL" ] || echo ">> $MDSC_CMD found exact path in a loop: " $check "$MDSC_SOURCE/$checkProject/$sourcePath" >&2
+				echo "$declaredAt" "$checkProject" "$sourcePath" "$@"
+			fi
+		done \
+	)"
+	
+	if [ ! -z "${commandOutput:0:1}" ] ; then
+		echo "$commandOutput"
+		return 0
+	fi
+	
+	echo "$MDSC_CMD: 🙋 WARNING: explicitly declared path is not found: $declaredAt:$sourceName:$sourcePath" >&2
+	return 1
+}
+
+DistroSourceEmbedScript(){ # "1-scriptFileName" "2-changeDir"
+	local MDSC_CMD='DistroSourceEmbedScript'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	if [ -z "$1" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: script file name argument is expected!" >&2
+		return 1
+	fi
+	if [ ! -f "$1" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: script file is does not exist: ${scriptFileName#$MMDAPP}" >&2
+		return 1
+	fi
+	if [ -z "$2" ] ; then
+		echo "$MDSC_CMD: ⛔ ERROR: working directory argument is expected!" >&2
+		return 1
+	fi
+	
+	[ -z "$MDSC_DETAIL" ] || echo "echo '> run: ${1#$MMDAPP}:$2' >&2"
+	printf "\n\n# embedded script: %s\n\n( cd '%s' ; bash || echo '%s' >&2 ) << 'EOF_PROJECT_DIESSH_XXXXXXXX'\n" \
+		"${1#$MMDAPP}" \
+		"$2" \
+		"ImageDeploy: ⛔ ERROR: script execution failed: $( basename "$1" )"
+	cat "$1"
+	printf '\nEOF_PROJECT_DIESSH_XXXXXXXX\n\n'
+	[ -z "$MDSC_DETAIL" ] || echo "echo '< run: ${1#$MMDAPP}:$2' >&2"
+	return 0
+}
+
+# main shell command
+DistroSource(){
+	echo "Not Supported!" >&2
+	return 1
+}

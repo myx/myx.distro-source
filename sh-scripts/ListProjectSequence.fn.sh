@@ -13,12 +13,13 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListProjectSequence(){
-	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListProjectSequence $@" >&2
+
+	local MDSC_CMD='ListProjectSequence'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListProjectSequence: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	shift
 
@@ -46,14 +47,14 @@ ListProjectSequence(){
 						if [ -f "$cacheFile" ] && \
 							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 						then
-							[ -z "$MDSC_DETAIL" ] || echo "| ListProjectSequence: $projectName: --print-provides using cached ($MDSC_OPTION)" >&2
+							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-provides using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
 						fi
 			
 						Require ListProjectProvides
 						
-						echo "ListProjectSequence: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
+						echo "$MDSC_CMD: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
 						for sequenceProjectName in $( ListProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
 							ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex --print-project "$@"
 						done | awk '!x[$2]++' | tee "$cacheFile"
@@ -82,7 +83,7 @@ ListProjectSequence(){
 				break;
 			;;
 			*)
-				echo "ERROR: ListProjectSequence: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
 			;;
 		esac
 	done

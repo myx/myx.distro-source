@@ -14,11 +14,12 @@ fi
 
 ListProjectProvides(){
 
-	[ -z "$MDSC_DETAIL" ] || echo "> ListProjectProvides $@" >&2
+	local MDSC_CMD='ListProjectProvides'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListProjectProvides: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	shift
 
@@ -37,17 +38,17 @@ ListProjectProvides(){
 			;;
 			--print-project)
 				shift
-				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" # | sed "s|^|$projectName |g"
 				return 0
 			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListProjectProvides: project provides filter is expected!" >&2 ; return 1
+					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2 ; return 1
 				fi
 				local filterProvides="$1" projectProvides ; shift
 
-				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" \
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" --print-provides-only \
 				| while read -r projectProvides ; do
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
@@ -83,7 +84,7 @@ ListProjectProvides(){
 				break;
 			;;
 			*)
-				echo "ERROR: ListProjectProvides: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
 			;;
 		esac
 	done
@@ -95,8 +96,8 @@ ListProjectProvides(){
 			if [ -f "$cacheFile" ] && \
 				( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 			then
-				[ -z "$MDSC_DETAIL" ] || echo "| ListProjectProvides: $projectName: using cached ($MDSC_OPTION)" >&2
-				cat "$cacheFile"
+				[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
+				cat "$cacheFile" | sed "s|^|$projectName |g"
 				return 0
 			fi
 	
@@ -104,14 +105,15 @@ ListProjectProvides(){
 			local repositoryIndexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 	
 			if [ -f "$repositoryIndexFile" ] ; then
-				echo "ListProjectProvides: $projectName: caching projects ($MDSC_OPTION)" >&2
+				echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
 				Require ListRepositoryProvides
-				ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' | tee "$cacheFile"
+				ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | tee "$cacheFile"
+				# ListRepositoryProvides "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' | tee "$cacheFile"
 				return 0
 			fi
 	
 			mkdir -p "$MDSC_CACHED/$projectName"
-			echo "ListProjectProvides: $projectName: caching project provides ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: $projectName: caching project provides ($MDSC_OPTION)" >&2
 			ListProjectProvides "$projectName" --no-cache "$@" | tee "$cacheFile"
 			return 0
 		fi
@@ -122,13 +124,11 @@ ListProjectProvides(){
 				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
 			then
 				
-				echo "ListProjectProvides: $projectName: using index ($MDSC_OPTION)" >&2
-				local MTC="PRJ-PRV-$projectName="
+				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
 				
-				for LINE in $( grep "$MTC" "$indexFile" | sed -e 's:^.*=::g' -e 's|\\:|:|g' ) ; do
+				for LINE in $( grep "PRJ-PRV-$projectName=" "$indexFile" | sed -e 's:^.*=::g' -e 's|\\:|:|g' ) ; do
 					echo $projectName $LINE
 				done
-				# grep "$MTC" "$indexFile" | sed "s:^.*=::g" | sort
 				
 				return 0
 			fi
@@ -136,20 +136,15 @@ ListProjectProvides(){
 	fi
 	
 	if [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
-		echo "ListProjectProvides: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
-
-		Require DistroSourceCommand
-		
-		DistroSourceCommand \
-			-q \
-			--import-from-source \
-			--select-project "$projectName" \
-			--print-provides-separate-lines \
-			
+		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
+		(
+			Require ListSourceProjectProvides
+			ListSourceProjectProvides "$projectName"
+		)
 		return 0
 	fi
 	
-	echo "ERROR: ListProjectProvides: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
 }
 
 case "$0" in

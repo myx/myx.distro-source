@@ -1,5 +1,4 @@
 
-# Require PrepareRepositorySyncToCached
 Require DistroSourceCommand
 
 PrepareBuildDependencyIndex(){

@@ -130,10 +130,6 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				if [ -z "${MDSC_IDAPRV:0:1}" ] ; then
-					Require ListDistroProvides
-					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
-				fi
 				local selectProjects="` \
 					cat \
 						<( echo "$selectProjects" ) \
@@ -149,10 +145,6 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				if [ -z "${MDSC_IDAPRV:0:1}" ] ; then
-					Require ListDistroProvides
-					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
-				fi
 				local selectProjects="` \
 					grep -Fx -f \
 						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" ) \
@@ -168,10 +160,6 @@ ListDistroProjects(){
 					return 1
 				fi
 				local selectArgument="$1" ; shift
-				if [ -z "${MDSC_IDAPRV:0:1}" ] ; then
-					Require ListDistroProvides
-					ListDistroProvides --set-env MDSC_IDAPRV --all-provides-merged
-				fi
 				local selectProjects="` \
 					grep -Fvx -f \
 						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" ) \
@@ -410,7 +398,7 @@ case "$0" in
 				echo "    ListDistroProjects.fn.sh --projects ndss | sort" >&2
 				echo "    ListDistroProjects.fn.sh --provides image-execute:deploy-l6route-config: | sort" >&2
 				echo "    ListDistroProjects.fn.sh --provides deploy-keyword:l6 | sort" >&2
-				echo "    ListDistroProjects.fn.sh --keywords deploy-keyword:l6 | sort" >&2
+				echo "    ListDistroProjects.fn.sh --keywords l6 | sort" >&2
 			fi
 			exit 1
 		fi

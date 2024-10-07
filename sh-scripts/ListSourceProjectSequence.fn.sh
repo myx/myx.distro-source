@@ -15,16 +15,67 @@ fi
 
 
 ListSourceProjectSequence(){
-	local PKG="$1"
-	if [ -z "$PKG" ] ; then
-		echo "ERROR: ListSourceProjectSequence: 'PKG' argument is required!" >&2 ; return 1
+
+	local MDSC_CMD='ListSourceProjectSequence'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	local projectName="${1#$MDSC_SOURCE/}"
+	if [ -z "$projectName" ] ; then
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
 	fi
-	
+
+	shift
+	set -e
+
+	local useNoCache=""
+	local useNoIndex=""
+
+	while true ; do
+		case "$1" in
+			--print-project)
+				shift
+				
+				ListSourceProjectSequence "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
+				return 0
+			;;
+			--print-provides)
+				shift
+				
+				Require ListSourceProjectProvides
+		
+				for sequenceProjectName in $( ListSourceProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
+					ListSourceProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex "$@"
+				done | awk '!x[$2]++'
+				# ListProjectSequence "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
+				return 0
+			;;
+			--no-cache)
+				shift
+				local useNoCache="--no-cache"
+			;;
+			--no-index)
+				shift
+				local useNoIndex="--no-index"
+			;;
+			'')
+				break;
+			;;
+			*)
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
+			;;
+		esac
+	done
+
+
 	Require DistroSourceCommand
 	DistroSourceCommand \
 		--import-from-source \
-		--select-project $PKG \
-		--print-sequence --print ""
+		--select-project "$projectName" \
+		--print-sequence-separate-lines
+
+
+	#	--prepare-sequence \
+	#	--print-sequence --print ""
 }
 
 case "$0" in

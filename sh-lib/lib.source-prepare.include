@@ -1,0 +1,11 @@
+[ -z "$MDSC_DETAIL" ] || echo "+ SourcePrepare: library included" >&2
+
+if ! type DistroSource >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+fi
+
+# main shell command
+SourcePrepare(){
+	echo "Not Supported!" >&2
+	return 1
+}

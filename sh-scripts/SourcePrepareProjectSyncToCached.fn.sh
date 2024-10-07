@@ -15,10 +15,10 @@ fi
 type Async >/dev/null 2>&1 || \
 	. "`myx.common which lib/async`"
 
-PrepareProjectSyncToCached(){
+SourcePrepareProjectSyncToCached(){
 	set -e
 
-	local MDSC_CMD='PrepareProjectSyncToCached'
+	local MDSC_CMD='SourcePrepareProjectSyncToCached'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 	
 	local projectName="${1#$MMDAPP/source/}"
@@ -86,7 +86,7 @@ PrepareProjectSyncToCached(){
 }
 
 case "$0" in
-	*/sh-scripts/PrepareProjectSyncToCached.fn.sh) 
-		PrepareProjectSyncToCached "$@"
+	*/sh-scripts/SourcePrepareProjectSyncToCached.fn.sh) 
+		SourcePrepareProjectSyncToCached "$@"
 	;;
 esac

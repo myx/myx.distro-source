@@ -12,6 +12,10 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	DistroShellContext --distro-path-auto
 fi
 
+if ! type DistroSource >/dev/null 2>&1 ; then
+	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+fi
+
 ListDistroProvides(){
 	local MDSC_CMD='ListDistroProvides'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
@@ -74,8 +78,14 @@ ListDistroProvides(){
 						echo "$MDSC_IDOPRV"
 						return 0
 					fi
+					if [ ! -z "$MDSC_IDAPRV_NAME" ] ; then 
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using MDSC_IDAPRV_NAME (--all-provides-merged) ($MDSC_OPTION)" >&2
+						export MDSC_IDOPRV="` cat "$MDSC_IDAPRV_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' `"
+						echo "$MDSC_IDOPRV"
+						return 0
+					fi
 					if [ ! -z "${MDSC_IDAPRV:0:1}" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using --all-provides-merged ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using MDSC_IDAPRV (--all-provides-merged) ($MDSC_OPTION)" >&2
 						export MDSC_IDOPRV="` echo "$MDSC_IDAPRV" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDOPRV"
 						return 0
@@ -154,6 +164,11 @@ ListDistroProvides(){
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
+					if [ ! -z "$MDSC_IDAPRV_NAME" ] ; then 
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using env-cached ($MDSC_OPTION)" >&2
+						cat "$MDSC_IDAPRV_NAME"
+						return 0
+					fi
 					if [ ! -z "${MDSC_IDAPRV:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDAPRV"
@@ -210,7 +225,7 @@ ListDistroProvides(){
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-megred env-caching projects ($MDSC_OPTION)" >&2
+					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDAPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides-merged `"
 					echo "$MDSC_IDAPRV"
 					return 0

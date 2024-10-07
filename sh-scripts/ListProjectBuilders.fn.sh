@@ -14,13 +14,18 @@ fi
 
 
 ListProjectBuilders(){
-	local projectName="$1"
+
+	local MDSC_CMD='ListProjectBuilders'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	local projectName="${1#$MDSC_SOURCE/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListSourceProjectProvides: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
 	fi
+
 	local stageType="$2"
 	if [ -z "$stageType" ] ; then
-		echo "ERROR: ListSourceProjectProvides: 'stageType' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'stageType' argument is required!" >&2 ; return 1
 	fi
 	if [ "$stageType" = "--all" ] ; then
 		for stageType in source-prepare source-process image-prepare image-process image-install ; do
