@@ -284,7 +284,7 @@ ListDistroProjects(){
 
 				Require ListDistroProvides
 				
-				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk awk '$1 && !x[$1]++ { print $1; }'
+				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
 			--repository-projects)
