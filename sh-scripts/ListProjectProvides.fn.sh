@@ -33,13 +33,14 @@ ListProjectProvides(){
 		case "$1" in
 			--print-provides-only)
 				shift
-				ListProjectProvides "$projectName" "$@" | awk '{print $2}' | awk '!x[$0]++'
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
 				shift
-				ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" # | sed "s|^|$projectName |g"
-				return 0
+				break;
+				#ListProjectProvides "$projectName" $useNoCache $useNoIndex "$@" # | sed "s|^|$projectName |g"
+				#return 0
 			;;
 			--filter-and-cut)
 				shift

@@ -205,11 +205,11 @@ ListDistroProjects(){
 				
 				case "$providesFilter" in
 					*:)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* $providesFilter.*$" | awk '{print $1}' | awk '$1 && !x[$1]++'
+						ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* $providesFilter$" | awk '{print $1}' | awk '$1 && !x[$1]++'
+						ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -236,11 +236,11 @@ ListDistroProjects(){
 
 				case "$providesFilter" in
 					*:)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter.*$" | awk '{print $1}' | awk '$1 && !x[$1]++'
+						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter$" | awk '{print $1}' | awk '$1 && !x[$1]++'
+						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -263,7 +263,7 @@ ListDistroProjects(){
 
 				Require ListDistroProvides
 				
-				ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '{print $1}' | awk '$1 && !x[$1]++'
+				ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
 			--merged-keywords)
@@ -284,7 +284,7 @@ ListDistroProjects(){
 
 				Require ListDistroProvides
 				
-				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '{print $1}' | awk '$1 && !x[$1]++'
+				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
 			--repository-projects)
