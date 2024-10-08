@@ -165,7 +165,7 @@ ListDistroProvides(){
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
 					if [ ! -z "$MDSC_IDAPRV_NAME" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using env-cached ($MDSC_OPTION)" >&2
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using cache file ($MDSC_OPTION)" >&2
 						cat "$MDSC_IDAPRV_NAME"
 						return 0
 					fi

@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
 [ -z "$MDSC_DETAIL" ] || echo "+ DistroSource: library included" >&2
 
 # checks and updates MDSC_PRJ_NAME variable with project in focus
@@ -137,16 +140,18 @@ DistroSourceProjectSequenceFile(){
 # sets MDSC_IDAPRV_NAME variable to all merged provides table file name
 DistroSourceEnsureProvidesMergedFile(){
 	local MDSC_CMD='DistroSourceEnsureProvidesMergedFile'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	if [ "$1" != "MDSC_IDAPRV_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_IDAPRV_NAME" >&2
 		return 1
 	fi
 	if [ ! -z "${MDSC_IDAPRV_NAME:0:1}" ] ; then
-		[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using env-cached ($MDSC_OPTION)" >&2
+		[ "$MDSC_DETAIL" != "full" ] || echo "| $MDSC_CMD: using cache file ($MDSC_OPTION)" >&2
 		return 0
 	fi
+
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
 	local checkFile="$MDSC_CACHED/distro-provides.txt"
 	local cacheFile="$MDSC_CACHED/distro-merged-provides.txt"
 	if [ -f "$checkFile" ] ; then
@@ -176,16 +181,18 @@ DistroSourceEnsureProvidesMergedFile(){
 # sets MDSC_IDOPRV_NAME variable to all merged provides table file name
 DistroSourceEnsureProvidesOwnedFile(){
 	local MDSC_CMD='DistroSourceEnsureProvidesOwnedFile'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	if [ "$1" != "MDSC_IDOPRV_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_IDOPRV_NAME" >&2
 		return 1
 	fi
 	if [ ! -z "${MDSC_IDOPRV_NAME:0:1}" ] ; then
-		[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using env-cached ($MDSC_OPTION)" >&2
+		[ "$MDSC_DETAIL" != "full" ] || echo "| $MDSC_CMD: using cache file ($MDSC_OPTION)" >&2
 		return 0
 	fi
+
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
 	local checkFile="$MDSC_CACHED/distro-index.inf"
 	local cacheFile="$MDSC_CACHED/distro-provides.txt"
 	if [ -f "$checkFile" ] ; then
