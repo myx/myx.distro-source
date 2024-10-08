@@ -200,24 +200,23 @@ ListDistroProvides(){
 
 							local indexProvides="` \
 								grep -e "^PRJ-PRV-" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\\\:|:|g' \
-							`"
-							local indexSequence="` \
-								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
-							`"
-
-							join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( \
-								echo "$indexProvides" | while read -r projectName extraText ; do
+								| while read -r projectName extraText ; do
 									for extraText in $extraText ; do
 										echo "$projectName" "$extraText"
 									done
 								done | cat -n | sort -k 2
-							) <( \
-								echo "$indexSequence" | while read -r projectName extraText ; do
+							`"
+							local indexSequence="` \
+								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
+								| while read -r projectName extraText ; do
 									for extraText in $extraText ; do
 										echo "$projectName" "$extraText"
 									done
 								done | cat -n | sort -k 3
-							) | sort -n -k 1,2 | cut -d" " -f 3-
+							`"
+
+							join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexProvides" ) <( echo "$indexSequence" ) \
+							| sort -n -k 1,2 | cut -d" " -f 3-
 							
 							return 0 # 2s
 						fi
