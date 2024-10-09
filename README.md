@@ -148,7 +148,6 @@ Some Commands:
 
 ### Stage: source-process:
 
-
 	At the start of this stage:
 	1. 'cached' folder exists
 	2. changed project list updated for '--select-changed' selector
