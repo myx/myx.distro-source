@@ -144,6 +144,8 @@ Some Commands:
 	1. 'cached' folder exists and updated with changes in 'source' folder
 	2. shell script (sh, bash) readable basic indices created
 	3. changed project list updated for '--select-changed' selector
+	4. source preprocessing directives executed (like source hash or version increment)
+	5. distro actions updated (without cleaning old ones)
 
 
 ### Stage: source-process:
@@ -153,8 +155,11 @@ Some Commands:
 	2. changed project list updated for '--select-changed' selector
 
 	At the end of this stage:
-	1. 'cached' folder exists
-	2. changed project list updated for '--select-changed' selector
+	1. 'output' folder exists
+	2. distro-image indices created
+	3. packages preprocessed and build
+	4. export packages and repository contents updated
+	5. distro actions updated (without cleaning old ones)
 
 
 ### Stage: image-prepare:
@@ -162,12 +167,14 @@ Some Commands:
 See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
 
 	The 'distro-deploy' could be updated/cloned from compiled version without pulling and processing source files.
-	The 'distro-source' is exporting (pushing and syncing) all export packages built from sources.
 
 	(todo) During this stage one of the following actions available:
 	- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-deploy')
 	- `DistroImagePublish` -- export images pre-built locally (command provided by 'distro-source')
 
+	The 'distro-source' is:
+	1. exporting (pushing and syncing) all export packages built from sources (from 'output' folder)
+	2. replaces distro actions with new ones (clearing stale actions)
 
 
 ### Stage: image-process:
