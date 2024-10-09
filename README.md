@@ -132,3 +132,52 @@ Some Commands:
 		ListDistroProvides.fn.sh --all-provides
 	}
 
+
+
+### Stage: source-prepare:
+
+	At the start of this stage:
+	1. 'source' folder exists
+	2. some repositories were configured
+
+	At the end of this stage:
+	1. 'cached' folder exists and updated with changes in 'source' folder
+	2. shell script (sh, bash) readable basic indices created
+	3. changed project list updated for '--select-changed' selector
+
+
+### Stage: source-process:
+
+
+	At the start of this stage:
+	1. 'cached' folder exists
+	2. changed project list updated for '--select-changed' selector
+
+	At the end of this stage:
+	1. 'cached' folder exists
+	2. changed project list updated for '--select-changed' selector
+
+
+### Stage: image-prepare:
+
+See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
+
+	The 'distro-deploy' could be updated/cloned from compiled version without pulling and processing source files.
+	The 'distro-source' is exporting (pushing and syncing) all export packages built from sources.
+
+	(todo) During this stage one of the following actions available:
+	- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-deploy')
+	- `DistroImagePublish` -- export images pre-built locally (command provided by 'distro-source')
+
+
+
+### Stage: image-process:
+
+See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
+
+
+### Stage: image-install:
+
+See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
+
+
