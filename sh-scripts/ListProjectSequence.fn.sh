@@ -95,25 +95,25 @@ ListProjectSequence(){
 			if [ -f "$cacheFile" ] && \
 				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 			then
-				[ -z "$MDSC_DETAIL" ] || echo "| ListProjectSequence: $projectName: using cached ($MDSC_OPTION)" >&2
+				[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
 				cat "$cacheFile"
 				return 0
 			fi
 
 			if [ ! -d "$MDSC_CACHED/$projectName" ] ; then
-				echo "ListProjectSequence: $projectName: bypass ($MDSC_OPTION)" >&2
+				echo "$MDSC_CMD: $projectName: bypass ($MDSC_OPTION)" >&2
 				ListProjectSequence "$projectName" --no-cache
 				return 0
 			fi
 
-			echo "ListProjectSequence: $projectName: caching projects ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
 			ListProjectSequence "$projectName" --no-cache | tee "$cacheFile"
 			return 0
 		fi
 
 		if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 			if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-				echo "ListProjectSequence: $projectName: using index ($MDSC_OPTION)" >&2
+				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
 				
 				local FILTER="$1"
 				local currentProject
@@ -135,7 +135,7 @@ ListProjectSequence(){
 	
 	
 	if [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
-		echo "ListProjectSequence: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
+		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
 		
@@ -148,7 +148,7 @@ ListProjectSequence(){
 		return 0
 	fi
 	
-	echo "ERROR: ListProjectSequence: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
 }
 
 case "$0" in
