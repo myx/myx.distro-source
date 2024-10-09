@@ -69,7 +69,7 @@ App Folders:
 	/actions - workspace actions - non-editable (generated)
 
 
-source-prepare, source-process, image-prepare commands:
+source-prepare, source-process, image-prepare directives:
 
 	image-prepare:context-variable:
 		image-prepare:context-variable:<variableName>:{create|change|ensure|insert|update|remove|re-set|delete}[:<valueNoSpaces>...]
@@ -136,45 +136,54 @@ Some Commands:
 
 ### Stage: source-prepare:
 
-	At the start of this stage:
-	1. 'source' folder exists
-	2. some repositories were configured
+The 'distro-source' is:
+1. working from 'source' folder
+2. builds indices and syncs data to 'cached' folder
 
-	At the end of this stage:
-	1. 'cached' folder exists and updated with changes in 'source' folder
-	2. shell script (sh, bash) readable basic indices created
-	3. changed project list updated for '--select-changed' selector
-	4. source preprocessing directives executed (like source hash or version increment)
-	5. distro actions updated (without cleaning old ones)
+At the start of this stage:
+1. 'source' folder exists
+2. some repositories were configured
+
+At the end of this stage:
+1. 'cached' folder exists and updated with changes in 'source' folder
+2. shell script (sh, bash) readable basic indices created
+3. changed project list updated for '--select-changed' selector
+4. source preprocessing directives executed (like source hash or version increment)
+5. distro actions updated (without cleaning old ones)
 
 
 ### Stage: source-process:
 
-	At the start of this stage:
-	1. 'cached' folder exists
-	2. changed project list updated for '--select-changed' selector
+The 'distro-source' is:
+1. working from 'cached' folder
+2. builds all data to 'output' folder
 
-	At the end of this stage:
-	1. 'output' folder exists
-	2. distro-image indices created
-	3. packages preprocessed and build
-	4. export packages and repository contents updated
-	5. distro actions updated (without cleaning old ones)
+At the start of this stage:
+1. 'cached' folder exists
+2. changed project list updated for '--select-changed' selector
+
+At the end of this stage:
+1. 'output' folder exists
+2. distro-image indices created
+3. packages preprocessed and build
+4. export packages and repository contents updated
+5. distro actions updated (without cleaning old ones)
 
 
 ### Stage: image-prepare:
 
 See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
 
-	The 'distro-deploy' could be updated/cloned from compiled version without pulling and processing source files.
+The 'distro-deploy' could be updated/cloned from compiled version without pulling and processing source files.
 
-	(todo) During this stage one of the following actions available:
-	- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-deploy')
-	- `DistroImagePublish` -- export images pre-built locally (command provided by 'distro-source')
+(todo) During this stage one of the following actions available:
+- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-deploy')
+- `DistroImagePublish` -- export images pre-built locally (command provided by 'distro-source')
 
-	The 'distro-source' is:
-	1. exporting (pushing and syncing) all export packages built from sources (from 'output' folder)
-	2. replaces distro actions with new ones (clearing stale actions)
+The 'distro-source' is:
+1. working from 'output' folder
+2. exporting (pushing and syncing) all export packages built from sources
+3. replaces distro actions with new ones (clearing stale actions)
 
 
 ### Stage: image-process:
