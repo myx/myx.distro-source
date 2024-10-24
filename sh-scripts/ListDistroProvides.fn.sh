@@ -30,7 +30,7 @@ ListDistroProvides(){
 		;;
 		--select-from-env)
 			shift
-			if [ -z "$MDSC_SELECT_PROJECTS" ] ; then
+			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
 				return 1
 			fi
@@ -359,7 +359,7 @@ ListDistroProvides(){
 			;;
 			--merge-sequence)
 				shift
-				if [ -z "$MDSC_SELECT_PROJECTS" ] ; then
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
 					return 1
 				fi
@@ -401,7 +401,7 @@ ListDistroProvides(){
 					return 0
 				fi
 				
-				if [ ! -z "$MDSC_SELECT_PROJECTS" ] ; then
+				if [ ! -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
