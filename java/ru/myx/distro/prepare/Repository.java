@@ -84,8 +84,11 @@ public class Repository {
     public final Distro distro;
 
     public Repository(final String name, final String fetch, final Distro distro) {
-	this.name = name;
-	this.fetch = fetch;
+	if (name == null || name.trim().length() == 0) {
+	    throw new NullPointerException("Repository name is NULL");
+	}
+	this.name = name.trim();
+	this.fetch = fetch == null ? "" : fetch.trim();
 	this.distro = distro;
 	if (distro != null) {
 	    distro.addKnown(this);
@@ -134,8 +137,8 @@ public class Repository {
 
 	{
 	    final Properties info = new Properties();
-	    info.setProperty("Name", this.name == null ? "" : this.name);
-	    info.setProperty("Fetch", this.fetch == null ? "" : this.fetch);
+	    info.setProperty("Name", this.name);
+	    info.setProperty("Fetch", this.fetch);
 
 	    Utils.save(//
 		    console, repositoryOutput.resolve("repository.inf"), //
