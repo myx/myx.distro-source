@@ -134,8 +134,8 @@ public class Repository {
 
 	{
 	    final Properties info = new Properties();
-	    info.setProperty("Name", this.name);
-	    info.setProperty("Fetch", this.fetch);
+	    info.setProperty("Name", this.name == null ? "" : this.name);
+	    info.setProperty("Fetch", this.fetch == null ? "" : this.fetch);
 
 	    Utils.save(//
 		    console, repositoryOutput.resolve("repository.inf"), //
