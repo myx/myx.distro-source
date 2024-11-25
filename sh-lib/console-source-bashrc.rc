@@ -63,11 +63,22 @@ Source(){
 		( EXITCODE=$? ; set +x ; echo "ERROR: exited with error status ($EXITCODE)" ; exit $EXITCODE )
 }
 
+_ActionsCompletion()
+{
+	local PREFIX="$2"
+	if [ -z "$PREFIX" ] ; then
+		COMPREPLY=( $( ListAllActions --completion | sed 's!/.*!/!' | sort -u ) )
+	else
+		COMPREPLY=( $( ListAllActions --completion | grep "^$PREFIX" | sort -u ) )
+	fi
+}
+
+complete -F _ActionsCompletion "Action"
+#complete -W "\`ListAllActions --completion\`"    "Action"
 
 complete -W "\`ListDistroScripts\`" "."
 complete -W "\`ListDistroScripts\`" "*"
 complete -W "\`ListDistroScripts\`" "which"
-complete -W "\`ListAllActions --completion\`"    "Action"
 complete -W "\`ListDistroScripts --completion\`" "Require"
 complete -W "\`ListDistroScripts --completion\`" "Distro"
 complete -W "\`ListDistroScripts --completion --type deploy\`" "Deploy"
