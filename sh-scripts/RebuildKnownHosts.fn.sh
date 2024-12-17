@@ -58,8 +58,8 @@ RebuildKnownHosts() {
 			echo "Processing: ${knownHostsProject}" >&2
 			(cat "$knownHostsFile"; echo;) | while read -r KEY PK_TYPE PK _; do
 				if [ -n "$KEY" ] && [ -n "$PK_TYPE" ] && [ -n "$PK" ]; then
-					echo "$KEY $PK_TYPE $PK"
-					myx.common lib/replaceLine "$TMP_FILE" "^$KEY" "$KEY $PK_TYPE $PK"
+					KEY_ESCAPED="$(echo "${KEY}" | sed 's/[^^]/[&]/g; s/\^/\\^/g')"
+					myx.common lib/replaceLine "$TMP_FILE" "^${KEY_ESCAPED} " "$KEY $PK_TYPE $PK"
 				fi
 			done
 		done
