@@ -19,7 +19,7 @@ ListRepositoryProjectsInternalRecursionEchoProjects(){
 	[ -d "$PKG_PATH/ae3-packages" ] && echo "$PKG_PATH" && return 0
 	
 	local SEARCH_DEPTH="$2"
-	if [ "$SEARCH_DEPTH" != "--" ] ; then
+	if [ "$SEARCH_DEPTH" != "---" ] ; then
 		for CHK_PATH in `find "$PKG_PATH" -mindepth 1 -maxdepth 1 -type d | sort` ; do
 			ListRepositoryProjectsInternalRecursionEchoProjects "$CHK_PATH" "-$SEARCH_DEPTH"
 		done	
