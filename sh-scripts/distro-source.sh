@@ -45,7 +45,7 @@ exit 0
 ./distro/distro-source.sh -v --add-all-source-repositories ../source --print-projects -p ""
 
 ./distro/distro-source.sh -v --add-source-repository ../source/myx --add-source-repository ../source/ndm --print-repositories -p ""
-./distro/distro-source.sh -v --add-source-repository ../source/myx --add-remote-repository "ndm|http://myx.ru/distro/ndm" --print-repositories -p ""
+./distro/distro-source.sh -v --add-source-repository ../source/myx --add-remote-repository "ndm|https://myx.co.nz/distro/ndm" --print-repositories -p ""
 
 ./distro/distro-source.sh -v --add-all-source-repositories ../source  --prepare-build -p ""
 ./distro/distro-source.sh -v --import-from-source --prepare-build -p ""
