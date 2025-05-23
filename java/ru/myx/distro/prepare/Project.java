@@ -327,18 +327,44 @@ public class Project {
 	}
 
 	{
-	    // final Collection<String> lines = new TreeSet<>();
 	    final Collection<String> lines = new LinkedHashSet<>();
-	    final Project project = this;
 	    {
-		lines.add(/* project.getFullName() + ' ' + */project.name);
-		for (final OptionListItem item : project.getProvides()) {
+		lines.add(/* project.getFullName() + ' ' + */this.name);
+		for (final OptionListItem item : this.getProvides()) {
 		    item.fillList(/* project.getFullName() + ' ' + */ "", lines);
 		}
 	    }
 	    Utils.save(//
 		    console, //
 		    packageOutput.resolve("project-provides.txt"), //
+		    lines.stream()//
+	    );
+	}
+	{
+	    final Collection<String> lines = new LinkedHashSet<>();
+	    {
+		lines.add(/* project.getFullName() + ' ' + */this.name);
+		for (final OptionListItem item : this.getDeclares()) {
+		    item.fillList(/* project.getFullName() + ' ' + */ "", lines);
+		}
+	    }
+	    Utils.save(//
+		    console, //
+		    packageOutput.resolve("project-declares.txt"), //
+		    lines.stream()//
+	    );
+	}
+	{
+	    final Collection<String> lines = new LinkedHashSet<>();
+	    {
+		lines.add(/* project.getFullName() + ' ' + */this.name);
+		for (final OptionListItem item : this.getKeywords()) {
+		    item.fillList(/* project.getFullName() + ' ' + */ "", lines);
+		}
+	    }
+	    Utils.save(//
+		    console, //
+		    packageOutput.resolve("project-keywords.txt"), //
 		    lines.stream()//
 	    );
 	}
