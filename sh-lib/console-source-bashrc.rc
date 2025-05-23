@@ -42,11 +42,31 @@ Deploy(){
 		( . "$MDSC_SOURCE/myx/myx.distro-deploy/sh-lib/HelpDeploy.include" )
 		return 1
 	fi
+
+
 	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
-		source "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+		if [ ! -f "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+			echo "ERROR: unknown command: ${distroCommand%.fn.sh}" ; set +e ; return 1
+		fi
+		. "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 	fi
-	( set -e ; "${distroCommand%.fn.sh}" "$@" ) || \
-		( EXITCODE=$? ; set +x ; echo "ERROR: exited with error status ($EXITCODE)" ; exit $EXITCODE )
+
+	set +e
+
+	"${distroCommand%.fn.sh}" "$@" || {
+		EXITCODE=$?
+		echo "ERROR: exited with error status ($EXITCODE)"
+		set +e
+		return $EXITCODE
+	}
+	return 0
+
+	( "${distroCommand%.fn.sh}" "$@" ; ) || {
+		EXITCODE=$?
+		echo "ERROR: exited with error status ($EXITCODE)"
+		set +e
+		return $EXITCODE
+	}
 }
 
 
@@ -56,14 +76,33 @@ Source(){
 		( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpSource.include" )
 		return 1
 	fi
+
 	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
-		source "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+		if [ ! -f "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+			echo "ERROR: unknown command: ${distroCommand%.fn.sh}" ; set +e ; return 1
+		fi
+		. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 	fi
-	( set -e ; "${distroCommand%.fn.sh}" "$@" ) || \
-		( EXITCODE=$? ; set +x ; echo "ERROR: exited with error status ($EXITCODE)" ; exit $EXITCODE )
+
+	set +e
+
+	"${distroCommand%.fn.sh}" "$@" || {
+		EXITCODE=$?
+		echo "ERROR: exited with error status ($EXITCODE)"
+		set +e
+		return $EXITCODE
+	}
+	return 0
+
+	( "${distroCommand%.fn.sh}" "$@" ; ) || {
+		EXITCODE=$?
+		echo "ERROR: exited with error status ($EXITCODE)"
+		set +e
+		return $EXITCODE
+	}
 }
 
-_ActionsCompletion()
+consoleActionsCompletion()
 {
 	local PREFIX="$2"
 	if [ -z "$PREFIX" ] ; then
@@ -73,7 +112,7 @@ _ActionsCompletion()
 	fi
 }
 
-complete -F _ActionsCompletion "Action"
+complete -F consoleActionsCompletion "Action"
 #complete -W "\`ListAllActions --completion\`"    "Action"
 
 complete -W "\`ListDistroScripts\`" "."
@@ -84,15 +123,23 @@ complete -W "\`ListDistroScripts --completion\`" "Distro"
 complete -W "\`ListDistroScripts --completion --type deploy\`" "Deploy"
 complete -W "\`ListDistroScripts --completion --type source\`" "Source"
 
-PS1="MDSSC: \`printf "\$MDSC_INMODE"\`: $PS1"
-export PS1
+PROMPT_COMMAND="set +e"
 
-### testing
-
-Echo(){
-	local prefixName="$1"
-	local commandName="$2"
-	echo "$commandName"
+consolePromptState(){
+	if [ ! -z "$MDSC_INT_CD" ] ; then
+		echo "Changing directory: $MDSC_INT_CD"
+		cd "$MDSC_INT_CD"
+		export -n MDSC_INT_CD
+	fi
+	printf "MDSSC:%s:%s" "$MDSC_INMODE" "$(basename "${MDSC_PRJ_NAME:--}")"
 }
 
-complete -F "Echo"    "TEST1"
+PS1="\` consolePromptState \`: $PS1"
+export PS1
+
+if [ ! -z "$MDSC_PRJ_NAME" ] ; then
+	# DistroSelectProject MDSC_PRJ_NAME "$MDSC_PRJ_NAME"
+	export MDSC_SELECT_PROJECTS="$MDSC_PRJ_NAME"
+	cd "$MMDAPP/source/$MDSC_PRJ_NAME"
+	echo "Console: Project Selected: $MDSC_PRJ_NAME" >&2
+fi

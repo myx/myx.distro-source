@@ -31,7 +31,7 @@ ListDistroProjects(){
 		case "$1" in
 			--select-from-env)
 				shift
-				local selectProjects="$MDSC_SELECT_PROJECTS"
+				local selectProjects="${MDSC_SELECT_PROJECTS}"
 				if [ -z "$selectProjects" ] ; then
 					echo "ERROR: ListDistroProjects: --select-from-env no projects selected!" >&2
 					return 1

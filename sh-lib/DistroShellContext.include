@@ -32,7 +32,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	Require(){
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] ; then
-			. "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpRequire.include"
+			( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpRequire.include" )
 			return 1
 		fi
 		if type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
@@ -63,7 +63,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 	Distro(){
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] ; then
-			. "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpDistro.include"
+			( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpDistro.include" )
 			return 1
 		fi
 		if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
