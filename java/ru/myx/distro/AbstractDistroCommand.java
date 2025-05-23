@@ -198,6 +198,46 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    }, "--print-provides-separate-lines");
 
 	    AbstractCommand.registerOperation(operations, context -> {
+		final StringBuilder builder = new StringBuilder(256);
+		boolean first = true;
+		for (final Project project : context.buildQueue) {
+		    final String projectName = project.getFullName();
+		    for (final OptionListItem provide : project.getDeclares()) {
+			if (first) {
+			    first = false;
+			} else {
+			    builder.append('\n');
+			}
+			final List<String> items = new ArrayList<>();
+			provide.fillList(projectName + ' ', items);
+			builder.append(String.join("\n", items));
+		    }
+		}
+		System.out.println(builder);
+		return true;
+	    }, "--print-declares-separate-lines");
+
+	    AbstractCommand.registerOperation(operations, context -> {
+		final StringBuilder builder = new StringBuilder(256);
+		boolean first = true;
+		for (final Project project : context.buildQueue) {
+		    final String projectName = project.getFullName();
+		    for (final OptionListItem provide : project.getKeywords()) {
+			if (first) {
+			    first = false;
+			} else {
+			    builder.append('\n');
+			}
+			final List<String> items = new ArrayList<>();
+			provide.fillList(projectName + ' ', items);
+			builder.append(String.join("\n", items));
+		    }
+		}
+		System.out.println(builder);
+		return true;
+	    }, "--print-keywords-separate-lines");
+
+	    AbstractCommand.registerOperation(operations, context -> {
 		final Map<String, Set<Project>> provides = context.repositories.getProvides();
 		final StringBuilder builder = new StringBuilder(256);
 		for (final String provide : provides.keySet()) {

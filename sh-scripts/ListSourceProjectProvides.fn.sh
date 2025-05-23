@@ -110,6 +110,27 @@ case "$0" in
 
 		# . "$( dirname $0 )/../sh-lib/DistroShellContext.include"
 		# DistroShellContext --distro-from-source
+	
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: ListSourceProjectProvides.fn.sh <project_name> [--print-project] [--print-provides-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
+			echo "syntax: ListSourceProjectProvides.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				echo "  Examples:" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common --print-project" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --merge-sequence" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --merge-sequence" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common --filter-and-cut deploy-export" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common --print-provides-only --filter-and-cut deploy-export" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --filter-and-cut deploy-export --merge-sequence" >&2
+				echo "    ListSourceProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-provides-only --filter-and-cut deploy-export --merge-sequence" >&2
+				echo "    ListSourceProjectProvides.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project" >&2
+				echo "    ListSourceProjectProvides.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence" >&2
+				echo "    ListSourceProjectProvides.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project " >&2
+			fi
+			exit 1
+		fi
 		
 		ListSourceProjectProvides "$@"
 	;;

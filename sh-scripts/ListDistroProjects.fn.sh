@@ -122,7 +122,7 @@ ListDistroProjects(){
 				local selectProjects="` cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' `"
 			;;
 
-			--select-projects|--select-provides|--select-merged-provides|--select-keywords|--select-merged-keywords|--select-repository-projects)
+			--select-projects|--select-provides|--select-merged-provides|--select-declares|--select-keywords|--select-merged-keywords|--select-keywords2|--select-merged-keywords2|--select-repository-projects)
 				## Unions with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -137,7 +137,7 @@ ListDistroProjects(){
 					| awk '$0 && !x[$0]++' \
 				`"
 			;;
-			--filter-projects|--filter-provides|--filter-merged-provides|--filter-keywords|--filter-merged-keywords|--filter-repository-projects)
+			--filter-projects|--filter-provides|--filter-merged-provides|--filter-declares|--filter-keywords|--filter-merged-keywords|--filter-keywords2|--filter-merged-keywords2|--filter-repository-projects)
 				## Intersects with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -152,7 +152,7 @@ ListDistroProjects(){
 					| awk '$0 && !x[$0]++' \
 				`"
 			;;
-			--remove-projects|--remove-provides|--remove-merged-provides|--remove-keywords|--remove-merged-keywords|--remove-repository-projects)
+			--remove-projects|--remove-provides|--remove-merged-provides|--remove-provides|--remove-keywords|--remove-merged-keywords|--remove-keywords2|--remove-merged-keywords2|--remove-repository-projects)
 				## Subtracts from selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -192,11 +192,11 @@ ListDistroProjects(){
 				##
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProjects: --projects projectName filter is expected!" >&2
+					echo "ERROR: ListDistroProjects: --provides projectName filter is expected!" >&2
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --provides option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 				local providesFilter="$1" ; shift
@@ -223,11 +223,11 @@ ListDistroProjects(){
 				##
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProjects: --projects projectName filter is expected!" >&2
+					echo "ERROR: ListDistroProjects: --merged-provides projectName filter is expected!" >&2
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --merged-provides option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 				local providesFilter="$1" ; shift
@@ -241,6 +241,34 @@ ListDistroProjects(){
 					;;
 					*)
 						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						return 0
+					;;
+				esac
+			;;
+			--declares)
+				##
+				## Prints projects whose declares match glob
+				##
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProjects: --declares projectName filter is expected!" >&2
+					return 1
+				fi
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: ListDistroProjects: no options allowed after --declares option ($MDSC_OPTION)" >&2
+					return 1
+				fi
+				local declaresFilter="$1" ; shift
+
+				Require ListDistroDeclares
+				
+				case "$declaresFilter" in
+					*:)
+						ListDistroDeclares $useNoCache $useNoIndex --all-declares | grep -e "^.* $declaresFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						return 0
+					;;
+					*)
+						ListDistroDeclares $useNoCache $useNoIndex --all-declares | grep -e "^.* $declaresFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -266,6 +294,34 @@ ListDistroProjects(){
 				ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
+			--keywords2)
+				##
+				## Prints projects whose keywords match glob
+				##
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProjects: --keywords projectName filter is expected!" >&2
+					return 1
+				fi
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
+					return 1
+				fi
+				local keywordsFilter="$1" ; shift
+
+				Require ListDistroKeywords
+				
+				case "$keywordsFilter" in
+					*:)
+						ListDistroKeywords $useNoCache $useNoIndex --all-keywords | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						return 0
+					;;
+					*)
+						ListDistroKeywords $useNoCache $useNoIndex --all-keywords | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						return 0
+					;;
+				esac
+			;;
 			--merged-keywords)
 				##
 				## Prints projects whose provides match glob
@@ -276,7 +332,7 @@ ListDistroProjects(){
 					return 1
 				fi
 				if [ ! -z "$2" ] ; then
-					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
+					echo "ERROR: ListDistroProjects: no options allowed after --merged-keywords option ($MDSC_OPTION)" >&2
 					return 1
 				fi
 
@@ -286,6 +342,34 @@ ListDistroProjects(){
 				
 				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
+			;;
+			--merged-keywords2)
+				##
+				## Prints projects whose keywords match glob
+				##
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProjects: --keywords projectName filter is expected!" >&2
+					return 1
+				fi
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
+					return 1
+				fi
+				local keywordsFilter="$1" ; shift
+
+				Require ListDistroKeywords
+				
+				case "$keywordsFilter" in
+					*:)
+						ListDistroKeywords $useNoCache $useNoIndex --all-keywords-merged | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						return 0
+					;;
+					*)
+						ListDistroKeywords $useNoCache $useNoIndex --all-keywords-merged | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						return 0
+					;;
+				esac
 			;;
 			--repository-projects)
 				##
