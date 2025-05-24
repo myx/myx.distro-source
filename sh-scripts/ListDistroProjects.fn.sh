@@ -273,7 +273,7 @@ ListDistroProjects(){
 					;;
 				esac
 			;;
-			--keywords)
+			--keywords2) # old, to be deleted later
 				##
 				## Prints projects whose provides match glob
 				##
@@ -294,7 +294,7 @@ ListDistroProjects(){
 				ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
-			--keywords2)
+			--keywords)
 				##
 				## Prints projects whose keywords match glob
 				##
@@ -322,7 +322,7 @@ ListDistroProjects(){
 					;;
 				esac
 			;;
-			--merged-keywords)
+			--merged-keywords2) # old, to be deleted later
 				##
 				## Prints projects whose provides match glob
 				##
@@ -343,7 +343,7 @@ ListDistroProjects(){
 				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
-			--merged-keywords2)
+			--merged-keywords)
 				##
 				## Prints projects whose keywords match glob
 				##
@@ -460,7 +460,7 @@ case "$0" in
 			if [ "$1" = "--help" ] ; then
 				echo "  Search:" >&2
 				echo "    --select-{all|sequence|changed|none} " >&2
-				echo "    --{select|filter|remove}-{projects|[merged-]provides|[merged-]keywords} <glob>" >&2
+				echo "    --{select|filter|remove}-{projects|declares|[merged-]provides|[merged-]keywords} <glob>" >&2
 				echo "    --{select|filter|remove}-repository-projects <repositoryName>" >&2
 				echo "  Examples:" >&2
 				
