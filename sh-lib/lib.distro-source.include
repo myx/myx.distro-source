@@ -215,7 +215,7 @@ DistroSourceEnsureProvidesOwnedFile(){
 	fi
 	
 	echo "$MDSC_CMD: ⛔ ERROR: can't ensure provides-owned index" >&2
-	return 1
+	set +e ; return 1
 }
 
 #
@@ -225,7 +225,7 @@ DistroSourceProjectContextVariables(){
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 	if [ -z "$MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
-		return 1
+		set +e ; return 1
 	fi
 
 	local prefix="" filter=""
@@ -251,7 +251,7 @@ DistroSourceProjectContextVariables(){
 			;;
 			*)
 				echo "$MDSC_CMD: ⛔ ERROR: Invalid option: $1" >&2
-				return 1
+				set +e ; return 1
 			;;
 		esac
 	done
@@ -413,7 +413,7 @@ DistroSourceCheckSourcePath(){
 
 	if [ -z "$MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	
 	local declaredAt="$1" ; shift
@@ -423,7 +423,7 @@ DistroSourceCheckSourcePath(){
 
 	if [ -z "$sourceName" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: arguments missing" >&2
-		return 1
+		set +e ; return 1
 	fi
 
 	if [ "$sourceName" = "*" -o "$sourceName" = "**" ] ; then
@@ -444,7 +444,7 @@ DistroSourceCheckSourcePath(){
 		fi
 		
 		echo "$MDSC_CMD: 🙋 WARNING: wild-card path is not found: $declaredAt:$sourceName:$sourcePath" >&2
-		return 1
+		set +e ; return 1
 	fi
 	
 	if [ "$sourceName" = "." ] ; then
@@ -475,7 +475,7 @@ DistroSourceCheckSourcePath(){
 	fi
 	
 	echo "$MDSC_CMD: 🙋 WARNING: explicitly declared path is not found: $declaredAt:$sourceName:$sourcePath" >&2
-	return 1
+	set +e ; return 1
 }
 
 DistroSourceEmbedScript(){ # "1-scriptFileName" "2-changeDir"
@@ -484,15 +484,15 @@ DistroSourceEmbedScript(){ # "1-scriptFileName" "2-changeDir"
 
 	if [ -z "$1" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: script file name argument is expected!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	if [ ! -f "$1" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: script file is does not exist: ${scriptFileName#$MMDAPP}" >&2
-		return 1
+		set +e ; return 1
 	fi
 	if [ -z "$2" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: working directory argument is expected!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	
 	[ -z "$MDSC_DETAIL" ] || echo "echo '> run: ${1#$MMDAPP}:$2' >&2"
@@ -509,5 +509,5 @@ DistroSourceEmbedScript(){ # "1-scriptFileName" "2-changeDir"
 # main shell command
 DistroSource(){
 	echo "Not Supported!" >&2
-	return 1
+	set +e ; return 1
 }

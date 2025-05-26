@@ -31,7 +31,7 @@ SourcePrepareRepositorySyncToCached(){
 	local repositoryName="${1#$MMDAPP/source/}"
 	if [ -z "$repositoryName" ] ; then
 		echo "ERROR: $MDSC_CMD: 'repositoryName' argument is required!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	
 	set -e

@@ -21,14 +21,14 @@ Require ListProjectKnownHosts
 RebuildKnownHosts() {
 	if [ -z "$MDSC_SOURCE" ]; then
 		echo "ERROR: DistroContext is not set!" >&2
-		return 1
+		set +e ; return 1
 	fi
 
 	local TMP_FILE
 	TMP_FILE="$(mktemp -t "rebuild-knownhosts-XXXXXXXX")"
 	if [ $? -ne 0 ]; then
 		echo "ERROR: Can't make temporary file $TMP_FILE, exiting..." >&2
-		return 1
+		set +e ; return 1
 	fi
 	echo "Using temporary file: $TMP_FILE"
 

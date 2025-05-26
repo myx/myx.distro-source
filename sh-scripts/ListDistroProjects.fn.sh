@@ -34,14 +34,14 @@ ListDistroProjects(){
 				local selectProjects="${MDSC_SELECT_PROJECTS}"
 				if [ -z "$selectProjects" ] ; then
 					echo "ERROR: ListDistroProjects: --select-from-env no projects selected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 			;;
 			--all-projects)
 				shift
 				if [ ! -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				
 				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
@@ -127,7 +127,7 @@ ListDistroProjects(){
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: $selectVariant selectArgument is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local selectArgument="$1" ; shift
 				local selectProjects="` \
@@ -142,7 +142,7 @@ ListDistroProjects(){
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: $selectVariant selectArgument is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local selectArgument="$1" ; shift
 				local selectProjects="` \
@@ -157,7 +157,7 @@ ListDistroProjects(){
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: $selectVariant selectArgument is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local selectArgument="$1" ; shift
 				local selectProjects="` \
@@ -175,11 +175,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --projects projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local projectFilter="$1" ; shift
 
@@ -193,11 +193,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --provides projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --provides option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local providesFilter="$1" ; shift
 
@@ -224,11 +224,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --merged-provides projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --merged-provides option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local providesFilter="$1" ; shift
 
@@ -252,11 +252,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --declares projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --declares option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local declaresFilter="$1" ; shift
 
@@ -280,11 +280,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --keywords keyword filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 
 				local providesFilter="$1" ; shift
@@ -301,11 +301,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --keywords projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local keywordsFilter="$1" ; shift
 
@@ -329,11 +329,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --merged-keywords keyword filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --merged-keywords option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 
 				local providesFilter="$1" ; shift
@@ -350,11 +350,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --keywords projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local keywordsFilter="$1" ; shift
 
@@ -378,11 +378,11 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --repository-projects projectName filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				if [ ! -z "$2" ] ; then
 					echo "ERROR: ListDistroProjects: no options allowed after --repository-projects option" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local projectFilter="$1" ; shift
 
@@ -405,7 +405,7 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --select-execute-default command is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local executeDefault="$1" ; shift
 			;;
@@ -413,7 +413,7 @@ ListDistroProjects(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: ListDistroProjects: --select-execute-command command is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local executeCommand="$1" ; shift
 
@@ -429,7 +429,7 @@ ListDistroProjects(){
 					fi
 
 					echo "ERROR: ListDistroProjects: invalid option ($1), expecting <command name> <args...>: $1" >&2
-					return 1
+					set +e ; return 1
 				fi
 				export MDSC_SELECT_PROJECTS="$selectProjects"
 				[ -z "$MDSC_DETAIL" ] || echo "* ListDistroProjects:" $executeDefault --select-from-env $useNoCache $useNoIndex "$@" >&2

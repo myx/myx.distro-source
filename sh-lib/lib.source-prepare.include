@@ -7,5 +7,5 @@ fi
 # main shell command
 SourcePrepare(){
 	echo "Not Supported!" >&2
-	return 1
+	set +e ; return 1
 }

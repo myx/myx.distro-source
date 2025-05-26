@@ -25,7 +25,7 @@ RebuildDistroFromOutputBuilderRaw(){
 		echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
-		return 1
+		set +e ; return 1
 	fi
 }
 

@@ -39,7 +39,8 @@ ListDistroSequence(){
 				;;
 
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
 				;;
 		esac
 	done
@@ -49,7 +50,7 @@ ListDistroSequence(){
 			shift
 			if [ ! -z "$1" ] ; then
 				echo "ERROR: $MDSC_CMD: no options allowed after --all option ($MDSC_OPTION, $@)" >&2
-				return 1
+				set +e ; return 1
 			fi
 
 			if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
@@ -100,14 +101,15 @@ ListDistroSequence(){
 				return 0
 			fi
 			
-			echo "ERROR: $MDSC_CMD: can't list distro sequence (mode: $MDSC_INMODE)" >&2 ; return 1
+			echo "ERROR: $MDSC_CMD: can't list distro sequence (mode: $MDSC_INMODE)" >&2
+			set +e ; return 1
 			;;
 
 		--all-projects)
 			shift
 			if [ ! -z "$1" ] ; then
 				echo "ERROR: $MDSC_CMD: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
-				return 1
+				set +e ; return 1
 			fi
 
 			if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then

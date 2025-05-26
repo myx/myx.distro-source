@@ -37,7 +37,7 @@ ListDistroScripts(){
 			local MDPATH="$MMDAPP/source/myx/myx.distro-$MDTYPE/sh-scripts"
 			if [ ! -d "$MDPATH" ] ; then
 				echo "ERROR: ListDistroScripts: invalid type: $MDTYPE" >&2
-				return 1
+				set +e ; return 1
 			fi
 			local FILTER="$MDPATH/"
 			;;

@@ -32,14 +32,14 @@ ListDistroProvides(){
 			shift
 			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
-				return 1
+				set +e ; return 1
 			fi
 		;;
 		--set-env)
 			shift
 			if [ -z "$1" ] ; then
 				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
-				return 1
+				set +e ; return 1
 			fi
 			local envName="$1" ; shift
 			eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
@@ -66,7 +66,7 @@ ListDistroProvides(){
 				shift
 				if [ ! -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
-					return 1
+					set +e ; return 1
 				fi
 
 				##
@@ -160,7 +160,7 @@ ListDistroProvides(){
 				shift
 				if [ ! -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
-					return 1
+					set +e ; return 1
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
@@ -274,7 +274,7 @@ ListDistroProvides(){
 				local lastOperation=${1%"-provides-column"} ; shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
@@ -354,14 +354,14 @@ ListDistroProvides(){
 				
 				if [ -z "$indexColumns" ] ; then
 					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 			;;
 			--merge-sequence)
 				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				
 				Require ListProjectProvides
@@ -376,7 +376,7 @@ ListDistroProvides(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local filterProvides="$1" projectName projectProvides ; shift
 				ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
@@ -411,11 +411,11 @@ ListDistroProvides(){
 				fi
 
 				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
-				return 1
+				set +e ; return 1
 			;;
 			*)
 				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
-				return 1
+				set +e ; return 1
 			;;
 		esac
 	done

@@ -18,7 +18,8 @@ Require ListProjectBuilders
 ListDistroBuilders(){
 	local stageType="$1"
 	if [ -z "$1" ] ; then
-		echo "ERROR: ListDistroBuilders: 'stageType' argument is required!" >&2 ; return 1
+		echo "ERROR: ListDistroBuilders: 'stageType' argument is required!" >&2
+		set +e ; return 1
 	fi
 	local projectName
 	for projectName in ` ListDistroProjects --all-projects ` ; do

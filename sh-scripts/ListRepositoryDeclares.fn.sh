@@ -25,7 +25,8 @@ ListRepositoryDeclares(){
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: ListRepositoryDeclares: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListRepositoryDeclares: 'repositoryName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -47,7 +48,8 @@ ListRepositoryDeclares(){
 			--filter-projects)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryDeclares: project name filter is expected!" >&2 ; return 1
+					echo "ERROR: ListRepositoryDeclares: project name filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local projectFilter="$1" ; shift
 				ListRepositoryDeclares "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
@@ -80,7 +82,8 @@ ListRepositoryDeclares(){
 			--filter)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryDeclares: project declares filter is expected!" >&2 ; return 1
+					echo "ERROR: ListRepositoryDeclares: project declares filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local filterDeclares="$1" ; shift
 
@@ -105,7 +108,8 @@ ListRepositoryDeclares(){
 				break;
 			;;
 			*)
-				echo "ERROR: ListRepositoryDeclares: invalid option: $1" >&2 ; return 1
+				echo "ERROR: ListRepositoryDeclares: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done

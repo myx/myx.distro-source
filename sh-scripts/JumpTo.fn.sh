@@ -48,7 +48,8 @@ JumpTo(){
 
 	local filterProject="$1"
 	if [ -z "$filterProject" ] ; then
-		echo -e "$MDSC_CMD: ⛔ ERROR: 'filterProject' argument (name or keyword or substring) is required!" >&2 ; return 1
+		echo -e "$MDSC_CMD: ⛔ ERROR: 'filterProject' argument (name or keyword or substring) is required!" >&2
+		set +e ; return 1
 	fi
 
 	shift

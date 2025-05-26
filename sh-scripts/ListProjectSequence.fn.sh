@@ -19,7 +19,8 @@ ListProjectSequence(){
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -83,7 +84,8 @@ ListProjectSequence(){
 				break;
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done
@@ -148,7 +150,8 @@ ListProjectSequence(){
 		return 0
 	fi
 	
-	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in

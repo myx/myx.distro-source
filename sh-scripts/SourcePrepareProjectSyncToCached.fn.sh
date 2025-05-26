@@ -23,7 +23,8 @@ SourcePrepareProjectSyncToCached(){
 	
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	
 	local projectSrc="$MMDAPP/source/$projectName"
@@ -73,7 +74,8 @@ SourcePrepareProjectSyncToCached(){
 								echo "$embeddedName: changed."
 							fi
 						else
-							echo "ERROR: $embeddedName: $EOUTPUT" >&2 ; return 1
+							echo "ERROR: $embeddedName: $EOUTPUT" >&2
+							set +e ; return 1
 						fi
 					done
 				fi
@@ -81,7 +83,8 @@ SourcePrepareProjectSyncToCached(){
 			
 		fi
 	else
-		echo "ERROR: $ROUTPUT" >&2 ; return 1
+		echo "ERROR: $ROUTPUT" >&2
+		set +e ; return 1
 	fi
 }
 

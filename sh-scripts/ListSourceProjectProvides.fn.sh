@@ -21,7 +21,8 @@ ListSourceProjectProvides(){
 
 	local projectName="${1#$MDSC_SOURCE/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 
 	shift
@@ -47,7 +48,8 @@ ListSourceProjectProvides(){
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2 ; return 1
+					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local filterProvides="$1" projectProvides ; shift
 
@@ -87,7 +89,8 @@ ListSourceProjectProvides(){
 				break;
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done

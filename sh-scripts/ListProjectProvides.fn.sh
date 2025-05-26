@@ -19,7 +19,8 @@ ListProjectProvides(){
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -45,7 +46,8 @@ ListProjectProvides(){
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2 ; return 1
+					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local filterProvides="$1" projectProvides ; shift
 
@@ -85,7 +87,8 @@ ListProjectProvides(){
 				break;
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done
@@ -145,7 +148,8 @@ ListProjectProvides(){
 		return 0
 	fi
 	
-	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in

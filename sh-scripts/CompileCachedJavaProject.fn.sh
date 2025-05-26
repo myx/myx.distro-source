@@ -8,7 +8,7 @@ CompileCachedJavaProject(){
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
 		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	
 	echo "$MDSC_CMD: Compiling project $projectName" >&2

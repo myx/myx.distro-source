@@ -32,14 +32,14 @@ ListDistroDeclares(){
 			shift
 			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
-				return 1
+				set +e ; return 1
 			fi
 		;;
 		--set-env)
 			shift
 			if [ -z "$1" ] ; then
 				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
-				return 1
+				set +e ; return 1
 			fi
 			local envName="$1" ; shift
 			eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
@@ -66,7 +66,7 @@ ListDistroDeclares(){
 				shift
 				if [ ! -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
-					return 1
+					set +e ; return 1
 				fi
 
 				##
@@ -160,7 +160,7 @@ ListDistroDeclares(){
 				shift
 				if [ ! -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares-merged option ($MDSC_OPTION, $@)" >&2
-					return 1
+					set +e ; return 1
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
@@ -274,7 +274,7 @@ ListDistroDeclares(){
 				local lastOperation=${1%"-declares-column"} ; shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: $lastOperation project declares filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
@@ -354,14 +354,14 @@ ListDistroDeclares(){
 				
 				if [ -z "$indexColumns" ] ; then
 					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 			;;
 			--merge-sequence)
 				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				
 				Require ListProjectDeclares
@@ -376,7 +376,7 @@ ListDistroDeclares(){
 				shift
 				if [ -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: project declares filter is expected!" >&2
-					return 1
+					set +e ; return 1
 				fi
 				local filterDeclares="$1" projectName projectDeclares ; shift
 				ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares \
@@ -411,11 +411,11 @@ ListDistroDeclares(){
 				fi
 
 				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
-				return 1
+				set +e ; return 1
 			;;
 			*)
 				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
-				return 1
+				set +e ; return 1
 			;;
 		esac
 	done

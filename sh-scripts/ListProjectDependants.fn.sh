@@ -15,7 +15,8 @@ fi
 ListProjectDependants(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListProjectDependants: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListProjectDependants: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -71,7 +72,8 @@ ListProjectDependants(){
 		return 0
 	fi
 	
-	echo "ERROR: ListProjectDependants: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListProjectDependants: $projectName: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in

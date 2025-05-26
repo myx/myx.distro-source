@@ -20,7 +20,8 @@ ListRepositoryRequires(){
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: ListRepositoryRequires: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListRepositoryRequires: 'repositoryName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -100,7 +101,8 @@ ListRepositoryRequires(){
 		return 0
 	fi
 	
-	echo "ERROR: ListRepositoryRequires: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListRepositoryRequires: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in

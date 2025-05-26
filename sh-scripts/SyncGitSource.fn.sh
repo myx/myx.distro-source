@@ -21,16 +21,19 @@ SyncGitSource(){
 	
 	local projectPath="$MDSC_SOURCE/${1#"$MDSC_SOURCE/"}" ; shift
 	if [ -z "$projectPath" ] ; then
-		echo "$MDSC_CMD: ⛔ ERROR: project path is expected!" >&2 ; return 1
+		echo "$MDSC_CMD: ⛔ ERROR: project path is expected!" >&2
+		set +e ; return 1
 	fi
 
 	local repositorySpec="$1" ; shift
 	if [ -z "$repositorySpec" ] ; then
-		echo "$MDSC_CMD: ⛔ ERROR: repository spec is expected!" >&2 ; return 1
+		echo "$MDSC_CMD: ⛔ ERROR: repository spec is expected!" >&2
+		set +e ; return 1
 	fi
 
 	if [ ! -z "$1" ] ; then
-		echo "$MDSC_CMD: ⛔ ERROR: extra arguments in command!" >&2 ; return 1
+		echo "$MDSC_CMD: ⛔ ERROR: extra arguments in command!" >&2
+		set +e ; return 1
 	fi
 
 	echo "$MDSC_CMD: 🔃 Syncing source project ${projectPath#"$MDSC_SOURCE/"} with git repository: $repositorySpec..." >&2

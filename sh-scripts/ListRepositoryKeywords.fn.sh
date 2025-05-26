@@ -25,7 +25,8 @@ ListRepositoryKeywords(){
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: ListRepositoryKeywords: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListRepositoryKeywords: 'repositoryName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -47,7 +48,8 @@ ListRepositoryKeywords(){
 			--filter-projects)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryKeywords: project name filter is expected!" >&2 ; return 1
+					echo "ERROR: ListRepositoryKeywords: project name filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local projectFilter="$1" ; shift
 				ListRepositoryKeywords "$repositoryName" "$@" | grep -e "^.*$projectFilter.* "
@@ -80,7 +82,8 @@ ListRepositoryKeywords(){
 			--filter)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryKeywords: project keywords filter is expected!" >&2 ; return 1
+					echo "ERROR: ListRepositoryKeywords: project keywords filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local filterKeywords="$1" ; shift
 
@@ -105,7 +108,8 @@ ListRepositoryKeywords(){
 				break;
 			;;
 			*)
-				echo "ERROR: ListRepositoryKeywords: invalid option: $1" >&2 ; return 1
+				echo "ERROR: ListRepositoryKeywords: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done

@@ -19,7 +19,8 @@ ListProjectKeywords(){
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -45,7 +46,8 @@ ListProjectKeywords(){
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project keywords filter is expected!" >&2 ; return 1
+					echo "ERROR: $MDSC_CMD: project keywords filter is expected!" >&2
+					set +e ; return 1
 				fi
 				local filterKeywords="$1" projectKeywords ; shift
 
@@ -85,7 +87,8 @@ ListProjectKeywords(){
 				break;
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2 ; return 1
+				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done
@@ -145,7 +148,8 @@ ListProjectKeywords(){
 		return 0
 	fi
 	
-	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in

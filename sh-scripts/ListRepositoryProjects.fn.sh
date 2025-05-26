@@ -10,7 +10,10 @@ fi
 ListRepositoryProjectsInternalRecursionEchoProjects(){
 	local PKG_PATH="$1"
 	
-	[ -z "$PKG_PATH" ] && echo 'ERROR: $PKG_PATH' is not set! >&2 && return 1
+	if [ -z "$PKG_PATH" ] ; then
+		echo 'ERROR: $PKG_PATH' is not set! >&2
+		set +e ; return 1
+	fi
 	
 	[ ! -d "$PKG_PATH" ] && return 0
 	
@@ -33,7 +36,10 @@ ListRepositoryProjects(){
 	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryProjects $@" >&2
 
 	local repositoryName="${1#$MDSC_SOURCE/}"
-	[ -z "$repositoryName" ] && echo 'ERROR: $repositoryName' is not set! >&2 && return 1
+	if [ -z "$repositoryName" ] ; then
+		echo 'ERROR: $repositoryName' is not set! >&2
+		set +e ; return 1
+	fi
 	
 	if [ "$2" = "--no-cache" ] ; then
 		shift

@@ -26,7 +26,7 @@ RebuildOutputFromCachedBuilderRaw(){
 		echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
-		return 1
+		set +e ; return 1
 	fi
 }
 
@@ -45,7 +45,7 @@ BuildOutputFromCachedRunner(){
 	
 	if [ ! -d "$MDSC_SOURCE" ] ; then
 		echo "ERROR: source path does not exist!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	
 	export OUTPUT_PATH="$MMDAPP/output"

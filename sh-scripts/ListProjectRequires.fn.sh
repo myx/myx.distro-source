@@ -15,7 +15,8 @@ fi
 ListProjectRequires(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListProjectRequires: 'projectName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListProjectRequires: 'projectName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -100,7 +101,8 @@ ListProjectRequires(){
 		return 0
 	fi
 	
-	echo "ERROR: ListProjectRequires: $projectName: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListProjectRequires: $projectName: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in

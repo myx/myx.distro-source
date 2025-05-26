@@ -18,7 +18,8 @@ ListRepositorySequence(){
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: ListRepositorySequence: 'repositoryName' argument is required!" >&2 ; return 1
+		echo "ERROR: ListRepositorySequence: 'repositoryName' argument is required!" >&2
+		set +e ; return 1
 	fi
 	shift
 
@@ -43,7 +44,8 @@ ListRepositorySequence(){
 				;;
 
 			*)
-				echo "ERROR: ListRepositorySequence: invalid option: $1" >&2 ; return 1
+				echo "ERROR: ListRepositorySequence: invalid option: $1" >&2
+				set +e ; return 1
 				;;
 		esac
 	done
@@ -99,7 +101,8 @@ ListRepositorySequence(){
 		return 0
 	fi
 	
-	echo "ERROR: ListRepositorySequence: project.inf file is required (at: $indexFile)" >&2 ; return 1
+	echo "ERROR: ListRepositorySequence: project.inf file is required (at: $indexFile)" >&2
+	set +e ; return 1
 }
 
 case "$0" in
