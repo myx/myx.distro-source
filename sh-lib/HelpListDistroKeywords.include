@@ -9,6 +9,9 @@ echo >&2
 echo "    --no-cache" >&2
 echo "                Use no cache." >&2
 echo >&2
+echo "    --explicit-noop" >&2
+echo "                Explicit argument that safely does nothing." >&2
+echo >&2
 echo "  Examples:" >&2
 echo >&2
 echo "    ListDistroKeywords.fn.sh --distro-from-source --all-keywords 2> /dev/null | sort" >&2
