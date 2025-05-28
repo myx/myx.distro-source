@@ -424,44 +424,15 @@ ListDistroProvides(){
 
 case "$0" in
 	*/sh-scripts/ListDistroProvides.fn.sh)
-		# ListDistroProvides.fn.sh --distro-source-only deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroProvides.fn.sh --distro-from-source deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroProvides.fn.sh --distro-from-cached deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroProvides.fn.sh --distro-from-cached deploy-ssh-target 2> /dev/null
-
-		# ListDistroProvides.fn.sh --distro-from-cached --select-projects tbd9 deploy-ssh-target 2> /dev/null
-		# ListDistroProvides.fn.sh --distro-from-cached --select-projects tbd9 deploy-keyword 2> /dev/null
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroProvides.fn.sh <search> [--merge-sequence]" >&2
-			echo "syntax: ListDistroProvides.fn.sh --all-provides [--merge-sequence]" >&2
+			echo "syntax: ListDistroProvides.fn.sh --all-provides" >&2
+			echo "syntax: ListDistroProvides.fn.sh --all-provides-merged" >&2
+			echo "syntax: ListDistroProvides.fn.sh <project-selector> [--merge-sequence] [<options>]" >&2
 			echo "syntax: ListDistroProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				echo "  Search:" >&2
-				echo "    --select-{all|sequence|changed|none} " >&2
-				echo "    --{select|filter|remove}-{projects|[merged-]provides|[merged-]keywords} <glob>" >&2
-				echo "    --{select|filter|remove}-repository-projects <repositoryName>" >&2
-				echo "  examples:" >&2
-				echo "    ListDistroProvides.fn.sh --distro-from-source --all-provides 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --distro-from-cached --all-provides | sort" >&2
-				echo "    ListDistroProvides.fn.sh --distro-source-only --all-provides | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-projects macosx 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-projects macosx --merge-sequence 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-projects myx | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-projects myx --filter-projects l6b2 --no-cache --no-index | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-keywords myx | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-keywords l6 | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-provides deploy-ssh-target: 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-merged-provides image-execute:deploy-l6route-config: 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --distro-source-only --select-merged-provides image-execute:deploy-l6route-config 2> /dev/null | sort" >&2
-				echo "    ListDistroProvides.fn.sh --select-projects l6b2 --merge-sequence 2> /dev/null" >&2
-				echo "    ListDistroProvides.fn.sh --select-merged-provides source-process: 2> /dev/null" >&2
-				echo "    ListDistroProvides.fn.sh --select-merged-provides source-process: --merge-sequence 2> /dev/null" >&2
-				echo "    ListDistroProvides.fn.sh --select-merged-keywords l6 --filter-projects myx --merge-sequence 2> /dev/null" >&2
-				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut source-prepare" >&2
-				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut source-process" >&2
-				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-prepare" >&2
-				echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-install" >&2
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroProvides.include"
 			fi
 			exit 1
 		fi

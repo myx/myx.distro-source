@@ -48,7 +48,7 @@ ListDistroProjects(){
 					if [ "$useNoCache" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/all-project-names.txt"
 						if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
-							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ) ; then
 							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
@@ -62,7 +62,7 @@ ListDistroProjects(){
 					if [ "$useNoIndex" != "--no-index" ] ; then
 						local indexFile="$MDSC_CACHED/distro-index.inf"
 						if [ -f "$indexFile" ] && \
-							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
+							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] )
 						then
 							echo "| ListDistroProjects: using image ($MDSC_OPTION)" >&2
 							local projectName
@@ -79,6 +79,7 @@ ListDistroProjects(){
 				Require ListAllRepositories
 				Require ListRepositoryProjects
 				
+				local repositoryName
 				ListAllRepositories | while read repositoryName ; do
 					ListRepositoryProjects "$repositoryName"
 				done
@@ -94,7 +95,8 @@ ListDistroProjects(){
 				## Replaces selection with 'all projects'
 				##
 				shift
-				local selectProjects="`ListDistroProjects $useNoCache $useNoIndex --all-projects`"
+				local selectProjects
+				selectProjects="$( ListDistroProjects $useNoCache $useNoIndex --all-projects )"
 			;;
 			--select-sequence)
 				##
@@ -103,7 +105,8 @@ ListDistroProjects(){
 				shift
 				
 				Require ListDistroSequence
-				local selectProjects="`ListDistroSequence $useNoCache $useNoIndex --all`"
+				local selectProjects
+				selectProjects="$( ListDistroSequence $useNoCache $useNoIndex --all )"
 			;;
 			--select-none)
 				##
@@ -119,10 +122,11 @@ ListDistroProjects(){
 				shift
 
 				Require ListChangedSourceProjects
-				local selectProjects="` cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' `"
+				local selectProjects
+				selectProjects="$( cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' )"
 			;;
 
-			--select-projects|--select-provides|--select-merged-provides|--select-declares|--select-keywords|--select-merged-keywords|--select-keywords2|--select-merged-keywords2|--select-repository-projects)
+			--select-projects|--select-provides|--select-merged-provides|--select-declares|--select-keywords|--select-merged-keywords|--select-keywords2|--select-merged-keywords2|--select-one-project)
 				## Unions with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -130,14 +134,35 @@ ListDistroProjects(){
 					set +e ; return 1
 				fi
 				local selectArgument="$1" ; shift
-				local selectProjects="` \
-					cat \
-						<( echo "$selectProjects" ) \
-						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" ) \
-					| awk '$0 && !x[$0]++' \
-				`"
+
+				local matchingProjects # local hides exit-code handling #
+				matchingProjects="$( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" )"
+
+				if [ -z "$matchingProjects" ] ; then
+					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
+				else
+					local selectProjects
+					selectProjects="$( \
+						printf "%s\n%s" "$selectProjects" "$matchingProjects" \
+						| awk '$0 && !x[$0]++' \
+					)"
+				fi
+
+				#selectProjects="` \
+				#	{ \
+				#		echo "$selectProjects" ; \
+				#		ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" ; \
+				#	} | awk '$0 && !x[$0]++' \
+				#`"
+
+				#selectProjects="` \
+				#	cat \
+				#		<( echo "$selectProjects" ) \
+				#		<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" || echo 1 ) \
+				#	| awk '$0 && !x[$0]++' \
+				#`"
 			;;
-			--filter-projects|--filter-provides|--filter-merged-provides|--filter-declares|--filter-keywords|--filter-merged-keywords|--filter-keywords2|--filter-merged-keywords2|--filter-repository-projects)
+			--filter-projects|--filter-provides|--filter-merged-provides|--filter-declares|--filter-keywords|--filter-merged-keywords|--filter-keywords2|--filter-merged-keywords2|--filter-one-project)
 				## Intersects with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -145,14 +170,28 @@ ListDistroProjects(){
 					set +e ; return 1
 				fi
 				local selectArgument="$1" ; shift
-				local selectProjects="` \
-					grep -Fx -f \
-						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" ) \
-						<( echo "$selectProjects" ) \
-					| awk '$0 && !x[$0]++' \
-				`"
+				local matchingProjects # local hides exit-code handling #
+				matchingProjects="$( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" )"
+				if [ -z "$matchingProjects" ] ; then
+					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
+					local selectProjects=""
+				else
+					local selectProjects
+					selectProjects="` \
+						grep -Fx -f \
+							<( echo "$matchingProjects" ) \
+							<( echo "$selectProjects" ) \
+						| awk '$0 && !x[$0]++' \
+					`"
+				fi
+				#selectProjects="` \
+				#	grep -Fx -f \
+				#		<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" ) \
+				#		<( echo "$selectProjects" ) \
+				#	| awk '$0 && !x[$0]++' \
+				#`"
 			;;
-			--remove-projects|--remove-provides|--remove-merged-provides|--remove-provides|--remove-keywords|--remove-merged-keywords|--remove-keywords2|--remove-merged-keywords2|--remove-repository-projects)
+			--remove-projects|--remove-provides|--remove-merged-provides|--remove-provides|--remove-keywords|--remove-merged-keywords|--remove-keywords2|--remove-merged-keywords2|--remove-one-project)
 				## Subtracts from selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -160,14 +199,59 @@ ListDistroProjects(){
 					set +e ; return 1
 				fi
 				local selectArgument="$1" ; shift
-				local selectProjects="` \
-					grep -Fvx -f \
-						<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" ) \
-						<( echo "$selectProjects" ) \
-					| awk '$0 && !x[$0]++' \
-				`"
+				local matchingProjects # local hides exit-code handling #
+				matchingProjects="$( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" )"
+				if [ -z "$matchingProjects" ] ; then
+					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
+				else
+					local selectProjects
+					selectProjects="` \
+						grep -Fvx -f \
+							<( echo "$matchingProjects" ) \
+							<( echo "$selectProjects" ) \
+						| awk '$0 && !x[$0]++' \
+					`"
+				fi
+				#selectProjects="` \
+				#	grep -Fvx -f \
+				#		<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" ) \
+				#		<( echo "$selectProjects" ) \
+				#	| awk '$0 && !x[$0]++' \
+				#`"
 			;;
 
+			--one-project)
+				##
+				## Prints exactly one project (or fails) whose name matches the glob
+				##
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: ListDistroProjects: --one-project projectName filter is expected!" >&2
+					set +e ; return 1
+				fi
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: ListDistroProjects: no options allowed after --one-project option ($MDSC_OPTION)" >&2
+					set +e ; return 1
+				fi
+				local projectFilter="$1" ; shift
+
+				local matchedProjects
+				matchedProjects="$( ListDistroProjects $useNoCache $useNoIndex --all-projects | ( grep -e "^.*$projectFilter.*$" || true ) )"
+
+				if [ -z "$matchedProjects" ] ; then
+					echo "ListDistroProjects: ⛔ ERROR: No matching projects found (exactly one requested, --one-project $projectFilter)." >&2
+					set +e ; return 1
+				fi
+				
+				if [ "$matchedProjects" != "$( echo "$matchedProjects" | head -n 1 )" ] ; then
+					echo "ListDistroProjects: 🙋 STOP: More than one match (exactly one requested, --one-project $projectFilter): $@" >&2
+					echo "$matchedProjects" | sed -e "s|^|        >> |g" >&2
+					set +e ; return 2
+				fi
+
+				echo "$matchedProjects"				
+				return 0
+			;;
 			--projects)
 				##
 				## Prints projects whose name matches the glob
@@ -371,24 +455,6 @@ ListDistroProjects(){
 					;;
 				esac
 			;;
-			--repository-projects)
-				##
-				## Prints projects whose name matches the glob
-				##
-				shift
-				if [ -z "$1" ] ; then
-					echo "ERROR: ListDistroProjects: --repository-projects projectName filter is expected!" >&2
-					set +e ; return 1
-				fi
-				if [ ! -z "$2" ] ; then
-					echo "ERROR: ListDistroProjects: no options allowed after --repository-projects option" >&2
-					set +e ; return 1
-				fi
-				local projectFilter="$1" ; shift
-
-				ListDistroProjects $useNoCache $useNoIndex --all-projects | grep -e "^$projectFilter/.*$"
-				return 0
-			;;
 
 
 
@@ -443,46 +509,13 @@ ListDistroProjects(){
 case "$0" in
 	*/sh-scripts/ListDistroProjects.fn.sh) 
 		
-		#	ListDistroProjects.fn.sh
-		#	( . "`which ListDistroProjects.fn.sh`" ; ListDistroProjects )
-		
-		#   ListDistroProjects.fn.sh --distro-source-only 2> /dev/null | sort
-		#	ListDistroProjects.fn.sh --distro-from-source 2> /dev/null | sort
-		
-		#	ListDistroProjects.fn.sh --distro-from-output
-		#	ListDistroProjects.fn.sh --distro-from-cached
-		#	ListDistroProjects.fn.sh --distro-from-distro
-		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListDistroProjects.fn.sh --all-projects" >&2
-			echo "syntax: ListDistroProjects.fn.sh <search>" >&2
+			echo "syntax: ListDistroProjects.fn.sh <project-selector> [<options>] [<execute-extra-args>]" >&2
 			echo "syntax: ListDistroProjects.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				echo "  Search:" >&2
-				echo "    --select-{all|sequence|changed|none} " >&2
-				echo "    --{select|filter|remove}-{projects|declares|[merged-]provides|[merged-]keywords} <glob>" >&2
-				echo "    --{select|filter|remove}-repository-projects <repositoryName>" >&2
-				echo "  Examples:" >&2
-				
-				echo "    ListDistroProjects.fn.sh --distro-from-source --select-all 2> /dev/null | sort" >&2
-				echo "    ListDistroProjects.fn.sh --distro-from-cached --select-all | sort" >&2
-				echo "    ListDistroProjects.fn.sh --distro-source-only --select-all | sort" >&2
-
-				echo "    ListDistroProjects.fn.sh --all-projects | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-sequence | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-all | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-none | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-changed | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-from-env | sort" >&2
-
-				echo "    ListDistroProjects.fn.sh --select-projects my --select-projects common --select-projects ndss --remove-projects prv --filter-projects tbd | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-merged-keywords l6 --filter-provides deploy-ssh-target: 2> /dev/null | sort" >&2
-				echo "    ListDistroProjects.fn.sh --select-merged-provides deploy-keyword:l6 --filter-provides deploy-ssh-target: 2> /dev/null | sort" >&2
-
-				echo "    ListDistroProjects.fn.sh --projects ndss | sort" >&2
-				echo "    ListDistroProjects.fn.sh --provides image-execute:deploy-l6route-config: | sort" >&2
-				echo "    ListDistroProjects.fn.sh --provides deploy-keyword:l6 | sort" >&2
-				echo "    ListDistroProjects.fn.sh --keywords l6 | sort" >&2
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroProjects.include"
 			fi
 			exit 1
 		fi

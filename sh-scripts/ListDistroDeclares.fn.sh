@@ -433,35 +433,13 @@ case "$0" in
 		# ListDistroDeclares.fn.sh --distro-from-cached --select-projects tbd9 deploy-keyword 2> /dev/null
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroDeclares.fn.sh <search> [--merge-sequence]" >&2
-			echo "syntax: ListDistroDeclares.fn.sh --all-declares [--merge-sequence]" >&2
+			echo "syntax: ListDistroDeclares.fn.sh --all-declares" >&2
+			# echo "syntax: ListDistroDeclares.fn.sh --all-declares-merged" >&2
+			echo "syntax: ListDistroDeclares.fn.sh <project-selector> [--merge-sequence]" >&2
 			echo "syntax: ListDistroDeclares.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				echo "  Search:" >&2
-				echo "    --select-{all|sequence|changed|none} " >&2
-				echo "    --{select|filter|remove}-{projects|[merged-]declares|[merged-]declares} <glob>" >&2
-				echo "    --{select|filter|remove}-repository-projects <repositoryName>" >&2
-				echo "  examples:" >&2
-				echo "    ListDistroDeclares.fn.sh --distro-from-source --all-declares 2> /dev/null | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --distro-from-cached --all-declares | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --distro-source-only --all-declares | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-projects macosx 2> /dev/null | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-projects macosx --merge-sequence 2> /dev/null | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-projects myx | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-projects myx --filter-projects l6b2 --no-cache --no-index | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-declares myx | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-declares l6 | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-declares deploy-ssh-target: 2> /dev/null | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-merged-declares image-execute:deploy-l6route-config: 2> /dev/null | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --distro-source-only --select-merged-declares image-execute:deploy-l6route-config 2> /dev/null | sort" >&2
-				echo "    ListDistroDeclares.fn.sh --select-projects l6b2 --merge-sequence 2> /dev/null" >&2
-				echo "    ListDistroDeclares.fn.sh --select-merged-declares source-process: 2> /dev/null" >&2
-				echo "    ListDistroDeclares.fn.sh --select-merged-declares source-process: --merge-sequence 2> /dev/null" >&2
-				echo "    ListDistroDeclares.fn.sh --select-merged-declares l6 --filter-projects myx --merge-sequence 2> /dev/null" >&2
-				echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut source-prepare" >&2
-				echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut source-process" >&2
-				echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut image-prepare" >&2
-				echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut image-install" >&2
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroDeclares.include"
 			fi
 			exit 1
 		fi

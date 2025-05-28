@@ -56,27 +56,17 @@ JumpTo(){
 
 	Require ListDistroProjects
 
-	local targets="$( ListDistroProjects --select-projects "$filterProject" )"
+	local targetProject
+	targetProject="$( ListDistroProjects --one-project "$filterProject" )"
 
-	if [ -z "$targets" ] ; then
-		echo "$MDSC_CMD: ⛔ ERROR: No matching projects with ssh deploy target is found, was looking for: $filterProject" >&2
-		set +e ; return 1
-	fi
+	printf "Target: \n    %s\n" "$targetProject" >&2
 	
-	if [ "$targets" != "$( echo "$targets" | head -n 1 )" ] ; then
-		echo "$MDSC_CMD: 🙋 STOP: More than one match: $@" >&2
-		printf "Targets: \n%s\n" "$( echo "$targets" | sed -e 's|^|   |g' )" >&2
-		set +e ; return 2
-	fi
-
-	printf "Target: \n    %s\n" "$targets" >&2
-	
-	declare -x MDSC_INT_CD="$baseDirectory/$targets"
-	MDSC_INT_CD="$baseDirectory/$targets"
+	declare -x MDSC_INT_CD="$baseDirectory/$targetProject"
+	MDSC_INT_CD="$baseDirectory/$targetProject"
 	export MDSC_INT_CD
-	PWD="$baseDirectory/$targets"
+	PWD="$baseDirectory/$targetProject"
 	export PWD
-	cd "$baseDirectory/$targets"
+	cd "$baseDirectory/$targetProject"
 }
 
 case "$0" in
