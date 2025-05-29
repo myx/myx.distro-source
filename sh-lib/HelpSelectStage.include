@@ -1,0 +1,22 @@
+echo >&2
+echo "  Build stage <build-stage> syntax:" >&2
+echo >&2
+echo "    source-prepare|source-process|image-prepare|image-process|image-install" >&2
+echo "                Five sequential stages for each project, from source updates to install and deploy." >&2
+echo >&2
+echo "    source-prepare" >&2
+echo "                Collect and cache all required sources." >&2
+echo >&2
+echo "    source-process" >&2
+echo "                Pre-process and build sources." >&2
+echo >&2
+echo "    image-prepare" >&2
+echo "                Post-process what is build, push or pull output distro." >&2
+echo >&2
+echo "    image-process" >&2
+echo "                Pre-process deployment and management." >&2
+echo >&2
+echo "    image-install" >&2
+echo "                Execute deployment." >&2
+echo >&2
+set +e ; return 1

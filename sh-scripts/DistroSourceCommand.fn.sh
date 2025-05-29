@@ -88,4 +88,3 @@ case "$0" in
 		DistroSourceCommand "$@" --print ''
 	;;
 esac
-

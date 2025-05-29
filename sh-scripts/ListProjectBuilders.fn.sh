@@ -23,44 +23,84 @@ ListProjectBuilders(){
 		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
 	fi
+	shift
 
-	local stageType="$2"
-	if [ -z "$stageType" ] ; then
-		echo "ERROR: $MDSC_CMD: 'stageType' argument is required!" >&2
-		set +e ; return 1
-	fi
-	if [ "$stageType" = "--all" ] ; then
-		for stageType in source-prepare source-process image-prepare image-process image-install ; do
-			ListProjectBuilders "$projectName" "$stageType" "$3"
-		done
-		return 0
-	fi
-	local buildersPath="$MMDAPP/source/$projectName/$stageType/builders"
-	[ -d "$buildersPath" ] || return 0
-	### only 1xxx - source-prepare, source-to-cached by default
-	local stageFilter="${3#--}"
-	for LINE in $( \
-		find "$buildersPath" -mindepth 1 -type f -name $( \
-			[ -z "$stageFilter" ] && echo "????-*.sh" || echo "$stageFilter???-*.sh" \
-		) | sort \
-	) ; do
-		echo "${LINE#$MMDAPP/source/}"
-	done
+	local printBuildStage
+	case "$1" in
+		--print-build-stage)
+			shift
+			local printBuildStage="--print-build-stage"
+		;;
+		*)
+		;;
+	esac
+
+	local stageType="$1"
+
+	case "$stageType" in
+		--all-build-stages)
+			set -e
+
+			for stageType in source-prepare source-process image-prepare image-process image-install ; do
+				ListProjectBuilders "$projectName" --print-build-stage "$stageType" "$2"
+			done
+			return 0
+		;;
+		source-prepare|source-process|image-prepare|image-process|image-install)
+			set -e
+
+			local buildersPath="$MMDAPP/source/$projectName/$stageType/builders"
+			[ -d "$buildersPath" ] || return 0
+			### only 1xxx - source-prepare, source-to-cached by default
+			local stageFilter="${3#--}"
+			local stagePrefix=""
+			if [ "$printBuildStage" == "--print-build-stage" ] ; then
+				stagePrefix="$stageType "
+			fi
+			for LINE in $( \
+				find "$buildersPath" -mindepth 1 -type f -name $( \
+					[ -z "$stageFilter" ] && echo "????-*.sh" || echo "$stageFilter???-*.sh" \
+				) | sort \
+			) ; do
+				echo "$stagePrefix${LINE#$MMDAPP/source/}"
+			done
+		;;
+		'')
+			echo "ERROR: $MDSC_CMD: no build-stage selected!" >&2
+			set +e ; return 1
+		;;
+		*)
+			echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+			set +e ; return 1
+		;;
+	esac
 }
 
 case "$0" in
 	*/sh-scripts/ListProjectBuilders.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectBuilders.fn.sh <project> <source-prepare|source-process|image-prepare|image-process|image-install>" >&2
+			echo "syntax: ListProjectBuilders.fn.sh <project> [--print-build-stage] <build-stage>" >&2
+			echo "syntax: ListProjectBuilders.fn.sh <project> --all-build-stages" >&2
 			echo "syntax: ListProjectBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				echo "examples:" >&2
-				echo "	ListProjectBuilders.fn.sh --distro-from-source myx/myx.distro-source source-prepare 2> /dev/null" >&2
-				echo "	ListProjectBuilders.fn.sh --distro-source-only myx/myx.distro-source source-prepare 2> /dev/null" >&2
-				echo "	ListProjectBuilders.fn.sh --distro-from-cached myx/myx.distro-source source-prepare 2> /dev/null" >&2
-				echo "	ListProjectBuilders.fn.sh myx/myx.distro-source source-prepare" >&2
-				echo "	ListProjectBuilders.fn.sh myx/myx.distro-source source-process" >&2
-				echo "	ListProjectBuilders.fn.sh myx/myx.distro-source image-prepare" >&2
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectStage.include"
+				echo >&2
+				echo "  Arguments:" >&2
+				echo >&2
+				echo "    --all-build-stages" >&2
+				echo "                Output builders for all known build stages. Two columns." >&2
+				echo >&2
+				echo "    --print-build-stage" >&2
+				echo "                Prints build stage in first column. Two columns." >&2
+				echo >&2
+				echo "  Examples:" >&2
+				echo >&2
+				echo "    ListProjectBuilders.fn.sh --distro-from-source myx/myx.distro-source source-prepare 2> /dev/null" >&2
+				echo "    ListProjectBuilders.fn.sh --distro-source-only myx/myx.distro-source source-prepare 2> /dev/null" >&2
+				echo "    ListProjectBuilders.fn.sh --distro-from-cached myx/myx.distro-source source-prepare 2> /dev/null" >&2
+				echo "    ListProjectBuilders.fn.sh myx/myx.distro-source source-prepare" >&2
+				echo "    ListProjectBuilders.fn.sh myx/myx.distro-source source-process" >&2
+				echo "    ListProjectBuilders.fn.sh myx/myx.distro-source image-prepare" >&2
 			fi
 			exit 1
 		fi
