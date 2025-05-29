@@ -1,7 +1,8 @@
+echo >&2
 echo "  Options:" >&2
 echo >&2
-echo "    --merge-sequence" >&2
-echo "                Include all inherited keywords for each project selected." >&2
+echo "    --explicit-noop" >&2
+echo "                Explicit argument that safely does nothing." >&2
 echo >&2
 echo "    --no-index" >&2
 echo "                Use no index." >&2
@@ -9,8 +10,11 @@ echo >&2
 echo "    --no-cache" >&2
 echo "                Use no cache." >&2
 echo >&2
-echo "    --explicit-noop" >&2
-echo "                Explicit argument that safely does nothing." >&2
+echo "    --merge-sequence" >&2
+echo "                Include all inherited keywords for each project selected." >&2
+echo >&2
+echo "    --set-env <variableName> <command...>" >&2
+echo "                Exports a variable and executes remaining arguments as a command." >&2
 echo >&2
 echo "  Examples:" >&2
 echo >&2
@@ -34,4 +38,5 @@ echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut source-prepare"
 echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut source-process" >&2
 echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut image-prepare" >&2
 echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut image-install" >&2
+echo >&2
 set +e ; return 1

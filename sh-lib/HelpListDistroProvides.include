@@ -1,4 +1,14 @@
+echo >&2
 echo "  Options:" >&2
+echo >&2
+echo "    --explicit-noop" >&2
+echo "                Explicit argument that safely does nothing." >&2
+echo >&2
+echo "    --no-index" >&2
+echo "                Use no index." >&2
+echo >&2
+echo "    --no-cache" >&2
+echo "                Use no cache." >&2
 echo >&2
 echo "    --merge-sequence" >&2
 echo "                Include all inherited provides for each project selected." >&2
@@ -17,14 +27,8 @@ echo "    --filter-own-provides-column <matcher>" >&2
 echo "    --filter-merged-provides-column <matcher>" >&2
 echo "                Filters by own or merged provides column with values matched." >&2
 echo >&2
-echo "    --no-index" >&2
-echo "                Use no index." >&2
-echo >&2
-echo "    --no-cache" >&2
-echo "                Use no cache." >&2
-echo >&2
-echo "    --explicit-noop" >&2
-echo "                Explicit argument that safely does nothing." >&2
+echo "    --set-env <variableName> <command...>" >&2
+echo "                Exports a variable and executes remaining arguments as a command." >&2
 echo >&2
 echo "  Examples:" >&2
 echo >&2
@@ -49,4 +53,5 @@ echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut source-process"
 echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-prepare" >&2
 echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-execute" >&2
 echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-install" >&2
+echo >&2
 set +e ; return 1

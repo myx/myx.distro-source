@@ -166,7 +166,7 @@ ListRepositoryDeclares(){
 	Require ListProjectDeclares
 
 	local projectName
-	ListRepositoryProjects | while read -r projectName ; do
+	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
 		ListProjectDeclares $projectName $useNoCache $useNoIndex "$@" || true
 	done
 }
@@ -178,8 +178,19 @@ case "$0" in
 			echo "syntax: ListRepositoryDeclares.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Search:" >&2
-				echo "    --all / --filter-projects <glob> / --filter-declares <keyword>" >&2
-				echo "  examples:" >&2
+				echo >&2
+				echo "    --all / --filter-projects <glob> / --filter <declares-filter>" >&2
+				echo >&2
+				echo "  Options:" >&2
+				echo >&2
+				echo "    --no-cache" >&2
+				echo "                Use no cache." >&2
+				echo >&2
+				echo "    --no-index" >&2
+				echo "                Use no index." >&2
+				echo >&2
+				echo "  Examples:" >&2
+				echo >&2
 				echo "    ListRepositoryDeclares.fn.sh --distro-from-source myx 2> /dev/null | sort" >&2
 				echo "    ListRepositoryDeclares.fn.sh --distro-from-cached myx 2> /dev/null | sort" >&2
 				echo "    ListRepositoryDeclares.fn.sh --distro-source-only myx 2> /dev/null | sort" >&2

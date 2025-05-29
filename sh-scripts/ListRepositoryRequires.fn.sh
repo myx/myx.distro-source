@@ -107,14 +107,6 @@ ListRepositoryRequires(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryRequires.fn.sh)
-		# ListRepositoryRequires.fn.sh lib
-		# ListRepositoryRequires.fn.sh --distro-source-only lib
-		# ListRepositoryRequires.fn.sh --distro-from-source lib
-		# ListRepositoryRequires.fn.sh --distro-from-cached lib
-		# ListRepositoryRequires.fn.sh lib --merge-sequence 2> /dev/null
-		# ListRepositoryRequires.fn.sh --distro-source-only lib --merge-sequence 2> /dev/null 
-		# ListRepositoryRequires.fn.sh --distro-from-source lib --merge-sequence 2> /dev/null 
-
 		# !!!! ListRepositoryRequires.fn.sh --distro-source-only myx os-myx.common
 		# !!!! ListRepositoryRequires.fn.sh --distro-from-cached myx os-myx.common
 		# !!!! ListRepositoryRequires.fn.sh --distro-source-only myx deploy-keyword
@@ -126,16 +118,25 @@ case "$0" in
 		# !!!! ListRepositoryRequires.fn.sh --distro-source-only ndm ndm/location-c1
 		# !!!! ListRepositoryRequires.fn.sh --distro-from-source ndm ndm/location-c1
 	
-		# ListRepositoryRequires.fn.sh --distro-from-source myx
-		# ListRepositoryRequires.fn.sh --distro-from-cached myx
-		# ListRepositoryRequires.fn.sh --distro-source-only myx
-		# ListRepositoryRequires.fn.sh myx --merge-sequence 
 		# !!!! ListRepositoryRequires.fn.sh myx --merge-sequence deploy-keyword
 		# !!!! ListRepositoryRequires.fn.sh --distro-from-source prv --no-cache source-prepare
 		# !!!! ListRepositoryRequires.fn.sh --distro-from-source prv --merge-sequence --no-cache source-prepare
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositoryRequires.fn.sh [--help] <repository_name> [--merge-sequence] [--no-cache] [filter_by]" >&2
+			echo "syntax: ListRepositoryRequires.fn.sh <repository_name> [--merge-sequence] [--no-cache] [filter_by]" >&2
+			echo "syntax: ListRepositoryRequires.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				echo >&2
+				echo "  Examples:" >&2
+				echo >&2
+				echo "    ListRepositoryRequires.fn.sh lib" >&2
+				echo "    ListRepositoryRequires.fn.sh --distro-source-only lib" >&2
+				echo "    ListRepositoryRequires.fn.sh --distro-from-source lib" >&2
+				echo "    ListRepositoryRequires.fn.sh --distro-from-cached lib" >&2
+				echo "    ListRepositoryRequires.fn.sh lib --merge-sequence 2> /dev/null" >&2
+				echo "    ListRepositoryRequires.fn.sh --distro-source-only lib --merge-sequence 2> /dev/null" >&2
+				echo "    ListRepositoryRequires.fn.sh --distro-from-source lib --merge-sequence 2> /dev/null" >&2
+			fi
 			exit 1
 		fi
 

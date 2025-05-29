@@ -166,7 +166,7 @@ ListRepositoryKeywords(){
 	Require ListProjectKeywords
 
 	local projectName
-	ListRepositoryProjects | while read -r projectName ; do
+	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
 		ListProjectKeywords $projectName $useNoCache $useNoIndex "$@" || true
 	done
 }
@@ -174,12 +174,23 @@ ListRepositoryKeywords(){
 case "$0" in
 	*/sh-scripts/ListRepositoryKeywords.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositoryKeywords.fn.sh <repository_name> [--print-keywords-only] [<search>] [--no-cache] [--filter filter_by]" >&2
+			echo "syntax: ListRepositoryKeywords.fn.sh <repository_name> [<options>] [--print-keywords-only] [<search>] [--filter filter_by]" >&2
 			echo "syntax: ListRepositoryKeywords.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Search:" >&2
-				echo "    --all / --filter-projects <glob> / --filter-keywords <keyword>" >&2
-				echo "  examples:" >&2
+				echo >&2
+				echo "    --all / --filter-projects <glob> / --filter <keywords-filter>" >&2
+				echo >&2
+				echo "  Options:" >&2
+				echo >&2
+				echo "    --no-cache" >&2
+				echo "                Use no cache." >&2
+				echo >&2
+				echo "    --no-index" >&2
+				echo "                Use no index." >&2
+				echo >&2
+				echo "  Examples:" >&2
+				echo >&2
 				echo "    ListRepositoryKeywords.fn.sh --distro-from-source myx 2> /dev/null | sort" >&2
 				echo "    ListRepositoryKeywords.fn.sh --distro-from-cached myx 2> /dev/null | sort" >&2
 				echo "    ListRepositoryKeywords.fn.sh --distro-source-only myx 2> /dev/null | sort" >&2

@@ -24,6 +24,7 @@ ListRepositorySequence(){
 	shift
 
 	local useNoCache=""
+	local useNoIndex=""
 	local filterProjects=""
 
 	set -e
@@ -37,6 +38,11 @@ ListRepositorySequence(){
 			--no-cache)
 				shift
 				local useNoCache="--no-cache"
+				;;
+			
+			--no-index)
+				shift
+				local useNoIndex="--no-index"
 				;;
 
 			'')
@@ -65,26 +71,28 @@ ListRepositorySequence(){
 		fi
 	fi
 	
-	local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-	if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
-		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-		
-		echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2
-		
-		local FILTER="$1"
-		local currentProject
-		if [ -z "$FILTER" ] ; then
-			for currentProject in ` grep "^PRJ-SEQ-$repositoryName/" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
-				echo $currentProject
-			done | awk '!x[$0]++'
-		else
-			for currentProject in ` grep "^PRJ-SEQ-$repositoryName/" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
-				if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
-					echo ${currentProject#${FILTER}:} | tr "|" "\n"
-				fi
-			done | awk '!x[$0]++'
+	if [ "$useNoIndex" != "--no-index" ] ; then
+		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
+		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+			
+			echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2
+			
+			local FILTER="$1"
+			local currentProject
+			if [ -z "$FILTER" ] ; then
+				for currentProject in ` grep "^PRJ-SEQ-$repositoryName/" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
+					echo $currentProject
+				done | awk '!x[$0]++'
+			else
+				for currentProject in ` grep "^PRJ-SEQ-$repositoryName/" "$indexFile" | sed 's|^.*=||g' | awk '!x[$0]++' ` ; do
+					if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
+						echo ${currentProject#${FILTER}:} | tr "|" "\n"
+					fi
+				done | awk '!x[$0]++'
+			fi
+			return 0
 		fi
-		return 0
 	fi
 	
 	if [ -z "$filterProjects" ] && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
@@ -111,7 +119,17 @@ case "$0" in
 			echo "syntax: ListRepositorySequence.fn.sh <repositoryName> [--no-cache]" >&2
 			echo "syntax: ListRepositorySequence.fn.sh --help" >&2
 			if [ "$1" = "--help" ] ; then
-				echo "examples:" >&2
+				echo "  Options:" >&2
+				echo >&2
+				echo "    --no-cache" >&2
+				echo "                Use no cache." >&2
+				echo >&2
+				echo "    --no-index" >&2
+				echo "                Use no index." >&2
+				echo >&2
+				echo "  Examples:" >&2
+				echo >&2
+				echo "	ListRepositorySequence.fn.sh myx" >&2
 				echo "	ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null" >&2
 				echo "	ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null" >&2
 				echo "	ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null" >&2

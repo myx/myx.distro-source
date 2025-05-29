@@ -35,7 +35,7 @@ ListRepositoryProvides(){
 	case "$1" in
 		--print-provides-only)
 			shift
-			ListRepositoryProvides "$repositoryName" "$@" | awk '{print $2}'
+			ListRepositoryProvides "$repositoryName" "$@" | awk '{print $2}' | awk '!x[$0]++'
 			return 0
 		;;
 	esac
@@ -75,7 +75,7 @@ ListRepositoryProvides(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@"
+					ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex --merge-sequence "$@"
 				done	
 				return 0
 			;;
@@ -139,8 +139,9 @@ ListRepositoryProvides(){
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProvides: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-PRV-$repositoryName/"
 				
-				grep "$MTC" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do
-					ListRepositoryProvides --internal-print-project-provides $LINE
+				local indexValueLine
+				grep "$MTC" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r indexValueLine ; do
+					ListRepositoryProvides --internal-print-project-provides $indexValueLine
 				done
 			
 				return 0
@@ -166,7 +167,7 @@ ListRepositoryProvides(){
 	Require ListProjectProvides
 
 	local projectName
-	ListRepositoryProjects | while read -r projectName ; do
+	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
 		ListProjectProvides $projectName $useNoCache $useNoIndex "$@" || true
 	done
 }
@@ -174,11 +175,26 @@ ListRepositoryProvides(){
 case "$0" in
 	*/sh-scripts/ListRepositoryProvides.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [--print-provides-only] [<search>] [--no-cache] [--filter filter_by]" >&2
+			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>]" >&2
+			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>] --merge-sequence" >&2
+			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>] --filter-projects <glob>" >&2
+			echo "syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>] --filter filter_by" >&2
 			echo "syntax: ListRepositoryProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				echo "  Search:" >&2
-				echo "    --all / --filter-projects <glob> / --filter-keywords <keyword>" >&2
+				echo >&2
+				echo "  Options:" >&2
+				echo >&2
+				echo "    --print-provides-only" >&2
+				echo "                Print only provides value column." >&2
+				echo >&2
+				echo "    --no-cache" >&2
+				echo "                Use no cache." >&2
+				echo >&2
+				echo "    --no-index" >&2
+				echo "                Use no index." >&2
+				echo >&2
+				echo "  Examples:" >&2
+				echo >&2
 				echo "  examples:" >&2
 				echo "    ListRepositoryProvides.fn.sh --distro-from-source myx 2> /dev/null | sort" >&2
 				echo "    ListRepositoryProvides.fn.sh --distro-from-cached myx 2> /dev/null | sort" >&2

@@ -180,7 +180,16 @@ case "$0" in
 			echo "syntax: ListProjectProvides.fn.sh <project_name> [--print-project] [--print-provides-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
 			echo "syntax: ListProjectProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
+				echo "  Options:" >&2
+				echo >&2
+				echo "    --no-cache" >&2
+				echo "                Use no cache." >&2
+				echo >&2
+				echo "    --no-index" >&2
+				echo "                Use no index." >&2
+				echo >&2
 				echo "  Examples:" >&2
+				echo >&2
 				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common" >&2
 				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common --print-project" >&2
 				echo "    ListProjectProvides.fn.sh myx/myx.common/os-myx.common-freebsd --print-project" >&2
