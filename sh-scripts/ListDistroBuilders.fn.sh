@@ -36,7 +36,9 @@ case "$0" in
 			echo "syntax: ListDistroBuilders.fn.sh <source-prepare|source-process|image-prepare|image-process|image-install>" >&2
 			echo "syntax: ListDistroBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
+				echo >&2
 				echo "  Examples:" >&2
+				echo >&2
 				echo "    ListDistroBuilders.fn.sh --distro-from-source source-prepare 2> /dev/null | sort" >&2
 				echo "    ListDistroBuilders.fn.sh --distro-from-cached source-prepare | sort" >&2
 				echo "    ListDistroBuilders.fn.sh --distro-source-only source-prepare | sort" >&2
