@@ -22,7 +22,7 @@ ListDistroBuilders(){
 		set +e ; return 1
 	fi
 	local projectName
-	for projectName in ` ListDistroProjects --all-projects ` ; do
+	for projectName in $( ListDistroProjects --all-projects ) ; do
 		ListProjectBuilders "$projectName" "$@" | while read -r builderName ; do
 			echo "$builderName" "` basename "$builderName" `" 
 		done
