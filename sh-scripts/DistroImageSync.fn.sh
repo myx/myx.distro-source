@@ -105,11 +105,11 @@ DistroImageSync(){
 
 				return 0
 			;;
-			--all-tasks-repo-list)
-				DistroImageSync --all-tasks-repo-list-bare | column -t
+			--all-tasks-repo-list-columns)
+				DistroImageSync --all-tasks-repo-list | column -t
 				return 0
 			;;
-			--all-tasks-repo-list-bare)
+			--all-tasks-repo-list)
 				local buildStage projectName syncOperation targetSpec sourceSpec extra
 				DistroImageSync $useNoCache $useNoIndex --all-tasks \
 				| while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
@@ -149,17 +149,6 @@ DistroImageSync(){
 					esac
 				done | awk '$0 && !x[$0]++'
 				return 0
-			;;
-			--all-projects)
-				shift
-				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
-					set +e ; return 1
-				fi
-
-				indexAllJobs="$( DistroImageSync $useNoCache $useNoIndex --all-tasks )"
-	
-				break
 			;;
 			--merge-sequence)
 				shift
@@ -229,6 +218,10 @@ case "$0" in
 				echo "  Arguments:" >&2
 				echo >&2
 				echo "    --all-tasks" >&2
+				echo "                Display all tasks, unrolled with repo lists expanded. (No execution of commands)" >&2
+				echo >&2
+				echo "    --all-tasks-repo-list" >&2
+				echo "    --all-tasks-repo-list-columns" >&2
 				echo "                Display all tasks, unrolled with repo lists expanded. (No execution of commands)" >&2
 				echo >&2
 				echo "    --all-declarations" >&2
