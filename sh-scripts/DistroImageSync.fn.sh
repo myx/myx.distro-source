@@ -76,6 +76,18 @@ DistroImageSync(){
 				shift
 				break
 			;;
+			--all-declarations)
+				shift
+				if [ ! -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+	
+				Require ListDistroDeclares
+				ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync"
+
+				return 0
+			;;
 			--all-tasks)
 				shift
 				if [ ! -z "$1" ] ; then
@@ -91,6 +103,51 @@ DistroImageSync(){
 					echo "$buildStage" "$projectName" "$syncOperation" "$targetSpec" "$sourceSpec" "$extra"
 				done
 
+				return 0
+			;;
+			--all-tasks-repo-list)
+				DistroImageSync --all-tasks-repo-list-bare | column -t
+				return 0
+			;;
+			--all-tasks-repo-list-bare)
+				local buildStage projectName syncOperation targetSpec sourceSpec extra
+				DistroImageSync $useNoCache $useNoIndex --all-tasks \
+				| while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
+					if [ "." == "$targetSpec" ] ; then
+						targetSpec="$projectName"
+					fi
+					case "$syncOperation" in
+						repo)
+							local sourceBranch sourceUrl
+							echo "*$sourceSpec" | sed 's/:/ /' | if read -r sourceBranch sourceUrl ; then
+								if [ -z "$sourceUrl" ] ; then
+									echo "WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
+									continue
+								fi
+								echo "$targetSpec" "$sourceUrl" "${sourceBranch:1}"
+							fi
+						;;
+						list)
+							local listFile="$MDSC_SOURCE/$targetSpec/$sourceSpec"
+							if [ ! -f "$listFile" ] ; then
+								echo "WARNING: $MDSC_CMD: no repo list ($listFile) found for $projectName $buildStage:repo directive (ignoring)!" >&2
+								continue
+							fi
+
+							local targetSpec sourceUrl sourceBranch
+							cat "$listFile" \
+							| while read -r targetSpec sourceUrl sourceBranch ; do
+								if [ "${targetSpec:0:1}"  == "#" ] || [ -z "$targetSpec" ] || [ -z "$sourceUrl" ] ; then
+									continue
+								fi
+								echo "$targetSpec" "$sourceUrl" "$sourceBranch"
+							done
+						;;
+						*)
+							# echo "$MDSC_CMD: unknown sync operation: $syncOperation" >&2
+						;;
+					esac
+				done | awk '$0 && !x[$0]++'
 				return 0
 			;;
 			--all-projects)
@@ -148,8 +205,9 @@ case "$0" in
 	*/sh-scripts/DistroImageSync.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: DistroImageSync.fn.sh [<options>] --all-projects" >&2
-			echo "syntax: DistroImageSync.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] <operation>" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
 			echo "syntax: DistroImageSync.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
@@ -167,6 +225,23 @@ case "$0" in
 				echo >&2
 				echo "    --merge-sequence" >&2
 				echo "                Include all inherited provides for each project selected." >&2
+				echo >&2
+				echo "  Arguments:" >&2
+				echo >&2
+				echo "    --all-tasks" >&2
+				echo "                Display all tasks, unrolled with repo lists expanded. (No execution of commands)" >&2
+				echo >&2
+				echo "    --all-declarations" >&2
+				echo "                Display all tasks as they are specified in projects. (No execution of commands)" >&2
+				echo >&2
+				echo "    --do-source-prepare-pull" >&2
+				echo "                Execute tasks for source-prapare pull stage (before source-prepare)." >&2
+				echo >&2
+				echo "    --do-image-prepare-push" >&2
+				echo "                Execute tasks for image-prapare push stage (on image-prepare, after source)." >&2
+				echo >&2
+				echo "    --do-image-prepare-pull" >&2
+				echo "                Execute tasks for image-prapare pull stage (on image-prepare, before deploy)." >&2
 				echo >&2
 				echo "  Examples:" >&2
 				echo >&2
