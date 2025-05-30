@@ -15,12 +15,23 @@ fi
 
 
 ListSourceActions(){
+	set +x	
+	local MDSC_CMD='ListSourceActions'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+
 	Require ListDistroProjects
-	Require ListSourceProjectActions
-	
-	local PKG
-	for PKG in ` ListDistroProjects --all-projects ` ; do
-		ListSourceProjectActions "$PKG"
+	# override to source, explicit
+	local MDSC_SOURCE="$MMDAPP/source"
+
+	local projectName
+	for projectName in $( ListDistroProjects --all-projects ) ; do
+		
+		[ -d "$MDSC_SOURCE/$projectName/actions" ] && \
+			find "$MDSC_SOURCE/$projectName/actions" -mindepth 1 -type f \
+			| sed "s:^$MDSC_SOURCE/::g" \
+		| sort
+		
 	done	
 }
 

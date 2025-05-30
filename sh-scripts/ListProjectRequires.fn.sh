@@ -13,9 +13,13 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 fi
 
 ListProjectRequires(){
+
+	local MDSC_CMD='ListProjectRequires'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: ListProjectRequires: 'projectName' argument is required!" >&2
+		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
 	fi
 	shift
@@ -88,12 +92,11 @@ ListProjectRequires(){
 		echo "ListProjectRequires: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
-		
 		DistroSourceCommand \
 			-q \
 			--import-from-source \
 			--select-project "$projectName" \
-			--print-requires \
+			--print-requires --print "" \
 			| sed "s|^$projectName ||g" \
 			| sed "s|\:|\\\:|"
 		# have ^^^ to cut project name from the beginning of each line

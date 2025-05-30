@@ -22,38 +22,50 @@ ListDistroDeclares(){
 
 	set -e
 
-	case "$1" in
-		--all-declares|--all-declares-merged|--add-*-column)
-		;;
-		--explicit-noop)
-			shift
-		;;
-		--select-from-env)
-			shift
-			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
-				set +e ; return 1
-			fi
-		;;
-		--set-env)
-			shift
-			if [ -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
-				set +e ; return 1
-			fi
-			local envName="$1" ; shift
-			eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
-			return 0
-		;;
-		--*)
-			Require ListDistroProjects
-			ListDistroProjects --select-execute-default ListDistroDeclares "$@"
-			return 0
-		;;
-	esac
-
 	local useNoCache=""
 	local useNoIndex=""
+
+	while true ; do
+		case "$1" in
+			--all-*|--add-*-column)
+				break
+			;;
+			--explicit-noop)
+				shift
+			;;
+			--no-cache)
+				shift
+				local useNoCache="--no-cache"
+			;;
+			--no-index)
+				shift
+				local useNoIndex="--no-index"
+			;;
+			--select-from-env)
+				shift
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+					set +e ; return 1
+				fi
+				break
+			;;
+			--set-env)
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
+					set +e ; return 1
+				fi
+				local envName="$1" ; shift
+				eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
+				return 0
+			;;
+			--*)
+				Require ListDistroProjects
+				ListDistroProjects --select-execute-default ListDistroDeclares "$@"
+				return 0
+			;;
+		esac
+	done
 
 	local indexFile="$MDSC_CACHED/distro-index.inf"
 	local indexAllDeclares=""
@@ -154,6 +166,21 @@ ListDistroDeclares(){
 					ListRepositoryDeclares $repositoryName $useNoCache $useNoIndex || true
 				done
 	
+				return 0
+			;;
+			--all-declares-prefix-cut) # from: --filter-and-cut
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: project declares filter is expected!" >&2
+					set +e ; return 1
+				fi
+				local filterDeclares="$1" projectName projectDeclares ; shift
+				ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares \
+				| while read -r projectName projectDeclares ; do
+				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
+						echo "$projectName ${projectDeclares#${filterDeclares}:}"
+					fi
+				done | awk '!x[$0]++'
 				return 0
 			;;
 			--all-declares-merged)
@@ -357,21 +384,6 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 			;;
-			--merge-sequence)
-				shift
-				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
-					set +e ; return 1
-				fi
-				
-				Require ListProjectDeclares
-		
-				local sequenceProjectName
-				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
-				done | awk '!x[$0]++'
-				return 0
-			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
@@ -387,13 +399,20 @@ ListDistroDeclares(){
 				done | awk '!x[$0]++'
 				return 0
 			;;
-			--no-cache)
+			--merge-sequence)
 				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				shift
-				local useNoIndex="--no-index"
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+					set +e ; return 1
+				fi
+				
+				Require ListProjectDeclares
+		
+				local sequenceProjectName
+				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
+					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				done | awk '!x[$0]++'
+				return 0
 			;;
 			'')
 				if [ ! -z "$indexColumns" ] ; then
@@ -433,9 +452,9 @@ case "$0" in
 		# ListDistroDeclares.fn.sh --distro-from-cached --select-projects tbd9 deploy-keyword 2> /dev/null
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroDeclares.fn.sh --all-declares" >&2
-			# echo "syntax: ListDistroDeclares.fn.sh --all-declares-merged" >&2
-			echo "syntax: ListDistroDeclares.fn.sh <project-selector> [--merge-sequence]" >&2
+			echo "syntax: ListDistroDeclares.fn.sh [<options>] --all-declares" >&2
+			# echo "syntax: ListDistroDeclares.fn.sh [<options>] --all-declares-merged" >&2
+			echo "syntax: ListDistroDeclares.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
 			echo "syntax: ListDistroDeclares.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"

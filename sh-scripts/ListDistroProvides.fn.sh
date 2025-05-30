@@ -357,21 +357,6 @@ ListDistroProvides(){
 					set +e ; return 1
 				fi
 			;;
-			--merge-sequence)
-				shift
-				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
-					set +e ; return 1
-				fi
-				
-				Require ListProjectProvides
-		
-				local sequenceProjectName
-				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
-				done | awk '!x[$0]++'
-				return 0
-			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
@@ -384,6 +369,21 @@ ListDistroProvides(){
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
 					fi
+				done | awk '!x[$0]++'
+				return 0
+			;;
+			--merge-sequence)
+				shift
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+					set +e ; return 1
+				fi
+				
+				Require ListProjectProvides
+		
+				local sequenceProjectName
+				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
+					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;

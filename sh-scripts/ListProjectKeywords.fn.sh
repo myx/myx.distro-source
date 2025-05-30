@@ -142,8 +142,12 @@ ListProjectKeywords(){
 	if [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
-			Require ListSourceProjectKeywords
-			ListSourceProjectKeywords "$projectName"
+			Require DistroSourceCommand
+			DistroSourceCommand \
+				-q \
+				--import-from-source \
+					--select-project "$projectName" \
+				--print-keywords-separate-lines
 		)
 		return 0
 	fi

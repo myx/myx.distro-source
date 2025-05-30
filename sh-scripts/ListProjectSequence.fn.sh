@@ -65,11 +65,8 @@ ListProjectSequence(){
 				
 				
 				Require ListProjectProvides
+				ListProjectProvides "$projectName" $useNoCache $useNoIndex --merge-sequence --print-project "$@"
 		
-				for sequenceProjectName in $( ListProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
-					ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex --print-project "$@"
-				done | awk '!x[$2]++'
-				# ListProjectSequence "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
 				return 0
 			;;
 			--no-cache)
