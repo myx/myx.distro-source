@@ -33,23 +33,17 @@ DistroImageSync(){
 			done
 			return 0
 		;;
-		--intern-print-repo-list-from-stdin)
+		--intern-print-unroll-tasks-from-stdin)
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
+			local projectName buildStage syncOperation targetSpec sourceSpec extra
 			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
 				if [ "." == "$targetSpec" ] ; then
 					targetSpec="$projectName"
 				fi
 				case "$syncOperation" in
 					repo)
-						local sourceBranch sourceUrl
-						echo "*$sourceSpec" | sed 's/:/ /' | if read -r sourceBranch sourceUrl ; then
-							if [ -z "$sourceUrl" ] ; then
-								echo "WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
-								continue
-							fi
-							echo "$targetSpec" "$sourceUrl" "${sourceBranch:1}"
-						fi
+						echo "$buildStage" "$projectName" "$syncOperation" "${targetSpec%%/}" "$sourceSpec" "$extra"
 					;;
 					list)
 						local listFile="$MDSC_SOURCE/$targetSpec/$sourceSpec"
@@ -64,8 +58,34 @@ DistroImageSync(){
 							if [ "${targetSpec:0:1}" == "#" ] || [ -z "$targetSpec" ] || [ -z "$sourceUrl" ] ; then
 								continue
 							fi
-							echo "${targetSpec%%/}" "$sourceUrl" "$sourceBranch"
+							echo "$buildStage" "$projectName" "repo" "${targetSpec%%/}" "$sourceBranch:$sourceUrl" "$extra"
 						done
+					;;
+					*)
+						# echo "$MDSC_CMD: unknown sync operation: $syncOperation" >&2
+					;;
+				esac
+			done | awk '$0 && !x[$0]++'
+			return 0
+		;;
+		--intern-print-repo-list-from-stdin)
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+
+			local projectName buildStage syncOperation targetSpec sourceSpec extra
+			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
+				case "$syncOperation" in
+					repo)
+						if [ "." == "$targetSpec" ] ; then
+							targetSpec="$projectName"
+						fi
+						local sourceBranch sourceUrl
+						echo "*$sourceSpec" | sed 's/:/ /' | if read -r sourceBranch sourceUrl ; then
+							if [ -z "$sourceUrl" ] ; then
+								echo "WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
+								continue
+							fi
+							echo "${targetSpec%%/}" "$sourceUrl" "${sourceBranch:1}"
+						fi
 					;;
 					*)
 						# echo "$MDSC_CMD: unknown sync operation: $syncOperation" >&2
@@ -87,7 +107,7 @@ DistroImageSync(){
 			echo "ERROR: $MDSC_CMD: invalid build-stage: $1" >&2
 			set +e ; return 1
 		;;
-		--intern-print-script-from-stdin-repo-list)
+		--intern-print-script-from-stdin-task-list)
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
 			shift
@@ -112,7 +132,10 @@ DistroImageSync(){
 		case "$1" in
 			--all-tasks)
 				shift
-				local useJobList="$( DistroImageSync $useNoCache $useNoIndex $useStage --print-all-tasks )"
+				useJobList="$( \
+					DistroImageSync --intern-print-all-tasks \
+					| DistroImageSync --intern-print-unroll-tasks-from-stdin
+				)"
 				break
 			;;
 			--explicit-noop)
@@ -133,6 +156,27 @@ DistroImageSync(){
 					echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
 					set +e ; return 1
 				fi
+
+				[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD selected projects: $( echo $MDSC_SELECT_PROJECTS )" >&2
+
+				useJobList="$( \
+					DistroImageSync --intern-print-all-tasks \
+					| DistroImageSync --intern-print-unroll-tasks-from-stdin \
+					| awk -v filter="$( echo $MDSC_SELECT_PROJECTS )" '
+						BEGIN {
+							split(filter, keep, " ")
+						}
+						{
+							for (i in keep) {
+								if (index(keep[i] "/", $4 "/") == 1) {
+									print
+									break
+								}
+							}
+						}
+					' \
+				)"
+
 				break
 			;;
 			--set-env)
@@ -152,16 +196,10 @@ DistroImageSync(){
 					set +e ; return 1
 				fi
 
-				DistroImageSync --intern-print-all-tasks
-				return 0
-			;;
-			--print-all-tasks-repo-list)
-				shift
-				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-tasks-repo-list option ($MDSC_OPTION, $@)" >&2
-					set +e ; return 1
-				fi
-				DistroImageSync --intern-print-all-tasks | DistroImageSync --intern-print-repo-list-from-stdin | sort
+				DistroImageSync --intern-print-all-tasks \
+				| DistroImageSync --intern-print-unroll-tasks-from-stdin \
+				| sort -k4
+
 				return 0
 			;;
 			--print-*|--script-*|--execute-*)
@@ -179,43 +217,46 @@ DistroImageSync(){
 	done
 
 	while true ; do
-		case "${useCommand:-$1}" in
+		case "$1" in
 			--print-tasks)
-			
-				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after $1 ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
+				shift
+			
 				echo "$useJobList"
 				
 				return 0
 			;;
 			--print-repo-list)
-			
-				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after $1 ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
+
+				shift
 				
 				echo "$useJobList" \
-				| DistroImageSync --intern-print-repo-list-from-stdin | sort
+				| DistroImageSync --intern-print-repo-list-from-stdin \
+				| sort -k4
 				
 				return 0
 			;;
 			--print-*)
+				if [ ! -z "$2" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after $1 option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+
 				local selectVariant="${1#--print-}"
 				DistroImageSync --intern-check-build-stage "$selectVariant"
 				shift
 				
-				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
-					set +e ; return 1
-				fi
 				
 				echo "$useJobList" \
-				| grep -e "^${selectVariant}" \
-				| DistroImageSync --intern-print-repo-list-from-stdin
+				| grep -e "^${selectVariant}"
 				
 				return 0
 			;;
@@ -226,8 +267,7 @@ DistroImageSync(){
 				
 				echo "$useJobList" \
 				| grep -e "^${selectVariant}" \
-				| DistroImageSync --intern-print-repo-list-from-stdin \
-				| DistroImageSync --intern-print-script-from-stdin-repo-list "$@"
+				| DistroImageSync --intern-print-script-from-stdin-task-list "$@"
 				
 				return 0
 			;;
@@ -238,26 +278,13 @@ DistroImageSync(){
 				
 				echo "$useJobList" \
 				| grep -e "^${selectVariant}" \
-				| DistroImageSync --intern-print-repo-list-from-stdin \
-				| DistroImageSync --intern-print-script-from-stdin-repo-list "$@" \
+				| DistroImageSync --intern-print-script-from-stdin-task-list "$@" \
 				| DistroImageSync --intern-execute-script-from-stdin
 				
 				return 0
 			;;
 			'')
 				echo "ERROR: $MDSC_CMD: one of --print-* or --execute command is required" >&2
-				set +e ; return 1
-
-				if [ ! -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
-						echo "$MDSC_SELECT_PROJECTS" \
-					) <( \
-						DistroImageSync $useNoCache $useNoIndex $useStage --print-all-tasks \
-					)
-					break
-				fi
-
-				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
 				set +e ; return 1
 			;;
 			*)

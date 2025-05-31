@@ -28,72 +28,102 @@ case "$useStage" in
 	;;
 esac
 
+local syncCommand=""
 local syncMode="${1:-parallel}"
 
-case "$syncMode" in
-	parallel)
-		# nothing
-	;;
-	sequence)
-		echo lib/sedLineReader lib/prefix git/clonePull git/clone${syncType}
-	;;
-	obsolete)
-		echo lib/sedLineReader lib/prefix lib/async git/clone${syncType}
-	;;
-esac \
-| tr ' ' '\n' | while read -r MC_EMBED ; do
-	if \
-		[ -f "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
-		cat "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
-	elif \
-		[ -f "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
-		cat "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
-	elif \
-		[ "$( which myx.common )" != "" ] ; then
-		myx.common cat $MC_EMBED
-	else
-		echo "ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
+if \
+[ -x "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
+	syncCommand="$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
+elif \
+[ -x "$MMDAPP/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
+	syncCommand="$MMDAPP/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
+elif \
+[ "$( which myx.common )" != "" ] ; then
+	syncCommand="$( myx.common which git/clone${syncType} )"
+	if [ ! -x "$syncCommand" ] ; then
+		echo "ERROR: $MDSC_CMD: myx.common which git/clone${syncType} failed ($MDSC_OPTION, $@)" >&2
 		set +e ; return 1
 	fi
-done | grep -v -e '^#' -e '^$' || true
+else
+	echo "ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
+	set +e ; return 1
+fi
 
 case "$syncMode" in
-	parallel)
+	--parallel)
+		## nothing
+	;;
+	--sequence|--obsolete)
+		{
+			echo lib/sedLineReader lib/prefix lib/async \
+			| tr ' ' '\n' | while read -r MC_EMBED ; do
+				if \
+					[ -f "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
+					cat "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
+				elif \
+					[ -f "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
+					cat "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
+				elif \
+					[ "$( which myx.common )" != "" ] ; then
+					myx.common cat $MC_EMBED
+				else
+					echo "ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+			done
+			cat "$syncCommand"
+		} | grep -v -e '^#' -e '^$' || true
+	;;
+	*)
+		echo "ERROR: $MDSC_CMD: invalid sync mode: $syncMode ($MDSC_OPTION, $@)" >&2
+		set +e ; return 1
+	;;
+esac
+
+
+case "$syncMode" in
+	--parallel)
+		printf "clone$syncType=\"%s\"\n" "$syncCommand"
+
 		printf "(%s | %s) <<XARGS_INPUT\n" \
 			"tr '\n' '\0'" \
-			"xargs -0 -P '${2:-8}' -I% -- sh -c 'myx.common lib/prefix -3 myx.common %'"
+			"xargs -0 -P '${2:-8}' -I% -- sh -c 'myx.common lib/prefix -3 %'"
 		
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		while read -r DST REPO BRANCH _; do
+		local itemTarget itemSource useBranch
+		DistroImageSync --intern-print-repo-list-from-stdin \
+		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - cloneSync clonePull
-			echo "	git/clone${syncType} \$MMDAPP/source/$DST" "$REPO" "$BRANCH"
+			echo "\$clone$syncType \$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
 		done
 		
 		printf 'XARGS_INPUT\n'
 	;;
-	sequence)
+	--sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		while read -r DST REPO BRANCH _; do
+		local itemTarget itemSource useBranch
+		DistroImageSync --intern-print-repo-list-from-stdin \
+		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Prefix -2 GitClone${syncType} "\$MMDAPP/source/$DST" "$REPO" "$BRANCH"
+			echo Prefix -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
 		done
 	;;
-	obsolete)
+	--obsolete)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		local COUNTER=""
-		while read -r DST REPO BRANCH _; do
-			echo Async -2 GitCloneSync "\$MMDAPP/source/$DST" "$REPO" "$BRANCH"
-			if [ "$COUNTER" == "@@@@@" ] ; then
+		local rowCounter=""
+		local itemTarget itemSource useBranch
+		
+		DistroImageSync --intern-print-repo-list-from-stdin \
+		| while read -r itemTarget itemSource useBranch _; do
+			echo Async -2 GitCloneSync "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
+			rowCounter="${rowCounter}@"
+			if [ "$rowCounter" == "@@@@@@@@" ] ; then
 				echo wait
-				COUNTER=""
-			else
-				COUNTER="${COUNTER}@"
+				rowCounter=""
 			fi
 		done
 		
-		if [ ! -z "$COUNTER" ] ; then
-			echo wait
-		fi
+		echo wait
 	;;
 esac
 
