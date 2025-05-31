@@ -80,6 +80,7 @@ DistroImageSync(){
 			shift
 			case "$1" in
 				source-prepare-pull|source-process-push|image-prepare-pull|image-process-push|image-install-pull)
+					useStage="$1"
 					return 0
 				;;
 			esac
