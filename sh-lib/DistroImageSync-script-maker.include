@@ -6,14 +6,14 @@ echo MMDAPP="\${MMDAPP:-"${MMDAPP}"}"
 local syncMode="${1:-parallel}"
 
 case "$syncMode" in
+	parallel)
+		# nothing
+	;;
 	sequence)
 		echo lib/sedLineReader lib/prefix git/clonePull git/cloneSync
 	;;
 	obsolete)
 		echo lib/sedLineReader lib/prefix lib/async git/clonePull git/cloneSync
-	;;
-	parallel)
-		# nothing
 	;;
 esac \
 | tr ' ' '\n' | while read -r MC_EMBED ; do
@@ -33,6 +33,18 @@ esac \
 done | grep -v -e '^#' -e '^$' || true
 
 case "$syncMode" in
+	parallel)
+		printf "(%s | %s) <<XARGS_INPUT\n" \
+			"tr '\n' '\0'" \
+			"xargs -0 -P '${2:-4}' -I% -- sh -c 'myx.common lib/prefix -3 myx.common git/cloneSync %'"
+		
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		while read -r DST REPO BRANCH _; do
+			echo "   \$MMDAPP/source/$DST" "$REPO" "$BRANCH"
+		done
+		
+		printf 'XARGS_INPUT\n'
+	;;
 	sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		while read -r DST REPO BRANCH _; do
@@ -46,18 +58,6 @@ case "$syncMode" in
 		done
 		
 		echo wait
-	;;
-	parallel)
-		printf "(%s | %s) <<XARGS_INPUT\n" \
-			"tr '\n' '\0'" \
-			"xargs -0 -P '${2:-4}' -I% -- sh -c 'myx.common lib/prefix -3 myx.common git/cloneSync %'"
-		
-		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		while read -r DST REPO BRANCH _; do
-			echo "   \$MMDAPP/source/$DST" "$REPO" "$BRANCH"
-		done
-		
-		printf 'XARGS_INPUT\n'
 	;;
 esac
 
