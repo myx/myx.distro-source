@@ -106,7 +106,6 @@ DistroImageSync(){
 	local useNoIndex=""
 	local useJobList=""
 	local useStage=""
-	local useCommand=""
 
 	while true ; do
 		case "$1" in
@@ -178,21 +177,26 @@ DistroImageSync(){
 		esac
 	done
 
-	if [ ! -z "$useCommand" ] && [ ! -z "$1" ] ; then
-		echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
-		set +e ; return 1
-	fi
-
 	while true ; do
 		case "${useCommand:-$1}" in
 			--print-tasks)
 			
+				if [ ! -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+
 				echo "$useJobList"
 				
 				return 0
 			;;
 			--print-repo-list)
 			
+				if [ ! -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+				
 				echo "$useJobList" \
 				| DistroImageSync --intern-print-repo-list-from-stdin | sort
 				
@@ -202,6 +206,11 @@ DistroImageSync(){
 				local selectVariant="${1#--print-}"
 				DistroImageSync --intern-check-build-stage "$selectVariant"
 				shift
+				
+				if [ ! -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
 				
 				echo "$useJobList" \
 				| grep -e "^${selectVariant}" \
