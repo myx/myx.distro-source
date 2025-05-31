@@ -3,10 +3,10 @@
 
 echo MMDAPP="\${MMDAPP:-"${MMDAPP}"}"
 
-local syncMode="${1:-minimal}"
+local syncMode="${1:-parallel}"
 
 case "$syncMode" in
-	minimal)
+	sequence)
 		echo lib/sedLineReader lib/prefix git/clonePull git/cloneSync
 	;;
 	obsolete)
@@ -33,7 +33,7 @@ esac \
 done | grep -v -e '^#' -e '^$' || true
 
 case "$syncMode" in
-	minimal)
+	sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		while read -r DST REPO BRANCH _; do
 			echo Prefix -2 GitCloneSync "\$MMDAPP/source/$DST" "$REPO" "$BRANCH"
