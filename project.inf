@@ -3,7 +3,9 @@ Title: Distro builder package, prepare distro indices
 Requires: os.java 
 Augments: developer-sdk:recommended
 Suggests: 
-Declares: 
+Declares: \
+	distro-image-sync:source-prepare-pull:repo:myx/myx.distro-source::git@github.com:myx/myx.distro-source.git \
+
 Provides: myx/myx.distro-source distro-source
 Replaces: 
 Keywords: 

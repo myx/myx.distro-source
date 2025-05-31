@@ -18,160 +18,204 @@ fi
 
 DistroImageSync(){
 	local MDSC_CMD='DistroImageSync'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-
 	set -e
 
-	local useNoCache=""
-	local useNoIndex=""
-
 	case "$1" in
-		--all-*)
-		;;
-		--explicit-noop)
-			shift
-		;;
-		--no-cache)
-			shift
-			local useNoCache="--no-cache"
-		;;
-		--no-index)
-			shift
-			local useNoIndex="--no-index"
-		;;
-		--select-from-env)
-			shift
-			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
-				set +e ; return 1
-			fi
-		;;
-		--set-env)
-			shift
-			if [ -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
-				set +e ; return 1
-			fi
-			local envName="$1" ; shift
-			eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
+		--intern-print-all-tasks)
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $1" >&2
+
+			local projectName buildStage syncOperation targetSpec sourceSpec extra
+			Require ListDistroDeclares
+			ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync" \
+			| sed -e 's/:/ /' -e 's/:/ /' -e 's/:/ /' \
+			| while read -r projectName buildStage syncOperation targetSpec sourceSpec extra ; do
+				echo "$buildStage" "$projectName" "$syncOperation" "$targetSpec" "$sourceSpec" "$extra"
+			done
 			return 0
 		;;
-		--*)
-			Require ListDistroProjects
-			ListDistroProjects --select-execute-default DistroImageSync "$@"
+		--intern-print-repo-list-from-stdin)
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $1" >&2
+
+			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
+				if [ "." == "$targetSpec" ] ; then
+					targetSpec="$projectName"
+				fi
+				case "$syncOperation" in
+					repo)
+						local sourceBranch sourceUrl
+						echo "*$sourceSpec" | sed 's/:/ /' | if read -r sourceBranch sourceUrl ; then
+							if [ -z "$sourceUrl" ] ; then
+								echo "WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
+								continue
+							fi
+							echo "$targetSpec" "$sourceUrl" "${sourceBranch:1}"
+						fi
+					;;
+					list)
+						local listFile="$MDSC_SOURCE/$targetSpec/$sourceSpec"
+						if [ ! -f "$listFile" ] ; then
+							echo "WARNING: $MDSC_CMD: no repo list ($listFile) found for $projectName $buildStage:repo directive (ignoring)!" >&2
+							continue
+						fi
+
+						local targetSpec sourceUrl sourceBranch
+						cat "$listFile" \
+						| while read -r targetSpec sourceUrl sourceBranch ; do
+							if [ "${targetSpec:0:1}"  == "#" ] || [ -z "$targetSpec" ] || [ -z "$sourceUrl" ] ; then
+								continue
+							fi
+							echo "${targetSpec%%/}" "$sourceUrl" "$sourceBranch"
+						done
+					;;
+					*)
+						# echo "$MDSC_CMD: unknown sync operation: $syncOperation" >&2
+					;;
+				esac
+			done | awk '$0 && !x[$0]++'
 			return 0
+		;;
+		--intern-check-build-stage)
+			shift
+			case "$1" in
+				source-prepare-pull|source-process-push|image-prepare-pull|image-process-push|image-install-pull)
+					return 0
+				;;
+			esac
+			echo "ERROR: $MDSC_CMD: invalid build-stage: $1" >&2
+			set +e ; return 1
 		;;
 	esac
 
-	local indexFile="$MDSC_CACHED/distro-index.inf"
-	local indexAllJobs=""
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	local useNoCache=""
+	local useNoIndex=""
+	local useJobList=""
+	local useStage=""
+	local useCommand=""
 
 	while true ; do
 		case "$1" in
-			--all-projects-source-prepare-pull)
-				shift
-				break
-			;;
-			--all-projects-source-prepare-sync)
-				shift
-				break
-			;;
-			--all-declarations)
-				shift
-				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
-					set +e ; return 1
-				fi
-	
-				Require ListDistroDeclares
-				ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync"
-
-				return 0
-			;;
 			--all-tasks)
 				shift
+				local useJobList="$( DistroImageSync $useNoCache $useNoIndex $useStage --print-all-tasks )"
+				break
+			;;
+			--explicit-noop)
+				shift
+				break
+			;;
+			--no-cache)
+				shift
+				local useNoCache="--no-cache"
+			;;
+			--no-index)
+				shift
+				local useNoIndex="--no-index"
+			;;
+			--select-from-env)
+				shift
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+					set +e ; return 1
+				fi
+				break
+			;;
+			--set-env)
+				shift
+				if [ -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
+					set +e ; return 1
+				fi
+				local envName="$1" ; shift
+				eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
+				return 0
+			;;
+			--print-all-tasks)
+				shift
 				if [ ! -z "$1" ] ; then
 					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
-	
-				local projectName buildStage syncOperation targetSpec sourceSpec extra
-				Require ListDistroDeclares
-				ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync" \
-				| sed -e 's/:/ /' -e 's/:/ /' -e 's/:/ /' \
-				| while read -r projectName buildStage syncOperation targetSpec sourceSpec extra ; do
-					echo "$buildStage" "$projectName" "$syncOperation" "$targetSpec" "$sourceSpec" "$extra"
-				done
 
+				DistroImageSync --intern-print-all-tasks
 				return 0
 			;;
-			--all-tasks-repo-list-columns)
-				DistroImageSync --all-tasks-repo-list | column -t
-				return 0
-			;;
-			--all-tasks-repo-list)
-				local buildStage projectName syncOperation targetSpec sourceSpec extra
-				DistroImageSync $useNoCache $useNoIndex --all-tasks \
-				| while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
-					if [ "." == "$targetSpec" ] ; then
-						targetSpec="$projectName"
-					fi
-					case "$syncOperation" in
-						repo)
-							local sourceBranch sourceUrl
-							echo "*$sourceSpec" | sed 's/:/ /' | if read -r sourceBranch sourceUrl ; then
-								if [ -z "$sourceUrl" ] ; then
-									echo "WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
-									continue
-								fi
-								echo "$targetSpec" "$sourceUrl" "${sourceBranch:1}"
-							fi
-						;;
-						list)
-							local listFile="$MDSC_SOURCE/$targetSpec/$sourceSpec"
-							if [ ! -f "$listFile" ] ; then
-								echo "WARNING: $MDSC_CMD: no repo list ($listFile) found for $projectName $buildStage:repo directive (ignoring)!" >&2
-								continue
-							fi
-
-							local targetSpec sourceUrl sourceBranch
-							cat "$listFile" \
-							| while read -r targetSpec sourceUrl sourceBranch ; do
-								if [ "${targetSpec:0:1}"  == "#" ] || [ -z "$targetSpec" ] || [ -z "$sourceUrl" ] ; then
-									continue
-								fi
-								echo "$targetSpec" "$sourceUrl" "$sourceBranch"
-							done
-						;;
-						*)
-							# echo "$MDSC_CMD: unknown sync operation: $syncOperation" >&2
-						;;
-					esac
-				done | awk '$0 && !x[$0]++'
-				return 0
-			;;
-			--merge-sequence)
+			--print-all-tasks-repo-list)
 				shift
-				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+				if [ ! -z "$1" ] ; then
+					echo "ERROR: $MDSC_CMD: no options allowed after --all-tasks-repo-list option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
-				
-				Require ListProjectDeclares
-		
-				local sequenceProjectName
-				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
-				done | awk '!x[$0]++'
-
+				DistroImageSync --intern-print-all-tasks | DistroImageSync --intern-print-repo-list-from-stdin | sort
 				return 0
 			;;
+			--print-*|--script-*|--execute-*)
+				break
+			;;
+			--*)
+				Require ListDistroProjects
+				ListDistroProjects --select-execute-default DistroImageSync "$@"
+				return 0
+			;;
+			*)
+				break;
+			;;
+		esac
+	done
+
+	if [ ! -z "$useCommand" ] && [ ! -z "$1" ] ; then
+		echo "ERROR: $MDSC_CMD: no options allowed after $useCommand option ($MDSC_OPTION, $@)" >&2
+		set +e ; return 1
+	fi
+
+	while true ; do
+		case "${useCommand:-$1}" in
+			--print-tasks)
+				echo "$useJobList"
+				return 0
+			;;
+			--print-repo-list)
+				echo "$useJobList" | DistroImageSync --intern-print-repo-list-from-stdin | sort
+				return 0
+			;;
+			--print-*)
+				local selectVariant="${1#--print-}"
+				DistroImageSync --intern-check-build-stage "$selectVariant"
+				shift
+				echo "$useJobList" | grep -e "^${selectVariant}" | DistroImageSync --intern-print-repo-list-from-stdin
+				return 0
+			;;
+			--script-*)
+				local selectVariant="${1#--script-}"
+				DistroImageSync --intern-check-build-stage "$selectVariant"
+				shift
+				DistroImageSync --print-${selectVariant} | DistroImageSync --intern-repo-list-sync-script-from-stdin
+				return 0
+			;;
+			--execute-*)
+				DistroImageSync --intern-check-build-stage "$1"
+				local selectVariant="$1" ; shift
+				echo "$useJobList" | grep -e "^${selectVariant#--print-}" | DistroImageSync --intern-print-repo-list-from-stdin
+				return 0
+			;;
+			--source-prepare-pull|--source-process-push|--image-prepare-pull|--image-process-push|--image-install-pull)
+				if [ ! -z "$useStage" ] ; then
+					echo "ERROR: $MDSC_CMD: build stage already selected ($useStage) ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+				local useStage="$1"
+				shift
+			;;
 			'')
+				echo "ERROR: $MDSC_CMD: one of --print-* or --execute command is required" >&2
+				set +e ; return 1
+
 				if [ ! -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						DistroImageSync --explicit-noop $useNoCache $useNoIndex --all-projects \
+						DistroImageSync $useNoCache $useNoIndex $useStage --print-all-tasks \
 					)
 					break
 				fi
@@ -180,26 +224,29 @@ DistroImageSync(){
 				set +e ; return 1
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "ERROR: $MDSC_CMD: invalid option: ${useCommand:-$1}" >&2
 				set +e ; return 1
 			;;
 		esac
 	done
-
-	echo "$indexAllJobs" >&2
-
+	return 0
 }
 
 case "$0" in
 	*/sh-scripts/DistroImageSync.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks" >&2
-			echo "syntax: DistroImageSync.fn.sh [<options>] <operation>" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
 			echo "syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
+			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
 			echo "syntax: DistroImageSync.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				echo "    --all-tasks" >&2
+				echo "                Select all distro tasks for all build stages." >&2
+				echo >&2
 				echo >&2
 				echo "  Options:" >&2
 				echo >&2
@@ -212,33 +259,54 @@ case "$0" in
 				echo "    --no-cache" >&2
 				echo "                Use no cache." >&2
 				echo >&2
-				echo "    --merge-sequence" >&2
-				echo "                Include all inherited provides for each project selected." >&2
+				echo "  Operations:" >&2
 				echo >&2
-				echo "  Arguments:" >&2
+				echo "    --print-all-tasks" >&2
+				echo "                Displays all sync tasks for all build stages from all projects in distro." >&2
 				echo >&2
-				echo "    --all-tasks" >&2
+				echo "    --print-tasks" >&2
 				echo "                Display all tasks, unrolled with repo lists expanded. (No execution of commands)" >&2
 				echo >&2
-				echo "    --all-tasks-repo-list" >&2
-				echo "    --all-tasks-repo-list-columns" >&2
+				echo "    --print-repo-list" >&2
 				echo "                Display all tasks, unrolled with repo lists expanded. (No execution of commands)" >&2
 				echo >&2
-				echo "    --all-declarations" >&2
-				echo "                Display all tasks as they are specified in projects. (No execution of commands)" >&2
-				echo >&2
-				echo "    --do-source-prepare-pull" >&2
+				echo "    --print-source-prepare-pull" >&2
 				echo "                Execute tasks for source-prapare pull stage (before source-prepare)." >&2
 				echo >&2
-				echo "    --do-image-prepare-push" >&2
+				echo "    --print-source-process-push" >&2
 				echo "                Execute tasks for image-prapare push stage (on image-prepare, after source)." >&2
 				echo >&2
-				echo "    --do-image-prepare-pull" >&2
+				echo "    --print-image-prepare-pull" >&2
 				echo "                Execute tasks for image-prapare pull stage (on image-prepare, before deploy)." >&2
+				echo >&2
+				echo "    --print-image-process-push" >&2
+				echo "                Execute tasks for image-prapare push stage (on image-prepare, before deploy)." >&2
+				echo >&2
+				echo "    --print-image-install-pull" >&2
+				echo "                Execute tasks for image-install pull stage (on image-install, before deploy)." >&2
+				echo >&2
+				echo "    --execute-source-prepare-pull" >&2
+				echo "                Execute tasks for source-prapare pull stage (before source-prepare)." >&2
+				echo >&2
+				echo "    --execute-source-process-push" >&2
+				echo "                Execute tasks for image-prapare push stage (on image-prepare, after source)." >&2
+				echo >&2
+				echo "    --execute-image-prepare-pull" >&2
+				echo "                Execute tasks for image-prapare pull stage (on image-prepare, before deploy)." >&2
+				echo >&2
+				echo "    --execute-image-process-push" >&2
+				echo "                Execute tasks for image-prapare push stage (on image-prepare, before deploy)." >&2
+				echo >&2
+				echo "    --execute-image-install-pull" >&2
+				echo "                Execute tasks for image-install pull stage (on image-install, before deploy)." >&2
 				echo >&2
 				echo "  Examples:" >&2
 				echo >&2
-				echo "    DistroImageSync.fn.sh --all-projects" >&2
+				echo "    DistroImageSync.fn.sh --print-all-tasks" >&2
+				echo "    DistroImageSync.fn.sh --source-prepare-pull --print-all-tasks" >&2
+				echo "    DistroImageSync.fn.sh --source-prepare-pull --all-tasks --print-tasks" >&2
+				echo "    DistroImageSync.fn.sh --source-prepare-pull --print-all-tasks-repo-list" >&2
+				echo "    DistroImageSync.fn.sh --source-prepare-pull --all-tasks --print-repo-list" >&2
 				echo >&2
 				echo ""
 			fi
