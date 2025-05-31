@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+echo MMDAPP="\${MMDAPP:-"${MMDAPP}"}"
+
+local syncMode="${1:-minimal}"
+
+case "$syncMode" in
+	minimal)
+		echo lib/sedLineReader lib/prefix git/clonePull git/cloneSync
+	;;
+	obsolete)
+		echo lib/sedLineReader lib/prefix lib/async git/clonePull git/cloneSync
+	;;
+	parallel)
+		# nothing
+	;;
+esac \
+| tr ' ' '\n' | while read -r MC_EMBED ; do
+	if [ -f "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
+		cat "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
+	elif [ -f "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
+		cat "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
+	elif [ "$( which myx.common )" != "" ] ; then
+		myx.common cat $MC_EMBED
+	else
+		echo "ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
+		set +e ; return 1
+	fi
+done | grep -v -e '^#' -e '^$' || true
+
+case "$syncMode" in
+	minimal)
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		while read -r DST REPO BRANCH _; do
+			echo Prefix -2 GitCloneSync "\$MMDAPP/source/$DST" "$REPO" "$BRANCH"
+		done
+	;;
+	obsolete)
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		while read -r DST REPO BRANCH _; do
+			echo Async -2 GitCloneSync "\$MMDAPP/source/$DST" "$REPO" "$BRANCH"
+		done
+		
+		echo wait
+	;;
+	parallel)
+		printf "(%s | %s) <<XARGS_INPUT\n" \
+			"tr '\n' '\0'" \
+			"xargs -0 -P '${2:-4}' -I% -- sh -c 'myx.common lib/prefix -3 myx.common git/cloneSync %'"
+		
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		while read -r DST REPO BRANCH _; do
+			echo "   \$MMDAPP/source/$DST" "$REPO" "$BRANCH"
+		done
+		
+		printf 'XARGS_INPUT\n'
+	;;
+esac
+
+#  mkdir -p ~/.ssh/controlmasters/
+#  GIT_SSH_COMMAND="ssh -4 -o ControlMaster=auto -o ControlPath=~/.ssh/controlmasters/%C -o ControlPersist=10m"
+#  export GIT_SSH_COMMAND
+
+#  LIST_REPOS="$MMDAPP/source/ndm/util.repository-ndm/data/repository/remotes-list-ndm.txt"
+#  test -s "$LIST_REPOS" && cat "$LIST_REPOS" | parallelGitCloneSync 6
+
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+# INF="$MMDAPP/source/myx/util.repository-myx/sh-data/repository/repository.inf"
+# ( set -e ; echo "# copied from $INF at `date`" ; cat "$INF" ) > "$MMDAPP/source/myx/repository.inf"

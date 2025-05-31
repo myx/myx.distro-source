@@ -22,7 +22,7 @@ DistroImageSync(){
 
 	case "$1" in
 		--intern-print-all-tasks)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $1" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
 			local projectName buildStage syncOperation targetSpec sourceSpec extra
 			Require ListDistroDeclares
@@ -34,7 +34,7 @@ DistroImageSync(){
 			return 0
 		;;
 		--intern-print-repo-list-from-stdin)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $1" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
 			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
 				if [ "." == "$targetSpec" ] ; then
@@ -61,7 +61,7 @@ DistroImageSync(){
 						local targetSpec sourceUrl sourceBranch
 						cat "$listFile" \
 						| while read -r targetSpec sourceUrl sourceBranch ; do
-							if [ "${targetSpec:0:1}"  == "#" ] || [ -z "$targetSpec" ] || [ -z "$sourceUrl" ] ; then
+							if [ "${targetSpec:0:1}" == "#" ] || [ -z "$targetSpec" ] || [ -z "$sourceUrl" ] ; then
 								continue
 							fi
 							echo "${targetSpec%%/}" "$sourceUrl" "$sourceBranch"
@@ -75,6 +75,8 @@ DistroImageSync(){
 			return 0
 		;;
 		--intern-check-build-stage)
+			[ "$MDSC_DETAIL" == "full" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+
 			shift
 			case "$1" in
 				source-prepare-pull|source-process-push|image-prepare-pull|image-process-push|image-install-pull)
@@ -83,6 +85,18 @@ DistroImageSync(){
 			esac
 			echo "ERROR: $MDSC_CMD: invalid build-stage: $1" >&2
 			set +e ; return 1
+		;;
+		--intern-print-script-from-stdin-repo-list)
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+
+			shift
+			. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroImageSync-script-maker.include"
+			return 0
+		;;
+		--intern-execute-script-from-stdin)
+			[ "$MDSC_DETAIL" == "full" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			( eval "$( cat )" )
+			return 0
 		;;
 	esac
 
@@ -172,40 +186,53 @@ DistroImageSync(){
 	while true ; do
 		case "${useCommand:-$1}" in
 			--print-tasks)
+			
 				echo "$useJobList"
+				
 				return 0
 			;;
 			--print-repo-list)
-				echo "$useJobList" | DistroImageSync --intern-print-repo-list-from-stdin | sort
+			
+				echo "$useJobList" \
+				| DistroImageSync --intern-print-repo-list-from-stdin | sort
+				
 				return 0
 			;;
 			--print-*)
 				local selectVariant="${1#--print-}"
 				DistroImageSync --intern-check-build-stage "$selectVariant"
 				shift
-				echo "$useJobList" | grep -e "^${selectVariant}" | DistroImageSync --intern-print-repo-list-from-stdin
+				
+				echo "$useJobList" \
+				| grep -e "^${selectVariant}" \
+				| DistroImageSync --intern-print-repo-list-from-stdin
+				
 				return 0
 			;;
 			--script-*)
 				local selectVariant="${1#--script-}"
 				DistroImageSync --intern-check-build-stage "$selectVariant"
 				shift
-				DistroImageSync --print-${selectVariant} | DistroImageSync --intern-repo-list-sync-script-from-stdin
+				
+				echo "$useJobList" \
+				| grep -e "^${selectVariant}" \
+				| DistroImageSync --intern-print-repo-list-from-stdin \
+				| DistroImageSync --intern-print-script-from-stdin-repo-list "$@"
+				
 				return 0
 			;;
 			--execute-*)
-				DistroImageSync --intern-check-build-stage "$1"
-				local selectVariant="$1" ; shift
-				echo "$useJobList" | grep -e "^${selectVariant#--print-}" | DistroImageSync --intern-print-repo-list-from-stdin
-				return 0
-			;;
-			--source-prepare-pull|--source-process-push|--image-prepare-pull|--image-process-push|--image-install-pull)
-				if [ ! -z "$useStage" ] ; then
-					echo "ERROR: $MDSC_CMD: build stage already selected ($useStage) ($MDSC_OPTION, $@)" >&2
-					set +e ; return 1
-				fi
-				local useStage="$1"
+				local selectVariant="${1#--execute-}"
+				DistroImageSync --intern-check-build-stage "$selectVariant"
 				shift
+				
+				echo "$useJobList" \
+				| grep -e "^${selectVariant}" \
+				| DistroImageSync --intern-print-repo-list-from-stdin \
+				| DistroImageSync --intern-print-script-from-stdin-repo-list "$@" \
+				| DistroImageSync --intern-execute-script-from-stdin
+				
+				return 0
 			;;
 			'')
 				echo "ERROR: $MDSC_CMD: one of --print-* or --execute command is required" >&2
