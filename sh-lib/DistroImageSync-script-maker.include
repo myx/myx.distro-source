@@ -29,7 +29,7 @@ case "$useStage" in
 esac
 
 local syncCommand=""
-local syncMode="${1:-parallel}"
+local syncMode="${1:---parallel}"
 
 if \
 [ -x "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
