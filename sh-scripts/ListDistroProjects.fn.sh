@@ -233,6 +233,12 @@ ListDistroProjects(){
 					echo "ERROR: ListDistroProjects: no options allowed after --one-project option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
+
+				if [ -f "$MDSC_SOURCE/$1/project.inf" ] ; then # exact match, beats all
+					echo "$1"
+					return 0
+				fi
+
 				local projectFilter="$1" ; shift
 
 				local matchedProjects
@@ -455,8 +461,6 @@ ListDistroProjects(){
 					;;
 				esac
 			;;
-
-
 
 
 			--no-cache)
