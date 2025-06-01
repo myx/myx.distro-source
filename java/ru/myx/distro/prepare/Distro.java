@@ -252,6 +252,12 @@ public final class Distro {
 	}
     }
 
+    public Map<String, Project> getProjects() {
+	final Map<String, Project> result = new LinkedHashMap<>();
+	result.putAll(this.byProjectName);
+	return result;
+    }
+
     public Map<String, Set<Project>> getDeclares() {
 	final Map<String, Set<Project>> result = new LinkedHashMap<>();
 	result.putAll(this.byDeclares);

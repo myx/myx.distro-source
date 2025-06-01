@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import ru.myx.distro.prepare.Distro;
+import ru.myx.distro.prepare.OptionList;
 import ru.myx.distro.prepare.OptionListItem;
 import ru.myx.distro.prepare.Project;
 import ru.myx.distro.prepare.Repository;
@@ -379,6 +380,14 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    }, "--select-required");
 
 	    AbstractCommand.registerOperation(operations, context -> {
+		if (context.buildQueue.isEmpty()) {
+		    throw new IllegalStateException("No queue to build");
+		}
+		context.doSelectAffected();
+		return true;
+	    }, "--select-affected");
+
+	    AbstractCommand.registerOperation(operations, context -> {
 		if (!context.arguments.hasNext()) {
 		    throw new IllegalArgumentException("project name is expected");
 		}
@@ -687,6 +696,57 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    }
 
 	    queue.removeFirst();
+	    if (know.putIfAbsent(project.getFullName(), project) == null) {
+		this.buildQueue.add(project);
+	    }
+
+	    continue queue;
+	}
+
+    }
+
+    public void doSelectAffected() {
+	this.console.outDebug("select affected, queue: ", this.buildQueue);
+
+	final LinkedList<Project> queue = new LinkedList<>(this.buildQueue);
+	final Map<String, Project> seen = new TreeMap<>();
+	final Map<String, Project> know = new TreeMap<>();
+
+	this.buildQueue.clear();
+
+	queue: for (;;) {
+	    final Project project = queue.peekFirst();
+	    if (project == null) {
+		this.console.outDebug("BQ-DONE");
+		break queue;
+	    }
+
+	    if (know.containsKey(project.getFullName())) {
+		queue.removeFirst();
+		continue queue;
+	    }
+
+	    final OptionList provides = project.getProvides();
+	    if (provides == null) {
+		throw new IllegalArgumentException(
+			"provided items unknown, name: " + this.repositories.getProject(project.getName()));
+	    }
+
+	    check: for (final Project candidate : this.repositories.getProjects().values()) {
+		if (know.containsKey(candidate.getFullName()) || candidate.projectSourceRoot == null) {
+		    continue check;
+		}
+
+		for (final OptionListItem requires : candidate.getRequires()) {
+		    for (final OptionListItem provide : provides) {
+			if (provide.equals(requires) && seen.putIfAbsent(candidate.getFullName(), candidate) == null) {
+			    queue.addLast(candidate);
+			    continue queue;
+			}
+		    }
+		}
+	    }
+
 	    if (know.putIfAbsent(project.getFullName(), project) == null) {
 		this.buildQueue.add(project);
 	    }
