@@ -90,7 +90,7 @@ ListDistroRequires(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						ListDistroRequires --explicit-noop $useNoCache $useNoIndex --all-keywords \
+						ListDistroRequires --explicit-noop $useNoCache $useNoIndex --all-requires \
 					)
 					return 0
 				fi

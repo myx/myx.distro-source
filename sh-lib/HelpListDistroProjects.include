@@ -38,6 +38,14 @@ echo >&2
 echo "    --one-project <project-name-glob>" >&2
 echo "                Print single project and exit or fail with error message. Search by project name substring." >&2
 echo >&2
+echo "    --required" >&2
+echo "    --required-projects" >&2
+echo "                Prints projects that are required for selected projects." >&2
+echo >&2
+echo "    --required" >&2
+echo "    --required-projects" >&2
+echo "                Prints projects that are derived/affected by selected projects." >&2
+echo >&2
 echo "    --select-execute-command <command>" >&2
 echo "                Execute command immediately with current selection. If arguments remain," >&2
 echo "                they are passed to command." >&2

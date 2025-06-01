@@ -126,6 +126,7 @@ ListDistroProjects(){
 				selectProjects="$( cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' )"
 			;;
 
+			#--select-{projects|provides|merged-provides|declares|keywords|merged-keywords|keywords2|merged-keywords2|one-project})
 			--select-projects|--select-provides|--select-merged-provides|--select-declares|--select-keywords|--select-merged-keywords|--select-keywords2|--select-merged-keywords2|--select-one-project)
 				## Unions with selection
 				local selectVariant="$1" ; shift
@@ -462,6 +463,45 @@ ListDistroProjects(){
 				esac
 			;;
 
+			--select-required|--select-affected|--select-required-projects|--select-affected-projects)
+				## Adds projects required or affected by current selection
+				[ "$MDSC_DETAIL" == "full" ] || echo "* ListDistroProjects: $1, selected: $( echo $selectProjects )" >&2
+
+				local selectVariant="--${1#--select-}" ; shift
+
+				selectProjects="$( 
+					export MDSC_SELECT_PROJECTS="$selectProjects"
+					ListDistroProjects $useNoCache $useNoIndex --select-from-env $selectVariant 
+				)"
+			;;
+			--required|--required-projects)
+
+				Require ListDistroSequence
+				ListDistroSequence --all-projects \
+				| awk -v list="$( echo $selectProjects )" '
+					BEGIN {
+						n = split(list, arr, " ")
+						for (i = 1; i <= n; i++) keys[arr[i]] = 1
+					}
+					($1 in keys) && !seen[$2]++ { print $2 }
+				'
+
+				return 0
+			;;
+			--affected|--affected-projects)
+
+				Require ListDistroSequence
+				ListDistroSequence --all-projects \
+				| awk -v list="$( echo $selectProjects )" '
+					BEGIN {
+						n = split(list, arr, " ")
+						for (i = 1; i <= n; i++) keys[arr[i]] = 1
+					}
+					($2 in keys) && !seen[$1]++ { print $1 }
+				'
+
+				return 0
+			;;
 
 			--no-cache)
 				shift

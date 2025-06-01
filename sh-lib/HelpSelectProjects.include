@@ -56,4 +56,12 @@ echo "    --remove-one-project <project-name-glob>" >&2
 echo "                Update selection with projects matched by project full name substring. Fail if" >&2
 echo "                matched project count is not exactly one." >&2
 echo >&2
+echo "    --select-required" >&2
+echo "    --select-required-projects" >&2
+echo "                Select projects that are required for currently selected projects." >&2
+echo >&2
+echo "    --select-all-affected" >&2
+echo "    --select-affected-projects" >&2
+echo "                Select projects that are derived/affected by currently selected projects." >&2
+echo >&2
 set +e ; return 1
