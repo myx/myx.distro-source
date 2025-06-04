@@ -158,28 +158,6 @@ ListProjectKeywords(){
 
 case "$0" in
 	*/sh-scripts/ListProjectKeywords.fn.sh)
-		# ListProjectKeywords.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectKeywords.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectKeywords.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz 
-		# ListProjectKeywords.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --merge-sequence --print-project 
-		# ListProjectKeywords.fn.sh ndm/cloud.dev/setup.host-ndss-hz.ndm9.xyz --merge-sequence 
-		# ListProjectKeywords.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --print-project deploy-keyword
-		# ListProjectKeywords.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence deploy-keyword
-		# ListProjectKeywords.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence --print-project deploy-keyword
-		# ListProjectKeywords.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz --merge-sequence deploy-keyword
-	
-		# ListProjectKeywords.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 2> /dev/null
-		# ListProjectKeywords.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 2> /dev/null
-
-		# ListProjectKeywords.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 --merge-sequence 2> /dev/null
-		# ListProjectKeywords.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 --merge-sequence 2> /dev/null
-
-		# ListProjectKeywords.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 deploy-keyword 2> /dev/null
-		# ListProjectKeywords.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 deploy-keyword 2> /dev/null
-
-		# ListProjectKeywords.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-c1 --print-project deploy-keyword 2> /dev/null
-		# ListProjectKeywords.fn.sh --distro-from-cached ndm/cloud-infra/setup.assets-infra/location-c1 --print-project deploy-keyword 2> /dev/null
-	
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListProjectKeywords.fn.sh <project_name> [--print-project] [--print-keywords-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
 			echo "syntax: ListProjectKeywords.fn.sh [--help]" >&2

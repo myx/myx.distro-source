@@ -443,14 +443,6 @@ ListDistroDeclares(){
 
 case "$0" in
 	*/sh-scripts/ListDistroDeclares.fn.sh)
-		# ListDistroDeclares.fn.sh --distro-source-only deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroDeclares.fn.sh --distro-from-source deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroDeclares.fn.sh --distro-from-cached deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroDeclares.fn.sh --distro-from-cached deploy-ssh-target 2> /dev/null
-
-		# ListDistroDeclares.fn.sh --distro-from-cached --select-projects tbd9 deploy-ssh-target 2> /dev/null
-		# ListDistroDeclares.fn.sh --distro-from-cached --select-projects tbd9 deploy-keyword 2> /dev/null
-
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListDistroDeclares.fn.sh [<options>] --all-declares" >&2
 			# echo "syntax: ListDistroDeclares.fn.sh [<options>] --all-declares-merged" >&2

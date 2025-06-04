@@ -424,14 +424,6 @@ ListDistroKeywords(){
 
 case "$0" in
 	*/sh-scripts/ListDistroKeywords.fn.sh)
-		# ListDistroKeywords.fn.sh --distro-source-only deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroKeywords.fn.sh --distro-from-source deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroKeywords.fn.sh --distro-from-cached deploy-keyword 2> /dev/null | grep " bhyve$"
-		# ListDistroKeywords.fn.sh --distro-from-cached deploy-ssh-target 2> /dev/null
-
-		# ListDistroKeywords.fn.sh --distro-from-cached --select-projects tbd9 deploy-ssh-target 2> /dev/null
-		# ListDistroKeywords.fn.sh --distro-from-cached --select-projects tbd9 deploy-keyword 2> /dev/null
-
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "syntax: ListDistroKeywords.fn.sh --all-keywords" >&2
 			echo "syntax: ListDistroKeywords.fn.sh --all-keywords-merged" >&2
