@@ -8,8 +8,9 @@ echo "    --no-cache" >&2
 echo "                Use no cache." >&2
 echo >&2
 echo "    --select-execute-default <command>" >&2
-echo "                Execute command after selection finished. If arguments remain, they" >&2
-echo "                are passed to command." >&2
+echo "                Execute command after selection finished. If arguments remain, they are passed to the" >&2
+echo "                command. MDSC_SELECT_PROJECTS env variable is exported into command's environment" >&2
+echo "                (Use --select-from-env in selectors to use selection)." >&2
 echo >&2
 echo "    --print-selected" >&2
 echo "                Immediately print projects currently selected. (and continue)" >&2
@@ -47,8 +48,9 @@ echo "    --required-projects" >&2
 echo "                Prints projects that are derived/affected by selected projects." >&2
 echo >&2
 echo "    --select-execute-command <command>" >&2
-echo "                Execute command immediately with current selection. If arguments remain," >&2
-echo "                they are passed to command." >&2
+echo "                Execute command immediately with current selection. If arguments remain, they are passed" >&2
+echo "                to command. MDSC_SELECT_PROJECTS env variable is exported into command's environment" >&2
+echo "                (Use --select-from-env in selectors to use selection)." >&2
 echo >&2
 echo "  Examples:" >&2
 echo >&2
