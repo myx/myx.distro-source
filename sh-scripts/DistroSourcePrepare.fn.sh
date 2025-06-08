@@ -42,7 +42,7 @@ DistroSourcePrepare(){
 			echo "> $MDSC_CMD: --prepare-register-repository-root: creating: $MMDAPP/source/$repositoryName/repository.inf" >&2
 			printf "# created at `date`\nName: $repositoryName\n" > "$MMDAPP/source/$repositoryName/repository.inf"
 
-			local initialProject="$3"
+			local initialProject="$1"
 			if [ ! -z "$initialProject" ] ; then
 				shift
 
