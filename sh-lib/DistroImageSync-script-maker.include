@@ -76,7 +76,6 @@ case "$syncMode" in
 	;;
 esac
 
-
 case "$syncMode" in
 	--parallel)
 		printf "clone$syncType=\"%s\"\n" "$syncCommand"

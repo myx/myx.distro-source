@@ -50,7 +50,7 @@ DistroSourcePrepare(){
 				export useStage="source-prepare-pull"
 				export syncMode="--parallel"
 				echo "$initialProject" | while read -r targetSpec sourceSpec sourceBranch ; do
-					echo "source-prepare-pull:$targetSpec:repo:$targetSpec:$sourceBranch:$sourceSpec"
+					echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
 				done | DistroImageSync --intern-print-script-from-stdin-task-list
 			fi
 
