@@ -47,7 +47,8 @@ DistroSourcePrepare(){
 				shift
 
 				Require DistroImageSync
-				export useStage="--source-prepare-pull"
+				export useStage="source-prepare-pull"
+				export syncMode="--parallel"
 				echo "$initialProject" | DistroImageSync --intern-print-script-from-stdin-task-list
 			fi
 
