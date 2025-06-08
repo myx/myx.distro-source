@@ -7,13 +7,15 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
+export MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
+
 if ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-path-auto
 fi
 
 if ! type DistroSource >/dev/null 2>&1 ; then
-	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+	. "$MDSC_BIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
 fi
 
 DistroSourcePrepare(){
@@ -26,6 +28,35 @@ DistroSourcePrepare(){
 	local useNoIndex=""
 
 	case "$1" in
+		--prepare-register-repository-root)
+			local repositoryName="$2"
+			if [ -z "$repositoryName" ] ; then
+				echo "ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+				set +e ; return 1
+			fi
+			shift
+			shift
+
+			echo "> $MDSC_CMD: --prepare-register-repository-root: creating source directory: $MMDAPP/source/$repositoryName" >&2
+			mkdir -p "$MMDAPP/source/$repositoryName"
+			echo "> $MDSC_CMD: --prepare-register-repository-root: creating: $MMDAPP/source/$repositoryName/repository.inf" >&2
+			printf "# created at `date`\nName: $repositoryName\n" > "$MMDAPP/source/$repositoryName/repository.inf"
+
+			local initialProject="$3"
+			if [ ! -z "$initialProject" ] ; then
+				shift
+
+				Require DistroImageSync
+				echo "$initialProject" | DistroImageSync --intern-print-script-from-stdin-task-list
+			fi
+
+			if [ ! -z "$1" ] ; then
+				echo "ERROR: $MDSC_CMD: no options allowed after --prepare-register-repository-root option ($MDSC_OPTION, $@)" >&2
+				set +e ; return 1
+			fi
+
+			return 0
+		;;
 		--all-*)
 		;;
 		--explicit-noop)
@@ -136,11 +167,12 @@ case "$0" in
 	*/sh-scripts/DistroSourcePrepare.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: DistroSourcePrepare.fn.sh --prepare-register-repository-root <repo-name> [projects-spec-to-pull]" >&2
 			echo "syntax: DistroSourcePrepare.fn.sh [<options>] --all-projects" >&2
 			echo "syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
 			echo "syntax: DistroSourcePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
 				echo >&2
 				echo "  Options:" >&2
 				echo >&2
