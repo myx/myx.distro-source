@@ -51,7 +51,7 @@ DistroSourcePrepare(){
 				export syncMode="--parallel"
 				echo "$initialProject" | while read -r targetSpec sourceSpec sourceBranch ; do
 					echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
-				done | DistroImageSync --intern-print-script-from-stdin-task-list
+				done | DistroImageSync --intern-print-script-from-stdin-task-list | eval
 			fi
 
 			if [ ! -z "$1" ] ; then
