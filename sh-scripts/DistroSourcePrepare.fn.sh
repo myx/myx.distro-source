@@ -7,7 +7,7 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-export MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
+MDSC_BIN="${MDSC_BIN:-${MDLC_BIN:-$MMDAPP/source}}"
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"

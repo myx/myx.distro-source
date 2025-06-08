@@ -3,6 +3,8 @@
 
 echo MMDAPP="\${MMDAPP:-"${MMDAPP}"}"
 
+MDSC_BIN="${MDSC_BIN:-${MDLC_BIN:-$MMDAPP/source}}"
+
 local syncType
 
 case "$useStage" in
@@ -32,11 +34,8 @@ local syncCommand=""
 local syncMode="${1:---parallel}"
 
 if \
-[ -x "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
-	syncCommand="$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
-elif \
-[ -x "$MMDAPP/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
-	syncCommand="$MMDAPP/source/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
+[ -x "$MDSC_BIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
+	syncCommand="$MDSC_BIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
 elif \
 [ "$( which myx.common )" != "" ] ; then
 	syncCommand="$( myx.common which git/clone${syncType} )"
@@ -58,11 +57,8 @@ case "$syncMode" in
 			echo lib/sedLineReader lib/prefix lib/async \
 			| tr ' ' '\n' | while read -r MC_EMBED ; do
 				if \
-					[ -f "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
-					cat "$MMDAPP/.local/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
-				elif \
-					[ -f "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
-					cat "$MMDAPP/source/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
+					[ -f "$MDSC_BIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
+					cat "$MDSC_BIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
 				elif \
 					[ "$( which myx.common )" != "" ] ; then
 					myx.common cat $MC_EMBED
