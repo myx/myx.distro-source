@@ -1,10 +1,14 @@
 echo "Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-# search: 1) previous path; 2) distro source scripts; 3) distro deploy scripts.
-PATH="$PATH:$MMDAPP/source/myx/myx.distro-source/sh-scripts:$MMDAPP/source/myx/myx.distro-deploy/sh-scripts"
+export MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
 
-. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+# search: 1) previous path; 2) distro source scripts; 3) distro deploy scripts.
+PATH=$(echo "$PATH" | sed -E "s|$MDSC_BIN/myx/myx.distro-(source|deploy|remote)/sh-scripts||g")
+PATH+=":$MDSC_BIN/myx/myx.distro-source/sh-scripts"
+PATH+=":$MDSC_BIN/myx/myx.distro-deploy/sh-scripts"
+
+. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 DistroShellContext --distro-from-source
 
 Require ListDistroScripts
@@ -16,7 +20,7 @@ Require ListAllActions
 Action(){
 	local actionCommand="$1" ; shift
 	if [ -z "$actionCommand" ] ; then
-		( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpAction.include" )
+		( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpAction.include" )
 		set +e ; return 1
 	fi
 	case "$actionCommand" in
@@ -39,17 +43,17 @@ Action(){
 Deploy(){
 	local distroCommand="$1" ; shift
 	if [ -z "$distroCommand" ] ; then
-		( . "$MDSC_SOURCE/myx/myx.distro-deploy/sh-lib/HelpDeploy.include" )
+		( . "$MDSC_BIN/myx/myx.distro-deploy/sh-lib/HelpDeploy.include" )
 		set +e ; return 1
 	fi
 
 
 	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
-		if [ ! -f "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+		if [ ! -f "$MDSC_BIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
 			echo "ERROR: unknown command: ${distroCommand%.fn.sh}" >&2
 			set +e ; return 1
 		fi
-		. "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+		. "$MDSC_BIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 	fi
 
 	set +e
@@ -74,16 +78,16 @@ Deploy(){
 Source(){
 	local distroCommand="$1" ; shift
 	if [ -z "$distroCommand" ] ; then
-		( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpSource.include" )
+		( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpSource.include" )
 		set +e ; return 1
 	fi
 
 	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
-		if [ ! -f "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+		if [ ! -f "$MDSC_BIN/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
 			echo "ERROR: unknown command: ${distroCommand%.fn.sh}" >&2
 			set +e ; return 1
 		fi
-		. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+		. "$MDSC_BIN/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 	fi
 
 	set +e
