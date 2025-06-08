@@ -18,12 +18,19 @@ fi
 # Runs DistroCommand by compiling it's source code to a temporary folder 
 #
 DistroSourceCommand(){
+
 	local MDSC_OUTPUT="${MDSC_OUTPUT:-$MMDAPP/output}"
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local MDSC_CACHED="${MDSC_CACHED:-$MMDAPP/output/cached}"
 
-	local DIR_OUT="$MDSC_BIN/cached/myx/myx.distro-source"
-	local DIR_SRC="$MDSC_BIN/myx/myx.distro-source"
+	if [ "$MDSC_BIN" == "$MMDAPP/source" ] ; then
+		local DIR_OUT="$MDSC_CACHED/myx/myx.distro-source"
+		local DIR_SRC="$MDSC_SOURCE/myx/myx.distro-source"
+	else
+		local DIR_OUT="$MDSC_BIN/cached/myx/myx.distro-source"
+		local DIR_SRC="$MDSC_BIN/myx/myx.distro-source"
+	fi
+
 
 	set -e
 
