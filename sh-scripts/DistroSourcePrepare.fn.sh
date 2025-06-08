@@ -16,8 +16,8 @@ if ! type DistroSource >/dev/null 2>&1 ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/lib.distro-source.include"
 fi
 
-SourcePrepareDistroPull(){
-	local MDSC_CMD='SourcePrepareDistroPull'
+DistroSourcePrepare(){
+	local MDSC_CMD='DistroSourcePrepare'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	set -e
@@ -58,7 +58,7 @@ SourcePrepareDistroPull(){
 		;;
 		--*)
 			Require ListDistroProjects
-			ListDistroProjects --select-execute-default SourcePrepareDistroPull "$@"
+			ListDistroProjects --select-execute-default DistroSourcePrepare "$@"
 			return 0
 		;;
 	esac
@@ -113,7 +113,7 @@ SourcePrepareDistroPull(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						SourcePrepareDistroPull --explicit-noop $useNoCache $useNoIndex --all-projects \
+						DistroSourcePrepare --explicit-noop $useNoCache $useNoIndex --all-projects \
 					)
 					break
 				fi
@@ -133,12 +133,12 @@ SourcePrepareDistroPull(){
 }
 
 case "$0" in
-	*/sh-scripts/SourcePrepareDistroPull.fn.sh)
+	*/sh-scripts/DistroSourcePrepare.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: SourcePrepareDistroPull.fn.sh [<options>] --all-projects" >&2
-			echo "syntax: SourcePrepareDistroPull.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
-			echo "syntax: SourcePrepareDistroPull.fn.sh [--help]" >&2
+			echo "syntax: DistroSourcePrepare.fn.sh [<options>] --all-projects" >&2
+			echo "syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
+			echo "syntax: DistroSourcePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
 				echo >&2
@@ -158,13 +158,13 @@ case "$0" in
 				echo >&2
 				echo "  Examples:" >&2
 				echo >&2
-				echo "    SourcePrepareDistroPull.fn.sh --all-projects" >&2
+				echo "    DistroSourcePrepare.fn.sh --all-projects" >&2
 				echo >&2
 				echo ""
 			fi
 			exit 1
 		fi
 		
-		SourcePrepareDistroPull "$@"
+		DistroSourcePrepare "$@"
 	;;
 esac

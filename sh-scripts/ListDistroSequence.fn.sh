@@ -52,7 +52,7 @@ ListDistroSequence(){
 					
 					local indexFile="$MDSC_CACHED/distro-index.inf"
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 							
 							echo "$MDSC_CMD: --all using index ($MDSC_OPTION)" >&2
 							
@@ -94,7 +94,7 @@ ListDistroSequence(){
 					
 					local indexFile="$MDSC_CACHED/distro-index.inf"
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 							
 							echo "$MDSC_CMD: --all-projects using index ($MDSC_OPTION)" >&2
 

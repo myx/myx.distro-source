@@ -62,7 +62,7 @@ ListDistroProjects(){
 					if [ "$useNoIndex" != "--no-index" ] ; then
 						local indexFile="$MDSC_CACHED/distro-index.inf"
 						if [ -f "$indexFile" ] && \
-							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] )
+							( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] )
 						then
 							echo "| ListDistroProjects: using image ($MDSC_OPTION)" >&2
 							local projectName

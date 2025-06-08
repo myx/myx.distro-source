@@ -46,7 +46,7 @@ ListProjectSequence(){
 					if [ "$useNoCache" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/$projectName/project-provides-sequence.txt"
 						if [ -f "$cacheFile" ] && \
-							( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
+							( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 						then
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-provides using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
@@ -92,7 +92,7 @@ ListProjectSequence(){
 		if [ "$useNoCache" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
 			if [ -f "$cacheFile" ] && \
-				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
+				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
 			then
 				[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
 				cat "$cacheFile"

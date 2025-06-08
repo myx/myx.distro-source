@@ -134,7 +134,7 @@ ListRepositoryDeclares(){
 		if [ "$useNoIndex" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 			if [ -f "$indexFile" ] && \
-				( [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
+				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
 			then
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryDeclares: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-DCL-$repositoryName/"

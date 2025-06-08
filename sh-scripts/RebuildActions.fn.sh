@@ -33,6 +33,21 @@ RebuildActions(){
 	local actionFullName
 	local actionLocation
 	local actionSourceFile
+
+	if [ "$1" == "--test1" ] ; then
+		cd "$MDSC_SOURCE"
+		find $( ListDistroProjects --all-projects | tr '\n' ' ' ) -type d -name "actions" -prune
+		exit 0
+	fi
+	if [ "$1" == "--test2" ] ; then
+		cd "$MDSC_SOURCE"
+		find . -type d -name "actions" -exec sh -c 'test -f "$0/../project.inf" && echo "$0"' {} \; -prune
+		exit 0
+	fi
+	if [ "$1" == "--test3" ] ; then
+		ListDistroProjects --select-projects-with-path "-d" "actions"
+		exit 0
+	fi
 	
 	for projectName in $( ListDistroProjects --all-projects ) ; do
 		

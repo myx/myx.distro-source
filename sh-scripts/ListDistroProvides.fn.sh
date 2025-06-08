@@ -109,7 +109,7 @@ ListDistroProvides(){
 				fi
 	
 				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using index" >&2
 						
@@ -194,7 +194,7 @@ ListDistroProvides(){
 
 				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using index ($MDSC_OPTION)" >&2
 
