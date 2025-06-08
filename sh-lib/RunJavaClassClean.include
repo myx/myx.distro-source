@@ -3,11 +3,21 @@
 RunJavaClassClean(){
 	set -e
 	
-	SRC_NAME=$1; shift
-	CLS_NAME=$1; shift
-	
-	DST_PATH="$MMDAPP/output/cached/$SRC_NAME/java"
-	SRC_PATH="$MMDAPP/source/$SRC_NAME/java"
+	local SRC_NAME=$1; shift
+	local CLS_NAME=$1; shift
+
+	local MDSC_BIN="${MDSC_BIN:-${MDLC_BIN:-$MMDAPP/source}}"
+
+	if [ "$MDSC_BIN" == "$MDSC_SOURCE" ] ; then
+		local DIR_OUT="$MDSC_CACHED"
+		local DIR_SRC="$MDSC_SOURCE"
+	else
+		local DIR_OUT="$MDSC_BIN/cached"
+		local DIR_SRC="$MDSC_BIN"
+	fi
+
+	DST_PATH="$DIR_OUT/$SRC_NAME/java"
+	SRC_PATH="$DIR_SRC/$SRC_NAME/java"
 	CLS_PATH="$DST_PATH:$SRC_PATH"
 
 	# echo "  >  Running Java Class (Clean): $CLS_NAME"  >&2
