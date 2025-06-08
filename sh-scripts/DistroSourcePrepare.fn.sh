@@ -46,12 +46,14 @@ DistroSourcePrepare(){
 			if [ ! -z "$initialProject" ] ; then
 				shift
 
-				Require DistroImageSync
-				export useStage="source-prepare-pull"
-				export syncMode="--parallel"
-				echo "$initialProject" | while read -r targetSpec sourceSpec sourceBranch ; do
-					echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
-				done | DistroImageSync --intern-print-script-from-stdin-task-list | eval
+				( 
+					Require DistroImageSync
+					export useStage="source-prepare-pull"
+					export syncMode="--parallel"
+					eval "$( echo "$initialProject" | while read -r targetSpec sourceSpec sourceBranch ; do
+						echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
+					done | DistroImageSync --intern-print-script-from-stdin-task-list )" 
+				)
 			fi
 
 			if [ ! -z "$1" ] ; then
