@@ -40,41 +40,41 @@ Action(){
 	esac
 }
 
-
-Deploy(){
-	local distroCommand="$1" ; shift
-	if [ -z "$distroCommand" ] ; then
-		( . "$MDSC_BIN/myx/myx.distro-deploy/sh-lib/HelpDeploy.include" )
-		set +e ; return 1
-	fi
-
-
-	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
-		if [ ! -f "$MDSC_BIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-			echo "ERROR: unknown command: ${distroCommand%.fn.sh}" >&2
+if ! type Deploy >/dev/null 2>&1 ; then
+	Deploy(){
+		local distroCommand="$1" ; shift
+		if [ -z "$distroCommand" ] ; then
+			( . "$MDSC_BIN/myx/myx.distro-deploy/sh-lib/HelpDeploy.include" )
 			set +e ; return 1
 		fi
-		. "$MDSC_BIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
-	fi
 
-	set +e
 
-	"${distroCommand%.fn.sh}" "$@" || {
-		EXITCODE=$?
-		echo "ERROR: exited with error status ($EXITCODE)" >&2
+		if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
+			if [ ! -f "$MDSC_BIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+				echo "ERROR: unknown command: ${distroCommand%.fn.sh}" >&2
+				set +e ; return 1
+			fi
+			. "$MDSC_BIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+		fi
+
 		set +e
-		return $EXITCODE
-	}
-	return 0
 
-	( "${distroCommand%.fn.sh}" "$@" ; ) || {
-		EXITCODE=$?
-		echo "ERROR: exited with error status ($EXITCODE)" >&2
-		set +e
-		return $EXITCODE
-	}
-}
+		"${distroCommand%.fn.sh}" "$@" || {
+			EXITCODE=$?
+			echo "ERROR: exited with error status ($EXITCODE)" >&2
+			set +e
+			return $EXITCODE
+		}
+		return 0
 
+		( "${distroCommand%.fn.sh}" "$@" ; ) || {
+			EXITCODE=$?
+			echo "ERROR: exited with error status ($EXITCODE)" >&2
+			set +e
+			return $EXITCODE
+		}
+	}
+fi
 
 Source(){
 	local distroCommand="$1" ; shift
@@ -117,6 +117,11 @@ consoleActionsCompletion()
 	else
 		COMPREPLY=( $( ListAllActions --completion | grep "^$PREFIX" | sort -u ) )
 	fi
+}
+
+Help(){
+	( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpDistroSourceConsole.include" )
+	set +e ; return 1
 }
 
 complete -F consoleActionsCompletion "Action"

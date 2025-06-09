@@ -1,10 +1,11 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
 [ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
 
+MDSC_BIN="${MDSC_BIN:-$MMDAPP/.local}"
+
 if ! type DistroShellContext >/dev/null 2>&1 ; then
-
-	MDSC_BIN="${MDSC_BIN:-$MMDAPP/.local}"
-
-	# DistroShellContext
 	DistroShellContext(){
 		case "$1" in
 			--uncache)
@@ -12,7 +13,8 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 			;;
 			--is-spec-option)
 				case "$2" in
-					--distro-path-auto|--distro-source-only|--distro-from-source|--distro-from-cached|--distro-from-output|--distro-from-distro)
+					--distro-path-auto|--distro-source-only|--distro-from-{source,cached,output,distro})
+					#--distro-path-auto|--distro-source-only|--distro-from-source|--distro-from-cached|--distro-from-output|--distro-from-distro)
 						return 0
 					;;
 				esac
@@ -30,42 +32,36 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 			;;
 		esac
 	}
-	
+fi
+
+if ! type Require >/dev/null 2>&1 ; then
 	Require(){
 		local distroCommand="$1" ; shift
-		if [ -z "$distroCommand" ] ; then
-			( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpRequire.include" )
+		if [ -z "$distroCommand" ] || [ "--help" == "$distroCommand" ] ; then
+			( . "$MDSC_BIN/myx/myx.distro-.local/sh-lib/HelpRequire.include" )
 			set +e ; return 1
 		fi
 		if type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
 			return 0
 		fi
 		
-		if [ -f "$MDSC_SOURCE/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-			. "$MDSC_SOURCE/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
-			return 0
-		fi
-		if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-			. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
-			return 0
-		fi
-		if [ -f "$MDSC_SOURCE/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-			. "$MDSC_SOURCE/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
-			return 0
-		fi
-		if [ -f "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-			. "$MMDAPP/source/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
-			return 0
-		fi
+		local ITEM
+		for ITEM in source .local system deploy remote ; do
+			if [ -f "$MDSC_BIN/myx/myx.distro-$ITEM/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+				. "$MDSC_BIN/myx/myx.distro-$ITEM/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+				return 0
+			fi
+		done
 		source "${distroCommand%.fn.sh}.fn.sh"
 		return 0
 	}
-	
-	
+fi
+
+if ! type Distro >/dev/null 2>&1 ; then
 	Distro(){
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] ; then
-			( . "$MDSC_SOURCE/myx/myx.distro-source/sh-lib/HelpDistro.include" )
+			( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpDistro.include" )
 			set +e ; return 1
 		fi
 		if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
