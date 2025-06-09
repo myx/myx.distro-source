@@ -5,7 +5,12 @@ case "$1" in
 	--make-console-command)
 		shift
 		set -e
-		bash "$MMDAPP/.local/myx.distro-source/sh-lib/DistroSourceToolsMake.include" --make-console-script > "$MMDAPP/DistroSourceConsole.sh"
+		( 
+			DistroSourceTools(){
+				. "$MMDAPP/.local/myx.distro-source/sh-lib/DistroSourceToolsMake.include"
+			}
+			DistroSourceTools --make-console-script > "$MMDAPP/DistroSourceConsole.sh"
+		)
 		chmod 770 "$MMDAPP/DistroSourceConsole.sh"
 
 		if [ "$1" != "--quiet" ] ; then
