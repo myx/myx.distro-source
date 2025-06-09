@@ -1,13 +1,13 @@
 echo "Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-if [ -z "$MDLC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-deploy/sh-lib/console-deploy-bashrc.rc" ] ; then
-	MDDC_BIN="${MDLC_BIN:-$MMDAPP/source}"
+if [ -z "$MDLC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+	MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
 else
-	MDDC_BIN="${MDLC_BIN:-$MMDAPP/.local}"
+	MDSC_BIN="${MDLC_BIN:-$MMDAPP/.local}"
 fi
 
-export MDDC_BIN
+export MDSC_BIN
 
 export BASH_ENV="$MDSC_BIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
 
