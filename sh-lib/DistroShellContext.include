@@ -59,6 +59,12 @@ fi
 
 if ! type Distro >/dev/null 2>&1 ; then
 	Distro(){
+		case "$1" in
+			''|--*)
+				( . "$MDRC_BIN/myx/myx.distro-remote/sh-lib/DistroRemoteConsole.include" )
+				set +e ; return 1
+			;;
+		esac
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] ; then
 			( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpDistro.include" )
