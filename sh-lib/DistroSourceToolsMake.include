@@ -45,7 +45,6 @@ case "$1" in
 				shift
 				{
 					echo ". '$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
-					echo "export MDSC_DETAIL=true"
 					cat
 				} | bash "$@"
 				return 0
