@@ -1,4 +1,0 @@
-echo "'Source' command provides/lists commands related to distro-source operations." >&2
-echo "Syntax: Source <distro-source-command-name>" >&2
-echo >&2
-set +e ; return 1
