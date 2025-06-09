@@ -23,7 +23,7 @@ case "$1" in
 	--completion-source)
 		shift
 		Source --completion-all \
-		| grep '^\(DistroSource\|Source\).*.fn.sh$' \
+		| grep '^\(DistroSource\|Source\|Build\|Clean\).*.fn.sh$' \
 		| sort -u \
 		| sed 's:\.fn\.sh$::' 
 		return 0
