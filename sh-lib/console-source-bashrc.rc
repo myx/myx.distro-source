@@ -23,11 +23,11 @@ DistroShellContext --distro-from-source
 # Action make-ws2017.sh
 
 Action(){
-	local actionCommand="$1" ; shift
-	if [ -z "$actionCommand" ] ; then
+	if [ -z "$1" ] || [ "$1" == "--help" ] ; then
 		( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpConsoleAction.include" )
 		set +e ; return 1
 	fi
+	local actionCommand="$1" ; shift
 	case "$actionCommand" in
 		*.sh)
 			( \
