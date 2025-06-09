@@ -138,8 +138,10 @@ ListDistroProvides(){
 					DistroSourceCommand \
 						-q \
 						--import-from-source \
-						--select-all \
-						--print-provides-separate-lines
+						--print-all-provides-separate-lines
+
+						# --select-all \
+						# --print-provides-separate-lines
 						
 					return 0
 				fi
