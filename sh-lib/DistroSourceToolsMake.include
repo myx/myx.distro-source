@@ -40,7 +40,13 @@ case "$1" in
 
 			cd "$MMDAPP"
 			export MMDAPP
-			bash --rcfile "$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
+
+			CONSOLE_INTERACTIVE="-i"
+			if [ "$1" == "--non-interactive" ] ; then
+				CONSOLE_INTERACTIVE=""
+			fi
+			
+			bash --rcfile "$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" $CONSOLE_INTERACTIVE "$@"
 DISTROCONSOLE
 
 		return 0
