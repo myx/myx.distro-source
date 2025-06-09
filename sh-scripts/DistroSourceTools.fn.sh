@@ -31,6 +31,11 @@ DistroSourceTools(){
 			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/DistroSourceToolsCompletion.include"
 			set +e ; return 1
 		;;
+		--upgrade-source-tools)
+			shift
+			bash "$MMDAPP/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh --install-distro-source"
+			return 0
+		;;
 		''|--help)
 			echo "syntax: DistroSourceTools.fn.sh <option>" >&2
 			echo "syntax: DistroSourceTools.fn.sh [--help]" >&2
@@ -50,7 +55,7 @@ case "$0" in
 	*/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: DistroSourceTools.fn.sh --help" >&2
+			echo "syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
 		fi
 
 		set -e
