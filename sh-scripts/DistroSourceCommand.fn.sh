@@ -72,9 +72,9 @@ DistroSourceCommand(){
 case "$0" in
 	*/sh-scripts/DistroSourceCommand.fn.sh) 
 		# DistroSourceCommand.fn.sh --import-from-source --print-all-provides
-		# DistroSourceCommand.fn.sh --import-from-source --print-provides-separate-lines
-		# DistroSourceCommand.fn.sh --import-from-source --print-all-provides
+		# DistroSourceCommand.fn.sh --import-from-source --select-all --print-provides-separate-lines
 		# DistroSourceCommand.fn.sh -q --import-from-source --print-all-provides | sort
+		# DistroSourceCommand.fn.sh -q --import-from-source --select-all --print-provides-separate-lines | sort
 		
 		# DistroSourceCommand.fn.sh --import-from-source --print-repo-provides lib
 		# DistroSourceCommand.fn.sh --import-from-cached --print-repo-provides lib
