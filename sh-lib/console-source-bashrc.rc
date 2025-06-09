@@ -19,9 +19,6 @@ PATH+=":$MDSC_BIN/myx/myx.distro-deploy/sh-scripts"
 . "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 DistroShellContext --distro-from-source
 
-Require ListDistroScripts
-Require ListAllActions
-
 # Action myx/yaumnrc/test-parser.url
 # Action make-ws2017.sh
 
@@ -128,8 +125,14 @@ Source(){
 	}
 }
 
+Help(){
+	( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpDistroSourceConsole.include" )
+	set +e ; return 1
+}
+
 consoleActionsCompletion()
 {
+	Require ListAllActions
 	local PREFIX="$2"
 	if [ -z "$PREFIX" ] ; then
 		COMPREPLY=( $( ListAllActions --completion | sed 's!/.*!/!' | sort -u ) )
@@ -138,21 +141,17 @@ consoleActionsCompletion()
 	fi
 }
 
-Help(){
-	( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpDistroSourceConsole.include" )
-	set +e ; return 1
-}
-
 complete -F consoleActionsCompletion "Action"
-#complete -W "\`ListAllActions --completion\`"    "Action"
 
-complete -W "\`ListDistroScripts\`" "."
-complete -W "\`ListDistroScripts\`" "*"
-complete -W "\`ListDistroScripts\`" "which"
-complete -W "\`ListDistroScripts --completion\`" "Require"
-complete -W "\`ListDistroScripts --completion\`" "Distro"
-complete -W "\`ListDistroScripts --completion --type deploy\`" "Deploy"
-complete -W "\`ListDistroScripts --completion --type source\`" "Source"
+complete -W "\` Source --completion-all \`" "."
+complete -W "\` Source --completion-all \`" "*"
+complete -W "\` Source --completion-all \`" "which"
+complete -W "\` Source --completion-require \`" "Require"
+
+complete -W "\` Source --completion-distro \`" "Distro"
+
+complete -W "\` Deploy --completion-deploy \`" "Deploy"
+complete -W "\` Source --completion-source \`" "Source"
 
 PROMPT_COMMAND="set +e"
 
