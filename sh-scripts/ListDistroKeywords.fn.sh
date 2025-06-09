@@ -138,8 +138,10 @@ ListDistroKeywords(){
 					DistroSourceCommand \
 						-q \
 						--import-from-source \
-						--select-all \
-						--print-keywords-separate-lines
+						--print-all-keywords-separate-lines
+
+						# --select-all \
+						# --print-keywords-separate-lines
 						
 					return 0
 				fi

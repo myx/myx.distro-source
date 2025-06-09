@@ -152,8 +152,10 @@ ListDistroDeclares(){
 					DistroSourceCommand \
 						-q \
 						--import-from-source \
-						--select-all \
-						--print-declares-separate-lines
+						--print-all-declares-separate-lines
+
+						# --select-all \
+						# --print-declares-separate-lines
 						
 					return 0
 				fi
