@@ -61,7 +61,7 @@ if ! type Distro >/dev/null 2>&1 ; then
 	Distro(){
 		case "$1" in
 			''|--*)
-				( . "$MDRC_BIN/myx/myx.distro-remote/sh-lib/DistroRemoteConsole.include" )
+				( . "$MDRC_BIN/myx/myx.distro-source/sh-lib/DistroImageConsole.include" )
 				set +e ; return 1
 			;;
 		esac
