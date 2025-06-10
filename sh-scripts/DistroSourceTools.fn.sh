@@ -33,7 +33,7 @@ DistroSourceTools(){
 		;;
 		--upgrade-source-tools)
 			shift
-			bash "$MMDAPP/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh --install-distro-source"
+			bash "$MMDAPP/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh" --install-distro-source
 			return 0
 		;;
 		''|--help)
