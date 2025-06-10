@@ -204,6 +204,24 @@ DistroImageSync(){
 
 				return 0
 			;;
+			--print-tasks-from-stdin-repositories-list)
+				Require DistroImageSync
+				local targetSpec sourceSpec sourceBranch
+				while read -r targetSpec sourceSpec sourceBranch ; do
+					echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
+				done 
+			;;
+			--script-from-stdin-repositories-list)
+				Require DistroImageSync
+				export useStage="source-prepare-pull"
+				export syncMode="--parallel"
+				DistroImageSync --print-tasks-from-stdin-repositories-list | DistroImageSync --intern-print-script-from-stdin-task-list 
+			;;
+			--execute-from-stdin-repositories-list)
+				export useStage="source-prepare-pull"
+				export syncMode="--parallel"
+				eval "$( DistroImageSync --script-repositories-list-from-stdin )"
+			;;
 			--print-*|--script-*|--execute-*)
 				break
 			;;
@@ -359,6 +377,11 @@ case "$0" in
 				echo "    --script-source-{prepare-pull|process-push} [--parallel [N] / --sequence]" >&2
 				echo "    --script-image-{prepare-pull|process-push} [--parallel [N] / --sequence]" >&2
 				echo "                Displays syncronisation script source to be executed." >&2
+				echo >&2
+				echo "    --{print|script|execute}-from-stdin-repositories-list" >&2
+				echo "                Takes text columns with '<targetSpec> <sourceSpec> [<branch>]' where <targetSpec>." >&2
+				echo "                is normally a local project full name, <sourceSpec> is git repository URL and <branch>" >&2
+				echo "                is optional branch name ('main' and 'master' are tried is ommited)." >&2
 				echo >&2
 				echo "  Examples:" >&2
 				echo >&2
