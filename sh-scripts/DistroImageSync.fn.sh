@@ -70,6 +70,13 @@ DistroImageSync(){
 			done | awk '$0 && !x[$0]++'
 			return 0
 		;;
+		--intern-print-tasks-from-stdin-repo-list)
+			local targetSpec sourceSpec sourceBranch
+			while read -r targetSpec sourceSpec sourceBranch ; do
+				echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
+			done 
+			return 0
+		;;
 		--intern-print-repo-list-from-stdin)
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
@@ -204,33 +211,19 @@ DistroImageSync(){
 
 				return 0
 			;;
-			--print-tasks-from-stdin-repositories-list)
-				local targetSpec sourceSpec sourceBranch
-				while read -r targetSpec sourceSpec sourceBranch ; do
-					echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
-				done 
-				return 0
-			;;
 			--script-from-stdin-repositories-list)
 				(
-					set -x
-					useStage="source-prepare-pull"
-					syncMode="--parallel"
-					export useStage
-					export syncMode
-					
-					DistroImageSync --print-tasks-from-stdin-repositories-list \
+					export useStage="source-prepare-pull"
+					export syncMode="--parallel"
+					DistroImageSync --intern-print-tasks-from-stdin-repo-list \
 					| DistroImageSync --intern-print-script-from-stdin-task-list "$@"
 				)
 				return 0
 			;;
 			--execute-from-stdin-repositories-list)
 				( 
-					useStage="source-prepare-pull"
-					syncMode="--parallel"
-					export useStage
-					export syncMode
-					
+					export useStage="source-prepare-pull"
+					export syncMode="--parallel"
 					eval "$( DistroImageSync --script-from-stdin-repositories-list )" 
 				)
 				return 0
@@ -391,7 +384,7 @@ case "$0" in
 				echo "    --script-image-{prepare-pull|process-push} [--parallel [N] / --sequence]" >&2
 				echo "                Displays syncronisation script source to be executed." >&2
 				echo >&2
-				echo "    --{print|script|execute}-from-stdin-repositories-list" >&2
+				echo "    --{script|execute}-from-stdin-repositories-list" >&2
 				echo "                Takes text columns with '<targetSpec> <sourceSpec> [<branch>]' where <targetSpec>." >&2
 				echo "                is normally a local project full name, <sourceSpec> is git repository URL and <branch>" >&2
 				echo "                is optional branch name ('main' and 'master' are tried is ommited)." >&2
