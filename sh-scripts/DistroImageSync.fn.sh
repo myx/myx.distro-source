@@ -133,7 +133,7 @@ DistroImageSync(){
 	esac
 
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-set -x
+
 	local useNoCache=""
 	local useNoIndex=""
 	local useJobList=""
@@ -216,8 +216,10 @@ set -x
 			--script-from-stdin-repositories-list)
 				shift
 				(
-					export useStage="source-prepare-pull"
-					export syncMode="--parallel"
+					useStage="source-prepare-pull"
+					syncMode="--parallel"
+					export useStage
+					export syncMode
 					DistroImageSync --intern-print-tasks-from-stdin-repo-list \
 					| DistroImageSync --intern-print-script-from-stdin-task-list "$@"
 				)
