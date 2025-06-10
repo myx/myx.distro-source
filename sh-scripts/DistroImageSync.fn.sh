@@ -133,7 +133,7 @@ DistroImageSync(){
 	esac
 
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-
+set -x
 	local useNoCache=""
 	local useNoIndex=""
 	local useJobList=""
