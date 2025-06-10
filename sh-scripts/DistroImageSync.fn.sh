@@ -210,17 +210,20 @@ DistroImageSync(){
 				while read -r targetSpec sourceSpec sourceBranch ; do
 					echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
 				done 
+				return 0
 			;;
 			--script-from-stdin-repositories-list)
 				Require DistroImageSync
 				export useStage="source-prepare-pull"
 				export syncMode="--parallel"
 				DistroImageSync --print-tasks-from-stdin-repositories-list | DistroImageSync --intern-print-script-from-stdin-task-list 
+				return 0
 			;;
 			--execute-from-stdin-repositories-list)
 				export useStage="source-prepare-pull"
 				export syncMode="--parallel"
 				eval "$( DistroImageSync --script-repositories-list-from-stdin )"
+				return 0
 			;;
 			--print-*|--script-*|--execute-*)
 				break
