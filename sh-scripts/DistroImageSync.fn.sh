@@ -73,9 +73,10 @@ DistroImageSync(){
 		--intern-print-tasks-from-stdin-repo-list)
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
+			local useStage="${useStage:-source-prepare-pull}"
 			local targetSpec sourceSpec sourceBranch
 			while read -r targetSpec sourceSpec sourceBranch ; do
-				echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
+				echo "$useStage $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
 			done 
 			return 0
 		;;
@@ -213,24 +214,22 @@ DistroImageSync(){
 
 				return 0
 			;;
-			--script-from-stdin-repositories-list)
+			--script-from-stdin-repo-list)
 				shift
 				(
-					useStage="source-prepare-pull"
-					syncMode="--parallel"
-					export useStage
-					export syncMode
+					export useStage="stdin-repo-list-pull"
+					export syncMode="--parallel"
 					DistroImageSync --intern-print-tasks-from-stdin-repo-list \
 					| DistroImageSync --intern-print-script-from-stdin-task-list "$@"
 				)
 				return 0
 			;;
-			--execute-from-stdin-repositories-list)
+			--execute-from-stdin-repo-list)
 				shift
 				( 
-					export useStage="source-prepare-pull"
+					export useStage="stdin-repo-list-pull"
 					export syncMode="--parallel"
-					eval "$( DistroImageSync --script-from-stdin-repositories-list )" 
+					eval "$( DistroImageSync --script-from-stdin-repo-list )" 
 				)
 				return 0
 			;;
