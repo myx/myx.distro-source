@@ -24,7 +24,7 @@ case "$1" in
 				printf \
 					'{ "path" : "%s", "name" : "%s" },\n' \
 					"$MMDAPP/source/$ITEM/" \
-					"Root - $ITEM"
+					"Repository Root: $ITEM"
 			done
 		)"
 
@@ -34,13 +34,21 @@ case "$1" in
 				$REPOS
 				{ 
 					"path": "$MMDAPP/source/"
-					"name": "source"
+					"name": "Browse: source"
 				},
 				{ 
 					"path": "$MMDAPP/.local/"
-					"name": ".local"
+					"name": "Browse: .local"
 				}
 			],
+			"settings": {
+				"search.exclude": {
+				"Browse*/**": true
+				},
+				"files.watcherExclude": {
+				"Browse*/**": true
+				}
+			}	
 			"tasks" : {
 				"version": "2.0.0",
 				"tasks": [
