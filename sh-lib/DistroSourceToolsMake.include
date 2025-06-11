@@ -22,18 +22,12 @@ case "$1" in
 				{ 
 					"path": "${MMDAPP}/source/" 
 				}
-			]
-		}
-CODEWORKSPACE
-
-		if [ -x "${MMDAPP}/DistroSourceConsole.sh" ] ; then
-			mkdir -p "$MMDAPP/.vscode"
-			cat > "$MMDAPP/.vscode/tasks.json" <<VSCODETASKS
-			{
+			],
+			"tasks" : {
 				"version": "2.0.0",
 				"tasks": [
 					{
-						"label": "Start Source Console",
+						"label": "🚀 Start Source Console",
 						"type": "shell",
 						"command": "${MMDAPP}/DistroSourceConsole.sh",
 						"group": { 
@@ -43,8 +37,8 @@ CODEWORKSPACE
 					}
 				]
 			}
-VSCODETASKS
-		fi
+		}
+CODEWORKSPACE
 
 		chmod 640 "$MMDAPP/$WS_NAME"
 
