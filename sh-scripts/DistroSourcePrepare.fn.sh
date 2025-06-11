@@ -39,7 +39,7 @@ DistroSourcePrepare(){
 
 			(
 				Require DistroSourceTools 
-				DistroSourceTools --register-repository-root "$repositoryName" "$repositoryFetch"
+				DistroSourceTools --register-repository-root "$repositoryName" "${repositoryFetch:-https://}"
 			)
 
 			echo "> $MDSC_CMD: --prepare-register-repository-root: creating source directory: $MMDAPP/source/$repositoryName" >&2
