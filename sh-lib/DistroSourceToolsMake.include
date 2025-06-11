@@ -27,9 +27,18 @@ case "$1" in
 				"version": "2.0.0",
 				"tasks": [
 					{
-						"label": "🚀 Start Source Console",
+						"label": "🖥️ Start Source Console...",
 						"type": "shell",
 						"command": "${MMDAPP}/DistroSourceConsole.sh",
+						"group": { 
+							"kind": "build", 
+							"isDefault": true 
+						}
+					},
+					{
+						"label": "⬇️ Pull All Known Sources...",
+						"type": "shell",
+						"command": "echo 'DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull' | ${MMDAPP}/DistroSourceConsole.sh --non-interactive",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
