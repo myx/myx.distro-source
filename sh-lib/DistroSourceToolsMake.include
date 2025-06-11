@@ -43,6 +43,15 @@ case "$1" in
 							"kind": "build", 
 							"isDefault": true 
 						}
+					},
+					{
+						"label": "🛠️ Update Local Tools...",
+						"type": "shell",
+						"command": "bash '${MMDAPP}/.local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh' --upgrade-source-tools",
+						"group": { 
+							"kind": "build", 
+							"isDefault": true 
+						}
 					}
 				]
 			}
