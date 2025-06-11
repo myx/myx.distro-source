@@ -21,7 +21,10 @@ case "$1" in
 			echo "ListAllRepositories.fn.sh --no-cache --noindex" \
 			| "$MMDAPP/DistroSourceConsole.sh" --non-interactive \
 			| while read -r ITEM ; do
-				printf '{ "path" : "%s", "name" : "%s" },\n' "$MMDAPP/source/$ITEM/" "Root - $ITEM"
+				printf \
+					'{ "path" : "%s", "name" : "%s" },\n' \
+					"$MMDAPP/source/$ITEM/" \
+					"Root - $ITEM"
 			done
 		)"
 
