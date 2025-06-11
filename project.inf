@@ -1,6 +1,5 @@
 Name: myx.distro-source
 Title: Distro builder package, prepare distro indices 
-Requires: os.java 
 Augments: developer-sdk:recommended
 Suggests: 
 Declares: \
