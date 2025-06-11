@@ -33,15 +33,25 @@ case "$1" in
 			"folders": [ 
 				$REPOS
 				{ 
+					"path": "$MMDAPP/output/"
+					"name": "Browse/output"
+				},
+				{ 
 					"path": "$MMDAPP/source/"
-					"name": "Browse: source"
+					"name": "Browse/source"
 				},
 				{ 
 					"path": "$MMDAPP/.local/"
-					"name": "Browse: .local"
+					"name": "Browse/.local"
 				}
 			],
 			"settings": {
+				"explorer.compactFolders": true,
+				"files.exclude": {
+					"Browse: output/**": true,
+					"Browse: source/**": true,
+					"Browse: .local/**": true
+				},
 				"search.exclude": {
 					"Browse: source/**": true,
 					"Browse: .local/**": true
