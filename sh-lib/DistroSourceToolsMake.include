@@ -2,6 +2,11 @@
 # ^^^ for syntax checking in the editor only
 
 case "$1" in
+	--make-console-commands)
+		DistroSourceTools --make-console-command "$@"
+		DistroSourceTools --make-code-workspace "$@"
+		return 0
+	;;
 	--make-code-workspace)
 		shift
 		set -e
