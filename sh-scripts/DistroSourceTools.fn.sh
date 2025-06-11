@@ -21,22 +21,38 @@ DistroSourceTools(){
 	case "$1" in
 		--register-repository-root)
 			local repositoryName="$2"
+			local repositoryHref="$3"
 			if [ -z "$repositoryName" ] ; then
 				echo "ERROR: $MDSC_CMD: repository root name expected: $@" >&2
 				set +e ; return 1
 			fi
-			shift
-			shift
+			if [ -z "$repositoryHref" ] ; then
+				echo "ERROR: $MDSC_CMD: repository root href expected: $@" >&2
+				set +e ; return 1
+			fi
+
+			shift ; shift ; shift
 
 			if [ ! -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> option ($MDSC_OPTION, $@)" >&2
+				echo "ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
 				set +e ; return 1
 			fi
 
 			mkdir -p "$MMDAPP/source/$repositoryName"
-			printf "# created at `date`\nName: $repositoryName\n" > "$MMDAPP/source/$repositoryName/repository.inf"
-			echo "> $MDSC_CMD: --register-repository-root: $MMDAPP/source/$repositoryName/repository.inf (re-)created." >&2
 
+			local repositoryInf="$(
+				printf \
+					"# created at `date`\nName: %s\Href: %s\nFetch: %s\n" \
+					"$repositoryName" \
+					"$repositoryHref" \
+					"$repositoryHref"
+			)"
+
+			if ! [ "$( cat "$MMDAPP/source/$repositoryName/repository.inf" )" == "$repositoryInf" ] ; then
+				echo -n "$repositoryInf" > "$MMDAPP/source/$repositoryName/repository.inf"
+				echo "> $MDSC_CMD: --register-repository-root: $MMDAPP/source/$repositoryName/repository.inf (re-)created." >&2
+				DistroSourceTools --make-code-workspace --quiet
+			fi
 
 			return 0
 		;;

@@ -37,6 +37,11 @@ DistroSourcePrepare(){
 			shift
 			shift
 
+			(
+				Require DistroSourceTools 
+				DistroSourceTools --register-repository-root "$repositoryName" "$repositoryFetch"
+			)
+
 			echo "> $MDSC_CMD: --prepare-register-repository-root: creating source directory: $MMDAPP/source/$repositoryName" >&2
 			mkdir -p "$MMDAPP/source/$repositoryName"
 			echo "> $MDSC_CMD: --prepare-register-repository-root: creating: $MMDAPP/source/$repositoryName/repository.inf" >&2
