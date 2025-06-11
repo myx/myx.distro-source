@@ -43,10 +43,10 @@ case "$1" in
 			],
 			"settings": {
 				"search.exclude": {
-				"Browse*/**": true
+					"Browse*/**": true
 				},
 				"files.watcherExclude": {
-				"Browse*/**": true
+					"Browse*/**": true
 				}
 			}	
 			"tasks" : {
