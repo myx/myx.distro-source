@@ -28,7 +28,7 @@ case "$1" in
 		cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 		{
 			"folders": [ 
-				$REPOS,
+				$REPOS
 				{ 
 					"path": "$MMDAPP/source/"
 					"name": "source"
