@@ -19,6 +19,27 @@ DistroSourceTools(){
 	set -e
 
 	case "$1" in
+		--register-repository-root)
+			local repositoryName="$2"
+			if [ -z "$repositoryName" ] ; then
+				echo "ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+				set +e ; return 1
+			fi
+			shift
+			shift
+
+			if [ ! -z "$1" ] ; then
+				echo "ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> option ($MDSC_OPTION, $@)" >&2
+				set +e ; return 1
+			fi
+
+			mkdir -p "$MMDAPP/source/$repositoryName"
+			printf "# created at `date`\nName: $repositoryName\n" > "$MMDAPP/source/$repositoryName/repository.inf"
+			echo "> $MDSC_CMD: --register-repository-root: $MMDAPP/source/$repositoryName/repository.inf (re-)created." >&2
+
+
+			return 0
+		;;
 		--make-*)
 			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/DistroSourceToolsMake.include"
 			set +e ; return 1
@@ -55,6 +76,7 @@ case "$0" in
 	*/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: DistroSourceTools.fn.sh --register-repository-root <repo-name>" >&2
 			echo "syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
 		fi
 

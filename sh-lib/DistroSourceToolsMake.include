@@ -2,6 +2,36 @@
 # ^^^ for syntax checking in the editor only
 
 case "$1" in
+	--make-code-workspace)
+		shift
+		set -e
+
+
+		local WS_NAME="$( basename "$MMDAPP" ).code-workspace"
+		local WS_FILE="$MMDAPP/$WS_NAME"
+
+		cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
+		{
+			"folders": [
+				{
+				"path": "${MMDAPP}/source",
+				"name": "Source"
+				}
+			}
+		}
+CODEWORKSPACE
+
+		chmod 640 "$MMDAPP/$WS_NAME"
+
+		if [ "$1" != "--quiet" ] ; then
+			printf \
+				"\nNote: $WS_NAME created, now you can open to start Code:\n%s\n\n" \
+				"$MMDAPP/$WS_NAME" \
+			>&2
+		fi
+
+		return 0
+	;;
 	--make-console-command)
 		shift
 		set -e

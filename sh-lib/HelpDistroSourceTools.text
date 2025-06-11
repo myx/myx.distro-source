@@ -1,0 +1,66 @@
+syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>
+
+	Options:
+
+		--register-repository-root <repo-name>
+			Registers the distro root repository by (re-)creating corresponding directory
+			is sources root and (re-)creating the `repository.inf` file. This is required
+			for projects being pulled into that root to be treated as projects.
+
+		--upgrade-source-tools
+			Upgrades local source packages with latest `master` version.
+		
+		--system-config-option <arguments...>
+		--custom-config-option <arguments...>
+			Sets the workspace environment parameter. 'system' is common for workspace and
+			'custom' is for current workspace user.
+
+			Following operations (arguments) are supported:
+
+				--select <option-name>
+				--select-default <option-name> <default-value>
+					Reads one or all variables. If value is not set, default-value is returned.
+
+				--select --all
+				--select-all
+					Reads all variables. 
+
+				--upsert <option-name> <value>
+				--upsert-if <option-name> <value> <if-value>
+					Sets a variable. Optionally, sets variable only if it's current value
+					is set to given value.
+
+				--delete <option-name>
+				--delete-if <option-name> <if-value>
+					Deletes a variable. Optionally, deletes the variable only if it's value
+					is set to given value.
+
+			Following options are defined (list of basic ones, option names are not limited
+			to this list, but these options are actively used by scripts of this package):
+
+				MDLT_CONSOLE_RC_SCRIPT
+					Shell script to include in console start. Allows to setup extra commands 
+					or settings.
+
+				MDLT_ACTIONS_SH_WRAP
+					Shell command to wrap shell actions to execute. Allows to run actions on
+					remote runner machine or add extra logging/notification, etc...
+
+		--make-console-command
+			Re-Creates DistroSourceConsole.sh script to be used as a command to quickly enter workspace 
+			console.
+
+		--make-code-workspace
+			Re-Creates <workspace-name>.code-workspace workspace file to be used with Microsoft Code.
+
+	Examples (in Local Console, within workspace context):
+
+		DistroSourceTools.fn.sh --upgrade-source-tools
+
+		DistroSourceTools.fn.sh --register-repository-root myx
+
+	Examples (in OS default shell):
+
+		bash .local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --help
+
+		bash .local/myx/myx.distro-.local/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools
