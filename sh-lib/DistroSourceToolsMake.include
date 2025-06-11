@@ -3,8 +3,8 @@
 
 case "$1" in
 	--make-console-commands)
-		$0 --make-console-command "$@"
-		$0 --make-code-workspace "$@"
+		DistroSourceTools --make-console-command "$@"
+		DistroSourceTools --make-code-workspace "$@"
 		return 0
 	;;
 	--make-code-workspace)
