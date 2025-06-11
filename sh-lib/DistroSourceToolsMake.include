@@ -18,12 +18,28 @@ case "$1" in
 
 		cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 		{
-			"folders": [
-				{
-				"path": "${MMDAPP}/source/",
-				"name": "Source"
+			"folders": [ 
+				{ 
+					"path": "${MMDAPP}/source/" 
 				}
-			}
+			]
+		}
+CODEWORKSPACE
+
+		cat > "$MMDAPP/.vscode/tasks.json" <<CODEWORKSPACE
+		{
+			"version": "2.0.0",
+			"tasks": [
+				{
+					"label": "Start Source Console",
+					"type": "shell",
+					"command": "${MMDAPP}/DistroSourceConsole.sh",
+					"group": { 
+						"kind": "build", 
+						"isDefault": true 
+					}
+				}
+			]
 		}
 CODEWORKSPACE
 
