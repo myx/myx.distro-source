@@ -26,22 +26,25 @@ case "$1" in
 		}
 CODEWORKSPACE
 
-		cat > "$MMDAPP/.vscode/tasks.json" <<CODEWORKSPACE
-		{
-			"version": "2.0.0",
-			"tasks": [
-				{
-					"label": "Start Source Console",
-					"type": "shell",
-					"command": "${MMDAPP}/DistroSourceConsole.sh",
-					"group": { 
-						"kind": "build", 
-						"isDefault": true 
+		if [ -x "${MMDAPP}/DistroSourceConsole.sh" ] ; then
+			mkdir -p "$MMDAPP/.vscode"
+			cat > "$MMDAPP/.vscode/tasks.json" <<VSCODETASKS
+			{
+				"version": "2.0.0",
+				"tasks": [
+					{
+						"label": "Start Source Console",
+						"type": "shell",
+						"command": "${MMDAPP}/DistroSourceConsole.sh",
+						"group": { 
+							"kind": "build", 
+							"isDefault": true 
+						}
 					}
-				}
-			]
-		}
-CODEWORKSPACE
+				]
+			}
+VSCODETASKS
+		fi
 
 		chmod 640 "$MMDAPP/$WS_NAME"
 
