@@ -42,6 +42,8 @@ case "$1" in
 				}
 			],
 			"settings": {
+			    "window.newWindowDimensions": "maximized",
+    			"extensions.showRecommendationsOnlyOnDemand": true,
 				"files.exclude": {
 					"📦 Browse: output/**": true,
 					"📝 Browse: source/**": true
