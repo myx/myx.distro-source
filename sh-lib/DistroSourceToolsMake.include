@@ -20,7 +20,7 @@ case "$1" in
 		{
 			"folders": [
 				{
-				"path": "${MMDAPP}/source",
+				"path": "${MMDAPP}/source/",
 				"name": "Source"
 				}
 			}
