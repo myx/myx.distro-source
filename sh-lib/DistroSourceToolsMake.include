@@ -18,9 +18,9 @@ case "$1" in
 
 		local REPOS="$( 
 			local ITEM
-			ListAllRepositories.fn.sh --no-cache --noindex \
+			echo "ListAllRepositories.fn.sh --no-cache --noindex" \
 			| "$MMDAPP/DistroSourceConsole.sh" --non-interactive \
-			| while read -r ITEM ; fo
+			| while read -r ITEM ; do
 				echo "{ \"path\" : \"$MMDAPP/source/$ITEM/\", \"name\" : \"Root - $ITEM\" }
 			done
 		)"
