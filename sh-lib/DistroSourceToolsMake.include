@@ -3,6 +3,8 @@
 
 case "$1" in
 	--make-console-commands)
+		shift
+
 		DistroSourceTools --make-console-command "$@"
 		DistroSourceTools --make-code-workspace "$@"
 		return 0
@@ -10,7 +12,6 @@ case "$1" in
 	--make-code-workspace)
 		shift
 		set -e
-
 
 		local WS_NAME="$( basename "$MMDAPP" ).code-workspace"
 		local WS_FILE="$MMDAPP/$WS_NAME"
@@ -30,7 +31,7 @@ CODEWORKSPACE
 
 		if [ "$1" != "--quiet" ] ; then
 			printf \
-				"\nNote: $WS_NAME created, now you can open to start Code:\n%s\n\n" \
+				"\nNote: $WS_NAME created, you can start Code with:\n%s\n\n" \
 				"$MMDAPP/$WS_NAME" \
 			>&2
 		fi
