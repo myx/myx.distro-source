@@ -38,21 +38,21 @@ case "$1" in
 				},
 				{ 
 					"path": "$MMDAPP/source/"
-					"name": "🌐 Browse: source"
+					"name": "📝 Browse: source"
 				}
 			],
 			"settings": {
 				"files.exclude": {
 					"📦 Browse: output/**": true,
-					"🌐 Browse: source/**": true
+					"📝 Browse: source/**": true
 				},
 				"search.exclude": {
 					"📦 Browse: output/**": true,
-					"🌐 Browse: source/**": true
+					"📝 Browse: source/**": true
 				},
 				"files.watcherExclude": {
 					"📦 Browse: output/**": true,
-					"🌐 Browse: source/**": true
+					"📝 Browse: source/**": true
 				}
 			}	
 			"tasks" : {
