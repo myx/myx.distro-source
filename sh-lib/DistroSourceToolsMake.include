@@ -16,11 +16,26 @@ case "$1" in
 		local WS_NAME="$( basename "$MMDAPP" ).code-workspace"
 		local WS_FILE="$MMDAPP/$WS_NAME"
 
+		local REPOS="$( 
+			local ITEM
+			ListAllRepositories.fn.sh --no-cache --noindex \
+			| "$MMDAPP/DistroSourceConsole.sh" --non-interactive \
+			| while read -r ITEM ; fo
+				echo "{ \"path\" : \"$MMDAPP/source/$ITEM/\", \"name\" : \"Root - $ITEM\" }
+			done
+		)"
+
 		cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 		{
 			"folders": [ 
+				$REPOS,
 				{ 
-					"path": "${MMDAPP}/source/" 
+					"path": "$MMDAPP/source/"
+					"name": "source"
+				},
+				{ 
+					"path": "$MMDAPP/.local/"
+					"name": ".local"
 				}
 			],
 			"tasks" : {
@@ -29,7 +44,7 @@ case "$1" in
 					{
 						"label": "🖥️ Start Source Console...",
 						"type": "shell",
-						"command": "${MMDAPP}/DistroSourceConsole.sh",
+						"command": "$MMDAPP/DistroSourceConsole.sh",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
@@ -38,7 +53,7 @@ case "$1" in
 					{
 						"label": "⬇️ Pull All Known Sources...",
 						"type": "shell",
-						"command": "echo 'DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull' | ${MMDAPP}/DistroSourceConsole.sh --non-interactive",
+						"command": "echo 'DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull' | $MMDAPP/DistroSourceConsole.sh --non-interactive",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
