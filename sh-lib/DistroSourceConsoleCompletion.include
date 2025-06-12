@@ -4,6 +4,7 @@
 local FUNCTIONS="$(compgen -A function)"
 
 if [ -z "COMP_LINE" ] ; then
+	echo ">>>1" >&2
     COMPREPLY=( $FUNCTIONS )
 	return 0
 fi
@@ -11,8 +12,10 @@ fi
 cur="${COMP_WORDS[COMP_CWORD]}"
 
 if [[ " $cmds " =~ " $cur " ]]; then
+	echo ">>>2" >&2
 	COMPREPLY=( $(compgen -W "$FUNCTIONS" -- "$cur") )
 fi
 
+	echo ">>>3" >&2
 # If not recognized, fallback to default Bash completion
 compopt -o default
