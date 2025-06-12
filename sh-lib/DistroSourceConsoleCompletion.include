@@ -3,8 +3,8 @@
 
 local FUNCTIONS="$(compgen -A function)"
 
+## empty input, requires bash 4+ (not default on MacOSX)
 if [ -z "COMP_LINE" ] ; then
-	echo ">>>1" >&2
     COMPREPLY=( $FUNCTIONS )
 	return 0
 fi
@@ -12,11 +12,9 @@ fi
 cur="${COMP_WORDS[COMP_CWORD]}"
 
 if [[ " $cmds " =~ " $cur " ]]; then
-	echo ">>>2" >&2
-
 	case "${COMP_WORDS[0]}" in
 	Require)
-		COMPREPLY=( $(compgen -W "start stop reset" -- "$2") )
+		COMPREPLY=( $( ( unset COMP_LINE ; Source --completion-require ) ) )
 		return 0
 	;;
 	Action)
@@ -31,11 +29,15 @@ if [[ " $cmds " =~ " $cur " ]]; then
 		return 0
 	;;
 	Source)
-		COMPREPLY=( $(compgen -W "local remote backup" -- "$2") )
+		COMPREPLY=( $( Source --completion-source ) )
 		return 0
 	;;
 	Distro)
-		COMPREPLY=( $(compgen -W "debian ubuntu arch fedora" -- "$2") )
+		COMPREPLY=( $( Source --completion-distro ) )
+		return 0
+	;;
+	Deploy)
+		COMPREPLY=( $( Deploy --completion-distro ) )
 		return 0
 	;;
 	*)
@@ -47,6 +49,6 @@ if [[ " $cmds " =~ " $cur " ]]; then
 	# COMPREPLY=( $(compgen -W "$FUNCTIONS" -- "$cur") )
 fi
 
-	echo ">>>3" >&2
 # If not recognized, fallback to default Bash completion
+echo ">>> DEF "
 compopt -o default

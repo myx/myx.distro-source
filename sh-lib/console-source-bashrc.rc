@@ -90,7 +90,8 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
-	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] ; then
+	echo ">>>> $1" >&2
+	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] && [ "${1#--completion}" = "$1" ]; then
 		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceConsoleCompletion.include"
 		return 0
 	fi
