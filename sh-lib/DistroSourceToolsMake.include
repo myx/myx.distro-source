@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
+if [ -z "$MDSC_BIN" ] && [ -z "$MDLC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+	MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
+else
+	MDSC_BIN="${MDLC_BIN:-$MMDAPP/.local}"
+fi
+
+export MDSC_BIN
+
 case "$1" in
 	--make-console-commands)
 		shift
@@ -107,7 +115,7 @@ CODEWORKSPACE
 		set -e
 		( 
 			DistroSourceTools(){
-				. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/DistroSourceToolsMake.include"
+				. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceToolsMake.include"
 			}
 			DistroSourceTools --make-console-script > "$MMDAPP/DistroSourceConsole.sh"
 		)
@@ -136,21 +144,30 @@ CODEWORKSPACE
 				MMDAPP="$( ( cd $(dirname "$0") ; pwd ) )"
 			fi
 
-			[ -d "$MMDAPP/.local" ] || ( echo "ERROR: expecting '$MMDAPP/.local' directory." >&2 && exit 1 )
+			if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+				MDSC_BIN="$MMDAPP/source"
+			elif [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+				MDSC_BIN="$MMDAPP/.local"
+			else
+				echo "ERROR: expecting '$MMDAPP/.local' or '$MMDAPP/source' directory to contain files required." >&2
+				exit 1
+			fi
+
+			export MDSC_BIN
+			export MMDAPP
 
 			cd "$MMDAPP"
-			export MMDAPP
 
 			if [ "$1" == "--non-interactive" ] ; then
 				shift
 				{
-					echo ". '$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
+					echo ". '$MDSC_BIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
 					cat
 				} | bash "$@"
 				exit 0
 			fi
 			
-			bash --rcfile "$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
+			bash --rcfile "$MDSC_BIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
 DISTROCONSOLE
 
 		return 0

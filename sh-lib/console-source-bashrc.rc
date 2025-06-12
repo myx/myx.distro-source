@@ -4,7 +4,7 @@
 echo "Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-if [ -z "$MDLC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+if [ -z "$MDSC_BIN" ] && [ -z "$MDLC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
 	MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
 else
 	MDSC_BIN="${MDLC_BIN:-$MMDAPP/.local}"
@@ -90,7 +90,6 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
-	echo ">>>> $1" >&2
 	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] && [ "${1#--completion}" = "$1" ]; then
 		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceConsoleCompletion.include"
 		return 0
@@ -135,32 +134,11 @@ Help(){
 	set +e ; return 1
 }
 
-consoleActionsCompletion()
-{
-	Require ListAllActions
-	local PREFIX="$2"
-	if [ -z "$PREFIX" ] ; then
-		COMPREPLY=( $( ListAllActions --completion | sed 's!/.*!/!' | sort -u ) )
-	else
-		COMPREPLY=( $( ListAllActions --completion | grep "^$PREFIX" | sort -u ) )
-	fi
-}
-
 if complete -D &>/dev/null; then
 	complete -F Source -D
 else
 	complete -F Source "" "*" "Action" "Require" "Distro" "Deploy" "Source" "which"
 fi
-
-#complete -W "\` Source --completion-all \`" ""
-#complete -W "\` Source --completion-all \`" "*"
-#complete -W "\` Source --completion-all \`" "which"
-#complete -W "\` Source --completion-require \`" "Require"
-
-#complete -W "\` Source --completion-distro \`" "Distro"
-
-#complete -W "\` Deploy --completion-deploy \`" "Deploy"
-#complete -W "\` Source --completion-source \`" "Source"
 
 PROMPT_COMMAND="set +e"
 PS1="\` Source --shell-prompt \`: $PS1"
