@@ -4,8 +4,8 @@
 echo "Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-if [ -z "$MDSC_BIN" ] && [ -z "$MDLC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
-	MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
+if [ -z "$MDSC_BIN" ] && [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+	MDSC_BIN="$MMDAPP/source"
 else
 	MDSC_BIN="${MDLC_BIN:-$MMDAPP/.local}"
 fi
