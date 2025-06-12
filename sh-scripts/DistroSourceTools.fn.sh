@@ -19,6 +19,13 @@ DistroSourceTools(){
 	set -e
 
 	case "$1" in
+		--register-repository-roots)
+			shift
+			while [ $# -gt 0 ]; do
+				DistroSourceTools --register-repository-root "$1" "--not-set" --batch
+				shift
+			done
+		;;
 		--register-repository-root)
 			local repositoryName="$2"
 			local repositoryHref="$3"
@@ -33,6 +40,10 @@ DistroSourceTools(){
 
 			shift ; shift ; shift
 
+			if [ "$1" == "--batch" ] ; then
+				shift
+				local partOfBatch="false"
+			fi
 			if [ ! -z "$1" ] ; then
 				echo "ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
 				set +e ; return 1
