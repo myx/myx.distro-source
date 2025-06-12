@@ -6,14 +6,12 @@ RunJavaClassClean(){
 	local SRC_NAME=$1; shift
 	local CLS_NAME=$1; shift
 
-	local MDSC_BIN="${MDSC_BIN:-${MDLC_BIN:-$MMDAPP/.local}}"
-
-	if [ "$MDSC_BIN" == "$MDSC_SOURCE" ] ; then
+	if [ "$MDSC_ORIGIN" == "$MMDAPP/.local" ] || [ -z "$MDSC_CACHED" ] ; then
+		local DIR_OUT="$MMDAPP/.local/.cached"
+		local DIR_SRC="$MMDAPP/.local"
+	else
 		local DIR_OUT="$MDSC_CACHED"
 		local DIR_SRC="$MDSC_SOURCE"
-	else
-		local DIR_OUT="$MDSC_BIN/cached"
-		local DIR_SRC="$MDSC_BIN"
 	fi
 
 	DST_PATH="$DIR_OUT/$SRC_NAME/java"

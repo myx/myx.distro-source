@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-MDSC_BIN="${MDSC_BIN:-$MMDAPP/.local}"
+MDLC_BIN="${MDLC_BIN:-$MMDAPP/.local}"
 
 case "$1" in 
 	--completion-*)
-		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceToolsCompletion.include"
+		. "$MDLC_BIN/myx/myx.distro-source/sh-lib/DistroSourceToolsCompletion.include"
 		set +e ; return 1
 	;;
 	''|--help)
 		shift
-		( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpConsoleDistro.include" )
+		( . "$MDLC_BIN/myx/myx.distro-source/sh-lib/HelpConsoleDistro.include" )
 		set +e ; return 1
 	;;
 	*)

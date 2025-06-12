@@ -3,8 +3,6 @@
 
 [ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
 
-MDSC_BIN="${MDSC_BIN:-$MMDAPP/.local}"
-
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	DistroShellContext(){
 		case "$1" in
@@ -25,7 +23,7 @@ if ! type DistroShellContext >/dev/null 2>&1 ; then
 					local adpcChangeSpec="true"
 			
 					[ -z "$MDSC_DETAIL" ] || echo "DistroShellContext: input spec: $1" >&2
-					. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContextSetInputSpec.include"		
+					. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroShellContextSetInputSpec.include"		
 					return 0
 				fi
 			;;
@@ -37,7 +35,7 @@ if ! type Require >/dev/null 2>&1 ; then
 	Require(){
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] || [ "--help" == "$distroCommand" ] ; then
-			( . "$MDSC_BIN/myx/myx.distro-.local/sh-lib/HelpRequire.include" )
+			( . "$MDSC_ORIGIN/myx/myx.distro-.local/sh-lib/HelpRequire.include" )
 			set +e ; return 1
 		fi
 		if type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
@@ -46,8 +44,8 @@ if ! type Require >/dev/null 2>&1 ; then
 		
 		local ITEM
 		for ITEM in source .local system deploy remote ; do
-			if [ -f "$MDSC_BIN/myx/myx.distro-$ITEM/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-				. "$MDSC_BIN/myx/myx.distro-$ITEM/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+			if [ -f "$MDSC_ORIGIN/myx/myx.distro-$ITEM/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+				. "$MDSC_ORIGIN/myx/myx.distro-$ITEM/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 				return 0
 			fi
 		done
@@ -66,7 +64,7 @@ if ! type Distro >/dev/null 2>&1 ; then
 		esac
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] ; then
-			( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpConsoleDistro.include" )
+			( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleDistro.include" )
 			set +e ; return 1
 		fi
 		if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
@@ -77,28 +75,25 @@ if ! type Distro >/dev/null 2>&1 ; then
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || [ "$MDSC_ORIGIN" == "${MDSC_ORIGIN#$MMDAPP/}" ] ; then
-	MDSC_DETAIL=""
-	export MDSC_DETAIL
+	export MDSC_DETAIL=""
+	export MDSC_INMODE=""
+	export MDSC_SOURCE=""
+	export MDSC_CACHED=""
+	export MDSC_OUTPUT=""
+	export MDSC_OPTION=""
+
+	if	   [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
+		&& [ -d "$MMDAPP/source/myx/myx.distro-system" ] \
+		&& [ -d "$MMDAPP/source/myx/myx.distro-.local" ] \
+		&& [ -d "$MMDAPP/source/myx/myx.common/os-myx.common" ] \
+	; then
+		export MDSC_ORIGIN="$MMDAPP/source"
+	else
+		export MDSC_ORIGIN="${MDLC_BIN:-$MMDAPP/.local}"
+	fi
 	
-	MDSC_SOURCE=""
-	MDSC_CACHED=""
-	MDSC_OUTPUT=""
-	MDSC_INMODE=""
-	MDSC_OPTION=""
-
-	export MDSC_INMODE
-	export MDSC_SOURCE
-	export MDSC_CACHED
-	export MDSC_OUTPUT
-	export MDSC_OPTION
-
-
-	MDSC_ORIGIN="$MDSC_BIN/myx/myx.distro-source/sh-lib"
-	export MDSC_ORIGIN
-	
-	echo "DistroContext: init: $MDSC_BIN/myx/myx.distro-source" >&2
+	echo "DistroContext: init: $MDSC_ORIGIN/myx/myx.distro-source" >&2
 fi
-
 
 while true ; do
 	if [ "--verbose" = "$1" ] ; then
@@ -108,7 +103,7 @@ while true ; do
 	fi 
 	if DistroShellContext --is-spec-option "$1" ; then
 		[ -z "$MDSC_DETAIL" ] || echo "DistroShellContext: input spec: $1" >&2
-		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContextSetInputSpec.include"
+		. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroShellContextSetInputSpec.include"
 		shift
 		continue
 	fi

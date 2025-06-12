@@ -7,15 +7,13 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-MDSC_BIN="${MDSC_BIN:-${MDLC_BIN:-$MMDAPP/source}}"
-
 if ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-path-auto
 fi
 
 if ! type DistroSource >/dev/null 2>&1 ; then
-	. "$MDSC_BIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+	. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
 fi
 
 ListDistroDeclares(){
@@ -453,8 +451,8 @@ case "$0" in
 			echo "syntax: ListDistroDeclares.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
 			echo "syntax: ListDistroDeclares.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
-				. "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpListDistroDeclares.include"
+				. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpListDistroDeclares.include"
 			fi
 			exit 1
 		fi

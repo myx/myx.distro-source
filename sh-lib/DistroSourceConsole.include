@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-MDSC_BIN="${MDSC_BIN:-$MMDAPP/.local}"
-
 case "$1" in 
 	--shell-prompt)
 		if [ ! -z "$MDSC_INT_CD" ] ; then
@@ -14,16 +12,16 @@ case "$1" in
 		return 0
 	;;
 	--completion-*)
-		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceToolsCompletion.include"
+		. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroSourceToolsCompletion.include"
 		set +e ; return 1
 	;;
 	''|--help)
 		shift
-		( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/HelpConsoleSource.include" )
+		( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleSource.include" )
 		set +e ; return 1
 	;;
 	--start-console)
-		bash --rcfile "$MDSC_BIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
+		bash --rcfile "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
 		return 0
 	;;
 	*)
