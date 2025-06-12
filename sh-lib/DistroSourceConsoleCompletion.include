@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
+set -x
+
 local FUNCTIONS="$(compgen -A function)"
 
 if [ -z "COMP_LINE" ] ; then

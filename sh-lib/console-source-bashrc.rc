@@ -90,7 +90,6 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
-	set -x
 	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] ; then
 		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceConsoleCompletion.include"
 		return 0
@@ -146,8 +145,7 @@ consoleActionsCompletion()
 	fi
 }
 
-complete -F Source ""
-complete -F Source "*"
+complete -F Source
 
 #complete -F consoleActionsCompletion "Action"
 
@@ -162,7 +160,6 @@ complete -F Source "*"
 #complete -W "\` Source --completion-source \`" "Source"
 
 PROMPT_COMMAND="set +e"
-
 PS1="\` Source --shell-prompt \`: $PS1"
 export PS1
 
