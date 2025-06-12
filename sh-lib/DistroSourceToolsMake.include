@@ -140,23 +140,22 @@ CODEWORKSPACE
 			set -e
 
 			if [ -z "$MMDAPP" ] ; then
-				export MMDAPP
 				MMDAPP="$( ( cd $(dirname "$0") ; pwd ) )"
 			fi
 
 			if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
 				MDSC_BIN="$MMDAPP/source"
-			elif [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
+			elif [ -f "$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] ; then
 				MDSC_BIN="$MMDAPP/.local"
 			else
 				echo "ERROR: expecting '$MMDAPP/.local' or '$MMDAPP/source' directory to contain files required." >&2
 				exit 1
 			fi
 
+			cd "$MMDAPP"
+
 			export MDSC_BIN
 			export MMDAPP
-
-			cd "$MMDAPP"
 
 			if [ "$1" == "--non-interactive" ] ; then
 				shift
