@@ -145,8 +145,11 @@ consoleActionsCompletion()
 	fi
 }
 
-complete -F Source -D
-complete -F Source "" "*" "Action" "Require" "Distro" "Deploy" "Source" "which"
+if complete -D &>/dev/null; then
+	complete -F Source -D
+else
+	complete -F Source "" "*" "Action" "Require" "Distro" "Deploy" "Source" "which"
+fi
 
 #complete -W "\` Source --completion-all \`" ""
 #complete -W "\` Source --completion-all \`" "*"
