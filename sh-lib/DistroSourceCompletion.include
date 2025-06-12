@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+local FUNCTIONS="$(compgen -A function)"
+
+if [ -z "COMP_LINE" ] ; then
+    COMPREPLY=( $FUNCTIONS )
+	return 0
+fi
+
+cur="${COMP_WORDS[COMP_CWORD]}"
+
+if [[ " $cmds " =~ " $cur " ]]; then
+	COMPREPLY=( $(compgen -W "$FUNCTIONS" -- "$cur") )
+fi
+
+# If not recognized, fallback to default Bash completion
+compopt -o default

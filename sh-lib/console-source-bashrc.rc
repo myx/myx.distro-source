@@ -90,6 +90,11 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
+	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] ; then
+		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceConsoleCompletion.include"
+		return 0
+	fi
+
 	case "$1" in
 		''|--*)
 			( . "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceConsole.include" )
@@ -140,17 +145,19 @@ consoleActionsCompletion()
 	fi
 }
 
-complete -F consoleActionsCompletion "Action"
+complete -F Source ""
 
-complete -W "\` Source --completion-all \`" ""
-complete -W "\` Source --completion-all \`" "*"
-complete -W "\` Source --completion-all \`" "which"
-complete -W "\` Source --completion-require \`" "Require"
+#complete -F consoleActionsCompletion "Action"
 
-complete -W "\` Source --completion-distro \`" "Distro"
+#complete -W "\` Source --completion-all \`" ""
+#complete -W "\` Source --completion-all \`" "*"
+#complete -W "\` Source --completion-all \`" "which"
+#complete -W "\` Source --completion-require \`" "Require"
 
-complete -W "\` Deploy --completion-deploy \`" "Deploy"
-complete -W "\` Source --completion-source \`" "Source"
+#complete -W "\` Source --completion-distro \`" "Distro"
+
+#complete -W "\` Deploy --completion-deploy \`" "Deploy"
+#complete -W "\` Source --completion-source \`" "Source"
 
 PROMPT_COMMAND="set +e"
 
