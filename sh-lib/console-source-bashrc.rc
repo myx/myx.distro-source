@@ -90,6 +90,7 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
+	set -x
 	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] ; then
 		. "$MDSC_BIN/myx/myx.distro-source/sh-lib/DistroSourceConsoleCompletion.include"
 		return 0
