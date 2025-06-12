@@ -9,7 +9,7 @@ fi
 
 ListDistroScripts(){
 
-	local MDSC_BIN="${MDLC_BIN:-$MMDAPP/source}"
+	local MDSC_BIN="${MDSC_BIN:-${MDLC_BIN:-$MMDAPP/.local}}"
 
 	case "$1" in
 		--completion)
