@@ -142,7 +142,7 @@ consoleActionsCompletion()
 
 complete -F consoleActionsCompletion "Action"
 
-complete -W "\` Source --completion-all \`" "."
+complete -W "\` Source --completion-all \`" ""
 complete -W "\` Source --completion-all \`" "*"
 complete -W "\` Source --completion-all \`" "which"
 complete -W "\` Source --completion-require \`" "Require"
