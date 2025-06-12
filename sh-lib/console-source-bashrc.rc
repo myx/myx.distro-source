@@ -145,7 +145,7 @@ consoleActionsCompletion()
 	fi
 }
 
-complete -F Source
+complete -F Source -D
 
 #complete -F consoleActionsCompletion "Action"
 
