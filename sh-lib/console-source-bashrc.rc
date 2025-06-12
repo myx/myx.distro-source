@@ -146,8 +146,7 @@ consoleActionsCompletion()
 }
 
 complete -F Source -D
-
-#complete -F consoleActionsCompletion "Action"
+complete -F Source "" "*" "Action" "Require" "Distro" "Deploy" "Source" "which"
 
 #complete -W "\` Source --completion-all \`" ""
 #complete -W "\` Source --completion-all \`" "*"
