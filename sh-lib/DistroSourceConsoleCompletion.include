@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-set -x
-
 local FUNCTIONS="$(compgen -A function)"
 
 if [ -z "COMP_LINE" ] ; then
@@ -15,7 +13,38 @@ cur="${COMP_WORDS[COMP_CWORD]}"
 
 if [[ " $cmds " =~ " $cur " ]]; then
 	echo ">>>2" >&2
-	COMPREPLY=( $(compgen -W "$FUNCTIONS" -- "$cur") )
+
+	case "${COMP_WORDS[0]}" in
+	Require)
+		COMPREPLY=( $(compgen -W "start stop reset" -- "$2") )
+		return 0
+	;;
+	Action)
+		Require ListAllActions
+		local PREFIX="$2"
+		if [ -z "$PREFIX" ] ; then
+			COMPREPLY=( $( ListAllActions --completion | sed 's!/.*!/!' | sort -u ) )
+		else
+			COMPREPLY=( $( ListAllActions --completion | grep "^$PREFIX" | sort -u ) )
+		fi
+		# COMPREPLY=( $(compgen -W "start stop reset" -- "$2") )
+		return 0
+	;;
+	Source)
+		COMPREPLY=( $(compgen -W "local remote backup" -- "$2") )
+		return 0
+	;;
+	Distro)
+		COMPREPLY=( $(compgen -W "debian ubuntu arch fedora" -- "$2") )
+		return 0
+	;;
+	*)
+		COMPREPLY=( $(compgen -c -- "$2") )  # Fallback to normal command completion
+		return 0
+	;;
+	esac
+
+	# COMPREPLY=( $(compgen -W "$FUNCTIONS" -- "$cur") )
 fi
 
 	echo ">>>3" >&2
