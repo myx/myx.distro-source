@@ -46,12 +46,25 @@ syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>
 					Shell command to wrap shell actions to execute. Allows to run actions on
 					remote runner machine or add extra logging/notification, etc...
 
-		--make-console-command
+		--make-console-command [--quiet]
 			Re-Creates DistroSourceConsole.sh script to be used as a command to quickly enter workspace 
-			console.
+			console. 
+			
+			Won't output helpful information on files created and how to use those files, when 
+			`--quiet` option specified.
 
-		--make-code-workspace
-			Re-Creates <workspace-name>.code-workspace workspace file to be used with Microsoft Code.
+		--make-code-workspace [--quiet]
+			Re-Creates <workspace-name>.code-workspace workspace file to be used with VS Code.
+			
+			Won't output helpful information on files created and how to use those files, when 
+			`--quiet` option specified.
+
+		--make-console-commands [--quiet]
+			Runs all `--make-*` commands (--make-console-command, --make-code-workspace), thus 
+			(re-)creating all SourceConsole the user executable workspace commands and files.
+			
+			Won't output helpful information on files created and how to use those files, when 
+			`--quiet` option specified.
 
 	Examples (in Local Console, within workspace context):
 
