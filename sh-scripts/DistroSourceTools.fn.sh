@@ -60,9 +60,11 @@ DistroSourceTools(){
 					"$repositoryHref"
 			)"
 
-			if ! [ "$( cat "$MMDAPP/source/$repositoryName/repository.inf" )" == "$repositoryInf" ] ; then
-				echo -n "$repositoryInf" > "$MMDAPP/source/$repositoryName/repository.inf"
-				echo "> $MDSC_CMD: --register-repository-root: $MMDAPP/source/$repositoryName/repository.inf (re-)created." >&2
+			local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
+
+			if ! [ "$( cat "$repositoryFile" 2>/dev/null )" == "$repositoryInf" ] ; then
+				echo -n "$repositoryInf" > "$repositoryFile"
+				echo "> $MDSC_CMD: --register-repository-root: $repositoryFile (re-)created." >&2
 				DistroSourceTools --make-code-workspace --quiet
 			fi
 
