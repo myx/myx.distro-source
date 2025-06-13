@@ -21,8 +21,8 @@ DistroSourceTools(){
 	case "$1" in
 		--register-repository-roots)
 			shift
-			while [ $# -gt 0 ]; do
-				DistroSourceTools --register-repository-root "$1" "--not-set" --batch
+			while [ $# -gt 0 ] ; do
+				DistroSourceTools --register-repository-root "$1" --not-set --batch
 				shift
 			done
 		;;
