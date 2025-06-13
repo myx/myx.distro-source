@@ -1,4 +1,7 @@
-[ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+: "${MMDAPP:?ERROR: MMDAPP is not set}"
 
 CompileCachedJavaRepository(){
 	REPO_NAME=$1; shift

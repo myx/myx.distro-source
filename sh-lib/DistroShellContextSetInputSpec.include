@@ -1,4 +1,7 @@
-[ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+: "${MMDAPP:?ERROR: MMDAPP is not set}"
 
 # DistroShellContextSetInputSpec
 
@@ -25,10 +28,7 @@ fi
 
 
 if [ "$adpcChangeSpec" = "true" ] ; then
-	if [ -z "$1" ] ; then
-		echo "ERROR: DistroShellContextSetInputSpec: inputSpec argument is required!" >&2
-		exit 1
-	fi
+	: "${1:?ERROR: DistroSourceContextSetInputSpec: inputSpec argument is required}"
 	if ! DistroShellContext --is-spec-option "$1" ; then
 		echo "ERROR: DistroShellContextSetInputSpec: inputSpec argument is invalid: $1" >&2
 		exit 1

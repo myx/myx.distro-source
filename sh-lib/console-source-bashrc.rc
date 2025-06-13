@@ -7,7 +7,7 @@ echo "SourceConsole: Working in $MMDAPP" >&2
 if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include" ] ; then
 	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 else
-	. "${MDLC_BIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	. "${MDLC_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 fi
 
 export BASH_ENV="$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"

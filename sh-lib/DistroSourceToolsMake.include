@@ -5,7 +5,7 @@ if [ -z "$MDSC_ORIGIN" ] ; then
 	if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include" ] ; then
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	else
-		. "${MDLC_BIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+		. "${MDLC_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	fi
 fi
 
@@ -144,11 +144,11 @@ CODEWORKSPACE
 			fi
 
 			if \
-				[ ! -z "$MDLC_BIN" ] && \
-				[ -f "$MDLC_BIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
+				[ ! -z "$MDLC_ORIGIN" ] && \
+				[ -f "$MDLC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
 			; then
 
-				export MDSC_ORIGIN="${MDLC_BIN}"
+				export MDSC_ORIGIN="${MDLC_ORIGIN}"
 
 			elif \
 				[ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] && \
@@ -157,7 +157,7 @@ CODEWORKSPACE
 				[ -d "$MMDAPP/source/myx/myx.common/os-myx.common" ] \
 			; then
 
-				export MDLC_BIN="$MMDAPP/source"
+				export MDLC_ORIGIN="$MMDAPP/source"
 				export MDSC_ORIGIN="$MMDAPP/source"
 
 			elif \

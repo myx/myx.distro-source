@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-[ -z "$MMDAPP" ] && echo 'ERROR: $MMDAPP is not set!' >&2 && exit 1
+: "${MMDAPP:?ERROR: MMDAPP is not set}"
 
 if ! type DistroShellContext >/dev/null 2>&1 ; then
 	DistroShellContext(){
@@ -60,13 +60,13 @@ if ! type Distro >/dev/null 2>&1 ; then
 	Distro(){
 		case "$1" in
 			''|--*)
-				( . "$MDRC_BIN/myx/myx.distro-source/sh-lib/DistroImageConsole.include" )
+				( . "$MDLC_ORIGIN/myx/myx.distro-system/sh-lib/DistroSystemConsole.include" )
 				set +e ; return 1
 			;;
 		esac
 		local distroCommand="$1" ; shift
 		if [ -z "$distroCommand" ] ; then
-			( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleDistro.include" )
+			( . "$MDSC_ORIGIN/myx/myx.distro-system/sh-lib/HelpConsoleDistro.include" )
 			set +e ; return 1
 		fi
 		if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
@@ -91,7 +91,7 @@ if [ -z "$MDSC_ORIGIN" ] || [ "$MDSC_ORIGIN" == "${MDSC_ORIGIN#$MMDAPP/}" ] ; th
 	; then
 		export MDSC_ORIGIN="$MMDAPP/source"
 	else
-		export MDSC_ORIGIN="${MDLC_BIN:-$MMDAPP/.local}"
+		export MDSC_ORIGIN="${MDLC_ORIGIN:-$MMDAPP/.local}"
 	fi
 	
 	echo "DistroContext: init: $MDSC_ORIGIN/myx/myx.distro-source" >&2
