@@ -103,7 +103,7 @@ CODEWORKSPACE
 
 		if [ "$1" != "--quiet" ] ; then
 			printf \
-				"\nNote: $WS_NAME created, you can start Code with:\n%s\n\n" \
+				"\nNote: $WS_NAME created, you can start Code with:\n\t%s\n\n" \
 				"$MMDAPP/$WS_NAME" \
 			>&2
 		fi

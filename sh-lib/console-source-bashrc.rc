@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-echo "Working in $MMDAPP" >&2
+echo "SourceConsole: Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
 if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include" ] ; then
@@ -10,14 +10,15 @@ else
 	. "${MDLC_BIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 fi
 
-DistroShellContext --distro-from-source
+export BASH_ENV="$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
 
-# search: 1) previous path; 2) distro source scripts; 3) distro deploy scripts.
+DistroShellContext --distro-from-source
 
 if [ -x "$MDSC_ORIGIN/myx/myx.common/os-myx.common/host/tarball/bin/myx.common" ] ; then
 	PATH="$MDSC_ORIGIN/myx/myx.common/os-myx.common/host/tarball/bin:$PATH"
 fi
 
+# add paths, replace if any
 PATH="$( echo "$PATH" | sed -E "s|:$MDSC_ORIGIN/myx/myx.distro-\(source\|deploy\|remote\)/sh-scripts||g" )"
 PATH+=":$MDSC_ORIGIN/myx/myx.distro-source/sh-scripts"
 PATH+=":$MDSC_ORIGIN/myx/myx.distro-deploy/sh-scripts"
