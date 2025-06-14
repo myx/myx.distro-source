@@ -59,7 +59,7 @@ syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>
 			Won't output helpful information on files created and how to use those files, when 
 			`--quiet` option specified.
 
-		--make-console-commands [--quiet]
+		--make-workspace-integration-files [--quiet]
 			Runs all `--make-*` commands (--make-console-command, --make-code-workspace), thus 
 			(re-)creating all SourceConsole the user executable workspace commands and files.
 			

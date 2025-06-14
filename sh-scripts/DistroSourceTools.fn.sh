@@ -79,8 +79,8 @@ DistroSourceTools(){
 			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/DistroSourceToolsMake.include"
 			set +e ; return 1
 		;;
-		--system-config-option|--custom-config-option)
-			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/DistroSourceToolsConfig.include"
+		--*-config-option)
+			. "$MMDAPP/.local/myx/myx.distro-.local/sh-lib/DistroLocalToolsConfig.include"
 			set +e ; return 1
 		;;
 		--completion-*)
