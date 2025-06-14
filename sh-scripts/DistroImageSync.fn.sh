@@ -7,8 +7,8 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "${MDSC_ORIGIN:=${MDLT_ORIGIN:=$MMDAPP/.local}}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-path-auto
 fi
 
@@ -358,19 +358,19 @@ case "$0" in
 				echo "                Displays all sync tasks for all build stages from all projects in distro." >&2
 				echo "                This command doesn't need project selector and any other arguments." >&2
 				echo >&2
-				echo "    --execute-source-prepare-pull [--parallel [N] / --sequence]" >&2
+				echo "    --execute-source-prepare-pull [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for source-prapare pull stage (before source-prepare)." >&2
 				echo >&2
-				echo "    --execute-source-process-push [--parallel [N] / --sequence]" >&2
+				echo "    --execute-source-process-push [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-prapare push stage (on image-prepare, after source)." >&2
 				echo >&2
-				echo "    --execute-image-prepare-pull [--parallel [N] / --sequence]" >&2
+				echo "    --execute-image-prepare-pull [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-prapare pull stage (on image-prepare, before deploy)." >&2
 				echo >&2
-				echo "    --execute-image-process-push [--parallel [N] / --sequence]" >&2
+				echo "    --execute-image-process-push [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-prapare push stage (on image-prepare, before deploy)." >&2
 				echo >&2
-				echo "    --execute-image-install-pull [--parallel [N] / --sequence]" >&2
+				echo "    --execute-image-install-pull [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-install pull stage (on image-install, before deploy)." >&2
 				echo >&2
 				echo "    --print-tasks" >&2
@@ -383,8 +383,8 @@ case "$0" in
 				echo "    --print-image-{prepare-pull|process-push}" >&2
 				echo "                Displays syncronisation task list to be executed." >&2
 				echo >&2
-				echo "    --script-source-{prepare-pull|process-push} [--parallel [N] / --sequence]" >&2
-				echo "    --script-image-{prepare-pull|process-push} [--parallel [N] / --sequence]" >&2
+				echo "    --script-source-{prepare-pull|process-push} [--parallel [N] / --sequence / --portable]" >&2
+				echo "    --script-image-{prepare-pull|process-push} [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Displays syncronisation script source to be executed." >&2
 				echo >&2
 				echo "    --{script|execute}-from-stdin-repositories-list" >&2

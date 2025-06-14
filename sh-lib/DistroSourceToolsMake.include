@@ -5,7 +5,7 @@ if [ -z "$MDSC_ORIGIN" ] ; then
 	if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include" ] ; then
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	else
-		. "${MDLC_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+		. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	fi
 fi
 
@@ -156,11 +156,11 @@ CODELAUNCHER
 			fi
 
 			if \
-				[ ! -z "$MDLC_ORIGIN" ] && \
-				[ -f "$MDLC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
+				[ ! -z "$MDLT_ORIGIN" ] && \
+				[ -f "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
 			; then
 
-				export MDSC_ORIGIN="${MDLC_ORIGIN}"
+				export MDSC_ORIGIN="${MDLT_ORIGIN}"
 
 			elif \
 				[ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] && \
@@ -169,7 +169,7 @@ CODELAUNCHER
 				[ -d "$MMDAPP/source/myx/myx.common/os-myx.common" ] \
 			; then
 
-				export MDLC_ORIGIN="$MMDAPP/source"
+				export MDLT_ORIGIN="$MMDAPP/source"
 				export MDSC_ORIGIN="$MMDAPP/source"
 
 			elif \

@@ -95,28 +95,38 @@ case "$syncMode" in
 	--sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
+		cat "${syncCommand%/*/*}/lib/prefix"
+		echo
+		cat "$syncCommand"
+		echo
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
 			echo Prefix -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
 		done
 	;;
-	--obsolete)
+	--portable)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		local rowCounter=""
-		local itemTarget itemSource useBranch
-		
+		local itemTarget itemSource useBranch rowCounter
+		cat "${syncCommand%/*/*}/lib/async"
+		echo
+		cat "${syncCommand%/*/*}/lib/prefix"
+		echo
+		cat "$syncCommand"
+		echo
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
-			echo Async -2 GitCloneSync "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
+			# ${syncType} - GitCloneSync GitClonePull
+			echo Async Prefix -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
 			rowCounter="${rowCounter}@"
 			if [ "$rowCounter" == "@@@@@@@@" ] ; then
 				echo wait
 				rowCounter=""
 			fi
 		done
-		
-		echo wait
+		if [ -n "$rowCounter" ] ; then
+			echo wait
+		fi
 	;;
 esac
 
