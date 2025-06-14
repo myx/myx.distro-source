@@ -8,12 +8,12 @@ for PROJECT in \
 ; do
 
 	if [ ! -d "$MMDAPP/source/$PROJECT" ] ; then
-		echo "WARNING: expecting 'source' directory ($MMDAPP/source/$PROJECT) is not available." >&2 
+		echo "🙋 WARNING: expecting 'source' directory ($MMDAPP/source/$PROJECT) is not available." >&2 
 		continue
 	fi
 
 	if [ ! -d "$MMDAPP/.local/$PROJECT" ] ; then
-		echo "WARNING: expecting 'source' directory ($MMDAPP/.local/$PROJECT) is not available." >&2 
+		echo "🙋 WARNING: expecting 'source' directory ($MMDAPP/.local/$PROJECT) is not available." >&2 
 		continue
 	fi
 

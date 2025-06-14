@@ -48,7 +48,7 @@ DistroImageSync(){
 					list)
 						local listFile="$MDSC_SOURCE/$targetSpec/$sourceSpec"
 						if [ ! -f "$listFile" ] ; then
-							echo "WARNING: $MDSC_CMD: no repo list ($listFile) found for $projectName $buildStage:repo directive (ignoring)!" >&2
+							echo "🙋 WARNING: $MDSC_CMD: no repo list ($listFile) found for $projectName $buildStage:repo directive (ignoring)!" >&2
 							continue
 						fi
 
@@ -91,7 +91,7 @@ DistroImageSync(){
 						local sourceBranch sourceUrl
 						echo "*$sourceSpec" | sed 's/:/ /' | if read -r sourceBranch sourceUrl ; then
 							if [ -z "$sourceUrl" ] ; then
-								echo "WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
+								echo "🙋 WARNING: $MDSC_CMD: no repo url spec in $projectName $buildStage:repo directive (ignoring)!" >&2
 								continue
 							fi
 							echo "${targetSpec%%/}" "$sourceUrl" "${sourceBranch:1}"
