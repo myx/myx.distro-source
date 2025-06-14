@@ -4,11 +4,11 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "`which rsync`" ] ; then
-	echo "ERROR: $0: rsync utility is required!" >&2
+	echo "⛔ ERROR: $0: rsync utility is required!" >&2
 	exit 1
 fi
 
@@ -23,7 +23,7 @@ SourcePrepareProjectSyncToCached(){
 	
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
 	fi
 	
@@ -74,7 +74,7 @@ SourcePrepareProjectSyncToCached(){
 								echo "$embeddedName: changed."
 							fi
 						else
-							echo "ERROR: $embeddedName: $EOUTPUT" >&2
+							echo "⛔ ERROR: $embeddedName: $EOUTPUT" >&2
 							set +e ; return 1
 						fi
 					done
@@ -83,7 +83,7 @@ SourcePrepareProjectSyncToCached(){
 			
 		fi
 	else
-		echo "ERROR: $ROUTPUT" >&2
+		echo "⛔ ERROR: $ROUTPUT" >&2
 		set +e ; return 1
 	fi
 }

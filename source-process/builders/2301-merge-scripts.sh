@@ -7,17 +7,17 @@ Require ListDistroProvides
 MergeScripts(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: MergeScripts: 'projectName' argument is required!" >&2 ; return 1
+		echo "⛔ ERROR: MergeScripts: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local sourceName="$2"
 	if [ -z "$sourceName" ] ; then
-		echo "ERROR: MergeScripts: 'sourceName' argument is required!" >&2 ; return 1
+		echo "⛔ ERROR: MergeScripts: 'sourceName' argument is required!" >&2 ; return 1
 	fi
 	
 	local targetName="$3"
 	if [ -z "$targetName" ] ; then
-		echo "ERROR: MergeScripts: 'targetName' argument is required!" >&2 ; return 1
+		echo "⛔ ERROR: MergeScripts: 'targetName' argument is required!" >&2 ; return 1
 	fi
 	
 	local OUTPUT_DST="$MDSC_OUTPUT/$projectName/$targetName"

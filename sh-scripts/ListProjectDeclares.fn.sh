@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -19,7 +19,7 @@ ListProjectDeclares(){
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
 	fi
 	shift
@@ -46,7 +46,7 @@ ListProjectDeclares(){
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project declares filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local filterDeclares="$1" projectDeclares ; shift
@@ -87,7 +87,7 @@ ListProjectDeclares(){
 				break;
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac
@@ -152,7 +152,7 @@ ListProjectDeclares(){
 		return 0
 	fi
 	
-	echo "ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
 	set +e ; return 1
 }
 

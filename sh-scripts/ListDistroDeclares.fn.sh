@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -44,7 +44,7 @@ ListDistroDeclares(){
 			--select-from-env)
 				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
 					set +e ; return 1
 				fi
 				break
@@ -52,7 +52,7 @@ ListDistroDeclares(){
 			--set-env)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --set-env argument expected!" >&2
 					set +e ; return 1
 				fi
 				local envName="$1" ; shift
@@ -77,7 +77,7 @@ ListDistroDeclares(){
 			--all-declares)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
@@ -173,7 +173,7 @@ ListDistroDeclares(){
 			--all-declares-prefix-cut) # from: --filter-and-cut
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project declares filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local filterDeclares="$1" projectName projectDeclares ; shift
@@ -188,7 +188,7 @@ ListDistroDeclares(){
 			--all-declares-merged)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares-merged option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
@@ -302,7 +302,7 @@ ListDistroDeclares(){
 			--add-own-declares-column|--filter-own-declares-column|--add-merged-declares-column|--filter-merged-declares-column)
 				local lastOperation=${1%"-declares-column"} ; shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: $lastOperation project declares filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local columnMatcher="$1" ; shift
@@ -382,14 +382,14 @@ ListDistroDeclares(){
 				`"
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
 					set +e ; return 1
 				fi
 			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project declares filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local filterDeclares="$1" projectName projectDeclares ; shift
@@ -404,7 +404,7 @@ ListDistroDeclares(){
 			--merge-sequence)
 				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
 					set +e ; return 1
 				fi
 				
@@ -431,11 +431,11 @@ ListDistroDeclares(){
 					return 0
 				fi
 
-				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: no projects selected!" >&2
 				set +e ; return 1
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac

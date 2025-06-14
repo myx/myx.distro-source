@@ -4,11 +4,11 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "`which rsync`" ] ; then
-	echo "ERROR: $0: rsync utility is required!" >&2
+	echo "⛔ ERROR: $0: rsync utility is required!" >&2
 	exit 1
 fi
 
@@ -30,7 +30,7 @@ SourcePrepareRepositorySyncToCached(){
 	
 	local repositoryName="${1#$MMDAPP/source/}"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'repositoryName' argument is required!" >&2
+		echo "⛔ ERROR: $MDSC_CMD: 'repositoryName' argument is required!" >&2
 		set +e ; return 1
 	fi
 	

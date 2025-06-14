@@ -23,7 +23,7 @@ case "$useStage" in
 		syncType="Sync"
 	;;
 	*)
-		echo "ERROR: $MDSC_CMD: invalid build stage ($useStage) ($MDSC_OPTION, $@)" >&2
+		echo "⛔ ERROR: $MDSC_CMD: invalid build stage ($useStage) ($MDSC_OPTION, $@)" >&2
 		set +e ; return 1
 	;;
 esac
@@ -38,11 +38,11 @@ elif \
 [ "$( which myx.common )" != "" ] ; then
 	syncCommand="$( myx.common which git/clone${syncType} )"
 	if [ ! -x "$syncCommand" ] ; then
-		echo "ERROR: $MDSC_CMD: myx.common which git/clone${syncType} failed ($MDSC_OPTION, $@)" >&2
+		echo "⛔ ERROR: $MDSC_CMD: myx.common which git/clone${syncType} failed ($MDSC_OPTION, $@)" >&2
 		set +e ; return 1
 	fi
 else
-	echo "ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
 	set +e ; return 1
 fi
 
@@ -61,7 +61,7 @@ case "$syncMode" in
 					[ "$( which myx.common )" != "" ] ; then
 					myx.common cat $MC_EMBED
 				else
-					echo "ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 			done
@@ -69,7 +69,7 @@ case "$syncMode" in
 		} | grep -v -e '^#' -e '^$' || true
 	;;
 	*)
-		echo "ERROR: $MDSC_CMD: invalid sync mode: $syncMode ($MDSC_OPTION, $@)" >&2
+		echo "⛔ ERROR: $MDSC_CMD: invalid sync mode: $syncMode ($MDSC_OPTION, $@)" >&2
 		set +e ; return 1
 	;;
 esac

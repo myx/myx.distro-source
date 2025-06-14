@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -18,13 +18,13 @@ Require ListProjectActions
 
 RebuildActions(){
 	if [ -z "$MDSC_SOURCE" ] ; then
-		echo "ERROR: DistroContext is not set!" >&2
+		echo "⛔ ERROR: DistroContext is not set!" >&2
 		set +e ; return 1
 	fi
 
 	local TMP_DIR="$( mktemp -d -t "rebuild-actions-XXXXXXXX" )"
 	if [ $? -ne 0 ]; then
-		echo "ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
+		echo "⛔ ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
 		set +e ; return 1
 	fi
 	echo "Using temporary install directory: $TMP_DIR"
@@ -89,12 +89,12 @@ RebuildActions(){
 						echo 		'export MMDAPP="${0%"/actions/$actionScript"}"'
 						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings from action: $MMDAPP" >&2'
 						echo 	'else'
-						echo 		'echo "! Action $actionFullName: ERROR: cant calculate distro root directory!" >&2'
+						echo 		'echo "! Action $actionFullName: ⛔ ERROR: cant calculate distro root directory!" >&2'
 						echo		'set +e ; return 1'
 						echo 	'fi'
 						
 						echo 	'if [ ! -d "$MMDAPP/source" ] ; then'
-						echo 		'echo "! Action $actionFullName: ERROR: source directory does not exist!" >&2'
+						echo 		'echo "! Action $actionFullName: ⛔ ERROR: source directory does not exist!" >&2'
 						echo		'set +e ; return 1'
 						echo 	'fi'
 						

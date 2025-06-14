@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-: "${MMDAPP:?ERROR: MMDAPP is not set}"
+: "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
 
 CompileCachedJavaRepository(){
 	REPO_NAME=$1; shift

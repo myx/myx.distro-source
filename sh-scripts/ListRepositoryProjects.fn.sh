@@ -4,14 +4,14 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 ListRepositoryProjectsInternalRecursionEchoProjects(){
 	local PKG_PATH="$1"
 	
 	if [ -z "$PKG_PATH" ] ; then
-		echo 'ERROR: $PKG_PATH' is not set! >&2
+		echo '⛔ ERROR: $PKG_PATH' is not set! >&2
 		set +e ; return 1
 	fi
 	
@@ -37,7 +37,7 @@ ListRepositoryProjects(){
 
 	local repositoryName="${1#$MDSC_SOURCE/}"
 	if [ -z "$repositoryName" ] ; then
-		echo 'ListRepositoryProjects: ERROR: $repositoryName' is not set! >&2
+		echo 'ListRepositoryProjects: ⛔ ERROR: $repositoryName' is not set! >&2
 		set +e ; return 1
 	fi
 	shift
@@ -68,7 +68,7 @@ ListRepositoryProjects(){
 				;;
 
 			*)
-				echo "ERROR: ListRepositoryProjects: invalid option: $1" >&2
+				echo "⛔ ERROR: ListRepositoryProjects: invalid option: $1" >&2
 				set +e ; return 1
 				;;
 		esac

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-: "${MMDAPP:?ERROR: MMDAPP is not set}"
+: "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
 
 RunJavaClassTemp(){
 	set -e
@@ -11,7 +11,7 @@ RunJavaClassTemp(){
 	
 	export TMP_DIR="`mktemp -d "/tmp/java-run-XXXXXXX"`"
 	if [ $? -ne 0 ]; then
-		echo "ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
+		echo "⛔ ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
 		set +e ; return 1
 	fi
 

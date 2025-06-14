@@ -2,7 +2,7 @@ Require ListChangedSourceProjects
 
 PrepareProjectHostInstallData(){
 	local projectName="${1#$MMDAPP/source/}"
-	[ -z "$projectName" ] && echo "ERROR: PrepareProjectHostInstallData: 'projectName' argument is required!" >&2 && return 1
+	[ -z "$projectName" ] && echo "⛔ ERROR: PrepareProjectHostInstallData: 'projectName' argument is required!" >&2 && return 1
 	
 	echo "$projectName: HOST INSTALL!"
 }

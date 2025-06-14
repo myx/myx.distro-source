@@ -1,6 +1,6 @@
 #!/bin/sh
 
-[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 
 type ListDistroProjects >/dev/null 2>&1 || \
 . "$MMDAPP/source/myx/myx.distro-source/sh-scripts/ListDistroProjects.fn.sh"

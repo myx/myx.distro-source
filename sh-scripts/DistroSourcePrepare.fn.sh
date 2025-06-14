@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -29,7 +29,7 @@ DistroSourcePrepare(){
 		--prepare-register-repository-root)
 			local repositoryName="$2"
 			if [ -z "$repositoryName" ] ; then
-				echo "ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+				echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
 				set +e ; return 1
 			fi
 			shift
@@ -60,7 +60,7 @@ DistroSourcePrepare(){
 			fi
 
 			if [ ! -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: no options allowed after --prepare-register-repository-root option ($MDSC_OPTION, $@)" >&2
+				echo "⛔ ERROR: $MDSC_CMD: no options allowed after --prepare-register-repository-root option ($MDSC_OPTION, $@)" >&2
 				set +e ; return 1
 			fi
 
@@ -82,14 +82,14 @@ DistroSourcePrepare(){
 		--select-from-env)
 			shift
 			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
 				set +e ; return 1
 			fi
 		;;
 		--set-env)
 			shift
 			if [ -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: --set-env argument expected!" >&2
 				set +e ; return 1
 			fi
 			local envName="$1" ; shift
@@ -111,7 +111,7 @@ DistroSourcePrepare(){
 			--all-tasks)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 	
@@ -123,7 +123,7 @@ DistroSourcePrepare(){
 			--all-projects)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 				
@@ -135,7 +135,7 @@ DistroSourcePrepare(){
 			--merge-sequence)
 				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
 					set +e ; return 1
 				fi
 				
@@ -158,11 +158,11 @@ DistroSourcePrepare(){
 					break
 				fi
 
-				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: no projects selected!" >&2
 				set +e ; return 1
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac

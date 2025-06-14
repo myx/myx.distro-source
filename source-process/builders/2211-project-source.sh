@@ -1,6 +1,6 @@
 MakeProjectSourceArchive(){
 	local projectName="${1#$MMDAPP/source/}"
-	[ -z "$projectName" ] && echo "ERROR: MakeProjectSourceArchive: 'projectName' argument is required!" >&2 && return 1
+	[ -z "$projectName" ] && echo "⛔ ERROR: MakeProjectSourceArchive: 'projectName' argument is required!" >&2 && return 1
 	
 	local CHECK_DIR="$MDSC_SOURCE/$projectName"
 	local BUILT_DIR="$MDSC_OUTPUT/$projectName"

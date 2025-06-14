@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-: "${MMDAPP:?ERROR: MMDAPP is not set}"
-: "${MDSC_ORIGIN:?ERROR: MDSC_ORIGIN is not set}"
+: "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
+: "${MDSC_ORIGIN:?⛔ ERROR: MDSC_ORIGIN is not set}"
 
 set -e
 

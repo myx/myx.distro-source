@@ -9,7 +9,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/.local" ] || ( echo "ERROR: expecting '.local' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/.local" ] || ( echo "⛔ ERROR: expecting '.local' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -35,11 +35,11 @@ DistroSourceTools(){
 			local repositoryName="$2"
 			local repositoryHref="$3"
 			if [ -z "$repositoryName" ] ; then
-				echo "ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+				echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
 				set +e ; return 1
 			fi
 			if [ -z "$repositoryHref" ] ; then
-				echo "ERROR: $MDSC_CMD: repository root href expected: $@" >&2
+				echo "⛔ ERROR: $MDSC_CMD: repository root href expected: $@" >&2
 				set +e ; return 1
 			fi
 
@@ -50,7 +50,7 @@ DistroSourceTools(){
 				local partOfBatch="false"
 			fi
 			if [ ! -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
+				echo "⛔ ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
 				set +e ; return 1
 			fi
 
@@ -101,7 +101,7 @@ DistroSourceTools(){
 			set +e ; return 1
 		;;
 		*)
-			echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+			echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 			set +e ; return 1
 		;;
 	esac

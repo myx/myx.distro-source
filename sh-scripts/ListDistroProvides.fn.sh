@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -31,14 +31,14 @@ ListDistroProvides(){
 		--select-from-env)
 			shift
 			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-				echo "ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
 				set +e ; return 1
 			fi
 		;;
 		--set-env)
 			shift
 			if [ -z "$1" ] ; then
-				echo "ERROR: $MDSC_CMD: --set-env argument expected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: --set-env argument expected!" >&2
 				set +e ; return 1
 			fi
 			local envName="$1" ; shift
@@ -65,7 +65,7 @@ ListDistroProvides(){
 			--all-provides)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
@@ -161,7 +161,7 @@ ListDistroProvides(){
 			--all-provides-merged)
 				shift
 				if [ ! -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
@@ -275,7 +275,7 @@ ListDistroProvides(){
 			--add-own-provides-column|--filter-own-provides-column|--add-merged-provides-column|--filter-merged-provides-column)
 				local lastOperation=${1%"-provides-column"} ; shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local columnMatcher="$1" ; shift
@@ -355,14 +355,14 @@ ListDistroProvides(){
 				`"
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
 					set +e ; return 1
 				fi
 			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: $MDSC_CMD: project provides filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: project provides filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local filterProvides="$1" projectName projectProvides ; shift
@@ -377,7 +377,7 @@ ListDistroProvides(){
 			--merge-sequence)
 				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
 					set +e ; return 1
 				fi
 				
@@ -412,11 +412,11 @@ ListDistroProvides(){
 					return 0
 				fi
 
-				echo "ERROR: $MDSC_CMD: no projects selected!" >&2
+				echo "⛔ ERROR: $MDSC_CMD: no projects selected!" >&2
 				set +e ; return 1
 			;;
 			*)
-				echo "ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac

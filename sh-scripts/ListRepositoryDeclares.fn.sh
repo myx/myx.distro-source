@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -25,7 +25,7 @@ ListRepositoryDeclares(){
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
-		echo "ERROR: ListRepositoryDeclares: 'repositoryName' argument is required!" >&2
+		echo "⛔ ERROR: ListRepositoryDeclares: 'repositoryName' argument is required!" >&2
 		set +e ; return 1
 	fi
 	shift
@@ -48,7 +48,7 @@ ListRepositoryDeclares(){
 			--filter-projects)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryDeclares: project name filter is expected!" >&2
+					echo "⛔ ERROR: ListRepositoryDeclares: project name filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local projectFilter="$1" ; shift
@@ -82,7 +82,7 @@ ListRepositoryDeclares(){
 			--filter)
 				shift
 				if [ -z "$1" ] ; then
-					echo "ERROR: ListRepositoryDeclares: project declares filter is expected!" >&2
+					echo "⛔ ERROR: ListRepositoryDeclares: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local filterDeclares="$1" ; shift
@@ -108,7 +108,7 @@ ListRepositoryDeclares(){
 				break;
 			;;
 			*)
-				echo "ERROR: ListRepositoryDeclares: invalid option: $1" >&2
+				echo "⛔ ERROR: ListRepositoryDeclares: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac

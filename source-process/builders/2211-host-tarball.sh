@@ -1,7 +1,7 @@
 CheckMakeProjectHostTarball(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "CheckMakeProjectHostTarball: 'ERROR: projectName' argument is required!" >&2 ; return 1
+		echo "CheckMakeProjectHostTarball: '⛔ ERROR: projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local SRC="$MDSC_SOURCE/$projectName"

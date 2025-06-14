@@ -1,17 +1,17 @@
 SyncExportsFromCached(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: SyncExportsFromCached: 'projectName' argument is required!" >&2 ; return 1
+		echo "⛔ ERROR: SyncExportsFromCached: 'projectName' argument is required!" >&2 ; return 1
 	fi
 	
 	local SRC="$2"
 	if [ -z "$SRC" ] ; then
-		echo "ERROR: SyncExportsFromCached: 'SRC' argument is required!" >&2 ; return 1
+		echo "⛔ ERROR: SyncExportsFromCached: 'SRC' argument is required!" >&2 ; return 1
 	fi
 	
 	local DST="$3"
 	if [ -z "$DST" ] ; then
-		echo "ERROR: SyncExportsFromCached: 'DST' argument is required!" >&2 ; return 1
+		echo "⛔ ERROR: SyncExportsFromCached: 'DST' argument is required!" >&2 ; return 1
 	fi
 	
 	local SOURCE_DIR="$MDSC_SOURCE/$projectName"
@@ -46,7 +46,7 @@ SyncExportsFromCached(){
 		return 0
 	fi
 
-	echo "ERROR: export file not found: $SRC" 
+	echo "⛔ ERROR: export file not found: $SRC" 
 }
 
 Require ListDistroProvides

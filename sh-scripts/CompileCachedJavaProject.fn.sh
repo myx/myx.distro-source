@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-: "${MMDAPP:?ERROR: MMDAPP is not set}"
+: "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
 
 CompileCachedJavaProject(){
 
@@ -10,7 +10,7 @@ CompileCachedJavaProject(){
 	
 	local projectName="${1#$MMDAPP/source/}"
 	if [ -z "$projectName" ] ; then
-		echo "ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
+		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
 	fi
 	

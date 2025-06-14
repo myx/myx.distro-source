@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -24,7 +24,7 @@ RebuildDistroFromOutputBuilderRaw(){
 	if ( . "$MMDAPP/source/$BUILDER" | cat -u ) ; then
 		echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
 	else
-		echo "ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
+		echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
 		set +e ; return 1
 	fi
 }

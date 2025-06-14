@@ -4,7 +4,7 @@ if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "ERROR: expecting 'source' directory." >&2 && exit 1 )
+	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
 if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
@@ -25,7 +25,7 @@ RebuildOutputFromCachedBuilderRaw(){
 	if ( . "$MMDAPP/source/$BUILDER" | cat -u ) ; then
 		echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
 	else
-		echo "ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
+		echo "⛔ ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
 		set +e ; return 1
 	fi
 }
@@ -44,7 +44,7 @@ BuildOutputFromCachedRunner(){
 	DistroShellContext --distro-from-cached
 	
 	if [ ! -d "$MDSC_SOURCE" ] ; then
-		echo "ERROR: source path does not exist!" >&2
+		echo "⛔ ERROR: source path does not exist!" >&2
 		set +e ; return 1
 	fi
 	
