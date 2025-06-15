@@ -6,7 +6,7 @@ echo "SourceConsole: Working in $MMDAPP" >&2
 
 . "${MDSC_ORIGIN:=${MDLT_ORIGIN:=$MMDAPP/.local}}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 
-export BASH_ENV="$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
+# export BASH_ENV="$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
 
 DistroShellContext --distro-from-source
 

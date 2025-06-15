@@ -3,29 +3,24 @@
 
 : "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
 
-# DistroShellContextSetInputSpec
-
-if [ "$1" = "--distro-path-auto" ] && [ ! -z "$MDSC_OPTION" ] ; then
-	set -- "$MDSC_OPTION"
-fi
-if [ "$1" = "--distro-path-auto" ] && [ -d "$MMDAPP/source/" ] && [ -d "$MMDAPP/cached" ] ; then
-	if [ -d "$MMDAPP/output/" ] ; then
-		set -- "--distro-from-output"
+if [ "$1" = "--distro-path-auto" ] ; then
+	if [ ! -z "$MDSC_OPTION" ] ; then
+		set -- "$MDSC_OPTION"
+	elif [ -d "$MMDAPP/source/" ] && [ -d "$MMDAPP/cached" ] ; then
+		if [ -d "$MMDAPP/output/" ] ; then
+			set -- "--distro-from-output"
+		else
+			set -- "--distro-from-cached"
+		fi
+	elif [ -d "$MMDAPP/source/" ] ; then
+		set -- "--distro-from-source"
+	elif [ -d "$MMDAPP/distro/" ] ; then
+		set -- "--distro-from-distro"
 	else
-		set -- "--distro-from-cached"
+		echo "⛔ ERROR: DistroShellContextSetInputSpec: can't detect proper input source" >&2
+		exit 1
 	fi
 fi
-if [ "$1" = "--distro-path-auto" ] && [ -d "$MMDAPP/source/" ] ; then
-	set -- "--distro-from-source"
-fi
-if [ "$1" = "--distro-path-auto" ] && [ -d "$MMDAPP/distro/" ] ; then
-	set -- "--distro-from-distro"
-fi
-if [ "$1" = "--distro-path-auto" ] ; then
-	echo "⛔ ERROR: DistroShellContextSetInputSpec: can't detect proper input source" >&2
-	exit 1
-fi
-
 
 if [ "$adpcChangeSpec" = "true" ] ; then
 	: "${1:?⛔ ERROR: DistroSourceContextSetInputSpec: inputSpec argument is required}"
@@ -33,6 +28,7 @@ if [ "$adpcChangeSpec" = "true" ] ; then
 		echo "⛔ ERROR: DistroShellContextSetInputSpec: inputSpec argument is invalid: $1" >&2
 		exit 1
 	fi
+	local previousSpec="$MDSC_OPTION"
 fi
 
 
@@ -73,7 +69,7 @@ case "$1" in
 		MDSC_OPTION="--distro-from-distro"
 	;;
 	*)
-		echo "⛔ ERROR: DistroShellContextSetInputSpec: Invalid input spec: $argOption" >&2
+		echo "⛔ ERROR: DistroShellContextSetInputSpec: Invalid input spec: $1" >&2
 		exit 1
 	;;
 esac
@@ -87,9 +83,3 @@ if [ -z "${previousSpec:-$MDSC_OPTION}" ] || [ "$previousSpec" != "$MDSC_OPTION"
 	
 	echo "DistroShellContextSetInputSpec: mode: $MDSC_INMODE, spec: $MDSC_OPTION" >&2
 fi
-
-if [ ! -z "$MDSC_OUTPUT" ] && [ ! -d "$MDSC_OUTPUT" ] ; then
-	echo "DistroShellContextSetInputSpec: creating output folder: $MDSC_OUTPUT" >&2
-	mkdir -p "$MDSC_OUTPUT"
-fi
- 
