@@ -181,7 +181,7 @@ CODELAUNCHER
 				;;
 			esac
 			if [ ! -f "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceContext.include" ] ; then
-				echo "⛔ ERROR: Context.SetInputSpec: can't find/detect origin" >&2
+				echo "⛔ ERROR: Context.SetInputSpec: can't find/detect origin, spec: $MDLT_CONSOLE_ORIGIN" >&2
 				exit 1
 			fi
 
