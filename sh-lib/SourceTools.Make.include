@@ -2,10 +2,10 @@
 # ^^^ for syntax checking in the editor only
 
 if [ -z "$MDLT_ORIGIN" ] ; then
-	if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include" ] ; then
-		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+	if [ -f "$MMDAPP/source/myx/myx.distro-system/sh-lib/SystemContext.include" ] ; then
+		. "$MMDAPP/source/myx/myx.distro-system/sh-lib/SystemContext.include"
 	else
-		. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+		. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	fi
 fi
 

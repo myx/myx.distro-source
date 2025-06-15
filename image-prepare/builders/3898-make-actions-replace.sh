@@ -1,5 +1,5 @@
 echo "Rebuilding 'source' actions (from scratch)..." >&2
-DistroShellContext --distro-from-output
+DistroSystemContext --distro-from-output
 
 Require RebuildActions
 RebuildActions

@@ -140,8 +140,8 @@ case "$0" in
 			exit 1
 		fi
 
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-path-auto
+		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-path-auto
 		
 		ListRepositoryProjects "$@"
 	;;

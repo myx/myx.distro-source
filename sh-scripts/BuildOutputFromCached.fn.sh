@@ -7,8 +7,8 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 fi
 
 Require ListAllRepositories
@@ -41,7 +41,7 @@ BuildOutputFromCachedRunner(){
 	type Async >/dev/null 2>&1 || \
 		. "`myx.common which lib/async`"
 	
-	DistroShellContext --distro-from-cached
+	DistroSystemContext --distro-from-cached
 	
 	if [ ! -d "$MDSC_SOURCE" ] ; then
 		echo "⛔ ERROR: source path does not exist!" >&2
@@ -71,8 +71,8 @@ BuildOutputFromCached(){
 
 case "$0" in
 	*/sh-scripts/BuildOutputFromCached.fn.sh) 
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-from-cached
+		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-from-cached
 		
 		BuildOutputFromCached "$@"
 	;;

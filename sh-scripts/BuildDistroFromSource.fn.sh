@@ -7,8 +7,8 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 fi
 
 Require BuildCachedFromSource
@@ -44,7 +44,7 @@ BuildDistroFromOutputRunner(){
 	type Async >/dev/null 2>&1 || \
 		. "`myx.common which lib/async`"
 	
-	DistroShellContext --distro-from-output
+	DistroSystemContext --distro-from-output
 	
 	local BUILDERS="$( ListDistroBuilders image-prepare --3 )"
 	echo "BuildDistroFromSource: Builders list:" $BUILDERS >&2
@@ -69,8 +69,8 @@ BuildDistroFromSource(){
 
 case "$0" in
 	*/sh-scripts/BuildDistroFromSource.fn.sh) 
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-from-source
+		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-from-source
 		
 		BuildDistroFromSource "$@"
 	;;

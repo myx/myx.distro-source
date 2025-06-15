@@ -48,8 +48,8 @@ case "$0" in
 	*/sh-scripts/CompileCachedJavaProject.fn.sh) 
 		# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
 
-		. "$( dirname $0 )/../sh-lib/DistroShellContext.include"
-		DistroShellContext --distro-from-cached
+		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-from-cached
 		
 		CompileCachedJavaProject "$@"
 	;;

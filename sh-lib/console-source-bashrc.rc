@@ -4,8 +4,8 @@
 echo "SourceConsole: Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-. "${MDLT_ORIGIN:-${MDLT_ORIGIN:-$MMDAPP/.local}}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
-DistroShellContext --distro-from-source
+. "${MDLT_ORIGIN:-${MDLT_ORIGIN:-$MMDAPP/.local}}/myx/myx.distro-system/sh-lib/SystemContext.include"
+DistroSystemContext --distro-from-source
 
 # export BASH_ENV="$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
 
