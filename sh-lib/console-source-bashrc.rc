@@ -83,11 +83,6 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
-	if [[ -n "$COMP_LINE" || -n "$COMP_WORDS" ]] && [ "${1#--completion}" = "$1" ]; then
-		. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroSourceConsoleCompletion.include"
-		return 0
-	fi
-
 	case "$1" in
 		''|--*)
 			( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroSourceConsole.include" )
@@ -128,9 +123,9 @@ Help(){
 }
 
 if complete -D &>/dev/null; then
-	complete -F Source -D
+	complete -F Distro -D
 else
-	complete -F Source "" "*" "Action" "Require" "Distro" "Deploy" "Source" "which"
+	complete -F Distro "" "*" "Action" "Require" "Distro" "Deploy" "Source" "which"
 fi
 
 PROMPT_COMMAND="set +e"

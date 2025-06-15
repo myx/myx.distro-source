@@ -17,15 +17,15 @@ if [ "$1" = "--distro-path-auto" ] ; then
 	elif [ -d "$MMDAPP/distro/" ] ; then
 		set -- "--distro-from-distro"
 	else
-		echo "⛔ ERROR: DistroShellContextSetInputSpec: can't detect proper input source" >&2
+		echo "⛔ ERROR: DistroShellContext.SetInputSpec: can't detect proper input source" >&2
 		exit 1
 	fi
 fi
 
 if [ "$adpcChangeSpec" = "true" ] ; then
-	: "${1:?⛔ ERROR: DistroSourceContextSetInputSpec: inputSpec argument is required}"
+	: "${1:?⛔ ERROR: DistroSourceContext.SetInputSpec: inputSpec argument is required}"
 	if ! DistroShellContext --is-spec-option "$1" ; then
-		echo "⛔ ERROR: DistroShellContextSetInputSpec: inputSpec argument is invalid: $1" >&2
+		echo "⛔ ERROR: DistroShellContext.SetInputSpec: inputSpec argument is invalid: $1" >&2
 		exit 1
 	fi
 	local previousSpec="$MDSC_OPTION"
@@ -69,7 +69,7 @@ case "$1" in
 		MDSC_OPTION="--distro-from-distro"
 	;;
 	*)
-		echo "⛔ ERROR: DistroShellContextSetInputSpec: Invalid input spec: $1" >&2
+		echo "⛔ ERROR: DistroShellContext.SetInputSpec: Invalid input spec: $1" >&2
 		exit 1
 	;;
 esac
@@ -81,5 +81,5 @@ if [ -z "${previousSpec:-$MDSC_OPTION}" ] || [ "$previousSpec" != "$MDSC_OPTION"
 	export MDSC_OUTPUT
 	export MDSC_OPTION
 	
-	echo "DistroShellContextSetInputSpec: mode: $MDSC_INMODE, spec: $MDSC_OPTION" >&2
+	echo "DistroShellContext.SetInputSpec: mode: $MDSC_INMODE, spec: $MDSC_OPTION" >&2
 fi

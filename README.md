@@ -58,6 +58,7 @@ Variables (context environment) specific to build-step scripts:
 App Folders:
 
 	/
+	/.local - system tools, utilities and system integrations
 	/source - source codes, all repositories and projects
 	/source/repo[/group]/project - project tree structure
 	/cached - build system space
