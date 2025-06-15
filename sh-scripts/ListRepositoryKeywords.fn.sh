@@ -114,7 +114,7 @@ ListRepositoryKeywords(){
 		esac
 	done
 
-	if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 		if [ "$useNoCache" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$repositoryName/repository-keywords.txt"
 			

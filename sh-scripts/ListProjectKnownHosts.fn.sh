@@ -50,7 +50,7 @@ ListProjectKnownHosts(){
 		return 0
 	fi
 	
-	if [ ! -z "$forCompletion" ] ; then
+	if [ -n "$forCompletion" ] ; then
 		local sedEx="-e \"s:^$MMDAPP/source/$projectName/ssh/::g\" -e \"s:^$MDSC_SOURCE/$projectName/ssh/::g\""
 	else
 		local sedEx="-e \"s:^$MMDAPP/source/::g\" -e \"s:^$MDSC_SOURCE/::g\""

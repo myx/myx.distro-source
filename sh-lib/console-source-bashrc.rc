@@ -85,7 +85,7 @@ fi
 Source(){
 	case "$1" in
 		''|--*)
-			( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroSourceConsole.include" )
+			( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/SourceConsole.include" )
 			set +e ; return 1
 		;;
 	esac
@@ -132,7 +132,7 @@ PROMPT_COMMAND="set +e"
 PS1="\` Source --shell-prompt \`: $PS1"
 export PS1
 
-if [ ! -z "$MDSC_PRJ_NAME" ] ; then
+if [ -n "$MDSC_PRJ_NAME" ] ; then
 	# DistroSelectProject MDSC_PRJ_NAME "$MDSC_PRJ_NAME"
 	export MDSC_SELECT_PROJECTS="$MDSC_PRJ_NAME"
 	cd "$MMDAPP/source/$MDSC_PRJ_NAME"

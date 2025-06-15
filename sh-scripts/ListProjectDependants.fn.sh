@@ -24,13 +24,13 @@ ListProjectDependants(){
 		shift
 	else
 		local cacheFile="$MDSC_CACHED/$projectName/project-dependants.txt"
-		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListProjectDependants: $projectName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListProjectDependants: $projectName: caching projects ($MDSC_OPTION)" >&2
 			ListProjectDependants "$projectName" --no-cache | tee "$cacheFile"
 			return 0
@@ -38,7 +38,7 @@ ListProjectDependants(){
 	fi
 	
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
-	if [ "0" = "1" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+	if [ "0" = "1" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2

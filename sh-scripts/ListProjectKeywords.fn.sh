@@ -93,7 +93,7 @@ ListProjectKeywords(){
 		esac
 	done
 
-	if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 		if [ "$useNoCache" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-keywords.txt"
 	

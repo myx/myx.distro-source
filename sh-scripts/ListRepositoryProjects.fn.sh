@@ -76,13 +76,13 @@ ListRepositoryProjects(){
 
 	if [ "$useNoCache" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/project-names.txt"
-		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProjects: $repositoryName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] && [ -d "$( dirname "$cacheFile" )" ] ; then
+		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] && [ -d "$( dirname "$cacheFile" )" ] ; then
 			echo "ListRepositoryProjects: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
 			ListRepositoryProjects "$repositoryName" --no-cache $useNoIndex | tee "$cacheFile"
 			return 0
@@ -92,7 +92,7 @@ ListRepositoryProjects(){
 
 	if [ "$useNoIndex" != "--no-index" ] ; then
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-		if [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+		if [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			echo "ListRepositoryProjects: $repositoryName: using image ($MDSC_OPTION)" >&2
 			local PKG

@@ -121,7 +121,7 @@ DistroImageSync(){
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
 			shift
-			. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroImageSync-script-maker.include"
+			. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include"
 			return 0
 		;;
 		--intern-execute-script-from-stdin)
@@ -201,7 +201,7 @@ DistroImageSync(){
 			;;
 			--print-all-tasks)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -248,7 +248,7 @@ DistroImageSync(){
 	while true ; do
 		case "$1" in
 			--print-tasks)
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after $1 ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -260,7 +260,7 @@ DistroImageSync(){
 				return 0
 			;;
 			--print-repo-list)
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after $1 ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -274,7 +274,7 @@ DistroImageSync(){
 				return 0
 			;;
 			--print-*)
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after $1 option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi

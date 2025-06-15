@@ -76,7 +76,7 @@ ListDistroDeclares(){
 		case "$1" in
 			--all-declares)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -85,24 +85,24 @@ ListDistroDeclares(){
 				## check cache ready
 				##
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					if [ ! -z "${MDSC_IDODCL:0:1}" ] ; then
+					if [ -n "${MDSC_IDODCL:0:1}" ] ; then
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDODCL"
 						return 0
 					fi
-					if [ ! -z "$MDSC_IDADCL_NAME" ] ; then 
+					if [ -n "$MDSC_IDADCL_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using MDSC_IDADCL_NAME (--all-declares-merged) ($MDSC_OPTION)" >&2
 						export MDSC_IDODCL="` cat "$MDSC_IDADCL_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDODCL"
 						return 0
 					fi
-					if [ ! -z "${MDSC_IDADCL:0:1}" ] ; then 
+					if [ -n "${MDSC_IDADCL:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using MDSC_IDADCL (--all-declares-merged) ($MDSC_OPTION)" >&2
 						export MDSC_IDODCL="` echo "$MDSC_IDADCL" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDODCL"
 						return 0
 					fi
-					if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-declares.txt"
 						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
 						&& ([ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
@@ -120,7 +120,7 @@ ListDistroDeclares(){
 					fi
 				fi
 	
-				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using index" >&2
@@ -187,23 +187,23 @@ ListDistroDeclares(){
 			;;
 			--all-declares-merged)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					if [ ! -z "$MDSC_IDADCL_NAME" ] ; then 
+					if [ -n "$MDSC_IDADCL_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged using cache file ($MDSC_OPTION)" >&2
 						cat "$MDSC_IDADCL_NAME"
 						return 0
 					fi
-					if [ ! -z "${MDSC_IDADCL:0:1}" ] ; then 
+					if [ -n "${MDSC_IDADCL:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDADCL"
 						return 0
 					fi
-					if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-merged-declares.txt"
 						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
 						&& ([ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
@@ -221,7 +221,7 @@ ListDistroDeclares(){
 					fi
 				fi
 
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
@@ -417,12 +417,12 @@ ListDistroDeclares(){
 				return 0
 			;;
 			'')
-				if [ ! -z "$indexColumns" ] ; then
+				if [ -n "$indexColumns" ] ; then
 					echo "$indexColumns"
 					return 0
 				fi
 				
-				if [ ! -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \

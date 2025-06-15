@@ -39,21 +39,21 @@ ListDistroProjects(){
 			;;
 			--all-projects)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 				
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoCache" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/all-project-names.txt"
-						if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+						if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ) ; then
 							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
 						fi
-						if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+						if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 							echo "| ListDistroProjects: caching projects ($MDSC_OPTION)" >&2
 							ListDistroProjects --no-cache --all-projects | tee "$cacheFile"
 							return 0
@@ -230,7 +230,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --one-project projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --one-project option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -268,7 +268,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --projects projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --projects option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -286,7 +286,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --provides projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --provides option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -317,7 +317,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --merged-provides projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --merged-provides option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -345,7 +345,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --declares projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --declares option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -373,7 +373,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --keywords keyword filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -394,7 +394,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --keywords projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -422,7 +422,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --merged-keywords keyword filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --merged-keywords option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
@@ -443,7 +443,7 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: --keywords projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ ! -z "$2" ] ; then
+				if [ -n "$2" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --keywords option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi

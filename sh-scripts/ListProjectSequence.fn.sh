@@ -42,7 +42,7 @@ ListProjectSequence(){
 			--print-provides)
 				shift
 				
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoCache" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/$projectName/project-provides-sequence.txt"
 						if [ -f "$cacheFile" ] && \
@@ -88,7 +88,7 @@ ListProjectSequence(){
 	done
 
 
-	if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 		if [ "$useNoCache" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
 			if [ -f "$cacheFile" ] && \

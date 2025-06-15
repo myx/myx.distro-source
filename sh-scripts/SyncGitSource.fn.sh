@@ -31,7 +31,7 @@ SyncGitSource(){
 		set +e ; return 1
 	fi
 
-	if [ ! -z "$1" ] ; then
+	if [ -n "$1" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: extra arguments in command!" >&2
 		set +e ; return 1
 	fi

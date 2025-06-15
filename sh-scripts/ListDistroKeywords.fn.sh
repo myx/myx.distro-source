@@ -64,7 +64,7 @@ ListDistroKeywords(){
 		case "$1" in
 			--all-keywords)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-keywords option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -73,24 +73,24 @@ ListDistroKeywords(){
 				## check cache ready
 				##
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					if [ ! -z "${MDSC_IDOKWD:0:1}" ] ; then
+					if [ -n "${MDSC_IDOKWD:0:1}" ] ; then
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDOKWD"
 						return 0
 					fi
-					if [ ! -z "$MDSC_IDAKWD_NAME" ] ; then 
+					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using MDSC_IDAKWD_NAME (--all-keywords-merged) ($MDSC_OPTION)" >&2
 						export MDSC_IDOKWD="` cat "$MDSC_IDAKWD_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDOKWD"
 						return 0
 					fi
-					if [ ! -z "${MDSC_IDAKWD:0:1}" ] ; then 
+					if [ -n "${MDSC_IDAKWD:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using MDSC_IDAKWD (--all-keywords-merged) ($MDSC_OPTION)" >&2
 						export MDSC_IDOKWD="` echo "$MDSC_IDAKWD" | cut -d" " -f2,3 | awk '!x[$0]++' `"
 						echo "$MDSC_IDOKWD"
 						return 0
 					fi
-					if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-keywords.txt"
 						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
 						&& ([ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
@@ -108,7 +108,7 @@ ListDistroKeywords(){
 					fi
 				fi
 	
-				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using index" >&2
@@ -160,23 +160,23 @@ ListDistroKeywords(){
 			;;
 			--all-keywords-merged)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-keywords-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
 				if [ "$useNoCache" != "--no-cache" ] ; then
-					if [ ! -z "$MDSC_IDAKWD_NAME" ] ; then 
+					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using cache file ($MDSC_OPTION)" >&2
 						cat "$MDSC_IDAKWD_NAME"
 						return 0
 					fi
-					if [ ! -z "${MDSC_IDAKWD:0:1}" ] ; then 
+					if [ -n "${MDSC_IDAKWD:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDAKWD"
 						return 0
 					fi
-					if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-merged-keywords.txt"
 						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
 						&& ([ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
@@ -194,7 +194,7 @@ ListDistroKeywords(){
 					fi
 				fi
 
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
@@ -398,12 +398,12 @@ ListDistroKeywords(){
 				local useNoIndex="--no-index"
 			;;
 			'')
-				if [ ! -z "$indexColumns" ] ; then
+				if [ -n "$indexColumns" ] ; then
 					echo "$indexColumns"
 					return 0
 				fi
 				
-				if [ ! -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \

@@ -80,7 +80,7 @@ RebuildActions(){
 						echo 	"local actionFullName='$actionFullName'"
 						echo 	'[ "full" != "$MDSC_DETAIL" ] || set -x'
 						
-						echo 	'if [ ! -z "$MMDAPP" ] ; then'
+						echo 	'if [ -n "$MMDAPP" ] ; then'
 						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: using context settings: $MMDAPP" >&2'
 						echo 	'elif [ "$0" != "${0%"/source/$actionFullName"}" ] ; then'
 						echo 		'export MMDAPP="${0%"/source/$actionFullName"}"'

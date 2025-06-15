@@ -26,12 +26,12 @@ ListDistroSequence(){
 		case "$1" in
 			--all)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$useNoCache" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-build-sequence.txt"
 
@@ -85,12 +85,12 @@ ListDistroSequence(){
 
 			--all-projects)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
-				if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					
 					local indexFile="$MDSC_CACHED/distro-index.inf"
 					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then

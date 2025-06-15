@@ -49,7 +49,7 @@ DistroSourceTools(){
 				shift
 				local partOfBatch="false"
 			fi
-			if [ ! -z "$1" ] ; then
+			if [ -n "$1" ] ; then
 				echo "⛔ ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
 				set +e ; return 1
 			fi
@@ -76,7 +76,7 @@ DistroSourceTools(){
 			return 0
 		;;
 		--make-*)
-			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/DistroSourceToolsMake.include"
+			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
 			set +e ; return 1
 		;;
 		--*-config-option)

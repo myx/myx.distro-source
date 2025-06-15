@@ -49,7 +49,7 @@ ListAllActions(){
 			continue
 		fi
 		
-		if [ ! -z "$forCompletion" ] ; then
+		if [ -n "$forCompletion" ] ; then
 			local sedEx="-e \"s:^$MMDAPP/source/$projectName/actions/::g\" -e \"s:^$MDSC_SOURCE/$projectName/actions/::g\""
 		fi
 		

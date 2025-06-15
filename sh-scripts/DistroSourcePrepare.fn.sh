@@ -46,7 +46,7 @@ DistroSourcePrepare(){
 			printf "# created at `date`\nName: $repositoryName\n" > "$MMDAPP/source/$repositoryName/repository.inf"
 
 			local initialProject="$1"
-			if [ ! -z "$initialProject" ] ; then
+			if [ -n "$initialProject" ] ; then
 				shift
 
 				( 
@@ -59,7 +59,7 @@ DistroSourcePrepare(){
 				)
 			fi
 
-			if [ ! -z "$1" ] ; then
+			if [ -n "$1" ] ; then
 				echo "⛔ ERROR: $MDSC_CMD: no options allowed after --prepare-register-repository-root option ($MDSC_OPTION, $@)" >&2
 				set +e ; return 1
 			fi
@@ -110,7 +110,7 @@ DistroSourcePrepare(){
 		case "$1" in
 			--all-tasks)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -122,7 +122,7 @@ DistroSourcePrepare(){
 			;;
 			--all-projects)
 				shift
-				if [ ! -z "$1" ] ; then
+				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -149,7 +149,7 @@ DistroSourcePrepare(){
 				return 0
 			;;
 			'')
-				if [ ! -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \

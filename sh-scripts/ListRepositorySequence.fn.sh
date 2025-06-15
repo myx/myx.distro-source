@@ -58,13 +58,13 @@ ListRepositorySequence(){
 
 	if [ "$useNoCache" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
-		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositorySequence: caching projects ($MDSC_OPTION)" >&2
 			ListRepositorySequence "$repositoryName" --no-cache | tee "$cacheFile"
 			return 0
@@ -73,7 +73,7 @@ ListRepositorySequence(){
 	
 	if [ "$useNoIndex" != "--no-index" ] ; then
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-		if [ -z "$filterProjects" ] && [ ! -z "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			
 			echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2

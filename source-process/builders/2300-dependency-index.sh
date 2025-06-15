@@ -29,7 +29,7 @@ PrepareBuildDependencyIndex(){
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
 		local projectSources="$MMDAPP/cached/sources/$projectName/java"
 		local projectQueue="$( find "$projectSources" -type f -name '*.java' | sed 's|$projectSources||g' )"
-		if [ ! -z "${projectQueue:0:1}" ] ; then
+		if [ -n "${projectQueue:0:1}" ] ; then
 			local checkSourceFile checkClassFile
 			local sourceFilesQueue="$( \
 				echo "$projectQueue" \
@@ -40,7 +40,7 @@ PrepareBuildDependencyIndex(){
 					fi
 				done
 			)" 
-			if [ ! -z "$sourceFilesQueue" ] ; then
+			if [ -n "$sourceFilesQueue" ] ; then
 				echo "Compiling: $projectName..." >&2
 				javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue || true
 				echo "javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue 2> /dev/null || true"

@@ -51,7 +51,7 @@ SourcePrepareProjectSyncToCached(){
 			local embeddedPath="$projectDst/source-projects"
 			if [ -d "$embeddedPath" ] ; then
 				local embeddedList="`find "$embeddedPath" -mindepth 3 -maxdepth 3 -type f -name project.inf | sort | sed 's|/project.inf$||g' | sed "s|^$embeddedPath/||g"`"
-				if [ ! -z "$embeddedList" ] ; then
+				if [ -n "$embeddedList" ] ; then
 					for embeddedName in $embeddedList ; do
 						local embeddedSrc="$embeddedPath/$embeddedName"
 					

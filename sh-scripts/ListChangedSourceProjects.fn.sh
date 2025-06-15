@@ -12,13 +12,13 @@ ListChangedSourceProjects(){
 		shift
 	else
 		local cacheFile="$MDSC_CACHED/changed-project-names.txt"
-		if [ ! -z "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ ! -z "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListChangedSourceProjects: caching projects ($MDSC_OPTION)" >&2
 			ListChangedSourceProjects --no-cache | tee "$cacheFile"
 			return 0
