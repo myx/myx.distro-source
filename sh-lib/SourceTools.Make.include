@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-if [ -z "$MDLT_ORIGIN" ] ; then
-	if [ -f "$MMDAPP/source/myx/myx.distro-system/sh-lib/SystemContext.include" ] ; then
-		. "$MMDAPP/source/myx/myx.distro-system/sh-lib/SystemContext.include"
-	else
-		. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	fi
-fi
-
 case "$1" in
 	--make-workspace-integration-files)
 		shift
+
+		if [ "$MDLT_ORIGIN" == "$MMDAPP/.local" ] ; then
+			touch $MMDAPP/.local/MDSC.source.settings.env
+		fi
 
 		DistroSourceTools --make-console-command "$@"
 		DistroSourceTools --make-code-workspace "$@"
@@ -155,35 +151,38 @@ CODELAUNCHER
 				MMDAPP="$( ( cd $(dirname "$0") ; pwd ) )"
 			fi
 
-			if \
-				[ -n "$MDLT_ORIGIN" ] && \
-				[ -f "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
-			; then
+			[ -d "$MMDAPP/.local" ] || ( echo "⛔ ERROR: expecting '$MMDAPP/.local' directory." >&2 && exit 1 )
 
-				export MDLT_ORIGIN="${MDLT_ORIGIN}"
-
-			elif \
-				[ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] && \
-				[ -d "$MMDAPP/source/myx/myx.distro-system" ] && \
-				[ -d "$MMDAPP/source/myx/myx.distro-.local" ] && \
-				[ -d "$MMDAPP/source/myx/myx.common/os-myx.common" ] \
-			; then
-
-				export MDLT_ORIGIN="$MMDAPP/source"
-				export MDLT_ORIGIN="$MMDAPP/source"
-
-			elif \
-				[ -f "$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
-			; then
-
-				export MDLS_BIN="$MMDAPP/.local"
-				export MDLT_ORIGIN="$MMDAPP/.local"
-
-			else
-
-				echo "⛔ ERROR: expecting '$MMDAPP/.local' or '$MMDAPP/source' directory to contain files required." >&2
+			MDLT_CONSOLE_ORIGIN="$( ( \
+				. "$MMDAPP/.local/MDLT.settings.env" ; \
+				echo "${MDLT_CONSOLE_ORIGIN:-.local}" \
+			) )"
+			MDLC_INMODE="${MDLT_CONSOLE_ORIGIN#$MMDAPP/}"
+			case "$MDLC_INMODE" in
+				.local)
+					export MDLT_ORIGIN="$MMDAPP/.local"
+				;;
+				source)
+					if [ -f "$MMDAPP/source/myx/myx.distro-.local/sh-lib/LocalContext.include" ] ; then
+						export MDLT_ORIGIN="$MMDAPP/$MDLC_INMODE"
+					else
+						export MDLT_ORIGIN="$MMDAPP/.local"
+					fi
+				;;
+				/*)
+					if [ -f "$MDLC_INMODE/myx/myx.distro-.local/sh-lib/LocalContext.include" ] ; then
+						export MDLT_ORIGIN="$MDLC_INMODE"
+					else
+						export MDLT_ORIGIN="$MMDAPP/.local"
+					fi
+				;;
+				*)
+					export MDLT_ORIGIN="$MMDAPP/.local"
+				;;
+			esac
+			if [ ! -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/SourceContext.include" ] ; then
+				echo "⛔ ERROR: Context.SetInputSpec: can't find/detect origin" >&2
 				exit 1
-
 			fi
 
 			cd "$MMDAPP"

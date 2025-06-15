@@ -4,7 +4,7 @@
 echo "SourceConsole: Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-. "${MDLT_ORIGIN:-${MDLT_ORIGIN:-$MMDAPP/.local}}/myx/myx.distro-system/sh-lib/SystemContext.include"
+. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 DistroSystemContext --distro-from-source
 
 # export BASH_ENV="$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
@@ -49,7 +49,7 @@ if ! type Deploy >/dev/null 2>&1 ; then
 	Deploy(){
 		case "$1" in
 			''|--*)
-				( . "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-lib/DistroDeployConsole.include" )
+				( . "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-lib/DeployConsole.include" )
 				set +e ; return 1
 			;;
 		esac
