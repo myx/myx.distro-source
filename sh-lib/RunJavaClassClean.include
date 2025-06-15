@@ -9,7 +9,7 @@ RunJavaClassClean(){
 	local SRC_NAME=$1; shift
 	local CLS_NAME=$1; shift
 
-	if [ "$MDSC_ORIGIN" == "$MMDAPP/.local" ] || [ -z "$MDSC_CACHED" ] ; then
+	if [ "$MDLT_ORIGIN" == "$MMDAPP/.local" ] || [ -z "$MDSC_CACHED" ] ; then
 		local DIR_OUT="$MMDAPP/.local/.cached"
 		local DIR_SRC="$MMDAPP/.local"
 	else

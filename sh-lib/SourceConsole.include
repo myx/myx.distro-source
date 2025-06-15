@@ -13,11 +13,11 @@ case "$1" in
 	;;
 	''|--help)
 		shift
-		( . "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleSource.include" )
+		( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleSource.include" )
 		set +e ; return 1
 	;;
 	--start-console)
-		bash --rcfile "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
+		bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
 		return 0
 	;;
 	*)

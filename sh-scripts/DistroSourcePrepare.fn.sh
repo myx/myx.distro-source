@@ -7,13 +7,13 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "${MDSC_ORIGIN:=${MDLT_ORIGIN:=$MMDAPP/.local}}/myx/myx.distro-system/sh-lib/DistroShellContext.include"
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-path-auto
 fi
 
 if ! type DistroSource >/dev/null 2>&1 ; then
-	. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
 fi
 
 DistroSourcePrepare(){
@@ -181,7 +181,7 @@ case "$0" in
 			echo "syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
 			echo "syntax: DistroSourcePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
 				echo >&2
 				echo "  Options:" >&2
 				echo >&2

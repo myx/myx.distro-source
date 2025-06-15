@@ -7,13 +7,13 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "${MDSC_ORIGIN:=${MDLT_ORIGIN:=$MMDAPP/.local}}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-path-auto
 fi
 
 if ! type DistroSource >/dev/null 2>&1 ; then
-	. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
 fi
 
 DistroImageSync(){
@@ -121,7 +121,7 @@ DistroImageSync(){
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
 
 			shift
-			. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include"
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include"
 			return 0
 		;;
 		--intern-execute-script-from-stdin)
@@ -336,7 +336,7 @@ case "$0" in
 			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
 			echo "syntax: DistroImageSync.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
 				echo "    --all-tasks" >&2
 				echo "                Select all distro tasks for all build stages." >&2
 				echo >&2

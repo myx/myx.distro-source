@@ -40,7 +40,7 @@ Builders Examples (actual builders, relative to the root of the workspace):
 Variables (context environment) available in: actions, build-step scripts and console (source mode):
 
 	MMDAPP - workspace root (something like: "/Volumes/ws-2017/myx-work")
-	MDSC_ORIGIN - source of System (Source or Deploy) Console commands (something like: "/Volumes/ws-2017/myx-work/.local/")
+	MDLT_ORIGIN - source of System (Source or Deploy) Console commands (something like: "/Volumes/ws-2017/myx-work/.local/")
 	MDSC_INMODE - cosole mode ("source")
 	MDSC_OPTION - console mode settings (something like: "--distro-from-source")
 	MDSC_SOURCE - current source root (something like: "/Volumes/ws-2017/myx-work/source")

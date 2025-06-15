@@ -15,8 +15,8 @@ fi
 type Prefix >/dev/null 2>&1 || \
 	. "`myx.common which lib/prefix`"
 
-if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "${MDSC_ORIGIN:=${MDLT_ORIGIN:=$MMDAPP/.local}}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-from-source
 fi
 

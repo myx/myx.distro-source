@@ -22,20 +22,20 @@ ListDistroScripts(){
 			local FILTER="$MMDAPP/source/"
 			case "$MDSC_OPTION" in
 				--distro-from-distro)
-					local MDPATH="$MDSC_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDSC_ORIGIN/myx/myx.distro-source/sh-scripts"
+					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
 				;;
 				--distro-from-output)
-					local MDPATH="$MDSC_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDSC_ORIGIN/myx/myx.distro-source/sh-scripts"
+					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
 				;;
 				*)
-					local MDPATH="$MDSC_ORIGIN/myx/myx.distro-source/sh-scripts $MDSC_ORIGIN/myx/myx.distro-deploy/sh-scripts"
+					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts $MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts"
 				;;
 			esac
 			;;
 		--type)
 			shift
 			local MDTYPE="$1" ; shift
-			local MDPATH="$MDSC_ORIGIN/myx/myx.distro-$MDTYPE/sh-scripts"
+			local MDPATH="$MDLT_ORIGIN/myx/myx.distro-$MDTYPE/sh-scripts"
 			if [ ! -d "$MDPATH" ] ; then
 				echo "⛔ ERROR: ListDistroScripts: invalid type: $MDTYPE" >&2
 				set +e ; return 1
@@ -43,7 +43,7 @@ ListDistroScripts(){
 			local FILTER="$MDPATH/"
 			;;
 		*)
-			local MDPATH="$MDSC_ORIGIN/myx/myx.distro-source/sh-scripts"
+			local MDPATH="$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
 			local FILTER="$MDPATH/"
 			;;
 	esac

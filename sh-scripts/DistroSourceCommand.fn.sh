@@ -7,8 +7,8 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDSC_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
-	. "${MDSC_ORIGIN:=${MDLT_ORIGIN:=$MMDAPP/.local}}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroShellContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	DistroShellContext --distro-from-source
 fi
 
@@ -21,12 +21,12 @@ DistroSourceCommand(){
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local MDSC_CACHED="${MDSC_CACHED:-$MMDAPP/output/cached}"
 
-	if [ "$MDSC_ORIGIN" == "$MMDAPP/source" ] ; then
+	if [ "$MDLT_ORIGIN" == "$MMDAPP/source" ] ; then
 		local DIR_OUT="$MDSC_CACHED/myx/myx.distro-source"
 		local DIR_SRC="$MDSC_SOURCE/myx/myx.distro-source"
 	else
-		local DIR_OUT="$MDSC_ORIGIN/cached/myx/myx.distro-source"
-		local DIR_SRC="$MDSC_ORIGIN/myx/myx.distro-source"
+		local DIR_OUT="$MDLT_ORIGIN/cached/myx/myx.distro-source"
+		local DIR_SRC="$MDLT_ORIGIN/myx/myx.distro-source"
 	fi
 
 
@@ -51,7 +51,7 @@ DistroSourceCommand(){
 	fi
 	
 	if [ -f "$DIR_SRC/java/ru/myx/distro/DistroSourceCommand.java" ] ; then
-		. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassClean.include"
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassClean.include"
 		RunJavaClassClean \
 			"myx/myx.distro-source" \
 			ru.myx.distro.DistroSourceCommand \

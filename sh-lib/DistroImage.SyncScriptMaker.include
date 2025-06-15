@@ -32,8 +32,8 @@ local syncCommand=""
 local syncMode="${1:---parallel}"
 
 if \
-[ -x "$MDSC_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
-	syncCommand="$MDSC_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
+[ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
+	syncCommand="$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
 elif \
 [ "$( which myx.common )" != "" ] ; then
 	syncCommand="$( myx.common which git/clone${syncType} )"
@@ -55,8 +55,8 @@ case "$syncMode" in
 			echo lib/sedLineReader lib/prefix lib/async \
 			| tr ' ' '\n' | while read -r MC_EMBED ; do
 				if \
-					[ -f "$MDSC_ORIGIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
-					cat "$MDSC_ORIGIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
+					[ -f "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
+					cat "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
 				elif \
 					[ "$( which myx.common )" != "" ] ; then
 					myx.common cat $MC_EMBED

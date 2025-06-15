@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-if [ -z "$MDSC_ORIGIN" ] ; then
+if [ -z "$MDLT_ORIGIN" ] ; then
 	if [ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include" ] ; then
 		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/DistroShellContext.include"
 	else
@@ -127,7 +127,7 @@ CODELAUNCHER
 		set -e
 		( 
 			DistroSourceTools(){
-				. "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
 			}
 			DistroSourceTools --make-console-script > "$MMDAPP/DistroSourceConsole.sh"
 		)
@@ -160,7 +160,7 @@ CODELAUNCHER
 				[ -f "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
 			; then
 
-				export MDSC_ORIGIN="${MDLT_ORIGIN}"
+				export MDLT_ORIGIN="${MDLT_ORIGIN}"
 
 			elif \
 				[ -f "$MMDAPP/source/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] && \
@@ -170,14 +170,14 @@ CODELAUNCHER
 			; then
 
 				export MDLT_ORIGIN="$MMDAPP/source"
-				export MDSC_ORIGIN="$MMDAPP/source"
+				export MDLT_ORIGIN="$MMDAPP/source"
 
 			elif \
 				[ -f "$MMDAPP/.local/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" ] \
 			; then
 
 				export MDLS_BIN="$MMDAPP/.local"
-				export MDSC_ORIGIN="$MMDAPP/.local"
+				export MDLT_ORIGIN="$MMDAPP/.local"
 
 			else
 
@@ -192,13 +192,13 @@ CODELAUNCHER
 			if [ "$1" == "--non-interactive" ] ; then
 				shift
 				{
-					echo ". '$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
+					echo ". '$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
 					cat
 				} | bash "$@"
 				exit 0
 			fi
 			
-			bash --rcfile "$MDSC_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
+			bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i "$@"
 DISTROCONSOLE
 
 		return 0
