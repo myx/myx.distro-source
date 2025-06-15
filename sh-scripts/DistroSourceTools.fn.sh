@@ -76,23 +76,23 @@ DistroSourceTools(){
 			return 0
 		;;
 		--make-*)
-			. "$MMDAPP/.local/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
 			set +e ; return 1
 		;;
 		--*-config-option)
-			. "$MMDAPP/.local/myx/myx.distro-.local/sh-lib/LocalTools.Config.include"
+			. "$MDLT_ORIGIN/myx/myx.distro-.local/sh-lib/LocalTools.Config.include"
 			set +e ; return 1
 		;;
 		--upgrade-source-tools)
 			shift
-			bash "$MMDAPP/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh" --install-distro-source
+			bash "$MDLT_ORIGIN/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh" --install-distro-source
 			return 0
 		;;
 		''|--help)
 			echo "syntax: DistroSourceTools.fn.sh <option>" >&2
 			echo "syntax: DistroSourceTools.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				cat "$MMDAPP/.local/myx/myx.distro-source/sh-lib/HelpDistroSourceTools.text" >&2
+				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpDistroSourceTools.text" >&2
 			fi
 			set +e ; return 1
 		;;
