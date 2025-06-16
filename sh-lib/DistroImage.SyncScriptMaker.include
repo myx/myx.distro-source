@@ -95,10 +95,14 @@ case "$syncMode" in
 	--sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
+		echo '### '
+		cat "${syncCommand%/*/*}/lib/sedLineReader"
 		cat "${syncCommand%/*/*}/lib/prefix"
 		echo
+		echo '### '
 		cat "$syncCommand"
 		echo
+		echo '### '
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
@@ -108,16 +112,19 @@ case "$syncMode" in
 	--portable)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch rowCounter
+		echo '### '
 		cat "${syncCommand%/*/*}/lib/async"
 		echo
+		echo '### '
 		cat "${syncCommand%/*/*}/lib/prefix"
 		echo
+		echo '### '
 		cat "$syncCommand"
 		echo
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Async Prefix -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
+			echo Async -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
 			rowCounter="${rowCounter}@"
 			if [ "$rowCounter" == "@@@@@@@@" ] ; then
 				echo wait
