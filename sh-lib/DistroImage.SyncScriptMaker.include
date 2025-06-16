@@ -98,6 +98,7 @@ case "$syncMode" in
 		echo '### '
 		cat "${syncCommand%/*/*}/lib/sedLineReader"
 		cat "${syncCommand%/*/*}/lib/prefix"
+		cat "${syncCommand%/*/*}/lib/async"
 		echo
 		echo '### '
 		cat "$syncCommand"
