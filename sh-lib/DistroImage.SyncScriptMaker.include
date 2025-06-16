@@ -86,7 +86,7 @@ echo
 
 case "$syncMode" in
 	--parallel)
-		printf '%s | %s <<XARGS_INPUT\n' \
+		printf '( %s | %s ) <<XARGS_INPUT\n' \
 			"tr '\n' '\0'" \
 			"xargs -0 -P '${2:-8}' -I% -- sh -c 'myx.common lib/prefix -3 %'"
 		
