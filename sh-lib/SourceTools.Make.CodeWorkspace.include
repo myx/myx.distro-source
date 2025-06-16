@@ -73,7 +73,7 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 			{
 				"label": "🛠️ Update Local Tools...",
 				"type": "shell",
-				"command": "bash -c \'$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools\'",
+				"command": "bash -c \"$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools\"",
 				"group": { 
 					"kind": "build", 
 					"isDefault": true 
