@@ -64,7 +64,7 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 			{
 				"label": "⬇️ Pull All Known Sources...",
 				"type": "shell",
-				"command": "echo 'DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull' | $MMDAPP/DistroSourceConsole.sh --non-interactive",
+				"command": "echo 'echo DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull' | $MMDAPP/DistroSourceConsole.sh --non-interactive' | bash -s",
 				"group": { 
 					"kind": "build", 
 					"isDefault": true 
@@ -73,7 +73,7 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 			{
 				"label": "🛠️ Update Local Tools...",
 				"type": "shell",
-				"command": "bash -c \"$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools\"",
+				"command": "echo '$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools' | bash -s",
 				"group": { 
 					"kind": "build", 
 					"isDefault": true 
