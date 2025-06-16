@@ -78,8 +78,8 @@ case "$syncMode" in
 	;;
 esac
 
-echo 'set -e' ; 
-echo "export MMDAPP='\${MMDAPP:-"${MMDAPP}"}'"
+echo 'set -e' 
+echo "export MMDAPP='\${MMDAPP:-${MMDAPP}}'"
 echo 'mkdir -p "$MMDAPP/source"'
 echo 'cd "$MMDAPP/source"'
 echo
@@ -95,7 +95,7 @@ case "$syncMode" in
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - cloneSync clonePull
-			echo "myx.common $syncCommandName $itemTarget" "$itemSource" "$useBranch"
+			echo myx.common "$syncCommandName" "$itemTarget" "$itemSource" "$useBranch"
 		done
 		
 		printf 'XARGS_INPUT\n\n'
