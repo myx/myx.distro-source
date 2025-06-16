@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-echo MMDAPP="\${MMDAPP:-"${MMDAPP}"}"
-
 local syncType
 
 case "$useStage" in
@@ -28,16 +26,19 @@ case "$useStage" in
 	;;
 esac
 
-local syncCommand=""
+local syncCommandPath=""
+local syncCommandName=""
 local syncMode="${1:---parallel}"
 
 if \
 [ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
-	syncCommand="$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}"
+	syncCommandPath="$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin"
+	syncCommandName="git/clone${syncType}"
 elif \
 [ "$( which myx.common )" != "" ] ; then
-	syncCommand="$( myx.common which git/clone${syncType} )"
-	if [ ! -x "$syncCommand" ] ; then
+	syncCommandPath="$( dirname "$( dirname "$( myx.common which git/clone${syncType} )" )" )"
+	syncCommandName="git/clone${syncType}"
+	if [ ! -x "$syncCommandPath/$syncCommandName" ] ; then
 		echo "⛔ ERROR: $MDSC_CMD: myx.common which git/clone${syncType} failed ($MDSC_OPTION, $@)" >&2
 		set +e ; return 1
 	fi
@@ -48,6 +49,9 @@ fi
 
 case "$syncMode" in
 	--parallel)
+		## nothing
+	;;
+	--sequence)
 		## nothing
 	;;
 	--sequence|--obsolete|--portable)
@@ -65,7 +69,7 @@ case "$syncMode" in
 					set +e ; return 1
 				fi
 			done
-			cat "$syncCommand"
+			cat "$syncCommandPath/$syncCommandName"
 		} | grep -v -e '^#' -e '^$' || true
 	;;
 	*)
@@ -74,11 +78,15 @@ case "$syncMode" in
 	;;
 esac
 
+echo 'set -e' ; 
+echo "export MMDAPP='\${MMDAPP:-"${MMDAPP}"}'"
+echo 'mkdir -p "$MMDAPP/source"'
+echo 'cd "$MMDAPP/source"'
+echo
+
 case "$syncMode" in
 	--parallel)
-		printf "clone$syncType=\"%s\"\n" "$syncCommand"
-
-		printf "(%s | %s) <<XARGS_INPUT\n" \
+		printf '%s | %s <<XARGS_INPUT\n' \
 			"tr '\n' '\0'" \
 			"xargs -0 -P '${2:-8}' -I% -- sh -c 'myx.common lib/prefix -3 %'"
 		
@@ -87,54 +95,63 @@ case "$syncMode" in
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - cloneSync clonePull
-			echo "\$clone$syncType \$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
+			echo "myx.common $syncCommandName $itemTarget" "$itemSource" "$useBranch"
 		done
 		
-		printf 'XARGS_INPUT\n'
+		printf 'XARGS_INPUT\n\n'
 	;;
 	--sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
 		echo '### '
-		cat "${syncCommand%/*/*}/lib/sedLineReader"
-		cat "${syncCommand%/*/*}/lib/prefix"
-		cat "${syncCommand%/*/*}/lib/async"
+		cat "$syncCommandPath/lib/sedLineReader"
 		echo
 		echo '### '
-		cat "$syncCommand"
+		cat "$syncCommandPath/lib/prefix"
 		echo
 		echo '### '
+		cat "$syncCommandPath/lib/async"
+		echo
+		echo '### '
+		cat "$syncCommandPath/$syncCommandName"
+		echo
+		echo '### '
+		echo 
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Prefix -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
+			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
 		done
 	;;
 	--portable)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch rowCounter
-		echo '### '
-		cat "${syncCommand%/*/*}/lib/async"
 		echo
 		echo '### '
-		cat "${syncCommand%/*/*}/lib/prefix"
+		cat "$syncCommandPath/lib/sedLineReader"
 		echo
 		echo '### '
-		cat "$syncCommand"
+		cat "$syncCommandPath/lib/prefix"
 		echo
+		echo '### '
+		cat "$syncCommandPath/lib/async"
+		echo
+		echo '### '
+		cat "$syncCommandPath/$syncCommandName"
+		echo
+		echo '### '
+		echo 
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Async -2 GitClone${syncType} "\$MMDAPP/source/$itemTarget" "$itemSource" "$useBranch"
+			echo Async -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
 			rowCounter="${rowCounter}@"
-			if [ "$rowCounter" == "@@@@@@@@" ] ; then
+			if [ "$rowCounter" = "@@@@@@@@" ] ; then
 				echo wait
 				rowCounter=""
 			fi
 		done
-		if [ -n "$rowCounter" ] ; then
-			echo wait
-		fi
+		echo wait
 	;;
 esac
 
