@@ -50,7 +50,7 @@ case "$syncMode" in
 	--parallel)
 		## nothing
 	;;
-	--sequence|--obsolete)
+	--sequence|--obsolete|--portable)
 		{
 			echo lib/sedLineReader lib/prefix lib/async \
 			| tr ' ' '\n' | while read -r MC_EMBED ; do
