@@ -66,7 +66,7 @@ case "$1" in
 					{
 						"label": "🖥️ Start Source Console...",
 						"type": "shell",
-						"command": "$MMDAPP/DistroSourceConsole.sh",
+						"command": "bash '$MMDAPP/DistroSourceConsole.sh'",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
@@ -75,7 +75,7 @@ case "$1" in
 					{
 						"label": "⬇️ Pull All Known Sources...",
 						"type": "shell",
-						"command": "echo 'DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull' | $MMDAPP/DistroSourceConsole.sh --non-interactive",
+						"command": "bash -c 'echo \"DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
@@ -84,7 +84,7 @@ case "$1" in
 					{
 						"label": "🛠️ Update Local Tools...",
 						"type": "shell",
-						"command": "bash '${MMDAPP}/.local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh' --upgrade-source-tools",
+						"command": "bash '${MMDAPP}/.local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh' --upgrade-source-tools'",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
