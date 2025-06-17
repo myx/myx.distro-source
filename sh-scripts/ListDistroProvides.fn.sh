@@ -434,7 +434,7 @@ case "$0" in
 			echo "syntax: ListDistroProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroProvides.include"
+				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListDistroProvides.include"
 			fi
 			exit 1
 		fi

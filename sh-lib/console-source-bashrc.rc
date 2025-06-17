@@ -25,7 +25,7 @@ PATH+=":$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts"
 
 Action(){
 	if [ -z "$1" ] || [ "$1" == "--help" ] ; then
-		( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleAction.include" )
+		( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpConsoleAction.include" )
 		set +e ; return 1
 	fi
 	local actionCommand="$1" ; shift
@@ -122,7 +122,7 @@ Source(){
 }
 
 Help(){
-	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpDistroSourceConsole.include" )
+	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceConsole.include" )
 	set +e ; return 1
 }
 

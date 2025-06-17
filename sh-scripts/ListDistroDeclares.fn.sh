@@ -452,7 +452,7 @@ case "$0" in
 			echo "syntax: ListDistroDeclares.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpListDistroDeclares.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroDeclares.include"
 			fi
 			exit 1
 		fi

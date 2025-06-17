@@ -20,7 +20,7 @@ case "$1" in
 	;;
 	''|--help)
 		shift
-		( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpConsoleSource.include" )
+		( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpConsoleSource.include" )
 		set +e ; return 1
 	;;
 	--start-console)

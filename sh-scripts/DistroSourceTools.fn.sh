@@ -92,7 +92,7 @@ DistroSourceTools(){
 			echo "syntax: DistroSourceTools.fn.sh <option>" >&2
 			echo "syntax: DistroSourceTools.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpDistroSourceTools.text" >&2
+				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceTools.text" >&2
 			fi
 			set +e ; return 1
 		;;

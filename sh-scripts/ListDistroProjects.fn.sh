@@ -537,7 +537,7 @@ ListDistroProjects(){
 				echo "syntax: ListDistroProjects.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
 					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
-					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroProjects.include"
+					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListDistroProjects.include"
 				fi
 				set +e ; return 1
 			;;
