@@ -181,7 +181,7 @@ case "$0" in
 			echo "syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
 			echo "syntax: DistroSourcePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 				echo >&2
 				echo "  Options:" >&2
 				echo >&2

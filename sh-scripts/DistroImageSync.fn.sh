@@ -336,7 +336,7 @@ case "$0" in
 			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
 			echo "syntax: DistroImageSync.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 				echo "    --all-tasks" >&2
 				echo "                Select all distro tasks for all build stages." >&2
 				echo >&2

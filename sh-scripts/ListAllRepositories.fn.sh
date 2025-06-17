@@ -7,12 +7,24 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
-fi
-
 ListAllRepositories(){
+
+	while true ; do
+		case "$1" in
+			--no-cache)
+				shift
+			;;
+			''|--help)
+				shift
+			;;
+		esac
+	done
+
+	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-path-auto
+	fi
+
 	if [ "$1" = "--no-cache" ] ; then
 		shift
 	else
