@@ -531,6 +531,16 @@ ListDistroProjects(){
 				$executeCommand --select-from-env $useNoCache $useNoIndex "$@"
 				return 0
 			;;
+			''|--help)
+				echo "syntax: ListDistroProjects.fn.sh --all-projects" >&2
+				echo "syntax: ListDistroProjects.fn.sh <project-selector> [<options>] [<execute-extra-args>]" >&2
+				echo "syntax: ListDistroProjects.fn.sh [--help]" >&2
+				if [ "$1" = "--help" ] ; then
+					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
+					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroProjects.include"
+				fi
+				set +e ; return 1
+			;;
 			*)
 				if [ -z "$executeDefault" ] ; then
 					if [ -z "$1" ] ; then
@@ -552,18 +562,8 @@ ListDistroProjects(){
 
 case "$0" in
 	*/sh-scripts/ListDistroProjects.fn.sh) 
-		
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroProjects.fn.sh --all-projects" >&2
-			echo "syntax: ListDistroProjects.fn.sh <project-selector> [<options>] [<execute-extra-args>]" >&2
-			echo "syntax: ListDistroProjects.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpSelectProjects.include"
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/HelpListDistroProjects.include"
-			fi
-			exit 1
-		fi
-		
+
+		set -e 
 		ListDistroProjects "$@"
 	;;
 esac
