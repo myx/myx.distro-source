@@ -7,35 +7,44 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+	DistroSystemContext --distro-path-auto
+fi
+
 ListAllRepositories(){
+
+	local useNoCache
 
 	while true ; do
 		case "$1" in
 			--no-cache)
-				shift
+				useNoCache=$1 ; shift
 			;;
-			''|--help)
+			''|--all-repositories)
 				shift
+				break
+			;;
+			--help)
+				shift
+				return 0
+			;;
+			*)
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
 			;;
 		esac
 	done
 
-	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-		DistroSystemContext --distro-path-auto
-	fi
-
-	if [ "$1" = "--no-cache" ] ; then
-		shift
-	else
+	if [ "$useNoCache" != "--no-cache" ] && [ -n "$MDSC_CACHED" ] ; then
 		local cacheFile="$MDSC_CACHED/repository-names.txt"
-		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListAllRepositories: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ -d "$MDSC_CACHED" ] ; then
 			echo "ListAllRepositories: caching repositories ($MDSC_OPTION)" >&2
 			ListAllRepositories --no-cache | tee "$cacheFile"
 			return 0

@@ -22,7 +22,7 @@ case "$1" in
 
 		local REPOS="$( 
 			local ITEM
-			echo "ListAllRepositories.fn.sh --no-cache --noindex" \
+			echo "ListAllRepositories.fn.sh --no-cache --no-index" \
 			| "$MMDAPP/DistroSourceConsole.sh" --non-interactive \
 			| while read -r ITEM ; do
 				printf \
