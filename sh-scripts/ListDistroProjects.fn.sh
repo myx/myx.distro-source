@@ -508,8 +508,7 @@ ListDistroProjects(){
 				local useNoCache="--no-cache"
 			;;
 			--no-index)
-				shift
-				local useNoIndex="--no-index"
+				useNoIndex=$1 ; shift
 			;;
 			--select-execute-default)
 				shift

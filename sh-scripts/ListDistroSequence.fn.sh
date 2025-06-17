@@ -146,8 +146,7 @@ ListDistroSequence(){
 				;;
 
 			--no-index)
-				shift
-				local useNoIndex="--no-index"
+				useNoIndex=$1 ; shift
 				;;
 
 			*)

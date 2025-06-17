@@ -15,11 +15,15 @@ fi
 ListAllRepositories(){
 
 	local useNoCache
+	local useNoIndex
 
 	while true ; do
 		case "$1" in
 			--no-cache)
 				useNoCache=$1 ; shift
+			;;
+			--no-index)
+				useNoIndex=$1 ; shift
 			;;
 			''|--all-repositories)
 				shift

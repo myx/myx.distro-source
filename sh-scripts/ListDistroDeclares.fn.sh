@@ -38,8 +38,7 @@ ListDistroDeclares(){
 				local useNoCache="--no-cache"
 			;;
 			--no-index)
-				shift
-				local useNoIndex="--no-index"
+				useNoIndex=$1 ; shift
 			;;
 			--select-from-env)
 				shift

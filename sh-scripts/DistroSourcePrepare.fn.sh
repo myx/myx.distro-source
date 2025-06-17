@@ -72,12 +72,10 @@ DistroSourcePrepare(){
 			shift
 		;;
 		--no-cache)
-			shift
-			local useNoCache="--no-cache"
+			useNoCache=$1 ; shift
 		;;
 		--no-index)
-			shift
-			local useNoIndex="--no-index"
+			useNoIndex=$1 ; shift
 		;;
 		--select-from-env)
 			shift
