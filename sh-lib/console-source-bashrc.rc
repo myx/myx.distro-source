@@ -47,10 +47,12 @@ Action(){
 
 if ! type Deploy >/dev/null 2>&1 ; then
 	Deploy(){
+		set -e
+
 		case "$1" in
 			''|--*)
 				( . "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-lib/DeployConsole.include" )
-				set +e ; return 1
+				return 0
 			;;
 		esac
 
@@ -100,6 +102,8 @@ Source(){
 		fi
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 	fi
+
+	set +e
 
 	"${distroCommand%.fn.sh}" "$@" || {
 		EXITCODE=$?
