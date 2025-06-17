@@ -198,7 +198,7 @@ CODELAUNCHER
 				exit 0
 			fi
 			
-			export MDSC_ARGUMENTS="$@" \
+			export MDSC_ARGUMENTS="$@"
 			bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i
 DISTROCONSOLE
 
