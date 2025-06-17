@@ -16,7 +16,10 @@ fi
 
 ListDistroProjects(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListDistroProjects $@" >&2
+	local MDSC_CMD='ListDistroProjects'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	set -e
 
@@ -24,9 +27,6 @@ ListDistroProjects(){
 
 	local executeDefault=""
 	
-	local useNoCache=""
-	local useNoIndex=""
-
 	while true ; do
 		case "$1" in
 			--select-from-env)
@@ -45,7 +45,7 @@ ListDistroProjects(){
 				fi
 				
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoCache" != "--no-cache" ] ; then
+					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/all-project-names.txt"
 						if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ) ; then
@@ -59,7 +59,7 @@ ListDistroProjects(){
 							return 0
 						fi
 					fi
-					if [ "$useNoIndex" != "--no-index" ] ; then
+					if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 						local indexFile="$MDSC_CACHED/distro-index.inf"
 						if [ -f "$indexFile" ] && \
 							( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] )
@@ -96,7 +96,7 @@ ListDistroProjects(){
 				##
 				shift
 				local selectProjects
-				selectProjects="$( ListDistroProjects $useNoCache $useNoIndex --all-projects )"
+				selectProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects )"
 			;;
 			--select-sequence)
 				##
@@ -106,7 +106,7 @@ ListDistroProjects(){
 				
 				Require ListDistroSequence
 				local selectProjects
-				selectProjects="$( ListDistroSequence $useNoCache $useNoIndex --all )"
+				selectProjects="$( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all )"
 			;;
 			--select-none)
 				##
@@ -123,7 +123,7 @@ ListDistroProjects(){
 
 				Require ListChangedSourceProjects
 				local selectProjects
-				selectProjects="$( cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $useNoCache $useNoIndex --all ) | awk '$0 && !x[$0]++' )"
+				selectProjects="$( cat <( echo "$selectProjects" ) <( ListChangedSourceProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) | awk '$0 && !x[$0]++' )"
 			;;
 
 			#--select-{projects|provides|merged-provides|declares|keywords|merged-keywords|keywords2|merged-keywords2|one-project})
@@ -137,7 +137,7 @@ ListDistroProjects(){
 				local selectArgument="$1" ; shift
 
 				local matchingProjects # local hides exit-code handling #
-				matchingProjects="$( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" )"
+				matchingProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--select}" "$selectArgument" )"
 
 				if [ -z "$matchingProjects" ] ; then
 					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
@@ -152,14 +152,14 @@ ListDistroProjects(){
 				#selectProjects="` \
 				#	{ \
 				#		echo "$selectProjects" ; \
-				#		ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" ; \
+				#		ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--select}" "$selectArgument" ; \
 				#	} | awk '$0 && !x[$0]++' \
 				#`"
 
 				#selectProjects="` \
 				#	cat \
 				#		<( echo "$selectProjects" ) \
-				#		<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--select}" "$selectArgument" || echo 1 ) \
+				#		<( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--select}" "$selectArgument" || echo 1 ) \
 				#	| awk '$0 && !x[$0]++' \
 				#`"
 			;;
@@ -172,7 +172,7 @@ ListDistroProjects(){
 				fi
 				local selectArgument="$1" ; shift
 				local matchingProjects # local hides exit-code handling #
-				matchingProjects="$( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" )"
+				matchingProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--filter}" "$selectArgument" )"
 				if [ -z "$matchingProjects" ] ; then
 					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
 					local selectProjects=""
@@ -187,7 +187,7 @@ ListDistroProjects(){
 				fi
 				#selectProjects="` \
 				#	grep -Fx -f \
-				#		<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--filter}" "$selectArgument" ) \
+				#		<( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--filter}" "$selectArgument" ) \
 				#		<( echo "$selectProjects" ) \
 				#	| awk '$0 && !x[$0]++' \
 				#`"
@@ -201,7 +201,7 @@ ListDistroProjects(){
 				fi
 				local selectArgument="$1" ; shift
 				local matchingProjects # local hides exit-code handling #
-				matchingProjects="$( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" )"
+				matchingProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--remove}" "$selectArgument" )"
 				if [ -z "$matchingProjects" ] ; then
 					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
 				else
@@ -215,7 +215,7 @@ ListDistroProjects(){
 				fi
 				#selectProjects="` \
 				#	grep -Fvx -f \
-				#		<( ListDistroProjects $useNoCache $useNoIndex "-${selectVariant#--remove}" "$selectArgument" ) \
+				#		<( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--remove}" "$selectArgument" ) \
 				#		<( echo "$selectProjects" ) \
 				#	| awk '$0 && !x[$0]++' \
 				#`"
@@ -243,7 +243,7 @@ ListDistroProjects(){
 				local projectFilter="$1" ; shift
 
 				local matchedProjects
-				matchedProjects="$( ListDistroProjects $useNoCache $useNoIndex --all-projects | ( grep -e "^.*$projectFilter.*$" || true ) )"
+				matchedProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects | ( grep -e "^.*$projectFilter.*$" || true ) )"
 
 				if [ -z "$matchedProjects" ] ; then
 					echo "ListDistroProjects: ⛔ ERROR: No matching projects found (exactly one requested, --one-project $projectFilter)." >&2
@@ -274,7 +274,7 @@ ListDistroProjects(){
 				fi
 				local projectFilter="$1" ; shift
 
-				ListDistroProjects $useNoCache $useNoIndex --all-projects | grep -e "^.*$projectFilter.*$"
+				ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects | grep -e "^.*$projectFilter.*$"
 				return 0
 			;;
 			--provides)
@@ -296,11 +296,11 @@ ListDistroProjects(){
 				
 				case "$providesFilter" in
 					*:)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -327,11 +327,11 @@ ListDistroProjects(){
 
 				case "$providesFilter" in
 					*:)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -355,11 +355,11 @@ ListDistroProjects(){
 				
 				case "$declaresFilter" in
 					*:)
-						ListDistroDeclares $useNoCache $useNoIndex --all-declares | grep -e "^.* $declaresFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares | grep -e "^.* $declaresFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroDeclares $useNoCache $useNoIndex --all-declares | grep -e "^.* $declaresFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares | grep -e "^.* $declaresFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -382,7 +382,7 @@ ListDistroProjects(){
 
 				Require ListDistroProvides
 				
-				ListDistroProvides $useNoCache $useNoIndex --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+				ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
 			--keywords)
@@ -404,11 +404,11 @@ ListDistroProjects(){
 				
 				case "$keywordsFilter" in
 					*:)
-						ListDistroKeywords $useNoCache $useNoIndex --all-keywords | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroKeywords $useNoCache $useNoIndex --all-keywords | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -431,7 +431,7 @@ ListDistroProjects(){
 
 				Require ListDistroProvides
 				
-				ListDistroProvides $useNoCache $useNoIndex --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+				ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
 			--merged-keywords)
@@ -453,11 +453,11 @@ ListDistroProjects(){
 				
 				case "$keywordsFilter" in
 					*:)
-						ListDistroKeywords $useNoCache $useNoIndex --all-keywords-merged | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroKeywords $useNoCache $useNoIndex --all-keywords-merged | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -471,7 +471,7 @@ ListDistroProjects(){
 
 				selectProjects="$( 
 					export MDSC_SELECT_PROJECTS="$selectProjects"
-					ListDistroProjects $useNoCache $useNoIndex --select-from-env $selectVariant 
+					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --select-from-env $selectVariant 
 				)"
 			;;
 			--required|--required-projects)
@@ -503,13 +503,6 @@ ListDistroProjects(){
 				return 0
 			;;
 
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
-			;;
 			--select-execute-default)
 				shift
 				if [ -z "$1" ] ; then
@@ -527,7 +520,7 @@ ListDistroProjects(){
 				local executeCommand="$1" ; shift
 
 				export MDSC_SELECT_PROJECTS="$selectProjects"
-				$executeCommand --select-from-env $useNoCache $useNoIndex "$@"
+				$executeCommand --select-from-env $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				return 0
 			;;
 			''|--help)
@@ -551,8 +544,8 @@ ListDistroProjects(){
 					set +e ; return 1
 				fi
 				export MDSC_SELECT_PROJECTS="$selectProjects"
-				[ -z "$MDSC_DETAIL" ] || echo "* ListDistroProjects:" $executeDefault --select-from-env $useNoCache $useNoIndex "$@" >&2
-				$executeDefault --select-from-env $useNoCache $useNoIndex "$@"
+				[ -z "$MDSC_DETAIL" ] || echo "* ListDistroProjects:" $executeDefault --select-from-env $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" >&2
+				$executeDefault --select-from-env $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				return 0
 			;;
 		esac

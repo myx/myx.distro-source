@@ -191,13 +191,15 @@ CODELAUNCHER
 			if [ "$1" == "--non-interactive" ] ; then
 				shift
 				{
+					echo MDSC_ARGUMENTS="$@"
 					echo ". '$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
 					cat
-				} | bash -- "$@"
+				} | bash -s
 				exit 0
 			fi
 			
-			bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i -- "$@"
+			export MDSC_ARGUMENTS="$@" \
+			bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i
 DISTROCONSOLE
 
 		return 0

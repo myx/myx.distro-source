@@ -14,7 +14,8 @@ fi
 
 ListRepositoryDeclares(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryDeclares $@" >&2
+	local MDSC_CMD='ListRepositoryDeclares'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	case "$1" in
 		--internal-print-project-declares)
@@ -22,6 +23,8 @@ ListRepositoryDeclares(){
 			return 0
 		;;
 	esac
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -39,9 +42,6 @@ ListRepositoryDeclares(){
 			return 0
 		;;
 	esac
-
-	local useNoCache=""
-	local useNoIndex=""
 
 	while true ; do
 		case "$1" in
@@ -62,8 +62,8 @@ ListRepositoryDeclares(){
 				Require ListProjectDeclares
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectDeclares "$sequenceProjectName" $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+					ListProjectDeclares "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
 			;;
@@ -74,8 +74,8 @@ ListRepositoryDeclares(){
 				Require ListProjectDeclares
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				done	
 				return 0
 			;;
@@ -88,20 +88,13 @@ ListRepositoryDeclares(){
 				local filterDeclares="$1" ; shift
 
 				local filterDeclares="$1" projectName projectDeclares ; shift
-				ListRepositoryDeclares "$repositoryName" $useNoCache $useNoIndex "$@" \
+				ListRepositoryDeclares "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" \
 				| while read -r projectName projectDeclares ; do
 				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
 						echo "$projectName ${projectDeclares#${filterDeclares}:}"
 					fi
 				done | awk '!x[$0]++'
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				break;
@@ -114,7 +107,7 @@ ListRepositoryDeclares(){
 	done
 
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$useNoCache" != "--no-cache" ] ; then
+		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$repositoryName/repository-declares.txt"
 			
 			if [ -f "$cacheFile" ] && \
@@ -130,7 +123,7 @@ ListRepositoryDeclares(){
 			return 0
 		fi
 		
-		if [ "$useNoIndex" != "--no-index" ] ; then
+		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 			if [ -f "$indexFile" ] && \
 				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
@@ -166,7 +159,7 @@ ListRepositoryDeclares(){
 
 	local projectName
 	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectDeclares $projectName $useNoCache $useNoIndex "$@" || true
+		ListProjectDeclares $projectName $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" || true
 	done
 }
 

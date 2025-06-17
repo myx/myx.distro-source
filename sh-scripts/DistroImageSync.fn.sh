@@ -22,11 +22,11 @@ DistroImageSync(){
 
 	case "$1" in
 		--intern-print-all-tasks)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			local projectName buildStage syncOperation targetSpec sourceSpec extra
 			Require ListDistroDeclares
-			ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync" \
+			ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares-prefix-cut "distro-image-sync" \
 			| sed -e 's/:/ /' -e 's/:/ /' -e 's/:/ /' \
 			| while read -r projectName buildStage syncOperation targetSpec sourceSpec extra ; do
 				echo "$buildStage" "$projectName" "$syncOperation" "$targetSpec" "$sourceSpec" "$extra"
@@ -34,7 +34,7 @@ DistroImageSync(){
 			return 0
 		;;
 		--intern-print-unroll-tasks-from-stdin)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			local projectName buildStage syncOperation targetSpec sourceSpec extra
 			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
@@ -69,7 +69,7 @@ DistroImageSync(){
 			return 0
 		;;
 		--intern-print-tasks-from-stdin-repo-list)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			local useStage="${useStage:-source-prepare-pull}"
 			local targetSpec sourceSpec sourceBranch
@@ -79,7 +79,7 @@ DistroImageSync(){
 			return 0
 		;;
 		--intern-print-repo-list-from-stdin)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			local projectName buildStage syncOperation targetSpec sourceSpec extra
 			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
@@ -105,7 +105,7 @@ DistroImageSync(){
 			return 0
 		;;
 		--intern-check-build-stage)
-			[ "$MDSC_DETAIL" == "full" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ "$MDSC_DETAIL" == "full" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			shift
 			case "$1" in
@@ -118,14 +118,14 @@ DistroImageSync(){
 			set +e ; return 1
 		;;
 		--intern-print-script-from-stdin-task-list)
-			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			shift
 			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include"
 			return 0
 		;;
 		--intern-execute-script-from-stdin)
-			[ "$MDSC_DETAIL" == "full" ] || echo "> $MDSC_CMD $useNoCache $useNoIndex $@" >&2
+			[ "$MDSC_DETAIL" == "full" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 			( eval "$( cat )" )
 			return 0
 		;;
@@ -133,8 +133,8 @@ DistroImageSync(){
 
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	local useNoCache=""
-	local useNoIndex=""
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	local useJobList=""
 	local useStage=""
 
@@ -151,12 +151,6 @@ DistroImageSync(){
 			--explicit-noop)
 				shift
 				break
-			;;
-			--no-cache)
-				useNoCache=$1 ; shift
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			--select-from-env)
 				shift

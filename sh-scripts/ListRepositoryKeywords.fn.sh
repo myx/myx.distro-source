@@ -14,7 +14,9 @@ fi
 
 ListRepositoryKeywords(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryKeywords $@" >&2
+	local MDSC_CMD='ListRepositoryKeywords'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
 
 	case "$1" in
 		--internal-print-project-keywords)
@@ -22,6 +24,8 @@ ListRepositoryKeywords(){
 			return 0
 		;;
 	esac
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -39,9 +43,6 @@ ListRepositoryKeywords(){
 			return 0
 		;;
 	esac
-
-	local useNoCache=""
-	local useNoIndex=""
 
 	while true ; do
 		case "$1" in
@@ -62,8 +63,8 @@ ListRepositoryKeywords(){
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectKeywords "$sequenceProjectName" $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+					ListProjectKeywords "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
 			;;
@@ -74,8 +75,8 @@ ListRepositoryKeywords(){
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectKeywords "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+					ListProjectKeywords "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				done	
 				return 0
 			;;
@@ -88,20 +89,13 @@ ListRepositoryKeywords(){
 				local filterKeywords="$1" ; shift
 
 				local filterKeywords="$1" projectName projectKeywords ; shift
-				ListRepositoryKeywords "$repositoryName" $useNoCache $useNoIndex "$@" \
+				ListRepositoryKeywords "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" \
 				| while read -r projectName projectKeywords ; do
 				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
 						echo "$projectName ${projectKeywords#${filterKeywords}:}"
 					fi
 				done | awk '!x[$0]++'
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				break;
@@ -114,7 +108,7 @@ ListRepositoryKeywords(){
 	done
 
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$useNoCache" != "--no-cache" ] ; then
+		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$repositoryName/repository-keywords.txt"
 			
 			if [ -f "$cacheFile" ] && \
@@ -130,7 +124,7 @@ ListRepositoryKeywords(){
 			return 0
 		fi
 		
-		if [ "$useNoIndex" != "--no-index" ] ; then
+		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 			if [ -f "$indexFile" ] && \
 				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
@@ -166,7 +160,7 @@ ListRepositoryKeywords(){
 
 	local projectName
 	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectKeywords $projectName $useNoCache $useNoIndex "$@" || true
+		ListProjectKeywords $projectName $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" || true
 	done
 }
 

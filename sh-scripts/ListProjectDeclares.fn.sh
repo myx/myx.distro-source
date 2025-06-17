@@ -17,6 +17,8 @@ ListProjectDeclares(){
 	local MDSC_CMD='ListProjectDeclares'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
 		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
@@ -24,8 +26,6 @@ ListProjectDeclares(){
 	fi
 	shift
 
-	local useNoCache=""
-	local useNoIndex=""
 	local filterProjects=""
 
 	set -e
@@ -34,13 +34,13 @@ ListProjectDeclares(){
 		case "$1" in
 			--print-declares-only)
 				shift
-				ListProjectDeclares "$projectName" $useNoCache $useNoIndex "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectDeclares "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
 				shift
 				break;
-				#ListProjectDeclares "$projectName" $useNoCache $useNoIndex "$@" # | sed "s|^|$projectName |g"
+				#ListProjectDeclares "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" # | sed "s|^|$projectName |g"
 				#return 0
 			;;
 			--filter-and-cut)
@@ -51,7 +51,7 @@ ListProjectDeclares(){
 				fi
 				local filterDeclares="$1" projectDeclares ; shift
 
-				ListProjectDeclares "$projectName" $useNoCache $useNoIndex "$@" --print-declares-only \
+				ListProjectDeclares "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" --print-declares-only \
 				| while read -r projectDeclares ; do
 				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
 						echo "$projectName ${projectDeclares#${filterDeclares}:}"
@@ -64,23 +64,16 @@ ListProjectDeclares(){
 				Require ListProjectSequence
 
 				if [ -z "$1" ] ; then
-					ListProjectSequence "$projectName" $useNoCache $useNoIndex --print-declares
+					ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --print-declares
 					return 0
 				fi
 
 				local sequenceProjectName
-				ListProjectSequence "$projectName" $useNoCache $useNoIndex \
+				ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX \
 				| while read -r sequenceProjectName ; do
-					ListProjectDeclares "$sequenceProjectName" $useNoCache $useNoIndex "$@"
+					ListProjectDeclares "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				done | awk '!x[$0]++'	
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				break;
@@ -93,7 +86,7 @@ ListProjectDeclares(){
 	done
 
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$useNoCache" != "--no-cache" ] ; then
+		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-declares.txt"
 	
 			if [ -f "$cacheFile" ] && \
@@ -121,7 +114,7 @@ ListProjectDeclares(){
 			return 0
 		fi
 		
-		if [ "$useNoIndex" != "--no-index" ] ; then
+		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 			if [ -f "$indexFile" ] && \
 				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )

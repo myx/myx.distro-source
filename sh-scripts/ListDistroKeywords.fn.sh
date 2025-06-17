@@ -20,6 +20,8 @@ ListDistroKeywords(){
 	local MDSC_CMD='ListDistroKeywords'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	set -e
 
 	case "$1" in
@@ -52,9 +54,6 @@ ListDistroKeywords(){
 		;;
 	esac
 
-	local useNoCache=""
-	local useNoIndex=""
-
 	local indexFile="$MDSC_CACHED/distro-index.inf"
 	local indexAllKeywords=""
 	local indexOwnKeywords=""
@@ -72,7 +71,7 @@ ListDistroKeywords(){
 				##
 				## check cache ready
 				##
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "${MDSC_IDOKWD:0:1}" ] ; then
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDOKWD"
@@ -108,7 +107,7 @@ ListDistroKeywords(){
 					fi
 				fi
 	
-				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using index" >&2
@@ -123,7 +122,7 @@ ListDistroKeywords(){
 					fi
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDOKWD="` ListDistroKeywords --explicit-noop --no-cache --all-keywords `"
 					echo "$MDSC_IDOKWD"
@@ -153,7 +152,7 @@ ListDistroKeywords(){
 			
 				local repositoryName
 				ListAllRepositories | while read -r repositoryName ; do
-					ListRepositoryKeywords $repositoryName $useNoCache $useNoIndex || true
+					ListRepositoryKeywords $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
 				done
 	
 				return 0
@@ -165,7 +164,7 @@ ListDistroKeywords(){
 					set +e ; return 1
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using cache file ($MDSC_OPTION)" >&2
 						cat "$MDSC_IDAKWD_NAME"
@@ -195,7 +194,7 @@ ListDistroKeywords(){
 				fi
 
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using index ($MDSC_OPTION)" >&2
@@ -225,7 +224,7 @@ ListDistroKeywords(){
 					fi
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDAKWD="` ListDistroKeywords --explicit-noop --no-cache --all-keywords-merged `"
 					echo "$MDSC_IDAKWD"
@@ -267,8 +266,8 @@ ListDistroKeywords(){
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence $useNoCache $useNoIndex --all ) ; do
-					ListProjectKeywords "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+					ListProjectKeywords "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -281,11 +280,11 @@ ListDistroKeywords(){
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
 					if [ -z "${indexOwnKeywords:0:1}" ] ; then
-						local indexOwnKeywords="` ListDistroKeywords --explicit-noop $useNoCache $useNoIndex --all-keywords `"
+						local indexOwnKeywords="` ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords `"
 					fi
 				else
 					if [ -z "${indexAllKeywords:0:1}" ] ; then
-						local indexAllKeywords="` ListDistroKeywords --explicit-noop $useNoCache $useNoIndex --all-keywords-merged `"
+						local indexAllKeywords="` ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged `"
 					fi
 				fi
 				
@@ -366,7 +365,7 @@ ListDistroKeywords(){
 					set +e ; return 1
 				fi
 				local filterKeywords="$1" projectName projectKeywords ; shift
-				ListDistroKeywords --explicit-noop $useNoCache $useNoIndex --all-keywords \
+				ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
 				| while read -r projectName projectKeywords ; do
 				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
 						echo "$projectName ${projectKeywords#${filterKeywords}:}"
@@ -385,16 +384,9 @@ ListDistroKeywords(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectKeywords "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectKeywords "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				if [ -n "$indexColumns" ] ; then
@@ -406,7 +398,7 @@ ListDistroKeywords(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						ListDistroKeywords --explicit-noop $useNoCache $useNoIndex --all-keywords \
+						ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
 					)
 					return 0
 				fi

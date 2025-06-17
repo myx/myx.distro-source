@@ -17,6 +17,8 @@ ListProjectKeywords(){
 	local MDSC_CMD='ListProjectKeywords'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
 		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
@@ -24,8 +26,6 @@ ListProjectKeywords(){
 	fi
 	shift
 
-	local useNoCache=""
-	local useNoIndex=""
 	local filterProjects=""
 
 	set -e
@@ -34,13 +34,13 @@ ListProjectKeywords(){
 		case "$1" in
 			--print-keywords-only)
 				shift
-				ListProjectKeywords "$projectName" $useNoCache $useNoIndex "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectKeywords "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
 				shift
 				break;
-				#ListProjectKeywords "$projectName" $useNoCache $useNoIndex "$@" # | sed "s|^|$projectName |g"
+				#ListProjectKeywords "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" # | sed "s|^|$projectName |g"
 				#return 0
 			;;
 			--filter-and-cut)
@@ -51,7 +51,7 @@ ListProjectKeywords(){
 				fi
 				local filterKeywords="$1" projectKeywords ; shift
 
-				ListProjectKeywords "$projectName" $useNoCache $useNoIndex "$@" --print-keywords-only \
+				ListProjectKeywords "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" --print-keywords-only \
 				| while read -r projectKeywords ; do
 				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
 						echo "$projectName ${projectKeywords#${filterKeywords}:}"
@@ -64,23 +64,16 @@ ListProjectKeywords(){
 				Require ListProjectSequence
 
 				if [ -z "$1" ] ; then
-					ListProjectSequence "$projectName" $useNoCache $useNoIndex --print-keywords
+					ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --print-keywords
 					return 0
 				fi
 
 				local sequenceProjectName
-				ListProjectSequence "$projectName" $useNoCache $useNoIndex \
+				ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX \
 				| while read -r sequenceProjectName ; do
-					ListProjectKeywords "$sequenceProjectName" $useNoCache $useNoIndex "$@"
+					ListProjectKeywords "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				done | awk '!x[$0]++'	
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				break;
@@ -93,7 +86,7 @@ ListProjectKeywords(){
 	done
 
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$useNoCache" != "--no-cache" ] ; then
+		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-keywords.txt"
 	
 			if [ -f "$cacheFile" ] && \
@@ -121,7 +114,7 @@ ListProjectKeywords(){
 			return 0
 		fi
 		
-		if [ "$useNoIndex" != "--no-index" ] ; then
+		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 			if [ -f "$indexFile" ] && \
 				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )

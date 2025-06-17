@@ -14,7 +14,8 @@ fi
 
 ListRepositoryProvides(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryProvides $@" >&2
+	local MDSC_CMD='ListRepositoryProvides'
+
 
 	case "$1" in
 		--internal-print-project-provides)
@@ -22,6 +23,9 @@ ListRepositoryProvides(){
 			return 0
 		;;
 	esac
+
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -39,9 +43,6 @@ ListRepositoryProvides(){
 			return 0
 		;;
 	esac
-
-	local useNoCache=""
-	local useNoIndex=""
 
 	while true ; do
 		case "$1" in
@@ -62,8 +63,8 @@ ListRepositoryProvides(){
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+					ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
 			;;
@@ -74,8 +75,8 @@ ListRepositoryProvides(){
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $useNoCache $useNoIndex ) ; do
-					ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex --merge-sequence "$@"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+					ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --merge-sequence "$@"
 				done	
 				return 0
 			;;
@@ -88,20 +89,13 @@ ListRepositoryProvides(){
 				local filterProvides="$1" ; shift
 
 				local filterProvides="$1" projectName projectProvides ; shift
-				ListRepositoryProvides "$repositoryName" $useNoCache $useNoIndex "$@" \
+				ListRepositoryProvides "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" \
 				| while read -r projectName projectProvides ; do
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
 					fi
 				done | awk '!x[$0]++'
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				break;
@@ -114,7 +108,7 @@ ListRepositoryProvides(){
 	done
 
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$useNoCache" != "--no-cache" ] ; then
+		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$repositoryName/repository-provides.txt"
 			
 			if [ -f "$cacheFile" ] && \
@@ -130,7 +124,7 @@ ListRepositoryProvides(){
 			return 0
 		fi
 		
-		if [ "$useNoIndex" != "--no-index" ] ; then
+		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 			if [ -f "$indexFile" ] && \
 				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
@@ -167,7 +161,7 @@ ListRepositoryProvides(){
 
 	local projectName
 	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectProvides $projectName $useNoCache $useNoIndex "$@" || true
+		ListProjectProvides $projectName $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" || true
 	done
 }
 

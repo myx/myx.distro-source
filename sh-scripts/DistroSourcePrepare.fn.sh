@@ -17,13 +17,13 @@ if ! type DistroSource >/dev/null 2>&1 ; then
 fi
 
 DistroSourcePrepare(){
+
 	local MDSC_CMD='DistroSourcePrepare'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	set -e
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
-	local useNoCache=""
-	local useNoIndex=""
+	set -e
 
 	case "$1" in
 		--prepare-register-repository-root)
@@ -71,12 +71,6 @@ DistroSourcePrepare(){
 		--explicit-noop)
 			shift
 		;;
-		--no-cache)
-			useNoCache=$1 ; shift
-		;;
-		--no-index)
-			useNoIndex=$1 ; shift
-		;;
 		--select-from-env)
 			shift
 			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
@@ -114,7 +108,7 @@ DistroSourcePrepare(){
 				fi
 	
 				Require ListDistroDeclares
-				ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync:source-prepare-pull"
+				ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares-prefix-cut "distro-image-sync:source-prepare-pull"
 
 				return 0
 			;;
@@ -126,7 +120,7 @@ DistroSourcePrepare(){
 				fi
 				
 				Require ListDistroDeclares
-				indexAllJobs="$( ListDistroDeclares $useNoCache $useNoIndex --all-declares-prefix-cut "distro-image-sync:source-prepare-pull:" )"
+				indexAllJobs="$( ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares-prefix-cut "distro-image-sync:source-prepare-pull:" )"
 	
 				break
 			;;
@@ -141,7 +135,7 @@ DistroSourcePrepare(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 
 				return 0
@@ -151,7 +145,7 @@ DistroSourcePrepare(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						DistroSourcePrepare --explicit-noop $useNoCache $useNoIndex --all-projects \
+						DistroSourcePrepare --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects \
 					)
 					break
 				fi

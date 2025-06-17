@@ -17,6 +17,8 @@ ListProjectSequence(){
 	local MDSC_CMD='ListProjectSequence'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
 		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
@@ -26,9 +28,6 @@ ListProjectSequence(){
 
 	set -e
 
-	local useNoCache=""
-	local useNoIndex=""
-
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 
 	while true ; do
@@ -36,14 +35,14 @@ ListProjectSequence(){
 			--print-project)
 				shift
 				
-				ListProjectSequence "$projectName" $useNoCache $useNoIndex "$@" | sed "s|^|$projectName |g"
+				ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$projectName |g"
 				return 0
 			;;
 			--print-provides)
 				shift
 				
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoCache" != "--no-cache" ] ; then
+					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/$projectName/project-provides-sequence.txt"
 						if [ -f "$cacheFile" ] && \
 							( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
@@ -56,8 +55,8 @@ ListProjectSequence(){
 						Require ListProjectProvides
 						
 						echo "$MDSC_CMD: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
-						for sequenceProjectName in $( ListProjectSequence "$projectName" $useNoCache $useNoIndex ) ; do
-							ListProjectProvides "$sequenceProjectName" $useNoCache $useNoIndex --print-project "$@"
+						for sequenceProjectName in $( ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+							ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --print-project "$@"
 						done | awk '!x[$2]++' | tee "$cacheFile"
 						return 0
 					fi
@@ -65,16 +64,9 @@ ListProjectSequence(){
 				
 				
 				Require ListProjectProvides
-				ListProjectProvides "$projectName" $useNoCache $useNoIndex --merge-sequence --print-project "$@"
+				ListProjectProvides "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --merge-sequence --print-project "$@"
 		
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				break;
@@ -88,7 +80,7 @@ ListProjectSequence(){
 
 
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$useNoCache" != "--no-cache" ] ; then
+		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
 			if [ -f "$cacheFile" ] && \
 				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
@@ -109,7 +101,7 @@ ListProjectSequence(){
 			return 0
 		fi
 
-		if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+		if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
 			if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
 				

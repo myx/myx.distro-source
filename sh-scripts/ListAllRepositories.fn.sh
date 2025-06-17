@@ -14,17 +14,13 @@ fi
 
 ListAllRepositories(){
 
-	local useNoCache
-	local useNoIndex
+	local MDSC_CMD='LostAllRepositories'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	while true ; do
 		case "$1" in
-			--no-cache)
-				useNoCache=$1 ; shift
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
-			;;
 			''|--all-repositories)
 				shift
 				break
@@ -40,7 +36,7 @@ ListAllRepositories(){
 		esac
 	done
 
-	if [ "$useNoCache" != "--no-cache" ] && [ -n "$MDSC_CACHED" ] ; then
+	if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -n "$MDSC_CACHED" ] ; then
 		local cacheFile="$MDSC_CACHED/repository-names.txt"
 		if [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then

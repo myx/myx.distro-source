@@ -20,11 +20,10 @@ ListDistroDeclares(){
 	local MDSC_CMD='ListDistroDeclares'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	set -e
-
-	local useNoCache=""
-	local useNoIndex=""
-
+	
 	while true ; do
 		case "$1" in
 			--all-*|--add-*-column)
@@ -32,13 +31,6 @@ ListDistroDeclares(){
 			;;
 			--explicit-noop)
 				shift
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			--select-from-env)
 				shift
@@ -83,7 +75,7 @@ ListDistroDeclares(){
 				##
 				## check cache ready
 				##
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "${MDSC_IDODCL:0:1}" ] ; then
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDODCL"
@@ -119,7 +111,7 @@ ListDistroDeclares(){
 					fi
 				fi
 	
-				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using index" >&2
@@ -134,7 +126,7 @@ ListDistroDeclares(){
 					fi
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDODCL="` ListDistroDeclares --explicit-noop --no-cache --all-declares `"
 					echo "$MDSC_IDODCL"
@@ -164,7 +156,7 @@ ListDistroDeclares(){
 			
 				local repositoryName
 				ListAllRepositories | while read -r repositoryName ; do
-					ListRepositoryDeclares $repositoryName $useNoCache $useNoIndex || true
+					ListRepositoryDeclares $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
 				done
 	
 				return 0
@@ -176,7 +168,7 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 				local filterDeclares="$1" projectName projectDeclares ; shift
-				ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares \
+				ListDistroDeclares --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
 				| while read -r projectName projectDeclares ; do
 				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
 						echo "$projectName ${projectDeclares#${filterDeclares}:}"
@@ -191,7 +183,7 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "$MDSC_IDADCL_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged using cache file ($MDSC_OPTION)" >&2
 						cat "$MDSC_IDADCL_NAME"
@@ -221,7 +213,7 @@ ListDistroDeclares(){
 				fi
 
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged using index ($MDSC_OPTION)" >&2
@@ -251,7 +243,7 @@ ListDistroDeclares(){
 					fi
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDADCL="` ListDistroDeclares --explicit-noop --no-cache --all-declares-merged `"
 					echo "$MDSC_IDADCL"
@@ -293,8 +285,8 @@ ListDistroDeclares(){
 				Require ListProjectDeclares
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence $useNoCache $useNoIndex --all ) ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -307,11 +299,11 @@ ListDistroDeclares(){
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
 					if [ -z "${indexOwnDeclares:0:1}" ] ; then
-						local indexOwnDeclares="` ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares `"
+						local indexOwnDeclares="` ListDistroDeclares --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares `"
 					fi
 				else
 					if [ -z "${indexAllDeclares:0:1}" ] ; then
-						local indexAllDeclares="` ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares-merged `"
+						local indexAllDeclares="` ListDistroDeclares --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares-merged `"
 					fi
 				fi
 				
@@ -392,7 +384,7 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 				local filterDeclares="$1" projectName projectDeclares ; shift
-				ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares \
+				ListDistroDeclares --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
 				| while read -r projectName projectDeclares ; do
 				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
 						echo "$projectName ${projectDeclares#${filterDeclares}:}"
@@ -411,7 +403,7 @@ ListDistroDeclares(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -425,7 +417,7 @@ ListDistroDeclares(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						ListDistroDeclares --explicit-noop $useNoCache $useNoIndex --all-declares \
+						ListDistroDeclares --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
 					)
 					return 0
 				fi

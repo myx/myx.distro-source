@@ -33,7 +33,10 @@ ListRepositoryProjectsInternalRecursionEchoProjects(){
 
 ListRepositoryProjects(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositoryProjects $@" >&2
+	local MDSC_CMD='ListRepositoryProjects'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	local repositoryName="${1#$MDSC_SOURCE/}"
 	if [ -z "$repositoryName" ] ; then
@@ -42,9 +45,6 @@ ListRepositoryProjects(){
 	fi
 	shift
 	
-	local useNoCache=""
-	local useNoIndex=""
-
 	set -e
 
 	while true ; do
@@ -53,15 +53,6 @@ ListRepositoryProjects(){
 				shift
 				;;
 
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-				;;
-
-			--no-index)
-				useNoIndex=$1 ; shift
-				;;
-			
 			'')
 				break;
 				;;
@@ -73,7 +64,7 @@ ListRepositoryProjects(){
 		esac
 	done
 
-	if [ "$useNoCache" != "--no-cache" ] ; then
+	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/project-names.txt"
 		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
@@ -83,13 +74,13 @@ ListRepositoryProjects(){
 		fi
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] && [ -d "$( dirname "$cacheFile" )" ] ; then
 			echo "ListRepositoryProjects: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
-			ListRepositoryProjects "$repositoryName" --no-cache $useNoIndex | tee "$cacheFile"
+			ListRepositoryProjects "$repositoryName" --no-cache $MDSC_NO_INDEX | tee "$cacheFile"
 			return 0
 		fi
 	fi
 	
 
-	if [ "$useNoIndex" != "--no-index" ] ; then
+	if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 		if [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then

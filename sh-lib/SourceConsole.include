@@ -24,7 +24,9 @@ case "$1" in
 		set +e ; return 1
 	;;
 	--start-console)
-		bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i -- "$@"
+		shift
+		export MDSC_ARGUMENTS="$@"
+		bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i
 		return 0
 	;;
 	*)

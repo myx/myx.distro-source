@@ -20,6 +20,8 @@ ListDistroProvides(){
 	local MDSC_CMD='ListDistroProvides'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	set -e
 
 	case "$1" in
@@ -52,9 +54,6 @@ ListDistroProvides(){
 		;;
 	esac
 
-	local useNoCache=""
-	local useNoIndex=""
-
 	local indexFile="$MDSC_CACHED/distro-index.inf"
 	local indexAllProvides=""
 	local indexOwnProvides=""
@@ -72,7 +71,7 @@ ListDistroProvides(){
 				##
 				## check cache ready
 				##
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "${MDSC_IDOPRV:0:1}" ] ; then
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using env-cached ($MDSC_OPTION)" >&2
 						echo "$MDSC_IDOPRV"
@@ -108,7 +107,7 @@ ListDistroProvides(){
 					fi
 				fi
 	
-				if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using index" >&2
@@ -123,7 +122,7 @@ ListDistroProvides(){
 					fi
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDOPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides `"
 					echo "$MDSC_IDOPRV"
@@ -153,7 +152,7 @@ ListDistroProvides(){
 			
 				local repositoryName
 				ListAllRepositories | while read -r repositoryName ; do
-					ListRepositoryProvides $repositoryName $useNoCache $useNoIndex || true
+					ListRepositoryProvides $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
 				done
 	
 				return 0
@@ -165,7 +164,7 @@ ListDistroProvides(){
 					set +e ; return 1
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "$MDSC_IDAPRV_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using cache file ($MDSC_OPTION)" >&2
 						cat "$MDSC_IDAPRV_NAME"
@@ -195,7 +194,7 @@ ListDistroProvides(){
 				fi
 
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged using index ($MDSC_OPTION)" >&2
@@ -225,7 +224,7 @@ ListDistroProvides(){
 					fi
 				fi
 
-				if [ "$useNoCache" != "--no-cache" ] ; then
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged env-caching projects ($MDSC_OPTION)" >&2
 					export MDSC_IDAPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides-merged `"
 					echo "$MDSC_IDAPRV"
@@ -267,8 +266,8 @@ ListDistroProvides(){
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence $useNoCache $useNoIndex --all ) ; do
-					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+					ListProjectProvides "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -281,11 +280,11 @@ ListDistroProvides(){
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
 					if [ -z "${indexOwnProvides:0:1}" ] ; then
-						local indexOwnProvides="` ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides `"
+						local indexOwnProvides="` ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides `"
 					fi
 				else
 					if [ -z "${indexAllProvides:0:1}" ] ; then
-						local indexAllProvides="` ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides-merged `"
+						local indexAllProvides="` ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged `"
 					fi
 				fi
 				
@@ -366,7 +365,7 @@ ListDistroProvides(){
 					set +e ; return 1
 				fi
 				local filterProvides="$1" projectName projectProvides ; shift
-				ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
+				ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
 				| while read -r projectName projectProvides ; do
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
@@ -385,16 +384,9 @@ ListDistroProvides(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectProvides "$sequenceProjectName" --merge-sequence $useNoCache $useNoIndex "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectProvides "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
-			;;
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-			;;
-			--no-index)
-				useNoIndex=$1 ; shift
 			;;
 			'')
 				if [ -n "$indexColumns" ] ; then
@@ -406,7 +398,7 @@ ListDistroProvides(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						ListDistroProvides --explicit-noop $useNoCache $useNoIndex --all-provides \
+						ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
 					)
 					return 0
 				fi

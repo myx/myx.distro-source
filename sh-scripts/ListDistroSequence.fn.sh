@@ -16,8 +16,8 @@ ListDistroSequence(){
 	local MDSC_CMD='ListDistroSequence'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	local useNoCache=""
-	local useNoIndex=""
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+
 	local filterProjects=""
 
 	set -e
@@ -32,7 +32,7 @@ ListDistroSequence(){
 				fi
 
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$useNoCache" != "--no-cache" ] ; then
+					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-build-sequence.txt"
 
 						if [ -f "$cacheFile" ] && \
@@ -51,7 +51,7 @@ ListDistroSequence(){
 					fi
 					
 					local indexFile="$MDSC_CACHED/distro-index.inf"
-					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 							
 							echo "$MDSC_CMD: --all using index ($MDSC_OPTION)" >&2
@@ -93,7 +93,7 @@ ListDistroSequence(){
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					
 					local indexFile="$MDSC_CACHED/distro-index.inf"
-					if [ "$useNoIndex" != "--no-index" ] && [ -f "$indexFile" ] ; then
+					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
 						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 							
 							echo "$MDSC_CMD: --all-projects using index ($MDSC_OPTION)" >&2
@@ -132,21 +132,12 @@ ListDistroSequence(){
 
 				local sequenceProjectName
 				local currentProjectName
-				for sequenceProjectName in $( ListDistroSequence $useNoCache $useNoIndex --all ) ; do
-					ListProjectSequence "$sequenceProjectName" $useNoCache $useNoIndex | while read -r currentProjectName ; do
+				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+					ListProjectSequence "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX | while read -r currentProjectName ; do
 						echo "$sequenceProjectName" "$currentProjectName"
 					done
 				done
 				return 0
-				;;
-
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-				;;
-
-			--no-index)
-				useNoIndex=$1 ; shift
 				;;
 
 			*)

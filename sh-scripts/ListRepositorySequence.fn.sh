@@ -14,7 +14,10 @@ fi
 
 ListRepositorySequence(){
 	
-	[ -z "$MDSC_DETAIL" ] || echo "> ListRepositorySequence $@" >&2
+	local MDSC_CMD='ListRepositorySequence'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -23,8 +26,6 @@ ListRepositorySequence(){
 	fi
 	shift
 
-	local useNoCache=""
-	local useNoIndex=""
 	local filterProjects=""
 
 	set -e
@@ -33,15 +34,6 @@ ListRepositorySequence(){
 		case "$1" in
 			--all)
 				shift
-				;;
-
-			--no-cache)
-				shift
-				local useNoCache="--no-cache"
-				;;
-			
-			--no-index)
-				useNoIndex=$1 ; shift
 				;;
 
 			'')
@@ -55,7 +47,7 @@ ListRepositorySequence(){
 		esac
 	done
 
-	if [ "$useNoCache" != "--no-cache" ] ; then
+	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
 		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
@@ -70,7 +62,7 @@ ListRepositorySequence(){
 		fi
 	fi
 	
-	if [ "$useNoIndex" != "--no-index" ] ; then
+	if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
