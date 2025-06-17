@@ -79,7 +79,6 @@ case "$0" in
 				echo "  Examples:" >&2
 				echo "    JumpTo.fn.sh ndss113" >&2
 				echo "    JumpTo.fn.sh ndm/cloud.knt/setup.host-ndss112r3.ndm9.xyz" >&2
-				echo "    JumpTo.fn.sh ndm/cloud.knt/setup.host-ndss112r3.ndm9.xyz -l mysql whoami" >&2
 			fi
 			exit 1
 		fi
