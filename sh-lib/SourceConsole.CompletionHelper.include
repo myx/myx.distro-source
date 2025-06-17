@@ -30,7 +30,7 @@ function SourceConsoleCompletionHelper(){
 	# grab the vertical list
 	list=$(
 		Distro --completion-all \
-		| grep '^\(DistroSource\|Source\|Build\|Clean\|List\).*.fn.sh$' \
+		| grep '^\(DistroSource\|Source\|ListDistro\|ListAll\|Build\|Clean\|ListSource\).*.fn.sh$' \
 		| sort -u \
 		| sed 's:\.fn\.sh$::' 
 	)
