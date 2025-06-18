@@ -84,7 +84,7 @@ ListDistroProjects(){
 					ListRepositoryProjects "$repositoryName"
 				done
 
-				echo "| ListDistroProjects: done scanning all projects. ($MDSC_OPTION)" >&2
+				[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: done scanning all projects. ($MDSC_OPTION)" >&2
 				return 0
 			;;
 			--print-selected)
