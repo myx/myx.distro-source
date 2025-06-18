@@ -23,7 +23,7 @@ ListRepositorySequence(){
 				echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
 				echo "syntax: ListRepositorySequence.fn.sh --help" >&2
 				if [ "$1" = "--help" ] ; then
-					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListRepositorySequence.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListRepositorySequence.include"
 				fi
 				return 0
 			;;
