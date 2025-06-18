@@ -19,13 +19,10 @@ ListAllRepositories(){
 	local MDSC_CMD='LostAllRepositories'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
 
 	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
-			'')
-				break
-			;;
 			--all-repositories)
 				shift
 				break
@@ -33,6 +30,9 @@ ListAllRepositories(){
 			--help)
 				shift
 				return 0
+			;;
+			'')
+				break
 			;;
 			*)
 				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2

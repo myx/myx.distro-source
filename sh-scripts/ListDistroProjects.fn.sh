@@ -7,19 +7,12 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
-fi
-
-
 ListDistroProjects(){
 	
 	local MDSC_CMD='ListDistroProjects'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+	#. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
 
@@ -28,6 +21,7 @@ ListDistroProjects(){
 	local executeDefault=""
 	
 	while true ; do
+		source "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--select-from-env)
 				shift
@@ -532,7 +526,7 @@ ListDistroProjects(){
 					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListDistroProjects.include"
 				fi
-				set +e ; return 1
+				return 0
 			;;
 			*)
 				if [ -z "$executeDefault" ] ; then
@@ -555,6 +549,11 @@ ListDistroProjects(){
 
 case "$0" in
 	*/sh-scripts/ListDistroProjects.fn.sh) 
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-path-auto
+		fi
+		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			ListDistroProjects "--help-syntax"
 			exit 1

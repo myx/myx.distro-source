@@ -25,7 +25,7 @@ ListRepositoryProvides(){
 	esac
 
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -63,8 +63,8 @@ ListRepositoryProvides(){
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-					ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectProvides "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
 			;;
@@ -75,8 +75,8 @@ ListRepositoryProvides(){
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-					ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --merge-sequence "$@"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectProvides "$sequenceProjectName" --merge-sequence "$@"
 				done	
 				return 0
 			;;

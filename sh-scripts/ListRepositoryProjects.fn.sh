@@ -36,7 +36,7 @@ ListRepositoryProjects(){
 	local MDSC_CMD='ListRepositoryProjects'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local repositoryName="${1#$MDSC_SOURCE/}"
 	if [ -z "$repositoryName" ] ; then

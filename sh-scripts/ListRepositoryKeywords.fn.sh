@@ -25,7 +25,7 @@ ListRepositoryKeywords(){
 		;;
 	esac
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -63,8 +63,8 @@ ListRepositoryKeywords(){
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-					ListProjectKeywords "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectKeywords "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
 			;;
@@ -75,8 +75,8 @@ ListRepositoryKeywords(){
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-					ListProjectKeywords "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectKeywords "$sequenceProjectName" --merge-sequence "$@"
 				done	
 				return 0
 			;;

@@ -1,0 +1,17 @@
+echo >&2
+echo "  Options:" >&2
+echo >&2
+echo "    --no-index" >&2
+echo "                Use no index." >&2
+echo >&2
+echo "    --no-cache" >&2
+echo "                Use no cache." >&2
+echo >&2
+echo "  Examples:" >&2
+echo >&2
+echo "	ListRepositorySequence.fn.sh myx" >&2
+echo "	ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null" >&2
+echo "	ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null" >&2
+echo "	ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null" >&2
+echo >&2
+set +e ; return 1

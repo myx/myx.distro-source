@@ -17,7 +17,7 @@ ListProjectSequence(){
 	local MDSC_CMD='ListProjectSequence'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then

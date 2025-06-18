@@ -24,7 +24,7 @@ ListRepositoryDeclares(){
 		;;
 	esac
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local repositoryName="$1"
 	if [ -z "$repositoryName" ] ; then
@@ -62,8 +62,8 @@ ListRepositoryDeclares(){
 				Require ListProjectDeclares
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-					ListProjectDeclares "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectDeclares "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
 			;;
@@ -74,8 +74,8 @@ ListRepositoryDeclares(){
 				Require ListProjectDeclares
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
+				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+					ListProjectDeclares "$sequenceProjectName" --merge-sequence "$@"
 				done	
 				return 0
 			;;

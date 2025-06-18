@@ -7,55 +7,54 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
-fi
-
 ListRepositorySequence(){
 	
 	local MDSC_CMD='ListRepositorySequence'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseOptions.include"
-
-	local repositoryName="$1"
-	if [ -z "$repositoryName" ] ; then
-		echo "⛔ ERROR: ListRepositorySequence: 'repositoryName' argument is required!" >&2
-		set +e ; return 1
-	fi
-	shift
-
-	local filterProjects=""
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
 
+	local repositoryName=""
+
 	while true ; do
 		case "$1" in
-			--all)
-				shift
+			--help|--help-syntax)
+				echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
+				echo "syntax: ListDistroProjects.fn.sh --help" >&2
+				if [ "$1" = "--help" ] ; then
+					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListRepositorySequence.include"
+				fi
+				return 0
+			;;
+			--*)
+				echo "⛔ ERROR: ListRepositorySequence: invalid option: $1" >&2
+				set +e ; return 1
 				;;
-
 			'')
 				break;
 				;;
-
 			*)
-				echo "⛔ ERROR: ListRepositorySequence: invalid option: $1" >&2
-				set +e ; return 1
+				repositoryName="$1" ; shift
 				;;
 		esac
 	done
 
+	if [ -z "$repositoryName" ] ; then
+		echo "⛔ ERROR: ListRepositorySequence: 'repositoryName' argument is required!" >&2
+		set +e ; return 1
+	fi
+
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
-		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
+		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
-		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositorySequence: caching projects ($MDSC_OPTION)" >&2
 			ListRepositorySequence "$repositoryName" --no-cache | tee "$cacheFile"
 			return 0
@@ -64,7 +63,7 @@ ListRepositorySequence(){
 	
 	if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-		if [ -z "$filterProjects" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
+		if [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			
 			echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2
@@ -86,7 +85,7 @@ ListRepositorySequence(){
 		fi
 	fi
 	
-	if [ -z "$filterProjects" ] && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
+	if [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
 		echo "ListRepositorySequence: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
@@ -106,8 +105,19 @@ ListRepositorySequence(){
 
 case "$0" in
 	*/sh-scripts/ListRepositorySequence.fn.sh) 
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-path-auto
+		fi
+
+		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositorySequence.fn.sh <repositoryName> [--no-cache]" >&2
+			ListRepositorySequence "--help-syntax"
+			exit 1
+		fi
+		
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
 			echo "syntax: ListRepositorySequence.fn.sh --help" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Options:" >&2
@@ -118,12 +128,6 @@ case "$0" in
 				echo "    --no-index" >&2
 				echo "                Use no index." >&2
 				echo >&2
-				echo "  Examples:" >&2
-				echo >&2
-				echo "	ListRepositorySequence.fn.sh myx" >&2
-				echo "	ListRepositorySequence.fn.sh --distro-from-source myx 2> /dev/null" >&2
-				echo "	ListRepositorySequence.fn.sh --distro-from-cached myx 2> /dev/null" >&2
-				echo "	ListRepositorySequence.fn.sh --distro-source-only myx 2> /dev/null" >&2
 			fi
 			exit 1
 		fi
