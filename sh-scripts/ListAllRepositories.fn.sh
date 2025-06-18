@@ -14,6 +14,8 @@ fi
 
 ListAllRepositories(){
 
+	set -x
+
 	local MDSC_CMD='LostAllRepositories'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
@@ -21,7 +23,10 @@ ListAllRepositories(){
 
 	while true ; do
 		case "$1" in
-			''|--all-repositories)
+			'')
+				break
+			;;
+			--all-repositories)
 				shift
 				break
 			;;

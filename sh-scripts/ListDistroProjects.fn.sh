@@ -74,16 +74,17 @@ ListDistroProjects(){
 					fi
 				fi
 				
-				echo "| ListDistroProjects: scanning all projects ($MDSC_OPTION)" >&2
+				echo "| ListDistroProjects: scanning all projects... ($MDSC_OPTION)" >&2
 			
 				Require ListAllRepositories
 				Require ListRepositoryProjects
 				
-				local repositoryName
 				ListAllRepositories | while read repositoryName ; do
+					[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: iterate repository: $repositoryName" >&2
 					ListRepositoryProjects "$repositoryName"
 				done
-				
+
+				echo "| ListDistroProjects: done scanning all projects. ($MDSC_OPTION)" >&2
 				return 0
 			;;
 			--print-selected)
