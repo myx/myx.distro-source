@@ -74,7 +74,7 @@ ListRepositoryProjects(){
 		fi
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] && [ -d "$( dirname "$cacheFile" )" ] ; then
 			echo "ListRepositoryProjects: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
-			ListRepositoryProjects "$repositoryName" --no-cache $MDSC_NO_INDEX | tee "$cacheFile"
+			ListRepositoryProjects --no-cache "$repositoryName" | tee "$cacheFile"
 			return 0
 		fi
 	fi
