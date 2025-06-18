@@ -12,8 +12,6 @@ ListDistroProjects(){
 	local MDSC_CMD='ListDistroProjects'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	#. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
-
 	set -e
 
 	local selectProjects=""
@@ -21,7 +19,7 @@ ListDistroProjects(){
 	local executeDefault=""
 	
 	while true ; do
-		source "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--select-from-env)
 				shift

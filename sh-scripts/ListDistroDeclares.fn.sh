@@ -31,6 +31,7 @@ ListDistroDeclares(){
 			;;
 			--explicit-noop)
 				shift
+				break
 			;;
 			--select-from-env)
 				shift
@@ -64,6 +65,7 @@ ListDistroDeclares(){
 	local indexColumns=""
 
 	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--all-declares)
 				shift

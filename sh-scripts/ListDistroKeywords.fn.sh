@@ -24,35 +24,40 @@ ListDistroKeywords(){
 
 	set -e
 
-	case "$1" in
-		--all-keywords|--all-keywords-merged|--add-*-column)
-		;;
-		--explicit-noop)
-			shift
-		;;
-		--select-from-env)
-			shift
-			if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
-				set +e ; return 1
-			fi
-		;;
-		--set-env)
-			shift
-			if [ -z "$1" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: --set-env argument expected!" >&2
-				set +e ; return 1
-			fi
-			local envName="$1" ; shift
-			eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
-			return 0
-		;;
-		--*)
-			Require ListDistroProjects
-			ListDistroProjects --select-execute-default ListDistroKeywords "$@"
-			return 0
-		;;
-	esac
+	while true ; do
+		case "$1" in
+			--all-*|--add-*-column)
+				break
+			;;
+			--explicit-noop)
+				shift
+				break
+			;;
+			--select-from-env)
+				shift
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+					set +e ; return 1
+				fi
+				break
+			;;
+			--set-env)
+				shift
+				if [ -z "$1" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: --set-env argument expected!" >&2
+					set +e ; return 1
+				fi
+				local envName="$1" ; shift
+				eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
+				return 0
+			;;
+			--*)
+				Require ListDistroProjects
+				ListDistroProjects --select-execute-default ListDistroKeywords "$@"
+				return 0
+			;;
+		esac
+	done
 
 	local indexFile="$MDSC_CACHED/distro-index.inf"
 	local indexAllKeywords=""
@@ -60,6 +65,7 @@ ListDistroKeywords(){
 	local indexColumns=""
 
 	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--all-keywords)
 				shift
