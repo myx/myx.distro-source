@@ -10,15 +10,15 @@ fi
 ListRepositorySequence(){
 	
 	local MDSC_CMD='ListRepositorySequence'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
 
 	local repositoryName=""
 
 	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--help|--help-syntax)
 				echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
@@ -56,7 +56,7 @@ ListRepositorySequence(){
 		fi
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListRepositorySequence: caching projects ($MDSC_OPTION)" >&2
-			ListRepositorySequence "$repositoryName" --no-cache | tee "$cacheFile"
+			ListRepositorySequence --no-cache "$repositoryName" | tee "$cacheFile"
 			return 0
 		fi
 	fi
