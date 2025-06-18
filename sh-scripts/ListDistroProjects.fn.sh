@@ -523,7 +523,7 @@ ListDistroProjects(){
 				$executeCommand --select-from-env $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
 				return 0
 			;;
-			''|--help)
+			--help)
 				echo "syntax: ListDistroProjects.fn.sh --all-projects" >&2
 				echo "syntax: ListDistroProjects.fn.sh <project-selector> [<options>] [<execute-extra-args>]" >&2
 				echo "syntax: ListDistroProjects.fn.sh [--help]" >&2
@@ -554,7 +554,11 @@ ListDistroProjects(){
 
 case "$0" in
 	*/sh-scripts/ListDistroProjects.fn.sh) 
-
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			ListDistroProjects "--help"
+			exit 1
+		fi
+		
 		set -e 
 		ListDistroProjects "$@"
 	;;
