@@ -1,0 +1,15 @@
+echo >&2
+echo "  Options:" >&2
+echo >&2
+echo "    --no-index" >&2
+echo "                Use no index." >&2
+echo >&2
+echo "    --no-cache" >&2
+echo "                Use no cache." >&2
+echo >&2
+echo "  Examples:" >&2
+echo >&2
+echo "    ListRepositoryProjects.fn.sh myx" >&2
+echo "    ListRepositoryProjects.fn.sh myx --no-cache --no-index" >&2
+echo >&2
+set +e ; return 1

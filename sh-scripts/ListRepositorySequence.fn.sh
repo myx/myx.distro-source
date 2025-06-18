@@ -12,17 +12,16 @@ ListRepositorySequence(){
 	local MDSC_CMD='ListRepositorySequence'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	local repositoryName=""
 
 	set -e
-
-	local repositoryName=""
 
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--help|--help-syntax)
 				echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
-				echo "syntax: ListDistroProjects.fn.sh --help" >&2
+				echo "syntax: ListRepositorySequence.fn.sh --help" >&2
 				if [ "$1" = "--help" ] ; then
 					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListRepositorySequence.include"
 				fi
@@ -109,26 +108,9 @@ case "$0" in
 			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
 		fi
-
 		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			ListRepositorySequence "--help-syntax"
-			exit 1
-		fi
-		
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
-			echo "syntax: ListRepositorySequence.fn.sh --help" >&2
-			if [ "$1" = "--help" ] ; then
-				echo "  Options:" >&2
-				echo >&2
-				echo "    --no-cache" >&2
-				echo "                Use no cache." >&2
-				echo >&2
-				echo "    --no-index" >&2
-				echo "                Use no index." >&2
-				echo >&2
-			fi
 			exit 1
 		fi
 

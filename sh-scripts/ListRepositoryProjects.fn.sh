@@ -36,33 +36,43 @@ ListRepositoryProjects(){
 	local MDSC_CMD='ListRepositoryProjects'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+	local repositoryName=""
 
-	local repositoryName="${1#$MDSC_SOURCE/}"
-	if [ -z "$repositoryName" ] ; then
-		echo 'ListRepositoryProjects: ⛔ ERROR: $repositoryName' is not set! >&2
-		set +e ; return 1
-	fi
-	shift
-	
 	set -e
 
+	local repositoryName="${1#$MDSC_SOURCE/}"
+	shift
 	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--all)
 				shift
 				;;
-
-			'')
-				break;
-				;;
-
-			*)
+			--help|--help-syntax)
+				echo "syntax: ListRepositoryProjects.fn.sh [<options>] <repository-name>" >&2
+				echo "syntax: ListRepositoryProjects.fn.sh --help" >&2
+				if [ "$1" = "--help" ] ; then
+					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListRepositoryProjects.include"
+				fi
+				return 0
+			;;
+			--*)
 				echo "⛔ ERROR: ListRepositoryProjects: invalid option: $1" >&2
 				set +e ; return 1
 				;;
+			'')
+				break;
+				;;
+			*)
+				repositoryName="$1" ; shift
+				;;
 		esac
 	done
+
+	if [ -z "$repositoryName" ] ; then
+		echo 'ListRepositoryProjects: ⛔ ERROR: $repositoryName' is not set! >&2
+		set +e ; return 1
+	fi
 
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/project-names.txt"
@@ -105,28 +115,8 @@ ListRepositoryProjects(){
 case "$0" in
 	*/sh-scripts/ListRepositoryProjects.fn.sh) 
 		
-		# ListRepositoryProjects.fn.sh --distro-source-only myx 2> /dev/null
-		# ListRepositoryProjects.fn.sh --distro-from-source myx 2> /dev/null
-		# ListRepositoryProjects.fn.sh --distro-from-cached myx 2> /dev/null
-		# ListRepositoryProjects.fn.sh myx --no-cache
-
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListRepositoryProjects.fn.sh <repository-name> [<options>]" >&2
-			echo "syntax: ListRepositoryProjects.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				echo "  Options:" >&2
-				echo >&2
-				echo "    --no-cache" >&2
-				echo "                Use no cache." >&2
-				echo >&2
-				echo "    --no-index" >&2
-				echo "                Use no index." >&2
-				echo >&2
-				echo "  Examples:" >&2
-				echo >&2
-				echo "    ListRepositoryProjects.fn.sh myx" >&2
-				echo "    ListRepositoryProjects.fn.sh myx --no-cache --no-index" >&2
-			fi
+			ListRepositorySequence "--help-syntax"
 			exit 1
 		fi
 
