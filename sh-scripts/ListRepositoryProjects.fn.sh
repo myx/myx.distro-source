@@ -40,8 +40,6 @@ ListRepositoryProjects(){
 
 	set -e
 
-	local repositoryName="${1#$MDSC_SOURCE/}"
-	shift
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
@@ -64,7 +62,7 @@ ListRepositoryProjects(){
 				break;
 				;;
 			*)
-				repositoryName="$1" ; shift
+				repositoryName="${1#$MDSC_SOURCE/}" ; shift
 				;;
 		esac
 	done
@@ -116,7 +114,7 @@ case "$0" in
 	*/sh-scripts/ListRepositoryProjects.fn.sh) 
 		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			ListRepositorySequence "--help-syntax"
+			ListRepositoryProjects "--help-syntax"
 			exit 1
 		fi
 
