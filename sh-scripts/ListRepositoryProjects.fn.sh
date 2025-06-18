@@ -50,7 +50,7 @@ ListRepositoryProjects(){
 				echo "syntax: ListRepositoryProjects.fn.sh [<options>] <repository-name>" >&2
 				echo "syntax: ListRepositoryProjects.fn.sh --help" >&2
 				if [ "$1" = "--help" ] ; then
-					. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListRepositoryProjects.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListRepositoryProjects.include"
 				fi
 				return 0
 			;;
@@ -114,7 +114,7 @@ case "$0" in
 	*/sh-scripts/ListRepositoryProjects.fn.sh) 
 		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			ListRepositoryProjects "--help-syntax"
+			ListRepositoryProjects ${1:-"--help-syntax"}
 			exit 1
 		fi
 

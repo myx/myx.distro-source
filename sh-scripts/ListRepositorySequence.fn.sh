@@ -110,7 +110,7 @@ case "$0" in
 		fi
 		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			ListRepositorySequence "--help-syntax"
+			ListRepositorySequence ${1:-"--help-syntax"}
 			exit 1
 		fi
 
