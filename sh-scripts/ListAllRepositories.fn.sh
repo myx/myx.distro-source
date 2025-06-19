@@ -14,8 +14,6 @@ fi
 
 ListAllRepositories(){
 
-	set -x
-
 	local MDSC_CMD='LostAllRepositories'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
