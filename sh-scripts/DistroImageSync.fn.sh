@@ -305,7 +305,7 @@ DistroImageSync(){
 				return 0
 			;;
 			'')
-				echo "⛔ ERROR: $MDSC_CMD: one of --print-* or --execute command is required" >&2
+				echo "⛔ ERROR: $MDSC_CMD: one of --print-* or --execute-* commands is required" >&2
 				set +e ; return 1
 			;;
 			*)
