@@ -207,7 +207,7 @@ DistroImageSync(){
 				shift
 				(
 					export useStage="stdin-repo-list-pull"
-					export syncMode="--parallel"
+					export syncMode="${1:---parallel}"
 					DistroImageSync --intern-print-tasks-from-stdin-repo-list \
 					| DistroImageSync --intern-print-script-from-stdin-task-list "$@"
 				)
@@ -217,7 +217,7 @@ DistroImageSync(){
 				shift
 				( 
 					export useStage="stdin-repo-list-pull"
-					export syncMode="--parallel"
+					export syncMode="${1:---parallel}"
 					eval "$( DistroImageSync --script-from-stdin-repo-list )" 
 				)
 				return 0
