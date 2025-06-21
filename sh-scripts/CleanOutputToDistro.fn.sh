@@ -20,7 +20,7 @@ CleanOutputToDistro(){
 
 case "$0" in
 	*/sh-scripts/CleanOutputToDistro.fn.sh) 
-		# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
+		# "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
 		CleanOutputToDistro "$@"
 	;;
 esac

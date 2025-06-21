@@ -11,7 +11,7 @@ CompileCachedJavaRepository(){
 
 
 	( \
-		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
 		RunJavaClassSource \
 			myx/myx.distro-source \
 			ru.myx.distro.prepare.MakeCompileSources \
@@ -23,7 +23,7 @@ CompileCachedJavaRepository(){
 
 case "$0" in
 	*/sh-scripts/CompileCachedJavaRepository.fn.sh) 
-		# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
+		# "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
 		CompileCachedJavaRepository "$@"
 	;;
 esac

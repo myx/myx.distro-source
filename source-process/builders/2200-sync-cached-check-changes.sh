@@ -1,5 +1,5 @@
 if [ "`type -t DistroSourceCommand`" != "function" ] ; then
-. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh"
+. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh"
 fi
 
 Require DistroSourceCommand

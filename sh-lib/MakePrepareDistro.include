@@ -7,7 +7,7 @@ echo "Initializing Source Build, Working in: $MMDAPP" >&2
 
 MakePrepareDistro(){
 
-	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassClean.include" ;
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassClean.include" ;
 	RunJavaClassClean myx/myx.distro-source ru.myx.distro.DistroStaticCommand \
 			--source-root "$MMDAPP/source" \
 			--output-root "$MMDAPP/output" \
@@ -18,7 +18,7 @@ MakePrepareDistro(){
 	
 	
 
-	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
 	RunJavaClassSource myx/myx.distro-source ru.myx.distro.DistroStaticCommand \
 			--source-root "$MMDAPP/source" \
 			--output-root "$MMDAPP/output" \

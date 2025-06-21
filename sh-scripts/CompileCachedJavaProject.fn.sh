@@ -17,7 +17,7 @@ CompileCachedJavaProject(){
 	echo "$MDSC_CMD: Compiling project $projectName" >&2
 	
 	( \
-		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
 		RunJavaClassSource \
 			myx/myx.distro-source \
 			ru.myx.distro.prepare.MakeCompileSources \
@@ -33,7 +33,7 @@ CompileCachedJavaProject(){
 	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
 	
 	( \
-		. "$MMDAPP/source/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
 		RunJavaClassSource \
 			myx/myx.distro-source \
 			ru.myx.distro.prepare.MakeCompileSources \
@@ -46,7 +46,7 @@ CompileCachedJavaProject(){
 
 case "$0" in
 	*/sh-scripts/CompileCachedJavaProject.fn.sh) 
-		# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
+		# "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
 
 		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
 		DistroSystemContext --distro-from-cached

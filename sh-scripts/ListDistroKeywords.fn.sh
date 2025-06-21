@@ -13,7 +13,7 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 fi
 
 if ! type DistroSource >/dev/null 2>&1 ; then
-	. "$MMDAPP/source/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
 fi
 
 ListDistroKeywords(){
@@ -432,8 +432,8 @@ case "$0" in
 			echo "syntax: ListDistroKeywords.fn.sh <project-selector> [--merge-sequence]" >&2
 			echo "syntax: ListDistroKeywords.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpListDistroKeywords.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroKeywords.include"
 			fi
 			exit 1
 		fi

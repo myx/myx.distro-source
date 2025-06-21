@@ -17,7 +17,7 @@ fi
 ListSourceBuildSequence(){
 	Require DistroSourceCommand
 	DistroSourceCommand "$@" --import-from-source --select-all --print-sequence --print ""
-	# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" "$@" --import-from-source --select-all --print-sequence --print ""
+	# "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/distro-source.sh" "$@" --import-from-source --select-all --print-sequence --print ""
 }
 
 case "$0" in

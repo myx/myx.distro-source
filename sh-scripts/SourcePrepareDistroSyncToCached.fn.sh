@@ -62,7 +62,7 @@ SourcePrepareDistroSyncToCached(){
 
 	# re-run itself with enforced 'source' mode
 	( \
-		. "$MMDAPP/source/myx/myx.distro-system/sh-lib/SystemContext.include" ; \
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include" ; \
 		DistroSystemContext --distro-from-source ; \
 		Distro SourcePrepareDistroSyncToCached "$@"
 	)

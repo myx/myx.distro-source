@@ -83,7 +83,7 @@ case "$0" in
 			echo "syntax: ListProjectBuilders.fn.sh <project> --all-build-stages" >&2
 			echo "syntax: ListProjectBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MMDAPP/source/myx/myx.distro-source/sh-lib/help/HelpSelectStage.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectStage.include"
 				echo >&2
 				echo "  Arguments:" >&2
 				echo >&2

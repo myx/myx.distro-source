@@ -5,14 +5,14 @@ CompileJavaSources(){
 	fi
 
 	( \
-		. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/CompileCachedJavaProject.fn.sh" ; \
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/CompileCachedJavaProject.fn.sh" ; \
 		CompileCachedJavaProject $projectName \
 	)
 	
 	return 0
 	
 	( \
-		. "$MMDAPP/source/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh" ; \
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh" ; \
 		DistroSourceCommand \
 			-v \
 			--output-root "$MMDAPP/output" \

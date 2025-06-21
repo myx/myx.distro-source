@@ -20,7 +20,7 @@ CleanCachedToOutput(){
 
 case "$0" in
 	*/sh-scripts/CleanCachedToOutput.fn.sh) 
-		# "$MMDAPP/source/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
+		# "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/distro-source.sh" --clean-output "$MMDAPP/output" --print ""
 		CleanCachedToOutput "$@"
 	;;
 esac
