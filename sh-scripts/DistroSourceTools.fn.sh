@@ -58,7 +58,7 @@ DistroSourceTools(){
 
 			local repositoryInf="$(
 				printf \
-					"# created by DistroSourceToops --register-repository-root '%s'\nName: %s\Href: %s\nFetch: %s\n" \
+					"# created by DistroSourceTools --register-repository-root '%s'\nName: %s\nHref: %s\nFetch: %s\n" \
 					"$repositoryName" \
 					"$repositoryName" \
 					"$repositoryHref" \
