@@ -43,7 +43,7 @@ ListRepositoryProjects(){
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
-			--all)
+			''|--all)
 				shift
 				;;
 			--help|--help-syntax)
@@ -55,11 +55,8 @@ ListRepositoryProjects(){
 				return 0
 			;;
 			--*)
-				echo "⛔ ERROR: ListRepositoryProjects: invalid option: $1" >&2
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
-				;;
-			'')
-				break;
 				;;
 			*)
 				repositoryName="${1#$MDSC_SOURCE/}" ; shift
@@ -68,7 +65,7 @@ ListRepositoryProjects(){
 	done
 
 	if [ -z "$repositoryName" ] ; then
-		echo 'ListRepositoryProjects: ⛔ ERROR: $repositoryName' is not set! >&2
+		echo '$MDSC_CMD: ⛔ ERROR: $repositoryName' is not set! >&2
 		set +e ; return 1
 	fi
 
@@ -76,12 +73,12 @@ ListRepositoryProjects(){
 		local cacheFile="$MDSC_CACHED/$repositoryName/project-names.txt"
 		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProjects: $repositoryName: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $repositoryName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] && [ -d "$( dirname "$cacheFile" )" ] ; then
-			echo "ListRepositoryProjects: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
 			ListRepositoryProjects --no-cache "$repositoryName" | tee "$cacheFile"
 			return 0
 		fi
@@ -92,7 +89,7 @@ ListRepositoryProjects(){
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 		if [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			echo "ListRepositoryProjects: $repositoryName: using image ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: $repositoryName: using image ($MDSC_OPTION)" >&2
 			local PKG
 			for PKG in $( grep "PRJS=" "$indexFile" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
 				echo "$PKG"
@@ -101,7 +98,7 @@ ListRepositoryProjects(){
 		fi
 	fi
 	
-	echo "ListRepositoryProjects: $repositoryName: scanning source folders ($MDSC_OPTION)" >&2
+	echo "$MDSC_CMD: $repositoryName: scanning source folders ($MDSC_OPTION)" >&2
 	
 	for CHK_PATH in `find "$MDSC_SOURCE/$repositoryName" -mindepth 1 -maxdepth 1 -type d | sort` ; do
 		for LINE in `ListRepositoryProjectsInternalRecursionEchoProjects "$CHK_PATH"` ; do

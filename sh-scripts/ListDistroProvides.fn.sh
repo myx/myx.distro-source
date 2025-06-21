@@ -56,6 +56,9 @@ ListDistroProvides(){
 				ListDistroProjects --select-execute-default ListDistroProvides "$@"
 				return 0
 			;;
+			*)
+				break
+			;;
 		esac
 	done
 

@@ -28,7 +28,7 @@ ListRepositorySequence(){
 				return 0
 			;;
 			--*)
-				echo "⛔ ERROR: ListRepositorySequence: invalid option: $1" >&2
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
 				;;
 			'')
@@ -41,7 +41,7 @@ ListRepositorySequence(){
 	done
 
 	if [ -z "$repositoryName" ] ; then
-		echo "⛔ ERROR: ListRepositorySequence: 'repositoryName' argument is required!" >&2
+		echo "⛔ ERROR: $MDSC_CMD: 'repositoryName' argument is required!" >&2
 		set +e ; return 1
 	fi
 
@@ -49,12 +49,12 @@ ListRepositorySequence(){
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
 		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
 			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "| ListRepositorySequence: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-			echo "ListRepositorySequence: caching projects ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: caching projects ($MDSC_OPTION)" >&2
 			ListRepositorySequence --no-cache "$repositoryName" | tee "$cacheFile"
 			return 0
 		fi
@@ -65,7 +65,7 @@ ListRepositorySequence(){
 		if [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			
-			echo "ListRepositorySequence: using index ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: using index ($MDSC_OPTION)" >&2
 			
 			local FILTER="$1"
 			local currentProject
@@ -85,7 +85,7 @@ ListRepositorySequence(){
 	fi
 	
 	if [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
-		echo "ListRepositorySequence: extracting from source (java) ($MDSC_OPTION)" >&2
+		echo "$MDSC_CMD: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
 		
@@ -98,7 +98,7 @@ ListRepositorySequence(){
 		return 0
 	fi
 	
-	echo "⛔ ERROR: ListRepositorySequence: project.inf file is required (at: $indexFile)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: project.inf file is required (at: $indexFile)" >&2
 	set +e ; return 1
 }
 

@@ -526,6 +526,10 @@ ListDistroProjects(){
 				fi
 				return 0
 			;;
+			'')
+				ListDistroProjects "--help-syntax"
+				set +e; return 1
+			;;
 			*)
 				if [ -z "$executeDefault" ] ; then
 					if [ -z "$1" ] ; then
@@ -547,17 +551,18 @@ ListDistroProjects(){
 
 case "$0" in
 	*/sh-scripts/ListDistroProjects.fn.sh) 
+		set -e 
+
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+			ListDistroProjects "${1:-"--help-syntax"}"
+			exit 1
+		fi
+		
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
 		fi
 		
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			ListDistroProjects "--help-syntax"
-			exit 1
-		fi
-		
-		set -e 
 		ListDistroProjects "$@"
 	;;
 esac

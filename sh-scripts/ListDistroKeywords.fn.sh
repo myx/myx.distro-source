@@ -56,6 +56,9 @@ ListDistroKeywords(){
 				ListDistroProjects --select-execute-default ListDistroKeywords "$@"
 				return 0
 			;;
+			*)
+				break
+			;;
 		esac
 	done
 
