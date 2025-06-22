@@ -64,8 +64,8 @@ ListProjectActions(){
 case "$0" in
 	*/sh-scripts/ListProjectActions.fn.sh) 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectActions.fn.sh <project>" >&2
-			echo "syntax: ListProjectActions.fn.sh [--help]" >&2
+			echo "📘 syntax: ListProjectActions.fn.sh <project>" >&2
+			echo "📘 syntax: ListProjectActions.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2
 				echo "	ListProjectActions.fn.sh --distro-from-source myx/myx.distro-source 2> /dev/null" >&2

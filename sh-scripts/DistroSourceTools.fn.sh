@@ -91,10 +91,10 @@ DistroSourceTools(){
 				return 0
 			;;
 			--help|--help-syntax)
-				echo "syntax: DistroSourceTools.fn.sh --register-repository-root <repo-name>" >&2
-				echo "syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
-				echo "syntax: DistroSourceTools.fn.sh <option>" >&2
-				echo "syntax: DistroSourceTools.fn.sh [--help]" >&2
+				echo "📘 syntax: DistroSourceTools.fn.sh --register-repository-root <repo-name>" >&2
+				echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
+				echo "📘 syntax: DistroSourceTools.fn.sh <option>" >&2
+				echo "📘 syntax: DistroSourceTools.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
 					cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceTools.text" >&2
 				fi

@@ -47,8 +47,8 @@ ListRepositoryProjects(){
 				shift
 				;;
 			--help|--help-syntax)
-				echo "syntax: ListRepositoryProjects.fn.sh [<options>] <repository-name>" >&2
-				echo "syntax: ListRepositoryProjects.fn.sh --help" >&2
+				echo "📘 syntax: ListRepositoryProjects.fn.sh [<options>] <repository-name>" >&2
+				echo "📘 syntax: ListRepositoryProjects.fn.sh --help" >&2
 				if [ "$1" = "--help" ] ; then
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListRepositoryProjects.include"
 				fi

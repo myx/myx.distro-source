@@ -320,12 +320,12 @@ case "$0" in
 	*/sh-scripts/DistroImageSync.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
-			echo "syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
-			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
-			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
-			echo "syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
-			echo "syntax: DistroImageSync.fn.sh [--help]" >&2
+			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
+			echo "📘 syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
+			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
+			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
+			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
+			echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 				echo "    --all-tasks" >&2

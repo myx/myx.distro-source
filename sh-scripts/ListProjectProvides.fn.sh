@@ -151,8 +151,8 @@ ListProjectProvides(){
 case "$0" in
 	*/sh-scripts/ListProjectProvides.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectProvides.fn.sh <project_name> [--print-project] [--print-provides-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
-			echo "syntax: ListProjectProvides.fn.sh [--help]" >&2
+			echo "📘 syntax: ListProjectProvides.fn.sh <project_name> [--print-project] [--print-provides-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
+			echo "📘 syntax: ListProjectProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Options:" >&2
 				echo >&2

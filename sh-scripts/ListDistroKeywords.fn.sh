@@ -427,10 +427,10 @@ ListDistroKeywords(){
 case "$0" in
 	*/sh-scripts/ListDistroKeywords.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroKeywords.fn.sh --all-keywords" >&2
-			echo "syntax: ListDistroKeywords.fn.sh --all-keywords-merged" >&2
-			echo "syntax: ListDistroKeywords.fn.sh <project-selector> [--merge-sequence]" >&2
-			echo "syntax: ListDistroKeywords.fn.sh [--help]" >&2
+			echo "📘 syntax: ListDistroKeywords.fn.sh --all-keywords" >&2
+			echo "📘 syntax: ListDistroKeywords.fn.sh --all-keywords-merged" >&2
+			echo "📘 syntax: ListDistroKeywords.fn.sh <project-selector> [--merge-sequence]" >&2
+			echo "📘 syntax: ListDistroKeywords.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroKeywords.include"

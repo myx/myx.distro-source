@@ -428,10 +428,10 @@ case "$0" in
 	*/sh-scripts/ListDistroProvides.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListDistroProvides.fn.sh --all-provides" >&2
-			echo "syntax: ListDistroProvides.fn.sh --all-provides-merged" >&2
-			echo "syntax: ListDistroProvides.fn.sh <project-selector> [--merge-sequence] [<options>]" >&2
-			echo "syntax: ListDistroProvides.fn.sh [--help]" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh --all-provides" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh --all-provides-merged" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh <project-selector> [--merge-sequence] [<options>]" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroProvides.include"

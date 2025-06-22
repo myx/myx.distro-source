@@ -1,4 +1,4 @@
-syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>
+📘 syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>
 
 	Options:
 

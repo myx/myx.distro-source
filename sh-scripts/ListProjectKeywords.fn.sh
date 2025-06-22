@@ -151,8 +151,8 @@ ListProjectKeywords(){
 case "$0" in
 	*/sh-scripts/ListProjectKeywords.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListProjectKeywords.fn.sh <project_name> [--print-project] [--print-keywords-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
-			echo "syntax: ListProjectKeywords.fn.sh [--help]" >&2
+			echo "📘 syntax: ListProjectKeywords.fn.sh <project_name> [--print-project] [--print-keywords-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
+			echo "📘 syntax: ListProjectKeywords.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Examples:" >&2
 				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common" >&2

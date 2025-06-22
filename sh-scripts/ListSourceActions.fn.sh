@@ -38,8 +38,8 @@ ListSourceActions(){
 case "$0" in
 	*/sh-scripts/ListSourceActions.fn.sh) 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: ListSourceActions.fn.sh --all [--no-cache]" >&2
-			echo "syntax: ListSourceActions.fn.sh --help" >&2
+			echo "📘 syntax: ListSourceActions.fn.sh --all [--no-cache]" >&2
+			echo "📘 syntax: ListSourceActions.fn.sh --help" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2
 				echo "	ListSourceActions.fn.sh --distro-from-source --all" >&2

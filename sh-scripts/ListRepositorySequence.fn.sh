@@ -20,8 +20,8 @@ ListRepositorySequence(){
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--help|--help-syntax)
-				echo "syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
-				echo "syntax: ListRepositorySequence.fn.sh --help" >&2
+				echo "📘 syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
+				echo "📘 syntax: ListRepositorySequence.fn.sh --help" >&2
 				if [ "$1" = "--help" ] ; then
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListRepositorySequence.include"
 				fi

@@ -168,10 +168,10 @@ case "$0" in
 	*/sh-scripts/DistroSourcePrepare.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: DistroSourcePrepare.fn.sh --prepare-register-repository-root <repo-name> [projects-spec-to-pull]" >&2
-			echo "syntax: DistroSourcePrepare.fn.sh [<options>] --all-projects" >&2
-			echo "syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
-			echo "syntax: DistroSourcePrepare.fn.sh [--help]" >&2
+			echo "📘 syntax: DistroSourcePrepare.fn.sh --prepare-register-repository-root <repo-name> [projects-spec-to-pull]" >&2
+			echo "📘 syntax: DistroSourcePrepare.fn.sh [<options>] --all-projects" >&2
+			echo "📘 syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
+			echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 				echo >&2
