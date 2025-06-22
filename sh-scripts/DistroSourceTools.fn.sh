@@ -31,6 +31,7 @@ DistroSourceTools(){
 					DistroSourceTools --register-repository-root "$1" --not-set --batch
 					shift
 				done
+				return 0
 			;;
 			--register-repository-root)
 				local repositoryName="$2"
@@ -78,11 +79,11 @@ DistroSourceTools(){
 			;;
 			--make-*)
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
-				set +e ; return 1
+				return 0
 			;;
 			--*-config-option)
 				. "$MDLT_ORIGIN/myx/myx.distro-.local/sh-lib/LocalTools.Config.include"
-				set +e ; return 1
+				return 0
 			;;
 			--upgrade-source-tools)
 				shift
