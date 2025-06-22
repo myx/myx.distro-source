@@ -518,7 +518,7 @@ ListDistroProjects(){
 			;;
 			--help|--help-syntax)
 				echo "syntax: ListDistroProjects.fn.sh --all-projects" >&2
-				echo "syntax: ListDistroProjects.fn.sh <project-selector> [<options>] [<execute-extra-args>]" >&2
+				echo "syntax: ListDistroProjects.fn.sh <project-selector> [<command-options>] [<execute-extra-args>]" >&2
 				echo "syntax: ListDistroProjects.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"

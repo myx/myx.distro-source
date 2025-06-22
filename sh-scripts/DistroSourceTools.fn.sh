@@ -23,95 +23,104 @@ DistroSourceTools(){
 
 	set -e
 
-	case "$1" in
-		--register-repository-roots)
-			shift
-			while [ $# -gt 0 ] ; do
-				DistroSourceTools --register-repository-root "$1" --not-set --batch
+	while true ; do
+		case "$1" in
+			--register-repository-roots)
 				shift
-			done
-		;;
-		--register-repository-root)
-			local repositoryName="$2"
-			local repositoryHref="$3"
-			if [ -z "$repositoryName" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
-				set +e ; return 1
-			fi
-			if [ -z "$repositoryHref" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: repository root href expected: $@" >&2
-				set +e ; return 1
-			fi
+				while [ $# -gt 0 ] ; do
+					DistroSourceTools --register-repository-root "$1" --not-set --batch
+					shift
+				done
+			;;
+			--register-repository-root)
+				local repositoryName="$2"
+				local repositoryHref="$3"
+				if [ -z "$repositoryName" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+					set +e ; return 1
+				fi
+				if [ -z "$repositoryHref" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: repository root href expected: $@" >&2
+					set +e ; return 1
+				fi
 
-			shift ; shift ; shift
+				shift ; shift ; shift
 
-			if [ "$1" == "--batch" ] ; then
+				if [ "$1" == "--batch" ] ; then
+					shift
+					local partOfBatch="false"
+				fi
+				if [ -n "$1" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+
+				mkdir -p "$MMDAPP/source/$repositoryName"
+
+				local repositoryInf="$(
+					printf \
+						"# created by DistroSourceTools --register-repository-root '%s'\nName: %s\nHref: %s\nFetch: %s\n" \
+						"$repositoryName" \
+						"$repositoryName" \
+						"$repositoryHref" \
+						"$repositoryHref"
+				)"
+
+				local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
+
+				if ! [ "$( cat "$repositoryFile" 2>/dev/null )" == "$repositoryInf" ] ; then
+					echo -n "$repositoryInf" > "$repositoryFile"
+					echo "> $MDSC_CMD: --register-repository-root: $repositoryFile (re-)created." >&2
+					DistroSourceTools --make-code-workspace --quiet
+				fi
+
+				return 0
+			;;
+			--make-*)
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
+				set +e ; return 1
+			;;
+			--*-config-option)
+				. "$MDLT_ORIGIN/myx/myx.distro-.local/sh-lib/LocalTools.Config.include"
+				set +e ; return 1
+			;;
+			--upgrade-source-tools)
 				shift
-				local partOfBatch="false"
-			fi
-			if [ -n "$1" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: no options allowed after --register-repository-root <repo-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
+				bash "$MDLT_ORIGIN/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh" --install-distro-source
+				return 0
+			;;
+			--help|--help-syntax)
+				echo "syntax: DistroSourceTools.fn.sh --register-repository-root <repo-name>" >&2
+				echo "syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
+				echo "syntax: DistroSourceTools.fn.sh <option>" >&2
+				echo "syntax: DistroSourceTools.fn.sh [--help]" >&2
+				if [ "$1" = "--help" ] ; then
+					cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceTools.text" >&2
+				fi
+				return 0
+			;;
+			--verbose)
+				shift
+				export MDSC_DETAIL="true"
+				continue
+			;;
+			*)
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
-			fi
-
-			mkdir -p "$MMDAPP/source/$repositoryName"
-
-			local repositoryInf="$(
-				printf \
-					"# created by DistroSourceTools --register-repository-root '%s'\nName: %s\nHref: %s\nFetch: %s\n" \
-					"$repositoryName" \
-					"$repositoryName" \
-					"$repositoryHref" \
-					"$repositoryHref"
-			)"
-
-			local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
-
-			if ! [ "$( cat "$repositoryFile" 2>/dev/null )" == "$repositoryInf" ] ; then
-				echo -n "$repositoryInf" > "$repositoryFile"
-				echo "> $MDSC_CMD: --register-repository-root: $repositoryFile (re-)created." >&2
-				DistroSourceTools --make-code-workspace --quiet
-			fi
-
-			return 0
-		;;
-		--make-*)
-			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"
-			set +e ; return 1
-		;;
-		--*-config-option)
-			. "$MDLT_ORIGIN/myx/myx.distro-.local/sh-lib/LocalTools.Config.include"
-			set +e ; return 1
-		;;
-		--upgrade-source-tools)
-			shift
-			bash "$MDLT_ORIGIN/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh" --install-distro-source
-			return 0
-		;;
-		''|--help)
-			echo "syntax: DistroSourceTools.fn.sh <option>" >&2
-			echo "syntax: DistroSourceTools.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceTools.text" >&2
-			fi
-			set +e ; return 1
-		;;
-		*)
-			echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
-			set +e ; return 1
-		;;
-	esac
+			;;
+		esac
+	done
 }
 
 case "$0" in
 	*/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh)
+		set -e
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "syntax: DistroSourceTools.fn.sh --register-repository-root <repo-name>" >&2
-			echo "syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
+			DistroSourceTools "${1:-"--help-syntax"}"
+			exit 1
 		fi
 
-		set -e
 		DistroSourceTools "$@"
 	;;
 esac

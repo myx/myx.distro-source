@@ -14,16 +14,19 @@ DistroSystemContext --distro-from-source
 
 # export BASH_ENV="$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
 
-
 if [ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/bin/myx.common" ] ; then
 	: ${MYXROOT:=$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common}
 	PATH="$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/bin:$PATH"
 fi
 
 # add paths, replace if any
-PATH="$( echo "$PATH" | sed -E "s|:$MDLT_ORIGIN/myx/myx.distro-\(source\|deploy\|remote\)/sh-scripts||g" )"
-PATH+=":$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
-PATH+=":$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts"
+PATH=$(
+  printf '%s:%s:%s:%s' \
+    "${PATH//:$MDLT_ORIGIN\/myx\/myx.distro-*\/sh-scripts/}" \
+    "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts" \
+    "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts" \
+    "$MDLT_ORIGIN/myx/myx.distro-.local/sh-scripts"
+)
 
 
 # Action myx/yaumnrc/test-parser.url
@@ -91,11 +94,9 @@ if ! type Deploy >/dev/null 2>&1 ; then
 fi
 
 Source(){
-	set -e
-
 	case "$1" in
 		''|--*)
-			( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceConsole.include" )
+			( set -e ; . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceConsole.include" )
 			return 0
 		;;
 	esac
@@ -109,22 +110,13 @@ Source(){
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
 	fi
 
-	set +e
-
-	"${distroCommand%.fn.sh}" "$@" || {
+	set +e ; "${distroCommand%.fn.sh}" "$@" || {
 		EXITCODE=$?
 		echo "⛔ ERROR: exited with error status ($EXITCODE)" >&2
 		set +e
 		return $EXITCODE
 	}
 	return 0
-
-	( "${distroCommand%.fn.sh}" "$@" ; ) || {
-		EXITCODE=$?
-		echo "⛔ ERROR: exited with error status ($EXITCODE)" >&2
-		set +e
-		return $EXITCODE
-	}
 }
 
 Help(){

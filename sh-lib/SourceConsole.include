@@ -1,29 +1,46 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
+while true ; do
 case "$1" in 
 	--shell-prompt)
 		if [ -n "$MDSC_INT_CD" ] ; then
-			echo "Changing directory: $MDSC_INT_CD" >&2
+			echo "⤵️ Source: Changing directory: $MDSC_INT_CD" >&2
 			cd "$MDSC_INT_CD"
 			export -n MDSC_INT_CD
 		fi
 		printf "MDSC:%s:%s" "$MDSC_INMODE" "$(basename "${MDSC_PRJ_NAME:--}")"
 		return 0
 	;;
-	''|--help)
+	''|--help|--help-syntax)
 		shift
 		( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpConsoleSource.include" )
 		set +e ; return 1
 	;;
-	--start-console)
+	--start-console|--start-source-tools-console)
 		shift
 		export MDSC_ARGUMENTS="$@"
 		bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i
 		return 0
 	;;
+	--start-local-tools-console)
+		set -- --start-.local-tools-console "$@"
+	;;
+	--start-*-tools-console)
+		local type=${1#--start-}; type=${type%-tools-console}
+		local file="$MDLT_ORIGIN/myx/myx.distro-$type/sh-lib/console-$type-bashrc.rc"
+		[ -f "$file" ] || {
+			echo "⛔ ERROR: Source: $1 subsystem is not installed in this workspace" >&2
+			set +e ; return 1
+		}
+		shift
+		export MDSC_ARGUMENTS="$@"
+		bash --rcfile "$file" -i
+		return 0
+	;;
 	*)
-		echo "DistroSourceConsole: Invalid argument: $1" >&2
+		echo "⛔ ERROR: Source: Invalid argument: $1" >&2
 		set +e ; return 1
 	;;
 esac
+done
