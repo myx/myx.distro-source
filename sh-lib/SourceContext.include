@@ -13,6 +13,7 @@ DistroSourceContext(){
 	DistroSystemContext "$@"
 }
 
-# include system context
-. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-DistroSystemContext --distro-from-source
+if ! type DistroSystemContext >/dev/null 2>&1 ; then
+	# include system context
+	. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+fi
