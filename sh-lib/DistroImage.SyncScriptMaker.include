@@ -2,22 +2,11 @@
 # ^^^ for syntax checking in the editor only
 
 local syncType
-
 case "$useStage" in
-	*-pull)
-		# gitClonePull | GitClonePull
+	*-pull) # gitClonePull | GitClonePull
 		syncType="Pull"
-		case "$useStage" in
-			source-*)
-				if [ "$MDSC_INMODE" = "source" ] ; then
-					# gitCloneSync | GitCloneSync
-					syncType="Sync"
-				fi
-			;;
-		esac
 	;;
-	*-push)
-		# gitCloneSync | GitCloneSync
+	*-push) # gitCloneSync | GitCloneSync
 		syncType="Sync"
 	;;
 	*)
@@ -26,9 +15,20 @@ case "$useStage" in
 	;;
 esac
 
+local syncMode="${1:---parallel}"
 local syncCommandPath=""
 local syncCommandName=""
-local syncMode="${1:---parallel}"
+
+[ "$syncType" != "Pull" ] || [ "$syncMode" == "--portable" ] || {
+	case "$useStage" in
+		source-*)
+			case "$MDSC_INMODE" in
+				source) syncType=Sync ;;
+			esac
+		;;
+	esac
+}
+
 
 if \
 [ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
@@ -48,29 +48,8 @@ else
 fi
 
 case "$syncMode" in
-	--parallel)
+	--parallel|--sequence|--obsolete|--portable)
 		## nothing
-	;;
-	--sequence)
-		## nothing
-	;;
-	--sequence|--obsolete|--portable)
-		{
-			echo lib/sedLineReader lib/prefix lib/async \
-			| tr ' ' '\n' | while read -r MC_EMBED ; do
-				if \
-					[ -f "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED" ] ; then
-					cat "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/share/myx.common/bin/$MC_EMBED"
-				elif \
-					[ "$( which myx.common )" != "" ] ; then
-					myx.common cat $MC_EMBED
-				else
-					echo "⛔ ERROR: $MDSC_CMD: can't locate myx.common ($useStage) ($MDSC_OPTION, $@)" >&2
-					set +e ; return 1
-				fi
-			done
-			cat "$syncCommandPath/$syncCommandName"
-		} | grep -v -e '^#' -e '^$' || true
 	;;
 	*)
 		echo "⛔ ERROR: $MDSC_CMD: invalid sync mode: $syncMode ($MDSC_OPTION, $@)" >&2
@@ -83,6 +62,27 @@ printf 'export MMDAPP="${MMDAPP:-%s}"\n' "$MMDAPP"
 echo 'mkdir -p "$MMDAPP/source"'
 echo 'cd "$MMDAPP/source"'
 echo
+
+# ─── configure SSH for multiplexing via this temp dir ────────────────────────
+{
+	echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
+	echo '  mkdir -p "$MMDAPP/.local/temp"'
+	echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/ssh-control-masters-XXXXXX")'
+	echo 'else'
+			# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
+	echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
+	echo 'fi'
+
+	echo "trap 'rm -rf \"\$tmpdir\"' EXIT"
+
+	echo 'export GIT_SSH_COMMAND=" \'
+	echo '	ssh -4 \'
+	echo '	-o ControlMaster=auto \'
+	echo '	-o ControlPath=$tmpdir/%C \'
+	echo '	-o ControlPersist=1m'
+	echo '"'
+}
+
 
 case "$syncMode" in
 	--parallel)
@@ -128,16 +128,16 @@ case "$syncMode" in
 		local itemTarget itemSource useBranch rowCounter
 		echo
 		echo '### '
-		cat "$syncCommandPath/lib/sedLineReader"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader"
 		echo
 		echo '### '
-		cat "$syncCommandPath/lib/prefix"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix"
 		echo
 		echo '### '
-		cat "$syncCommandPath/lib/async"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async"
 		echo
 		echo '### '
-		cat "$syncCommandPath/$syncCommandName"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName"
 		echo
 		echo '### '
 		echo 
