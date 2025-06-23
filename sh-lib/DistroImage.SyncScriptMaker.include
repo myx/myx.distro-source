@@ -83,6 +83,30 @@ echo
 	echo '"'
 }
 
+# embed functions (xargs from --parallel doesn't support functions)
+case "$syncMode" in
+	--sequence|--obsolete|--portable)
+		echo 
+		echo '### lib/sedLineReader'
+		echo 
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader"
+		echo 
+		echo '### lib/sedLineReader'
+		echo 
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix"
+		echo 
+		echo '### lib/sedLineReader'
+		echo 
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async"
+		echo 
+		echo '### lib/sedLineReader'
+		echo 
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName"
+		echo 
+		echo '### Image Sync main block'
+		echo 
+	;;
+esac
 
 case "$syncMode" in
 	--parallel)
@@ -103,20 +127,6 @@ case "$syncMode" in
 	--sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
-		echo '### '
-		cat "$syncCommandPath/lib/sedLineReader"
-		echo
-		echo '### '
-		cat "$syncCommandPath/lib/prefix"
-		echo
-		echo '### '
-		cat "$syncCommandPath/lib/async"
-		echo
-		echo '### '
-		cat "$syncCommandPath/$syncCommandName"
-		echo
-		echo '### '
-		echo 
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
@@ -126,21 +136,6 @@ case "$syncMode" in
 	--portable)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch rowCounter
-		echo
-		echo '### '
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader"
-		echo
-		echo '### '
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix"
-		echo
-		echo '### '
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async"
-		echo
-		echo '### '
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName"
-		echo
-		echo '### '
-		echo 
 		DistroImageSync --intern-print-repo-list-from-stdin \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
