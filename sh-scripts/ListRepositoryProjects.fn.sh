@@ -45,6 +45,7 @@ ListRepositoryProjects(){
 		case "$1" in
 			''|--all)
 				shift
+				break
 				;;
 			--help|--help-syntax)
 				echo "📘 syntax: ListRepositoryProjects.fn.sh [<options>] <repository-name>" >&2
@@ -60,6 +61,7 @@ ListRepositoryProjects(){
 				;;
 			*)
 				repositoryName="${1#$MDSC_SOURCE/}" ; shift
+				break
 				;;
 		esac
 	done
