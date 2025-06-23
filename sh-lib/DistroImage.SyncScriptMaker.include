@@ -67,7 +67,7 @@ echo
 {
 	echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
 	echo '  mkdir -p "$MMDAPP/.local/temp"'
-	echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/ssh-control-masters-XXXXXX")'
+	echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/sshmux-XXXXX")'
 	echo 'else'
 			# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
 	echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
