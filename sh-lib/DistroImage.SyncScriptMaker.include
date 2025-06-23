@@ -74,8 +74,8 @@ echo
 	echo 'fi'
 
 	echo "trap 'rm -rf \"\$tmpdir\"' EXIT"
-
-	echo 'export GIT_SSH_COMMAND="ssh -4 -o ControlMaster=auto -o ControlPath=$tmpdir/%C -o ControlPersist=1m"'
+	echo 'pushd "$tmpdir" >/dev/null || exit 1'
+	echo 'export GIT_SSH_COMMAND="ssh -4 -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=1m"'
 }
 
 # embed functions (xargs from --parallel doesn't support functions)
@@ -145,12 +145,7 @@ case "$syncMode" in
 	;;
 esac
 
-#  mkdir -p ~/.ssh/controlmasters/
-#  GIT_SSH_COMMAND="ssh -4 -o ControlMaster=auto -o ControlPath=~/.ssh/controlmasters/%C -o ControlPersist=10m"
-#  export GIT_SSH_COMMAND
-
-#  LIST_REPOS="$MMDAPP/source/ndm/util.repository-ndm/data/repository/remotes-list-ndm.txt"
-#  test -s "$LIST_REPOS" && cat "$LIST_REPOS" | parallelGitCloneSync 6
+echo 'popd >/dev/null'
 
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
