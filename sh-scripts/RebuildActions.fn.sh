@@ -72,25 +72,35 @@ RebuildActions(){
 			case "$actionFullName" in
 		        *.sh)
 					## source code of script being created:
-					if true ; then
+					{
 						echo '#/bin/sh'
 						
 						echo 'ActionExecutionWrap(){'
+
 						echo 	"local actionScript='${actionFullName#"$projectName/actions/"}'"
 						echo 	"local actionFullName='$actionFullName'"
+
 						echo 	'[ "full" != "$MDSC_DETAIL" ] || set -x'
 						
 						echo 	'if [ -n "$MMDAPP" ] ; then'
+
 						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: using context settings: $MMDAPP" >&2'
+
 						echo 	'elif [ "$0" != "${0%"/source/$actionFullName"}" ] ; then'
+
 						echo 		'export MMDAPP="${0%"/source/$actionFullName"}"'
 						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings from source: $MMDAPP" >&2'
+
 						echo 	'elif [ "$0" != "${0%"/actions/$actionScript"}" ] ; then'
+
 						echo 		'export MMDAPP="${0%"/actions/$actionScript"}"'
 						echo 		'[ -z "$MDSC_DETAIL" ] || echo "> Action $actionFullName: calculated settings from action: $MMDAPP" >&2'
+
 						echo 	'else'
+
 						echo 		'echo "! Action $actionFullName: ⛔ ERROR: cant calculate distro root directory!" >&2'
 						echo		'set +e ; return 1'
+
 						echo 	'fi'
 						
 						echo 	'if [ ! -d "$MMDAPP/source" ] ; then'
@@ -101,8 +111,8 @@ RebuildActions(){
 						echo 	'. "$MMDAPP/source/$actionFullName"' 
 						echo '}'
 						
-						echo 'ActionExecutionWrap "$@"'
-					fi > "$actionLocation"
+						echo '( ActionExecutionWrap "$@" )'
+					} > "$actionLocation"
 					chmod ug=rx,o=r "$actionLocation" 
 					;;
 		        *.url)
