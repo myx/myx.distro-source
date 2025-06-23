@@ -11,7 +11,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 fi
 
-Require ListAllRepositories
 Require ListDistroProjects
 Require ListDistroBuilders
 

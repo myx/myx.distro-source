@@ -160,7 +160,7 @@ ListDistroKeywords(){
 				Require ListRepositoryKeywords
 			
 				local repositoryName
-				ListAllRepositories | while read -r repositoryName ; do
+				ListAllRepositories --all-repositories | while read -r repositoryName ; do
 					ListRepositoryKeywords $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
 				done
 	

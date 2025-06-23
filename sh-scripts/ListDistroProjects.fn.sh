@@ -71,7 +71,7 @@ ListDistroProjects(){
 				Require ListAllRepositories
 				Require ListRepositoryProjects
 				
-				ListAllRepositories | while read repositoryName ; do
+				ListAllRepositories --all-repositories | while read repositoryName ; do
 					[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: iterate repository: $repositoryName" >&2
 					ListRepositoryProjects "$repositoryName"
 				done

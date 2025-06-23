@@ -160,7 +160,7 @@ ListDistroProvides(){
 				Require ListRepositoryProvides
 			
 				local repositoryName
-				ListAllRepositories | while read -r repositoryName ; do
+				ListAllRepositories --all-repositories | while read -r repositoryName ; do
 					ListRepositoryProvides $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
 				done
 	
@@ -235,7 +235,7 @@ ListDistroProvides(){
 
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged env-caching projects ($MDSC_OPTION)" >&2
-					export MDSC_IDAPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides-merged `"
+					export MDSC_IDAPRV="` ListDistroProvides --no-cache --all-provides-merged `"
 					echo "$MDSC_IDAPRV"
 					return 0
 				fi

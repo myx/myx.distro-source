@@ -43,19 +43,19 @@ ListAllRepositories(){
 		local cacheFile="$MDSC_CACHED/repository-names.txt"
 		if [ -f "$cacheFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-			[ -z "$MDSC_DETAIL" ] || echo "| ListAllRepositories: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
 		if [ -d "$MDSC_CACHED" ] ; then
-			echo "ListAllRepositories: caching repositories ($MDSC_OPTION)" >&2
-			ListAllRepositories --no-cache | tee "$cacheFile"
+			echo "$MDSC_CMD: caching repositories ($MDSC_OPTION)" >&2
+			ListAllRepositories --no-cache --all-repositories | tee "$cacheFile"
 			return 0
 		fi
 	fi
 	
 
-	echo "ListAllRepositories: scanning all repositories ($MDSC_OPTION)" >&2
+	echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
 	for LINE in `find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!'` ; do
 		echo "${LINE#$MDSC_SOURCE/}"
 	done
