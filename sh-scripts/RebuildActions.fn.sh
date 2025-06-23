@@ -108,10 +108,15 @@ RebuildActions(){
 						echo		'set +e ; return 1'
 						echo 	'fi'
 						
+						echo 	'[ -n "$MDSC_ORIGIN" ] || {'
+						echo 		'. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/SourceContext.include"'
+						echo 		'DistroSourceContext --distro-path-auto'
+						echo 	'}'
+
 						echo 	'. "$MMDAPP/source/$actionFullName"' 
 						echo '}'
 						
-						echo '( ActionExecutionWrap "$@" )'
+						echo 'ActionExecutionWrap "$@"'
 					} > "$actionLocation"
 					chmod ug=rx,o=r "$actionLocation" 
 					;;
