@@ -87,23 +87,23 @@ echo
 case "$syncMode" in
 	--sequence|--obsolete|--portable)
 		echo 
-		echo '### lib/sedLineReader'
+		echo '# 📚 lib/sedLineReader'
 		echo 
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader"
 		echo 
-		echo '### lib/sedLineReader'
+		echo '# 📚 lib/prefix'
 		echo 
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix"
 		echo 
-		echo '### lib/sedLineReader'
+		echo '# 📚 lib/async'
 		echo 
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async"
 		echo 
-		echo '### lib/sedLineReader'
+		echo "# 📘 $syncCommandName"
 		echo 
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName"
 		echo 
-		echo '### Image Sync main block'
+		echo '# 🧾 Image Sync main block'
 		echo 
 	;;
 esac
