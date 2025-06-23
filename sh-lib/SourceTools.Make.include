@@ -98,14 +98,14 @@ CODEWORKSPACE
 
 		mkdir -p "$MMDAPP/.vscode/"{extensions,user-data}
 
-		cat > "$MMDAPP/start.sh" <<'CODELAUNCHER'
-		#!/usr/bin/env bash
-		cd "\$(dirname "\$0")"
-		code \
-		--extensions-dir "\$PWD/.vscode/extensions" \
-		--user-data-dir   "\$PWD/.vscode/user-data" \
-		"\$PWD/project.code-workspace"
-CODELAUNCHER
+		{
+			echo '#!/usr/bin/env bash'
+			echo 'cd "\$(dirname "\$0")"'
+			echo 'code \'
+			echo '--extensions-dir "\$PWD/.vscode/extensions" \'
+			echo '--user-data-dir   "\$PWD/.vscode/user-data" \'
+			echo '"\$PWD/project.code-workspace"'
+		} > "$MMDAPP/start.sh"
 
 		chmod +x "$MMDAPP/start.sh"
 
