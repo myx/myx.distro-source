@@ -110,7 +110,7 @@ ListProjectProvides(){
 	
 			mkdir -p "$MDSC_CACHED/$projectName"
 			echo "$MDSC_CMD: $projectName: caching project provides ($MDSC_OPTION)" >&2
-			ListProjectProvides "$projectName" --no-cache "$@" | tee "$cacheFile"
+			ListProjectProvides --no-cache "$projectName" "$@" | tee "$cacheFile"
 			return 0
 		fi
 		

@@ -56,7 +56,7 @@ ListProjectSequence(){
 						
 						echo "$MDSC_CMD: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
 						for sequenceProjectName in $( ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
-							ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --print-project "$@"
+							ListProjectProvides "$sequenceProjectName" --print-project "$@"
 						done | awk '!x[$2]++' | tee "$cacheFile"
 						return 0
 					fi
@@ -64,7 +64,7 @@ ListProjectSequence(){
 				
 				
 				Require ListProjectProvides
-				ListProjectProvides "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --merge-sequence --print-project "$@"
+				ListProjectProvides "$projectName" --merge-sequence --print-project "$@"
 		
 				return 0
 			;;
