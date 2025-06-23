@@ -407,7 +407,7 @@ ListDistroProvides(){
 					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
 						echo "$MDSC_SELECT_PROJECTS" \
 					) <( \
-						ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
+						ListDistroProvides --explicit-noop --all-provides \
 					)
 					return 0
 				fi

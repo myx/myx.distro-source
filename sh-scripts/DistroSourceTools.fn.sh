@@ -14,12 +14,12 @@ fi
 
 DistroSourceTools(){
 	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-source/sh-lib/SourceContext.include"
 	fi
 	DistroSystemContext --distro-path-auto
 
 	local MDSC_CMD='DistroSourceTools'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" >&2
 
 	set -e
 
@@ -91,9 +91,9 @@ DistroSourceTools(){
 				return 0
 			;;
 			--help|--help-syntax)
+				echo "📘 syntax: DistroSourceTools.fn.sh <option>" >&2
 				echo "📘 syntax: DistroSourceTools.fn.sh --register-repository-root <repo-name>" >&2
 				echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
-				echo "📘 syntax: DistroSourceTools.fn.sh <option>" >&2
 				echo "📘 syntax: DistroSourceTools.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
 					cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceTools.text" >&2

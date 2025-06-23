@@ -34,13 +34,13 @@ ListProjectProvides(){
 		case "$1" in
 			--print-provides-only)
 				shift
-				ListProjectProvides "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectProvides "$projectName" "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
 				shift
 				break;
-				#ListProjectProvides "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" # | sed "s|^|$projectName |g"
+				#ListProjectProvides "$projectName" "$@" # | sed "s|^|$projectName |g"
 				#return 0
 			;;
 			--filter-and-cut)
@@ -51,7 +51,7 @@ ListProjectProvides(){
 				fi
 				local filterProvides="$1" projectProvides ; shift
 
-				ListProjectProvides "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" --print-provides-only \
+				ListProjectProvides "$projectName" "$@" --print-provides-only \
 				| while read -r projectProvides ; do
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
@@ -64,14 +64,14 @@ ListProjectProvides(){
 				Require ListProjectSequence
 
 				if [ -z "$1" ] ; then
-					ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --print-provides
+					ListProjectSequence "$projectName" --print-provides
 					return 0
 				fi
 
 				local sequenceProjectName
-				ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX \
+				ListProjectSequence "$projectName" \
 				| while read -r sequenceProjectName ; do
-					ListProjectProvides "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
+					ListProjectProvides "$sequenceProjectName" "$@"
 				done | awk '!x[$0]++'	
 				return 0
 			;;
