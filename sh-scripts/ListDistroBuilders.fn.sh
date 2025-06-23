@@ -20,14 +20,18 @@ ListDistroBuilders(){
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local printBuildStage
-	case "$1" in
-		--print-build-stage)
-			shift
-			local printBuildStage="--print-build-stage"
-		;;
-		*)
-		;;
-	esac
+	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+		case "$1" in
+			--print-build-stage)
+				shift
+				local printBuildStage="--print-build-stage"
+			;;
+			*)
+			;;
+		esac
+		break
+	done
 
 	local stageType="$1"
 	if [ -z "$1" ] ; then

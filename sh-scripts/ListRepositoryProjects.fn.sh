@@ -100,8 +100,8 @@ ListRepositoryProjects(){
 	
 	echo "$MDSC_CMD: $repositoryName: scanning source folders ($MDSC_OPTION)" >&2
 	
-	for CHK_PATH in `find "$MDSC_SOURCE/$repositoryName" -mindepth 1 -maxdepth 1 -type d | sort` ; do
-		for LINE in `ListRepositoryProjectsInternalRecursionEchoProjects "$CHK_PATH"` ; do
+	for CHK_PATH in $( find "$MDSC_SOURCE/$repositoryName" -mindepth 1 -maxdepth 1 -type d | sort ) ; do
+		for LINE in $( ListRepositoryProjectsInternalRecursionEchoProjects "$CHK_PATH" ) ; do
 			echo "${LINE#$MDSC_SOURCE/}"
 		done
 	done	
