@@ -75,12 +75,7 @@ echo
 
 	echo "trap 'rm -rf \"\$tmpdir\"' EXIT"
 
-	echo 'export GIT_SSH_COMMAND=" \'
-	echo '	ssh -4 \'
-	echo '	-o ControlMaster=auto \'
-	echo '	-o ControlPath=$tmpdir/%C \'
-	echo '	-o ControlPersist=1m'
-	echo '"'
+	echo 'export GIT_SSH_COMMAND="ssh -4 -o ControlMaster=auto -o ControlPath=$tmpdir/%C -o ControlPersist=1m"'
 }
 
 # embed functions (xargs from --parallel doesn't support functions)
