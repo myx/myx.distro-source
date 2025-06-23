@@ -526,10 +526,6 @@ ListDistroProjects(){
 				fi
 				return 0
 			;;
-			'')
-				ListDistroProjects "--help-syntax"
-				set +e; return 1
-			;;
 			*)
 				if [ -z "$executeDefault" ] ; then
 					if [ -z "$1" ] ; then
