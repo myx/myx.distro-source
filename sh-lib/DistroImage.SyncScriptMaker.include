@@ -1,10 +1,72 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-[ "$1" != "--no-ssh-mx" ] || {
-	local NO_SSH_MX=$1
-	shift
-}
+case "$1" in
+	--no-ssh-mx)
+		local NO_SSH_MX=$1
+		shift
+	;;
+	--one-ssh-mx)
+		local ONE_SSH_MX=$1
+		shift
+	;;
+	--intern-ssh-mx-root-temp-block)
+		# make a socket-dir and ensure it’s cleaned up
+		echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
+		echo '  mkdir -p "$MMDAPP/.local/temp"'
+		echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/sshmux-XXXXX")'
+		echo 'else'
+				# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
+		echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
+		echo 'fi'
+
+		echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
+		echo 'pushd "$tmpdir" >/dev/null || exit 1'
+
+		return 0
+	;;
+	--intern-stdin-parallel-block)
+		printf '( %s | %s ) <<XARGS_INPUT\n' \
+			"tr '\n' '\0'" \
+			"xargs -0 -P '$parallelLimit' -I% -- sh -c 'myx.common lib/prefix -3 %'"
+		
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		local itemTarget itemSource useBranch
+		while read -r itemTarget itemSource useBranch _; do
+			# ${syncType} - cloneSync clonePull
+			echo myx.common "$syncCommandName" "$itemTarget" "$itemSource" "$useBranch"
+		done
+		
+		printf 'XARGS_INPUT\n\n'
+		return 0
+	;;
+	--intern-stdin-sequence-block)
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		local itemTarget itemSource useBranch
+		printf '%s\n' "$REPO_LIST" \
+		| while read -r itemTarget itemSource useBranch _; do
+			# ${syncType} - GitCloneSync GitClonePull
+			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
+		done
+		return 0
+	;;
+	--intern-stdin-portable-block)
+		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
+		local itemTarget itemSource useBranch rowCounter
+		printf '%s\n' "$REPO_LIST" \
+		| while read -r itemTarget itemSource useBranch _; do
+			# ${syncType} - GitCloneSync GitClonePull
+			echo Async -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
+			rowCounter="${rowCounter}@"
+			if [ "$rowCounter" = "@@@@@@@@" ] ; then
+				echo wait
+				rowCounter=""
+			fi
+		done
+		echo wait
+		return 0
+	;;
+esac
 
 local syncType
 case "$useStage" in
@@ -52,9 +114,17 @@ else
 	set +e ; return 1
 fi
 
+local parallelLimit
+
 case "$syncMode" in
-	--parallel|--sequence|--obsolete|--portable)
-		## nothing
+	--sequence|--obsolete)
+		parallelLimit=1
+	;;
+	--parallel)
+		parallelLimit=${2:-8}
+	;;
+	--portable)
+		parallelLimit=8
 	;;
 	*)
 		echo "⛔ ERROR: $MDSC_CMD: invalid sync mode: $syncMode ($MDSC_OPTION, $@)" >&2
@@ -75,46 +145,14 @@ echo 'mkdir -p "$MMDAPP/source"'
 echo 'cd "$MMDAPP/source"'
 echo
 
-# ─── configure SSH for multiplexing via this temp dir ────────────────────────
-{
-	# extract 2nd-column SSH URLs (skip http:// & https://)
-	local SSH_URLS=$( printf '%s\n' "$REPO_LIST" | awk '$2 !~ /^https?:\/\// { print $2 }' )
-	
-	if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_URLS" | wc -l)" -gt 2 ]; then
-		# make a socket-dir and ensure it’s cleaned up
-		echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
-		echo '  mkdir -p "$MMDAPP/.local/temp"'
-		echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/sshmux-XXXXX")'
-		echo 'else'
-				# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
-		echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
-		echo 'fi'
-
-		echo "trap 'rm -rf \"\$tmpdir\"' EXIT"
-		echo 'pushd "$tmpdir" >/dev/null || exit 1'
-		# export a minimal, high-throughput SSH for Git
-		echo 'export GIT_SSH_COMMAND="ssh -4 -T -q \'
-		echo 	' -o BatchMode=yes -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=2m \'
-		echo	' -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
-		echo	' -o KexAlgorithms=curve25519-sha256 \'
-		echo	' -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
-		echo	' -o Compression=yes \'
-		echo '"'
-  
-		# build unique "host port" list
-		local SSH_SERVERS=$(
-			printf '%s\n' "$SSH_URLS" \
-			| sed -nE 's#^(ssh://)?([^@]+@)?([^:/]+)(:([0-9]+))?.*#\3 \5#p' \
-			| sort -u
-		)
-
-		# spawn one master per unique host:port
-		printf '%s\n' "$SSH_SERVERS" \
-		| while read -r SSH_HOST SSH_PORT; do
-			echo 'ssh -MNf -o ControlMaster=yes -o ControlPath="./%C" -o ControlPersist=1m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || :'
-		done
-	fi
-}
+# 1) Common SSH flags (cipher-suite, KEX, hostkeys, compression, batching…)
+echo 'export SSH_COMMON_OPTS=" -4 -T -q \'
+echo '  -o BatchMode=yes \'
+echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
+echo '  -o KexAlgorithms=curve25519-sha256 \'
+echo '  -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
+echo '  -o Compression=yes \'
+echo '"'
 
 # embed functions (xargs from --parallel doesn't support functions)
 case "$syncMode" in
@@ -141,50 +179,110 @@ case "$syncMode" in
 	;;
 esac
 
-case "$syncMode" in
-	--parallel)
-		printf '( %s | %s ) <<XARGS_INPUT\n' \
-			"tr '\n' '\0'" \
-			"xargs -0 -P '${2:-8}' -I% -- sh -c 'myx.common lib/prefix -3 %'"
-		
-		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		local itemTarget itemSource useBranch
-		printf '%s\n' "$REPO_LIST" \
-		| while read -r itemTarget itemSource useBranch _; do
-			# ${syncType} - cloneSync clonePull
-			echo myx.common "$syncCommandName" "$itemTarget" "$itemSource" "$useBranch"
+local SSH_REPO_LIST=$( printf '%s\n' "$REPO_LIST" | awk '$2 !~ /^https?:\/\// { print $0 }' )
+local SSH_USE_ROOT_MX SSH_ROOT_MX_USED SSH_NEED_WAIT	
+
+# ─── configure SSH for multiplexing via this temp dir ────────────────────────
+if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] ; then
+
+	local MX_SSH_REPO_LIST=$(
+		printf '%s\n' "$SSH_REPO_LIST" \
+		| while read itemTarget url rest; do
+			# extract “host port” from $url
+			printf '%s\n' "$url" \
+			| sed -nE 's#^(ssh://)?([^@]+@)?([^:/]+)(:([0-9]+))?.*#\3 \5#p' \
+			| while read -r SSH_HOST SSH_PORT ; do
+				echo "$SSH_HOST ${SSH_PORT:-22} $itemTarget $url $rest"
+			done
 		done
-		
-		printf 'XARGS_INPUT\n\n'
-	;;
-	--sequence)
-		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		local itemTarget itemSource useBranch
-		printf '%s\n' "$REPO_LIST" \
-		| while read -r itemTarget itemSource useBranch _; do
-			# ${syncType} - GitCloneSync GitClonePull
-			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
-		done
-	;;
-	--portable)
-		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
-		local itemTarget itemSource useBranch rowCounter
-		printf '%s\n' "$REPO_LIST" \
-		| while read -r itemTarget itemSource useBranch _; do
-			# ${syncType} - GitCloneSync GitClonePull
-			echo Async -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
-			rowCounter="${rowCounter}@"
-			if [ "$rowCounter" = "@@@@@@@@" ] ; then
-				echo wait
-				rowCounter=""
+	)
+
+	while read -r SSH_HOST SSH_PORT ; do
+		local SERVER_REPO_LIST=$(
+			echo "$MX_SSH_REPO_LIST" | grep -e "^$SSH_HOST $SSH_PORT " | cut -d' ' -f3-
+		)
+
+		# one master per 4 repos, capped at 8
+		local SERVER_REPOS=$(printf '%s\n' "$SERVER_REPO_LIST" | wc -l)
+		local MASTER_COUNT=$(( ( $SERVER_REPOS + 3) / 4 )) ; [ "$MASTER_COUNT" -gt 8 ] && MASTER_COUNT=8
+
+		if [ "$MASTER_COUNT" = 1 ] || [ -n "$ONE_SSH_MX" ] ; then
+			if [ "$SERVER_REPOS" = 1 ] ; then
+				echo "## server $SSH_HOST:$SSH_PORT exactly one repo on this server - inline"
+				continue
 			fi
+			echo "## server $SSH_HOST:$SSH_PORT not enough repos for multiplexing but more than one -- goes to global batch"
+			[ -n "$SSH_USE_ROOT_MX" ] | {
+				SSH_USE_ROOT_MX=1
+			}
+			continue
+		fi
+
+		SSH_NEED_WAIT=1
+		if [ -z "$SSH_ROOT_MX_USED" ] ; then
+			SSH_USE_ROOT_MX=1
+			SSH_ROOT_MX_USED=1
+			(
+				set -- --intern-ssh-mx-root-temp-block
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include" 
+			)
+		fi
+
+		echo "("
+		echo
+
+		echo 'ssh -MNf $SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath="./%C" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
+		for i in $(seq 1 $((MASTER_COUNT-1))); do
+			# first master uses "%C", extras use "p1","p2",…
+			local label=$([ "$i" -eq 0 ] && echo '%C' || echo "$SSH_HOST-p$i")
+			echo "ssh -MNf \$SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath=\"./$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
 		done
 		echo wait
-	;;
-esac
+		
+		# export a minimal, high-throughput SSH for Git
+		echo "export GIT_SSH_COMMAND='sh -c \""
+		echo "idx=\\\$(awk '\''BEGIN { srand(); print int(rand()*$MASTER_COUNT) }'\'')"
+		echo "slot=\\\$( [ \\\"\\\$idx\\\" -eq 0 ] && echo \\\"%C\\\" || echo \\\"github.com-p\\\$idx\\\" )"
+		echo "exec ssh $SSH_COMMON_OPTIONS -o ControlMaster=auto -o ControlPath=./\\\$slot -o ControlPersist=3m \\\"\\\$@\\\""
+		echo "\" ssh'"
 
-if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_URLS" | wc -l)" -gt 2 ]; then
-	echo 'popd >/dev/null'
+		printf '%s\n' "$SERVER_REPO_LIST" \
+		| (
+			set -- --intern-stdin-${syncMode#--}-block
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include" 
+		)
+
+		echo ") &"
+
+		REPO_LIST="$( printf '%s\n' "$REPO_LIST" | grep -Fvxf <( printf '%s\n' "$SERVER_REPO_LIST" ) || : )"
+
+	done <<< "$( printf '%s\n' "$MX_SSH_REPO_LIST" | cut -d' ' -f1,2 | sort -u )"
+
+fi
+
+if [ -n "$REPO_LIST" ] ; then
+	if [ -n "$SSH_USE_ROOT_MX"] ; then
+		if [ -z "$SSH_ROOT_MX_USED" ] ; then
+			(
+				set -- --intern-ssh-mx-root-temp-block
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include" 
+			)
+		fi
+		# export a minimal, high-throughput SSH for Git
+		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=2m"'
+	else
+		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS"'
+	fi
+
+	printf '%s\n' "$REPO_LIST" \
+	| (
+		set -- --intern-stdin-${syncMode#--}-block
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/DistroImage.SyncScriptMaker.include" 
+	)
+fi
+
+if [ -n "$SSH_NEED_WAIT" ] ; then
+	echo wait
 fi
 
 #!/usr/bin/env bash
