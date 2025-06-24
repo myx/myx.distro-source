@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-if [ "$1" != "--no-ssh-mx" ] ; then
+[ "$1" != "--no-ssh-mx" ] || {
 	local NO_SSH_MX=$1
 	shift
-fi
+}
 
 local syncType
 case "$useStage" in
