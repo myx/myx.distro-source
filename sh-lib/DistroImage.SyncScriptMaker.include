@@ -89,14 +89,13 @@ echo
 		echo 'pushd "$tmpdir" >/dev/null || exit 1'
 		# export a minimal, high-throughput SSH for Git
 		echo 'export GIT_SSH_COMMAND="ssh -4 -T -q \'
-		echo 	' -o BatchMode=yes -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=1m \'
+		echo 	' -o BatchMode=yes -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=2m \'
 		echo	' -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
 		echo	' -o KexAlgorithms=curve25519-sha256 \'
 		echo	' -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
 		echo	' -o Compression=yes \'
 		echo '"'
   
-		echo ">>>>> SERVERS: $SSH_URLS" >&2
 		# build unique "host port" list
 		local SSH_SERVERS=$(
 			printf '%s\n' "$SSH_URLS" \
