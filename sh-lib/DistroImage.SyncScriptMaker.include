@@ -261,7 +261,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 fi
 
 if [ -n "$REPO_LIST" ] ; then
-	if [ -n "$SSH_USE_ROOT_MX"] ; then
+	if [ -n "$SSH_USE_ROOT_MX" ] ; then
 		if [ -z "$SSH_ROOT_MX_USED" ] ; then
 			(
 				set -- --intern-ssh-mx-root-temp-block
