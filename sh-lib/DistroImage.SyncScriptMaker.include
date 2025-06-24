@@ -57,6 +57,13 @@ case "$syncMode" in
 	;;
 esac
 
+local REPO_LIST; REPO_LIST="$(DistroImageSync --intern-print-repo-list-from-stdin)"
+
+if [ -z "$REPO_LIST" ] ; then
+	echo "⛔ ERROR: $MDSC_CMD: empty repo list:" >&2
+	set +e ; return 1
+fi
+
 echo 'set -e' 
 printf 'export MMDAPP="${MMDAPP:-%s}"\n' "$MMDAPP"
 echo 'mkdir -p "$MMDAPP/source"'
@@ -65,17 +72,48 @@ echo
 
 # ─── configure SSH for multiplexing via this temp dir ────────────────────────
 {
-	echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
-	echo '  mkdir -p "$MMDAPP/.local/temp"'
-	echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/sshmux-XXXXX")'
-	echo 'else'
-			# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
-	echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
-	echo 'fi'
+	# extract 2nd-column SSH URLs (skip http:// & https://)
+	local SSH_URLS=$( printf '%s\n' "$REPO_LIST" | awk '$2 !~ /^https?:\/\// { print $2 }' )
+	
+	if [ "$(printf '%s\n' "$SSH_URLS" | wc -l)" -gt 2 ]; then
+		# make a socket-dir and ensure it’s cleaned up
+		echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
+		echo '  mkdir -p "$MMDAPP/.local/temp"'
+		echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/sshmux-XXXXX")'
+		echo 'else'
+				# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
+		echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
+		echo 'fi'
 
-	echo "trap 'rm -rf \"\$tmpdir\"' EXIT"
-	echo 'pushd "$tmpdir" >/dev/null || exit 1'
-	echo 'export GIT_SSH_COMMAND="ssh -4 -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=1m"'
+		echo "trap 'rm -rf \"\$tmpdir\"' EXIT"
+		echo 'pushd "$tmpdir" >/dev/null || exit 1'
+		# export a minimal, high-throughput SSH for Git
+		echo 'export GIT_SSH_COMMAND="ssh -4 -T -q \'
+		echo 	' -o BatchMode=yes -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=1m \'
+		echo	' -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
+		echo	' -o KexAlgorithms=curve25519-sha256 \'
+		echo	' -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
+		echo	' -o Compression=yes \'
+		echo '"'
+  
+		echo ">>>>> SERVERS: $SSH_URLS" >&2
+		# build unique "host port" list
+		local SSH_SERVERS=$(
+			printf '%s\n' "$SSH_URLS" \
+			| sed -nE 's#^(ssh://)?([^@]+@)?([^:/]+)(:([0-9]+))?.*#\3 \5#p' \
+			| sort -u
+		)
+
+		# spawn one master per unique host:port
+		printf '%s\n' "$SSH_SERVERS" \
+		| while read -r SSH_HOST SSH_PORT; do
+			echo 'ssh -MNf -o ControlMaster=yes -o ControlPath="./%C" -o ControlPersist=1m -p' "${SSH_PORT:-22}" git@"$SSH_HOST"
+		done
+	fi
+
+
+
+
 }
 
 # embed functions (xargs from --parallel doesn't support functions)
@@ -111,7 +149,7 @@ case "$syncMode" in
 		
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
-		DistroImageSync --intern-print-repo-list-from-stdin \
+		printf '%s\n' "$REPO_LIST" \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - cloneSync clonePull
 			echo myx.common "$syncCommandName" "$itemTarget" "$itemSource" "$useBranch"
@@ -122,7 +160,7 @@ case "$syncMode" in
 	--sequence)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
-		DistroImageSync --intern-print-repo-list-from-stdin \
+		printf '%s\n' "$REPO_LIST" \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
 			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
@@ -131,7 +169,7 @@ case "$syncMode" in
 	--portable)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch rowCounter
-		DistroImageSync --intern-print-repo-list-from-stdin \
+		printf '%s\n' "$REPO_LIST" \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
 			echo Async -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
