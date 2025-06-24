@@ -183,7 +183,9 @@ case "$syncMode" in
 	;;
 esac
 
-echo 'popd >/dev/null'
+if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_URLS" | wc -l)" -gt 2 ]; then
+	echo 'popd >/dev/null'
+fi
 
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
