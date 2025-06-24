@@ -111,7 +111,7 @@ echo
 		# spawn one master per unique host:port
 		printf '%s\n' "$SSH_SERVERS" \
 		| while read -r SSH_HOST SSH_PORT; do
-			echo 'ssh -MNf -o ControlMaster=yes -o ControlPath="./%C" -o ControlPersist=1m -p' "${SSH_PORT:-22}" git@"$SSH_HOST"
+			echo 'ssh -MNf -o ControlMaster=yes -o ControlPath="./%C" -o ControlPersist=1m -p' "${SSH_PORT:-22}" git@"$SSH_HOST || :"
 		done
 	fi
 }
