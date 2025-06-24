@@ -218,6 +218,8 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 			continue
 		fi
 
+		echo "## server $SSH_HOST:$SSH_PORT will do multiple control masters"
+
 		SSH_NEED_WAIT=1
 		if [ -z "$SSH_ROOT_MX_USED" ] ; then
 			SSH_USE_ROOT_MX=1
