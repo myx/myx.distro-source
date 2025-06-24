@@ -13,15 +13,15 @@ case "$1" in
 	--intern-ssh-mx-root-temp-block)
 		# make a socket-dir and ensure it’s cleaned up
 		echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
-		echo '  mkdir -p "$MMDAPP/.local/temp"'
-		echo '  tmpdir=$(mktemp -d "$MMDAPP/.local/temp/sshmux-XXXXX")'
+		echo '  tmpdir="$MMDAPP/.local/temp/ssh"'
 		echo 'else'
-				# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
-		echo '  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/ssh-control-masters-XXXXXX")'
+		# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
+		echo '  tmpdir="${TMPDIR:-/tmp}/ssh-cmx"'
 		echo 'fi'
+		echo '  mkdir -p "$tmpdir"'
 
-		echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
-		echo 'pushd "$tmpdir" >/dev/null || exit 1'
+		# echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
+		# echo 'pushd "$tmpdir" >/dev/null || exit 1'
 
 		return 0
 	;;
@@ -233,20 +233,20 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		echo "("
 		echo
 
-		echo 'ssh -MNf $SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath="./%C" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
+		echo 'ssh -MNf $SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath="$tmpdir/%r,%h,%p" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
 		for i in $(seq 1 $((MASTER_COUNT-1))); do
-			# first master uses "%C", extras use "p1","p2",…
-			local label=$([ "$i" -eq 0 ] && echo '%C' || echo "$SSH_HOST-p$i")
-			echo "ssh -MNf \$SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath=\"./$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
+			# first master uses default, extras use "p1","p2",…
+			local label=$([ "$i" -eq 0 ] && echo '%r,%h,%p' || echo "%r,%h,%p,$i")
+			echo "ssh -MNf \$SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath=\"\$tmpdir/$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
 		done
 		echo wait
 		
 		# export a minimal, high-throughput SSH for Git
-		echo "export GIT_SSH_COMMAND='sh -c \""
+		echo "export GIT_SSH_COMMAND=\"sh -c '"
 		echo "idx=\\\$(awk '\''BEGIN { srand(); print int(rand()*$MASTER_COUNT) }'\'')"
-		echo "slot=\\\$( [ \\\"\\\$idx\\\" -eq 0 ] && echo \\\"%C\\\" || echo \\\"github.com-p\\\$idx\\\" )"
-		echo "exec ssh $SSH_COMMON_OPTIONS -o ControlMaster=auto -o ControlPath=./\\\$slot -o ControlPersist=3m \\\"\\\$@\\\""
-		echo "\" ssh'"
+		echo "slot=\\\$( [ \\\"\\\$idx\\\" -eq 0 ] && echo \\\"%r,%h,%p\\\" || echo \\\"%r,%h,%p,\\\$idx\\\" )"
+		echo "exec ssh $SSH_COMMON_OPTIONS -o ControlMaster=auto -o ControlPath=\$tmpdir/\\\$slot -o ControlPersist=3m \\\"\\\$@\\\""
+		echo "' ssh\""
 
 		printf '%s\n' "$SERVER_REPO_LIST" \
 		| (
@@ -271,7 +271,7 @@ if [ -n "$REPO_LIST" ] ; then
 			)
 		fi
 		# export a minimal, high-throughput SSH for Git
-		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS -o ControlMaster=auto -o ControlPath=./%C -o ControlPersist=2m"'
+		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS -o ControlMaster=auto -o ControlPath=$tmpdir/%r,%h,%p -o ControlPersist=2m"'
 	else
 		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS"'
 	fi
