@@ -31,32 +31,33 @@ PATH=$(
 )
 
 if ! type Deploy >/dev/null 2>&1 ; then
-	Deploy(){
-		case "$1" in
-			''|--*)
-				( set -e ; . "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-lib/DeployConsole.include" )
-				return 0
-			;;
-		esac
+Deploy(){
+	case "$1" in
+		''|--*)
+			( set -e ; . "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-lib/DeployConsole.include" )
+			return 0
+		;;
+	esac
 
-		local distroCommand="$1" ; shift
-		if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
-			if [ ! -f "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
-				echo "⛔ ERROR: unknown command: ${distroCommand%.fn.sh}" >&2
-				set +e ; return 1
-			fi
-			. "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+	local distroCommand="$1" ; shift
+	if ! type "${distroCommand%.fn.sh}" >/dev/null 2>&1 ; then
+		if [ ! -f "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh" ] ; then
+			echo "⛔ ERROR: unknown command: ${distroCommand%.fn.sh}" >&2
+			set +e ; return 1
 		fi
+		. "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts/${distroCommand%.fn.sh}.fn.sh"
+	fi
 
-		set +e ; "${distroCommand%.fn.sh}" "$@" || {
-			EXITCODE=$?
-			echo "⛔ ERROR: exited with error status ($EXITCODE)" >&2
-			set +e ; return $EXITCODE
-		}
-		return 0
+	set +e ; "${distroCommand%.fn.sh}" "$@" || {
+		EXITCODE=$?
+		echo "⛔ ERROR: exited with error status ($EXITCODE)" >&2
+		set +e ; return $EXITCODE
 	}
+	return 0
+}
 fi
 
+if ! type Source >/dev/null 2>&1 ; then
 Source(){
 	case "$1" in
 		''|--*)
@@ -81,6 +82,7 @@ Source(){
 	}
 	return 0
 }
+fi
 
 Help(){
 	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceConsole.include" )
