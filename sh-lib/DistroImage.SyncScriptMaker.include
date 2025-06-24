@@ -233,11 +233,11 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		echo "("
 		echo
 
-		echo 'ssh -q -MNf $SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath="$tmpdir/%r,%h,%p" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
+		echo 'ssh -MNf $SSH_COMMON_OPTS -o ControlMaster=yes -o ControlPath="$tmpdir/%r,%h,%p" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
 		for i in $(seq 1 $((MASTER_COUNT-1))); do
 			# first master uses default, extras use "p1","p2",…
 			local label=$([ "$i" -eq 0 ] && echo '%r,%h,%p' || echo "%r,%h,%p,$i")
-			echo "ssh -q -MNf \$SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath=\"\$tmpdir/$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
+			echo "ssh -MNf \$SSH_COMMON_OPTS -o ControlMaster=yes -o ControlPath=\"\$tmpdir/$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
 		done
 		echo wait
 		
@@ -245,7 +245,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		echo "export GIT_SSH_COMMAND=\"sh -c '"
 		echo "idx=\\\$(awk '\''BEGIN { srand(); print int(rand()*$MASTER_COUNT) }'\'')"
 		echo "slot=\\\$( [ \\\"\\\$idx\\\" -eq 0 ] && echo \\\"%r,%h,%p\\\" || echo \\\"%r,%h,%p,\\\$idx\\\" )"
-		echo "exec ssh $SSH_COMMON_OPTIONS -o ControlMaster=auto -o ControlPath=\$tmpdir/\\\$slot -o ControlPersist=3m \\\"\\\$@\\\""
+		echo "exec ssh \$SSH_COMMON_OPTS -o ControlMaster=auto -o ControlPath=\$tmpdir/\\\$slot -o ControlPersist=3m \\\"\\\$@\\\""
 		echo "' ssh\""
 
 		printf '%s\n' "$SERVER_REPO_LIST" \
