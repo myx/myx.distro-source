@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-[ "$1" != "--no-ssh-mx" ] || {
+if [ "$1" != "--no-ssh-mx" ] ; then
 	local NO_SSH_MX=$1
 	shift
-}
+fi
 
 local syncType
 case "$useStage" in
@@ -80,7 +80,7 @@ echo
 	# extract 2nd-column SSH URLs (skip http:// & https://)
 	local SSH_URLS=$( printf '%s\n' "$REPO_LIST" | awk '$2 !~ /^https?:\/\// { print $2 }' )
 	
-	if [ -z "$NO_SSH_MX" ] || [ "$(printf '%s\n' "$SSH_URLS" | wc -l)" -gt 2 ]; then
+	if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_URLS" | wc -l)" -gt 2 ]; then
 		# make a socket-dir and ensure it’s cleaned up
 		echo 'if [ -n "$MMDAPP" ] && [ -d "$MMDAPP/.local" ]; then'
 		echo '  mkdir -p "$MMDAPP/.local/temp"'
