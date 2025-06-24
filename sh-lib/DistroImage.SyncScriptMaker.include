@@ -211,7 +211,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 				echo "## server $SSH_HOST:$SSH_PORT exactly one repo on this server - inline"
 				continue
 			fi
-			echo "## server $SSH_HOST:$SSH_PORT not enough repos for multiplexing but more than one -- goes to global batch"
+			echo "## server $SSH_HOST:$SSH_PORT not enough repos for multiplexing but more than one ($SERVER_REPOS) -- goes to global batch"
 			[ -n "$SSH_USE_ROOT_MX" ] || {
 				SSH_USE_ROOT_MX=1
 			}
