@@ -349,19 +349,19 @@ case "$0" in
 				echo "                Displays all sync tasks for all build stages from all projects in distro." >&2
 				echo "                This command doesn't need project selector and any other arguments." >&2
 				echo >&2
-				echo "    --execute-source-prepare-pull [--parallel [N] / --sequence / --portable]" >&2
+				echo "    --execute-source-prepare-pull [--no-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for source-prapare pull stage (before source-prepare)." >&2
 				echo >&2
-				echo "    --execute-source-process-push [--parallel [N] / --sequence / --portable]" >&2
+				echo "    --execute-source-process-push [--no-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-prapare push stage (on image-prepare, after source)." >&2
 				echo >&2
-				echo "    --execute-image-prepare-pull [--parallel [N] / --sequence / --portable]" >&2
+				echo "    --execute-image-prepare-pull [--no-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-prapare pull stage (on image-prepare, before deploy)." >&2
 				echo >&2
-				echo "    --execute-image-process-push [--parallel [N] / --sequence / --portable]" >&2
+				echo "    --execute-image-process-push [--no-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-prapare push stage (on image-prepare, before deploy)." >&2
 				echo >&2
-				echo "    --execute-image-install-pull [--parallel [N] / --sequence / --portable]" >&2
+				echo "    --execute-image-install-pull [--no-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
 				echo "                Execute tasks for image-install pull stage (on image-install, before deploy)." >&2
 				echo >&2
 				echo "    --print-tasks" >&2
