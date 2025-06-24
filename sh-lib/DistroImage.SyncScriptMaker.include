@@ -212,7 +212,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 				continue
 			fi
 			echo "## server $SSH_HOST:$SSH_PORT not enough repos for multiplexing but more than one -- goes to global batch"
-			[ -n "$SSH_USE_ROOT_MX" ] | {
+			[ -n "$SSH_USE_ROOT_MX" ] || {
 				SSH_USE_ROOT_MX=1
 			}
 			continue
@@ -233,11 +233,11 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		echo "("
 		echo
 
-		echo 'ssh -MNf $SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath="$tmpdir/%r,%h,%p" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
+		echo 'ssh -q -MNf $SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath="$tmpdir/%r,%h,%p" -o ControlPersist=3m -p' "${SSH_PORT:-22}" git@"$SSH_HOST" ' || : &'
 		for i in $(seq 1 $((MASTER_COUNT-1))); do
 			# first master uses default, extras use "p1","p2",…
 			local label=$([ "$i" -eq 0 ] && echo '%r,%h,%p' || echo "%r,%h,%p,$i")
-			echo "ssh -MNf \$SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath=\"\$tmpdir/$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
+			echo "ssh -q -MNf \$SSH_COMMON_OPTIONS -o ControlMaster=yes -o ControlPath=\"\$tmpdir/$label\" -o ControlPersist=3m -p ${SSH_PORT:-22} git@$SSH_HOST || : &"
 		done
 		echo wait
 		
