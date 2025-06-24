@@ -203,7 +203,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		)
 
 		# one master per 4 repos, capped at 8
-		local SERVER_REPOS=$(printf '%s\n' "$SERVER_REPO_LIST" | wc -l)
+		local SERVER_REPOS=$(printf '%s\n' "$SERVER_REPO_LIST" | echo $(wc -l))
 		local MASTER_COUNT=$(( ( $SERVER_REPOS + 5) / 6 )) ; [ "$MASTER_COUNT" -gt 8 ] && MASTER_COUNT=8
 
 		if [ "$MASTER_COUNT" = 1 ] || [ -n "$ONE_SSH_MX" ] ; then
@@ -218,7 +218,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 			continue
 		fi
 
-		echo "## server $SSH_HOST:$SSH_PORT will do multiple control masters"
+		echo "## server $SSH_HOST:$SSH_PORT ($SERVER_REPOS repos) will do multiple control masters"
 
 		SSH_NEED_WAIT=1
 		if [ -z "$SSH_ROOT_MX_USED" ] ; then
