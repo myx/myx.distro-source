@@ -271,7 +271,7 @@ if [ -n "$REPO_LIST" ] ; then
 			)
 		fi
 		# export a minimal, high-throughput SSH for Git
-		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS -o ControlMaster=auto -o ControlPath=$tmpdir/%r,%h,%p -o ControlPersist=2m"'
+		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS -o ControlMaster=auto -o ControlPath=$tmpdir/%r,%h,%p -o ControlPersist=3m"'
 	else
 		echo 'export GIT_SSH_COMMAND="ssh $SSH_COMMON_OPTS"'
 	fi
