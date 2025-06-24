@@ -206,7 +206,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		local SERVER_REPOS=$(printf '%s\n' "$SERVER_REPO_LIST" | echo $(wc -l))
 		local MASTER_COUNT=$(( ( $SERVER_REPOS + 5) / 6 )) ; [ "$MASTER_COUNT" -gt 8 ] && MASTER_COUNT=8
 
-		if [ "$MASTER_COUNT" = 1 ] || [ -n "$ONE_SSH_MX" ] ; then
+		if [ "$MASTER_COUNT" = 1 ] || [ -n "$ONE_SSH_MX" ] || [ "$parallelLimit" = 1 ] ; then
 			if [ "$SERVER_REPOS" = 1 ] ; then
 				echo "## server $SSH_HOST:$SSH_PORT exactly one repo on this server - inline"
 				continue
