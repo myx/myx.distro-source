@@ -210,7 +210,15 @@ if [ -z "$SYNC_NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt
 		done
 	)
 
+	local SSH_MX_STOP_LIST=" bitbucket.org "   # space-separated and space-padded list
+
 	while read -r SSH_HOST SSH_PORT ; do
+	
+		if [ "${SSH_MX_STOP_LIST#* $SSH_HOST }" != "$SSH_MX_STOP_LIST" ] ; then
+			echo "## server $SSH_HOST is in SSH_MX_STOP_LIST - not using control master - inline"
+			continue
+		fi
+
 		local SERVER_REPO_LIST=$(
 			echo "$MX_SSH_REPO_LIST" | grep -e "^$SSH_HOST $SSH_PORT " | cut -d' ' -f3-
 		)
