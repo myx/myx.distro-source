@@ -161,7 +161,7 @@ echo '  -o BatchMode=yes \'
 	# echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
 	# bitbucket needs aes128-ctr:
 	echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr \'
-	echo '  -o KexAlgorithms=curve25519-sha256 \'
+	echo '  -o KexAlgorithms=curve25519-sha256,diffie-hellman-group1-sha1 \'
 	echo '  -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
 	echo '  -o Compression=yes \'
 }
