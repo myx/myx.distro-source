@@ -152,7 +152,7 @@ echo
 # 1) Common SSH flags (cipher-suite, KEX, hostkeys, compression, batching…)
 echo 'export SSH_COMMON_OPTS=" -4 -T -q \'
 echo '  -o BatchMode=yes \'
-[ -n "SYNC_SSH_DEFAULTS" ] || {
+[ "SYNC_SSH_DEFAULTS" = 1 ] || {
 	echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
 	echo '  -o KexAlgorithms=curve25519-sha256 \'
 	echo '  -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
