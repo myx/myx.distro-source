@@ -3,14 +3,17 @@
 
 case "$1" in
 	--no-ssh-mx)
+		[ -z "$MDSC_DETAIL" ] || echo "⛔ ERROR: $MDSC_CMD: $1: no ssh multiplexing" >&2
 		local SYNC_NO_SSH_MX=$1
 		shift
 	;;
 	--ssh-defaults)
+		[ -z "$MDSC_DETAIL" ] || echo "⛔ ERROR: $MDSC_CMD: $1: use default ssh settings" >&2
 		local SYNC_SSH_DEFAULTS=$1
 		shift
 	;;
 	--one-ssh-mx)
+		[ -z "$MDSC_DETAIL" ] || echo "⛔ ERROR: $MDSC_CMD: $1: one ssh control master at most" >&2
 		local SYNC_ONE_SSH_MX=$1
 		shift
 	;;
