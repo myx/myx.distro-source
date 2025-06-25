@@ -153,9 +153,12 @@ echo 'cd "$MMDAPP/source"'
 echo
 
 # 1) Common SSH flags (cipher-suite, KEX, hostkeys, compression, batching…)
-echo 'export SSH_COMMON_OPTS=" -4 -T -q \'
+echo 'export SSH_COMMON_OPTS="\'
+echo '  -T -q \'
 echo '  -o BatchMode=yes \'
 [ -n "$SYNC_SSH_DEFAULTS" ] || {
+[ -n "$SYNC_SSH_DEFAULTS" ] || {
+	echo '  -4 \'
 	# echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
 	# bitbucket needs aes128-ctr:
 	echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr \'
