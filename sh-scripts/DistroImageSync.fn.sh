@@ -383,8 +383,9 @@ case "$0" in
 				echo "                is normally a local project full name, <sourceSpec> is git repository URL and <branch>" >&2
 				echo "                is optional branch name ('main' and 'master' are tried is ommited)." >&2
 				echo >&2
-				echo "    --(script|execute)-* [--no-ssh-mx|--one-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                '--no-ssh-mx|--one-ssh-mx' controls use of ssh multiplexing." >&2
+				echo "    --(script|execute)-* [--no-ssh-mx|--one-ssh-mx] [--ssh-defaults] [--parallel [N] / --sequence / --portable]" >&2
+				echo "                '--no-ssh-mx|--one-ssh-mx' controls use of ssh multiplexing. The '--ssh-defaults' disables" >&2
+				echo "                advanced ssh settings and parameters to be used." >&2
 				echo >&2
 				echo "  Examples:" >&2
 				echo >&2

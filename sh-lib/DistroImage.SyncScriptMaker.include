@@ -3,11 +3,15 @@
 
 case "$1" in
 	--no-ssh-mx)
-		local NO_SSH_MX=$1
+		local SYNC_NO_SSH_MX=$1
+		shift
+	;;
+	--ssh-defaults)
+		local SYNC_SSH_DEFAULTS=$1
 		shift
 	;;
 	--one-ssh-mx)
-		local ONE_SSH_MX=$1
+		local SYNC_ONE_SSH_MX=$1
 		shift
 	;;
 	--intern-ssh-mx-root-temp-block)
@@ -148,10 +152,12 @@ echo
 # 1) Common SSH flags (cipher-suite, KEX, hostkeys, compression, batching…)
 echo 'export SSH_COMMON_OPTS=" -4 -T -q \'
 echo '  -o BatchMode=yes \'
-echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
-echo '  -o KexAlgorithms=curve25519-sha256 \'
-echo '  -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
-echo '  -o Compression=yes \'
+[ -n "SYNC_SSH_DEFAULTS" ] || {
+	echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
+	echo '  -o KexAlgorithms=curve25519-sha256 \'
+	echo '  -o HostKeyAlgorithms=ssh-ed25519,ecdsa-sha2-nistp256,ssh-rsa \'
+	echo '  -o Compression=yes \'
+}
 echo '"'
 
 # embed functions (xargs from --parallel doesn't support functions)
@@ -183,7 +189,7 @@ local SSH_REPO_LIST=$( printf '%s\n' "$REPO_LIST" | awk '$2 !~ /^https?:\/\// { 
 local SSH_USE_ROOT_MX SSH_ROOT_MX_USED SSH_NEED_WAIT	
 
 # ─── configure SSH for multiplexing via this temp dir ────────────────────────
-if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] ; then
+if [ -z "$SYNC_NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] ; then
 
 	local MX_SSH_REPO_LIST=$(
 		printf '%s\n' "$SSH_REPO_LIST" \
@@ -206,7 +212,7 @@ if [ -z "$NO_SSH_MX" ] && [ "$(printf '%s\n' "$SSH_REPO_LIST" | wc -l)" -gt 2 ] 
 		local SERVER_REPOS=$(printf '%s\n' "$SERVER_REPO_LIST" | echo $(wc -l))
 		local MASTER_COUNT=$(( ( $SERVER_REPOS + 6) / 7 )) ; [ "$MASTER_COUNT" -gt 8 ] && MASTER_COUNT=8
 
-		if [ "$MASTER_COUNT" = 1 ] || [ -n "$ONE_SSH_MX" ] || [ "$parallelLimit" = 1 ] ; then
+		if [ "$MASTER_COUNT" = 1 ] || [ -n "$SYNC_ONE_SSH_MX" ] || [ "$parallelLimit" = 1 ] ; then
 			if [ "$SERVER_REPOS" = 1 ] ; then
 				echo "## server $SSH_HOST:$SSH_PORT exactly one repo on this server - inline"
 				continue
