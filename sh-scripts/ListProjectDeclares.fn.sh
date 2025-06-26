@@ -64,14 +64,14 @@ ListProjectDeclares(){
 				Require ListProjectSequence
 
 				if [ -z "$1" ] ; then
-					ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX --print-declares
+					ListProjectSequence "$projectName" --print-declares
 					return 0
 				fi
 
 				local sequenceProjectName
-				ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX \
+				ListProjectSequence "$projectName" \
 				| while read -r sequenceProjectName ; do
-					ListProjectDeclares "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
+					ListProjectDeclares "$sequenceProjectName" "$@"
 				done | awk '!x[$0]++'	
 				return 0
 			;;

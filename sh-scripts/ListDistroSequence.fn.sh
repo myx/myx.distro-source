@@ -132,8 +132,8 @@ ListDistroSequence(){
 
 				local sequenceProjectName
 				local currentProjectName
-				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
-					ListProjectSequence "$sequenceProjectName" $MDSC_NO_CACHE $MDSC_NO_INDEX | while read -r currentProjectName ; do
+				for sequenceProjectName in $( ListDistroSequence --all ) ; do
+					ListProjectSequence "$sequenceProjectName" | while read -r currentProjectName ; do
 						echo "$sequenceProjectName" "$currentProjectName"
 					done
 				done

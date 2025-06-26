@@ -31,11 +31,12 @@ ListProjectSequence(){
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 
 	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--print-project)
 				shift
 				
-				ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$projectName |g"
+				ListProjectSequence "$projectName" "$@" | sed "s|^|$projectName |g"
 				return 0
 			;;
 			--print-provides)
@@ -92,12 +93,12 @@ ListProjectSequence(){
 
 			if [ ! -d "$MDSC_CACHED/$projectName" ] ; then
 				echo "$MDSC_CMD: $projectName: bypass ($MDSC_OPTION)" >&2
-				ListProjectSequence "$projectName" --no-cache
+				ListProjectSequence --no-cache "$projectName"
 				return 0
 			fi
 
 			echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectSequence "$projectName" --no-cache | tee "$cacheFile"
+			ListProjectSequence --no-cache "$projectName" | tee "$cacheFile"
 			return 0
 		fi
 
@@ -149,7 +150,7 @@ case "$0" in
 		# ListProjectSequence.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: ListProjectSequence.fn.sh <project_name> [--print-project] [--no-cache] [--print-provides]" >&2
+			echo "📘 syntax: ListProjectSequence.fn.sh [--no-cache] <project_name> [--print-project] [--print-provides]" >&2
 			echo "📘 syntax: ListProjectSequence.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				echo "  Examples:" >&2
