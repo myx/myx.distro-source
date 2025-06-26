@@ -221,7 +221,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 
     private void doPrepareBuildDistroIndex() throws Exception {
 	this.repositories.buildPrepareDistroIndex(//
-		this.console, //
+		this, //
 		this.outputRoot.resolve("distro").normalize(), //
 		true//
 	);
@@ -254,7 +254,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 	this.console.outDebug("check update build source-2-cache indices");
 
 	this.repositories.buildPrepareDistroIndex(//
-		this.console, //
+		this, //
 		this.cachedRoot.normalize(), //
 		true//
 	);
@@ -264,7 +264,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 	this.console.outDebug("check update build cache indices");
 
 	this.repositories.buildPrepareCompileIndex(//
-		this.console, //
+		this, //
 		this.cachedRoot.normalize()//
 	);
     }

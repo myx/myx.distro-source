@@ -72,7 +72,7 @@ public class DistroImageCommand extends AbstractDistroCommand {
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		context.repositories.buildPrepareCompileIndex(//
-			context.console, //
+			context, //
 			context.outputRoot.resolve("cached").normalize()//
 		);
 		return true;
@@ -80,7 +80,7 @@ public class DistroImageCommand extends AbstractDistroCommand {
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		context.repositories.buildPrepareDistroIndex(//
-			context.console, //
+			context, //
 			context.outputRoot.resolve("distro").normalize(), //
 			true//
 		);
@@ -93,12 +93,12 @@ public class DistroImageCommand extends AbstractDistroCommand {
 		DistroImageCommand.prepareCheckBuildRoots(context.outputRoot);
 
 		context.repositories.buildPrepareDistroIndex(//
-			context.console, //
+			context, //
 			context.outputRoot.resolve("distro").normalize(), //
 			true//
 		);
 		context.repositories.buildPrepareCompileIndex(//
-			context.console, //
+			context, //
 			context.cachedRoot.normalize()//
 		);
 		return true;

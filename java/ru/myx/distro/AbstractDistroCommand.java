@@ -306,7 +306,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		boolean first = true;
 		for (final Project project : context.buildQueue) {
 		    final String projectName = project.getFullName();
-		    for (final Project sequenceProject : project.getBuildSequence()) {
+		    for (final Project sequenceProject : project.getBuildSequence(context)) {
 			if (first) {
 			    first = false;
 			} else {
