@@ -88,7 +88,7 @@ public class DistroImageCommand extends AbstractDistroCommand {
 	    }, "--prepare-build-distro-index");
 
 	    AbstractCommand.registerOperation(operations, context -> {
-		context.repositories.buildCalculateSequence(context.buildQueue);
+		context.repositories.buildCalculateSequence(context, context.buildQueue);
 
 		DistroImageCommand.prepareCheckBuildRoots(context.outputRoot);
 
@@ -125,7 +125,7 @@ public class DistroImageCommand extends AbstractDistroCommand {
 	    }, "--build-repository");
 
 	    AbstractCommand.registerOperation(operations, context -> {
-		context.repositories.buildCalculateSequence(null);
+		context.repositories.buildCalculateSequence(context, null);
 		context.doSelectAll();
 		return context.build();
 	    }, "--build-all");

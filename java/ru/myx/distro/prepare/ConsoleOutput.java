@@ -6,6 +6,7 @@ public class ConsoleOutput {
     }
 
     private boolean silent;
+
     private boolean verbose;
 
     private boolean debug;

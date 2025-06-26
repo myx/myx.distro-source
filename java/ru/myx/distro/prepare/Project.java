@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import ru.myx.distro.ClasspathBuilder;
+import ru.myx.distro.OperationContext;
 import ru.myx.distro.Utils;
 
 public class Project {
@@ -162,7 +163,9 @@ public class Project {
 	}
     }
 
-    public List<Project> buildCalculateSequence(final List<Project> sequence, final Map<String, Project> seen) {
+    public List<Project> buildCalculateSequence(//
+	    final OperationContext context, final List<Project> sequence, final Map<String, Project> seen//
+    ) {
 	if (seen.putIfAbsent(this.getFullName(), this) != null) {
 	    return sequence;
 	}
@@ -188,6 +191,11 @@ public class Project {
 	    for (final OptionListItem requires : project.lstRequires) {
 		final Set<Project> providers = distro.getProvides(requires);
 		if (providers == null) {
+		    if (context.noFail) {
+			context.console
+				.outError("ERROR: required item is unknown, name: " + requires + " for " + this.name);
+			continue;
+		    }
 		    throw new IllegalArgumentException(
 			    "required item is unknown, name: " + requires + " for " + this.name);
 		}
@@ -588,7 +596,7 @@ public class Project {
     public List<Project> getBuildSequence() {
 	final Map<String, Project> checked = new HashMap<>();
 	final List<Project> sequence = new ArrayList<>();
-	return this.buildCalculateSequence(sequence, checked);
+	return this.buildCalculateSequence(null, sequence, checked);
     }
 
     public final String getFullName() {

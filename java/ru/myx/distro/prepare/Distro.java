@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import ru.myx.distro.ClasspathBuilder;
+import ru.myx.distro.OperationContext;
 import ru.myx.distro.Utils;
 
 public final class Distro {
@@ -72,11 +73,11 @@ public final class Distro {
 	set.add(project);
     }
 
-    public boolean buildCalculateSequence(List<Project> buildQueue) {
+    public boolean buildCalculateSequence(final OperationContext context, List<Project> buildQueue) {
 	final Map<String, Project> checked = new HashMap<>();
 	this.sequenceProjects.clear();
 	for (final Project project : (buildQueue != null ? buildQueue : this.byProjectName.values())) {
-	    project.buildCalculateSequence(this.sequenceProjects, checked);
+	    project.buildCalculateSequence(context, this.sequenceProjects, checked);
 	}
 	return true;
     }

@@ -84,11 +84,11 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 
 	{
 	    AbstractCommand.registerOperation(operations, context -> {
-		return context.repositories.buildCalculateSequence(null);
+		return context.repositories.buildCalculateSequence(context, null);
 	    }, "--prepare-full-sequence");
 
 	    AbstractCommand.registerOperation(operations, context -> {
-		return context.repositories.buildCalculateSequence(context.buildQueue);
+		return context.repositories.buildCalculateSequence(context, context.buildQueue);
 	    }, "--prepare-sequence");
 
 	    AbstractCommand.registerOperation(operations, context -> {
@@ -389,7 +389,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 
 	{
 	    AbstractCommand.registerOperation(operations, context -> {
-		context.repositories.buildCalculateSequence(null);
+		context.repositories.buildCalculateSequence(context, null);
 		context.doSelectAll();
 		return true;
 	    }, "--select-all");

@@ -71,7 +71,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		context.doSelectAllFromSource();
-		context.repositories.buildCalculateSequence(null);
+		context.repositories.buildCalculateSequence(context, null);
 		return true;
 	    }, "--select-all-from-source");
 	}
@@ -209,7 +209,7 @@ public class DistroSourceCommand extends AbstractDistroCommand {
     public void doPrepareBuild() throws Exception {
 	this.console.outDebug("prepare 'cache' build from 'source' directory");
 
-	this.repositories.buildCalculateSequence(null);
+	this.repositories.buildCalculateSequence(this, null);
 
 	this.doPrepareBuildRoots();
 	this.doPrepareBuildDistroIndex();
