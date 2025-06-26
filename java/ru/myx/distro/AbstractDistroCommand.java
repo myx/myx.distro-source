@@ -569,7 +569,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		final Set<Project> providers = this.repositories.getProvides(requires);
 		if (providers == null) {
 		    if (this.noFail) {
-			this.console.outWarn(" ERROR: required item is unknown, name: " + requires);
+			this.console.outError("ERROR: required item is unknown, name: " + requires);
 			continue;
 		    }
 		    throw new IllegalArgumentException("required item is unknown, name: " + requires);
@@ -670,7 +670,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	final Set<Project> providers = this.repositories.getProvides(spec);
 	if (providers == null) {
 	    if (this.noFail) {
-		this.console.outWarn(" ERROR: required item is unknown, name: " + spec);
+		this.console.outError("ERROR: required item is unknown, name: " + spec);
 		return;
 	    }
 	    throw new IllegalArgumentException("required item is unknown, name: " + spec);
@@ -739,7 +739,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		final Set<Project> providers = this.repositories.getProvides(requires);
 		if (providers == null) {
 		    if (this.noFail) {
-			this.console.outWarn(" ERROR: required item is unknown, name: " + requires);
+			this.console.outError("ERROR: required item is unknown, name: " + requires);
 			continue;
 		    }
 		    throw new IllegalArgumentException("required item is unknown, name: " + requires + ", "
@@ -907,7 +907,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	final Set<Project> providers = this.repositories.getProvides(spec);
 	if (providers == null) {
 	    if (this.noFail) {
-		this.console.outWarn("ERROR: required item is unknown, name: " + spec);
+		this.console.outError("ERROR: required item is unknown, name: " + spec);
 		return;
 	    }
 	    throw new IllegalArgumentException("required item is unknown, name: " + spec);
