@@ -41,8 +41,12 @@ public class ConsoleOutput {
 	return this.verbose;
     }
 
-    public String[] getAllErrors() {
-	return this.errors.toArray(new String[this.errors.size()]);
+    public String[] clearCollectedErrors() {
+	try {
+	    return this.errors.toArray(new String[this.errors.size()]);
+	} finally {
+	    this.errors.clear();
+	}
     }
 
     public void out(final String s) {

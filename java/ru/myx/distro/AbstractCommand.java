@@ -48,7 +48,7 @@ public abstract class AbstractCommand extends OperationContext implements Operat
 	    }, "--no-fail");
 
 	    AbstractCommand.registerOperation(operations, context -> {
-		final String[] errors = context.console.getAllErrors();
+		final String[] errors = context.console.clearCollectedErrors();
 		if (errors != null && errors.length > 0) {
 		    context.console.outWarn( //
 			    "There were errors, exiting with error code, errors:\n" + String.join("\n", errors) //
@@ -58,6 +58,16 @@ public abstract class AbstractCommand extends OperationContext implements Operat
 		}
 		return true;
 	    }, "--fail-if-errors");
+
+	    AbstractCommand.registerOperation(operations, context -> {
+		final String[] errors = context.console.clearCollectedErrors();
+		if (errors != null && errors.length > 0) {
+		    context.console.outWarn( //
+			    "There were errors:\n" + String.join("\n", errors) //
+		    );
+		}
+		return true;
+	    }, "--print-if-errors");
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		if (!context.arguments.hasNext()) {
