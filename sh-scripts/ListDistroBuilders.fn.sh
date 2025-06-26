@@ -53,7 +53,13 @@ ListDistroBuilders(){
 					ListProjectBuilders "$projectName" $printBuildStage "$stageType" "$@" | while read -r buildStage builderName ; do
 						echo "$buildStage" "$builderName" "` basename "$builderName" `" 
 					done
-				done | sort -k3 | cut -d" " -f1,2
+				done | sort -k3 | cut -d" " -f1,2 \
+				| awk '{
+					b=$2; sub(".*/","",b)
+					if (!seen[b]++) {
+						print
+					}
+				}'
 				return 0
 			fi
 
@@ -61,7 +67,13 @@ ListDistroBuilders(){
 				ListProjectBuilders "$projectName" "$stageType" "$@" | while read -r builderName ; do
 					echo "$builderName" "` basename "$builderName" `" 
 				done
-			done | sort -k2 | cut -d" " -f1
+			done | sort -k2 | cut -d" " -f1 \
+			| awk '{
+				b=$1; sub(".*/","",b)
+				if (!seen[b]++) {
+					print
+				}
+			}'
 
 			return 0
 		;;
