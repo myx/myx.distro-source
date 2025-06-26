@@ -48,6 +48,18 @@ public abstract class AbstractCommand extends OperationContext implements Operat
 	    }, "--no-fail");
 
 	    AbstractCommand.registerOperation(operations, context -> {
+		final String[] errors = context.console.getAllErrors();
+		if (errors != null && errors.length > 0) {
+		    context.console.outWarn( //
+			    "There were errors, exiting with error code, errors:\n" + String.join("\n", errors) //
+		    );
+		    context.okState = false;
+		    return false;
+		}
+		return true;
+	    }, "--fail-if-errors");
+
+	    AbstractCommand.registerOperation(operations, context -> {
 		if (!context.arguments.hasNext()) {
 		    throw new IllegalArgumentException("text is expected for -p/--print agrument");
 		}

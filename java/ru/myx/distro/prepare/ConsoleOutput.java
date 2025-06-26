@@ -1,5 +1,8 @@
 package ru.myx.distro.prepare;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 public class ConsoleOutput {
     private enum STATE {
 	NEW_LINE, CHAR_PROGRESS, STRING_PROGRESS, NRML_PROGRESS
@@ -10,6 +13,8 @@ public class ConsoleOutput {
     private boolean verbose;
 
     private boolean debug;
+
+    private Set<String> errors = new LinkedHashSet<>();
 
     private STATE lastState = STATE.NEW_LINE;
 
@@ -34,6 +39,10 @@ public class ConsoleOutput {
 
     public boolean isVerbose() {
 	return this.verbose;
+    }
+
+    public String[] getAllErrors() {
+	return this.errors.toArray(new String[this.errors.size()]);
     }
 
     public void out(final String s) {
@@ -236,7 +245,9 @@ public class ConsoleOutput {
     }
 
     public void outError(final String s) {
-	this.outWarn("⛔ " + s);
+	if (this.errors.add("⛔ " + s)) {
+	    this.outWarn("⛔ " + s);
+	}
     }
 
     public void outWarn(final String s) {
