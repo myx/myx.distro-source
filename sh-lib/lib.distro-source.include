@@ -426,6 +426,8 @@ DistroSourceCheckSourcePath(){
 		set +e ; return 1
 	fi
 
+	set -e
+
 	if [ "$sourceName" = "*" -o "$sourceName" = "**" ] ; then
 		commandOutput="$( \
 			while read -r checkProject ; do
