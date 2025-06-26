@@ -9,8 +9,8 @@ fi
 
 CleanAllOutputs(){
 
-	echo "CleanAllOutputs: 🧻 Cleaning Output directory" >&2
-	rm -rf "$MMDAPP/output" "$MMDAPP/cached" "$MMDAPP/export" "$MMDAPP/distro"
+	echo "CleanAllOutputs: 🧻 Cleaning Output directories" >&2
+	rm -rf "$MMDAPP"/{output,cached,export,distro}
 	
 	if type DistroSystemContext >/dev/null 2>&1 ; then
 		echo "CleanAllOutputs: 🧹 Cleaning DistroShell in-line caches" >&2
