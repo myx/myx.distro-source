@@ -64,8 +64,8 @@ public class Project {
 	return new Project(projectName, info, repo);
     }
 
-    static Project staticLoadFromLocalSource(final Repository repo, final String packageName, final Path projectPath)
-	    throws Exception {
+    static Project staticLoadFromLocalSource(final ConsoleOutput console, final Repository repo,
+	    final String packageName, final Path projectPath) throws Exception {
 	final String folderName = projectPath.getFileName().toString();
 	if (folderName.length() < 2 || folderName.charAt(0) == '.') {
 	    // not a user-folder, hidden
@@ -87,8 +87,10 @@ public class Project {
 	    return null;
 	}
 	if (!checkName.equals(packageName) && !packageName.endsWith('/' + checkName)) {
-	    System.err.println(
-		    Project.class.getSimpleName() + ": packageName mismatch: " + packageName + " != " + checkName);
+	    console.outError( //
+		    "ERROR: " + Project.class.getSimpleName() + ": packageName mismatch: " //
+			    + packageName + " != " + checkName//
+	    );
 	    return null;
 	}
 	final Project project = new Project(packageName, info, repo);

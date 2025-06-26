@@ -333,6 +333,7 @@ public class Repository {
 		if (Project.checkIfProject(projectRoot)) {
 
 		    final Project project = Project.staticLoadFromLocalSource(//
+			    console, //
 			    this, //
 			    repositoryRoot.relativize(projectRoot).toString(), //
 			    projectRoot//
@@ -348,6 +349,7 @@ public class Repository {
 			    for (final Path subProjectRoot : subProjects) {
 				if (Project.checkIfProject(subProjectRoot)) {
 				    final Project subProject = Project.staticLoadFromLocalSource(//
+					    console, //
 					    this, //
 					    repositoryRoot.relativize(subProjectRoot).toString(), //
 					    subProjectRoot//
