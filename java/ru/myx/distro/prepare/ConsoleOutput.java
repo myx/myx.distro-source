@@ -51,8 +51,10 @@ public class ConsoleOutput {
     }
 
     public void outDebug(final Object... s) {
-	if (!this.debug && !this.verbose && !this.silent && this.lastState == STATE.NRML_PROGRESS) {
-	    this.outProgressDefault();
+	if (!this.debug && !this.verbose) {
+	    if (!this.silent && this.lastState == STATE.NRML_PROGRESS) {
+		this.outProgressDefault();
+	    }
 	    return;
 	}
 	if (this.debug) {
