@@ -44,7 +44,7 @@ public abstract class AbstractCommand extends OperationContext implements Operat
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		context.noFail = true;
-		return false;
+		return true;
 	    }, "--no-fail");
 
 	    AbstractCommand.registerOperation(operations, context -> {
