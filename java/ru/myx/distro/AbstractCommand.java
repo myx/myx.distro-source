@@ -43,6 +43,11 @@ public abstract class AbstractCommand extends OperationContext implements Operat
 	    }, "--quiet", "--silent", "-q");
 
 	    AbstractCommand.registerOperation(operations, context -> {
+		context.noFail = true;
+		return false;
+	    }, "--no-fail");
+
+	    AbstractCommand.registerOperation(operations, context -> {
 		if (!context.arguments.hasNext()) {
 		    throw new IllegalArgumentException("text is expected for -p/--print agrument");
 		}

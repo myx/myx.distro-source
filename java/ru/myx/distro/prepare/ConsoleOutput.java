@@ -232,6 +232,10 @@ public class ConsoleOutput {
 	}
     }
 
+    public void outError(final String s) {
+	this.outWarn("⛔ " + s);
+    }
+
     public void outWarn(final String s) {
 	switch (this.lastState) {
 	case NRML_PROGRESS:
