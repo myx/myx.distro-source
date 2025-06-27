@@ -129,6 +129,23 @@ DistroImageSync(){
 
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+	case "$1" in
+			''|--help|--help-syntax)
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
+				if [ "$1" = "--help" ] ; then
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroImageSync.include"
+				fi
+				return 1
+			;;
+	esac
+
 	local useJobList=""
 	local useStage=""
 
@@ -220,19 +237,6 @@ DistroImageSync(){
 			;;
 			--print-*|--script-*|--execute-*)
 				break
-			;;
-			--help|--help-syntax)
-				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
-				echo "📘 syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
-				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
-				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
-				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
-				echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
-				if [ "$1" = "--help" ] ; then
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroImageSync.include"
-				fi
-				return 0
 			;;
 			--*)
 				Require ListDistroProjects
