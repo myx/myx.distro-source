@@ -53,4 +53,3 @@ echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut source-process"
 echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut image-prepare" >&2
 echo "    ListDistroDeclares.fn.sh --select-all --filter-and-cut image-install" >&2
 echo >&2
-set +e ; return 1

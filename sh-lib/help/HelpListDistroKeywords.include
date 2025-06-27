@@ -39,4 +39,3 @@ echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut source-process"
 echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut image-prepare" >&2
 echo "    ListDistroKeywords.fn.sh --select-all --filter-and-cut image-install" >&2
 echo >&2
-set +e ; return 1

@@ -11,4 +11,3 @@ echo "		MDSC_SOURCE: ${MDSC_SOURCE:-"Not Set"}" >&2
 echo "		MDSC_CACHED: ${MDSC_CACHED:-"Not Set"}" >&2
 echo "		MDSC_OUTPUT: ${MDSC_OUTPUT:-"Not Set"}" >&2
 echo >&2
-set +e ; return 1

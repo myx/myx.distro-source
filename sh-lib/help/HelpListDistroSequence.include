@@ -20,4 +20,3 @@ echo "    ListDistroSequence.fn.sh --distro-from-source --all" >&2
 echo "    ListDistroSequence.fn.sh --distro-from-cached --all" >&2
 echo "    ListDistroSequence.fn.sh --distro-source-only --no-cache --no-index --all" >&2
 echo >&2
-set +e ; return 1

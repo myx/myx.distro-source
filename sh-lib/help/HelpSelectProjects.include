@@ -64,4 +64,3 @@ echo "    --select-all-affected" >&2
 echo "    --select-affected-projects" >&2
 echo "                Select projects that are derived/affected by currently selected projects." >&2
 echo >&2
-set +e ; return 1

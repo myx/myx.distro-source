@@ -19,4 +19,3 @@ echo >&2
 echo "    image-install" >&2
 echo "                Execute deployment." >&2
 echo >&2
-set +e ; return 1

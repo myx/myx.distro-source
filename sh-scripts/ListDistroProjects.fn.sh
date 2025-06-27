@@ -21,6 +21,23 @@ ListDistroProjects(){
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
+			''|--help|--help-syntax)
+				echo "📘 syntax: ListDistroProjects.fn.sh --all-projects" >&2
+				echo "📘 syntax: ListDistroProjects.fn.sh <project-selector> [<command-options>] [<execute-extra-args>]" >&2
+				echo "📘 syntax: ListDistroProjects.fn.sh [--help]" >&2
+				if [ "$1" = "--help" ] ; then
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroProjects.include"
+				fi
+				return 0
+			;;
+		esac
+		break
+	done
+	
+	while true ; do
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+		case "$1" in
 			--select-from-env)
 				shift
 				local selectProjects="${MDSC_SELECT_PROJECTS}"
@@ -514,16 +531,6 @@ ListDistroProjects(){
 
 				export MDSC_SELECT_PROJECTS="$selectProjects"
 				$executeCommand --select-from-env $MDSC_NO_CACHE $MDSC_NO_INDEX "$@"
-				return 0
-			;;
-			--help|--help-syntax)
-				echo "📘 syntax: ListDistroProjects.fn.sh --all-projects" >&2
-				echo "📘 syntax: ListDistroProjects.fn.sh <project-selector> [<command-options>] [<execute-extra-args>]" >&2
-				echo "📘 syntax: ListDistroProjects.fn.sh [--help]" >&2
-				if [ "$1" = "--help" ] ; then
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroProjects.include"
-				fi
 				return 0
 			;;
 			*)

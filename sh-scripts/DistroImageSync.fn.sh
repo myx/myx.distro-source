@@ -7,16 +7,12 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
-fi
-
-if ! type DistroSource >/dev/null 2>&1 ; then
-	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
-fi
 
 DistroImageSync(){
+	if ! type DistroSource >/dev/null 2>&1 ; then
+		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
+	fi
+
 	local MDSC_CMD='DistroImageSync'
 	set -e
 
@@ -225,6 +221,19 @@ DistroImageSync(){
 			--print-*|--script-*|--execute-*)
 				break
 			;;
+			--help|--help-syntax)
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
+				echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
+				if [ "$1" = "--help" ] ; then
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroImageSync.include"
+				fi
+				return 0
+			;;
 			--*)
 				Require ListDistroProjects
 				ListDistroProjects --select-execute-default DistroImageSync "$@"
@@ -318,85 +327,13 @@ DistroImageSync(){
 
 case "$0" in
 	*/sh-scripts/DistroImageSync.fn.sh)
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-path-auto
+		fi
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --print-all-tasks" >&2
-			echo "📘 syntax: DistroImageSync.fn.sh [<options>] <project-selector> <operation>" >&2
-			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}" >&2
-			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
-			echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
-			echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-				echo "    --all-tasks" >&2
-				echo "                Select all distro tasks for all build stages." >&2
-				echo >&2
-				echo >&2
-				echo "  Options:" >&2
-				echo >&2
-				echo "    --explicit-noop" >&2
-				echo "                Explicit argument that safely does nothing." >&2
-				echo >&2
-				echo "    --no-index" >&2
-				echo "                Use no index." >&2
-				echo >&2
-				echo "    --no-cache" >&2
-				echo "                Use no cache." >&2
-				echo >&2
-				echo "  Operations:" >&2
-				echo >&2
-				echo "    --print-all-tasks" >&2
-				echo "                Displays all sync tasks for all build stages from all projects in distro." >&2
-				echo "                This command doesn't need project selector and any other arguments." >&2
-				echo >&2
-				echo "    --execute-source-prepare-pull [--no-ssh-mx|--one-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                Execute tasks for source-prapare pull stage (before source-prepare)." >&2
-				echo >&2
-				echo "    --execute-source-process-push [--no-ssh-mx|--one-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                Execute tasks for image-prapare push stage (on image-prepare, after source)." >&2
-				echo >&2
-				echo "    --execute-image-prepare-pull [--no-ssh-mx|--one-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                Execute tasks for image-prapare pull stage (on image-prepare, before deploy)." >&2
-				echo >&2
-				echo "    --execute-image-process-push [--no-ssh-mx|--one-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                Execute tasks for image-prapare push stage (on image-prepare, before deploy)." >&2
-				echo >&2
-				echo "    --execute-image-install-pull [--no-ssh-mx|--one-ssh-mx] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                Execute tasks for image-install pull stage (on image-install, before deploy)." >&2
-				echo >&2
-				echo "    --print-tasks" >&2
-				echo "                Display selected sync tasks for all build stages for selected projects." >&2
-				echo >&2
-				echo "    --print-repo-list" >&2
-				echo "                Display selected tasks' unrolled sync lists (with repo lists expanded)." >&2
-				echo >&2
-				echo "    --print-source-{prepare-pull|process-push}" >&2
-				echo "    --print-image-{prepare-pull|process-push}" >&2
-				echo "                Displays syncronisation task list to be executed." >&2
-				echo >&2
-				echo "    --script-source-{prepare-pull|process-push} [--parallel [N] / --sequence / --portable]" >&2
-				echo "    --script-image-{prepare-pull|process-push} [--parallel [N] / --sequence / --portable]" >&2
-				echo "                Displays syncronisation script source to be executed." >&2
-				echo >&2
-				echo "    --{script|execute}-from-stdin-repositories-list" >&2
-				echo "                Takes text columns with '<targetSpec> <sourceSpec> [<branch>]' where <targetSpec>." >&2
-				echo "                is normally a local project full name, <sourceSpec> is git repository URL and <branch>" >&2
-				echo "                is optional branch name ('main' and 'master' are tried is ommited)." >&2
-				echo >&2
-				echo "    --(script|execute)-* [--no-ssh-mx|--one-ssh-mx] [--ssh-defaults] [--parallel [N] / --sequence / --portable]" >&2
-				echo "                '--no-ssh-mx|--one-ssh-mx' controls use of ssh multiplexing. The '--ssh-defaults' disables" >&2
-				echo "                advanced ssh settings and parameters to be used." >&2
-				echo >&2
-				echo "  Examples:" >&2
-				echo >&2
-				echo "    DistroImageSync.fn.sh --print-all-tasks" >&2
-				echo "    DistroImageSync.fn.sh --source-prepare-pull --print-all-tasks" >&2
-				echo "    DistroImageSync.fn.sh --source-prepare-pull --all-tasks --print-tasks" >&2
-				echo "    DistroImageSync.fn.sh --source-prepare-pull --print-all-tasks-repo-list" >&2
-				echo "    DistroImageSync.fn.sh --source-prepare-pull --all-tasks --print-repo-list" >&2
-				echo >&2
-				echo ""
-			fi
+			DistroImageSync ${1:-"--help-syntax"}
 			exit 1
 		fi
 		

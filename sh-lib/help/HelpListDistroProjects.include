@@ -75,4 +75,3 @@ echo "    ListDistroProjects.fn.sh --provides image-execute:deploy-l6route-confi
 echo "    ListDistroProjects.fn.sh --provides deploy-keyword:l6 | sort" >&2
 echo "    ListDistroProjects.fn.sh --keywords l6 | sort" >&2
 echo >&2
-set +e ; return 1

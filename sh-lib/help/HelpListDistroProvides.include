@@ -54,4 +54,3 @@ echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-prepare" 
 echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-execute" >&2
 echo "    ListDistroProvides.fn.sh --select-all --filter-and-cut image-install" >&2
 echo >&2
-set +e ; return 1
