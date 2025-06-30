@@ -40,7 +40,7 @@ DistroSourceTools(){
 				set +e ; return 1
 			fi
 
-			shift ; shift ; shift
+			shift 3
 
 			if [ "$1" == "--batch" ] ; then
 				shift
