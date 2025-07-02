@@ -42,7 +42,10 @@ SourcePrepareProjectSyncToCached(){
 
 	# rlpgoDitO
 	if ROUTPUT="$( 
-		rsync -ai --delete \
+		rsync \
+			-aiO \
+			--delete \
+			--delete-excluded \
 			--exclude='.DS_Store' \
 			--exclude='Icon?' \
 			--exclude='._*' \
@@ -50,7 +53,8 @@ SourcePrepareProjectSyncToCached(){
 			--exclude='.Trashes' \
 			--exclude='.*' \
 			--exclude='CVS' \
-			"$projectSrc/" "$projectDst" 2>&1 
+			"$projectSrc/" "$projectDst" \
+		2>&1 
 	)" ; then
 		if [ -z "$ROUTPUT" ] ; then
 			echo "not changed on this run."
