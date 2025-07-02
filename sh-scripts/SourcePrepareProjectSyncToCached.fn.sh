@@ -36,9 +36,24 @@ SourcePrepareProjectSyncToCached(){
 	if [ -f "$projectChg" ] ; then
 		echo "already marked as changed." >&2 
 	fi
-	
-	if local ROUTPUT="$( rsync -rlpgoDitO --delete --exclude '.*' --exclude 'CVS' "$projectSrc/" "$projectDst" 2>&1 \
-	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true) )" ; then
+
+	# 1) Common macOS junk excludes
+	local RSYNC_EXCLUDES="
+		--exclude='.DS_Store'
+		--exclude='Icon?'
+		--exclude='._*'
+		--exclude='.Spotlight-V100'
+		--exclude='.Trashes'
+		--exclude='.*' 
+		--exclude='CVS'
+	"
+
+	local ROUTPUT
+
+	# rlpgoDitO
+	if ROUTPUT="$( 
+		rsync -ai --delete $RSYNC_EXCLUDES "$projectSrc/" "$projectDst" 2>&1 
+	)" ; then
 		if [ -z "$ROUTPUT" ] ; then
 			echo "not changed on this run."
 		else
