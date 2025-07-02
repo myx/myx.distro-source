@@ -13,6 +13,32 @@ case "$1" in
 		DistroSourceTools --make-code-workspace "$@"
 		return 0
 	;;
+	--make-static-non-editable)
+		[ -n "$2" ] || {
+			echo "⛔ ERROR: $MDSC_CMD: $1 missing target filename" >&2
+			set +e ; return 1
+		}
+		shift
+
+		if [ -f "$1" ]; then
+			if command -v chflags >/dev/null 2>&1; then
+				chflags nouchg "$1" 2>/dev/null || true
+			fi
+			rm -f "$1"
+			#chmod u+w "$1" 2>/dev/null || true
+		fi
+
+		cat "${2:-"-"}" > "$1"
+
+		if [ -f "$1" ]; then
+			chmod 444 "$1" 2>/dev/null || true
+			if command -v chflags >/dev/null 2>&1; then
+				chflags uchg "$1" 2>/dev/null || true
+			fi
+		fi
+
+		return 0
+	;;
 	--make-code-workspace)
 		shift
 		set -e
@@ -32,20 +58,57 @@ case "$1" in
 			done
 		)"
 
+		local VSE_PATH="$MMDAPP/.local/.vscode/browse"
+		local VSEO_PATH="$VSE_PATH/📦 Browse - output"
+		local VSES_PATH="$VSE_PATH/📝 Browse - source"
+
+		local VSS_PATH="$MMDAPP/.local/.vscode/status"
+		local VSSB_PATH="$VSS_PATH/🧱 Workspace - Build"
+		local VSSR_PATH="$VSS_PATH/🩺 Workspace - Recover"
+
+		mkdir -p \
+			"$VSE_PATH" \
+			"$VSSB_PATH" \
+			"$VSSR_PATH" \
+
+		if [ -d "$MMDAPP/output" ]; then
+			ln -sfn "$MMDAPP/output" "$VSEO_PATH"
+		else
+			[ ! -L "$VSEO_PATH" ] || rm "$VSEO_PATH"		
+		fi
+		ln -sfn "$MMDAPP/source" "$VSES_PATH"
+
+		ln -sfn "$MMDAPP/cached/build-time-stamp.txt" "$VSSB_PATH/LatestBuildTimeStamp.txt"
+
+		ln -sfn "$MMDAPP/cached/enhance" "$VSSB_PATH/basic-indices"
+
+		echo "Hello! This is generated folder. It contains symlinks to some internal directories that are used in this workspace." \
+		| DistroSourceTools --make-static-non-editable "$VSE_PATH/🔍 README.md"
+
+		echo "Hello! This is generated folder. Some content may appear here as result of operations executed." \
+		| DistroSourceTools --make-static-non-editable "$VSS_PATH/🛠️ README.md"
+
+		echo "Hello! This is generated folder. Here you may find build logs and inventory reports after builds." \
+		| DistroSourceTools --make-static-non-editable "$VSSB_PATH/🧱 README.md"
+
+		echo "Hello! This is generated folder. Here you may find commands and handy information to fix, reinstall or export your workspace." \
+		| DistroSourceTools --make-static-non-editable "$VSSR_PATH/🩺 README.md"
+
 		cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 		{
 			"folders": [ 
 				$REPOS
 				{ 
-					"path": "$MMDAPP/output/"
-					"name": "📦 Browse: output"
+					"path": "$MMDAPP/.local/.vscode/browse",
+					"name": "🔍 Browse"
 				},
 				{ 
-					"path": "$MMDAPP/source/"
-					"name": "📝 Browse: source"
+					"path": "$MMDAPP/.local/.vscode/status",
+					"name": "🛠️ Workspace"
 				}
 			],
 			"settings": {
+				"search.followSymlinks": false,
     			"extensions.showRecommendationsOnlyOnDemand": true,
 				"files.exclude": {
 					"📦 Browse: output/**": true,
