@@ -7,7 +7,23 @@ MakeProjectSourceArchive(){
 	local BASE_ROOT="`dirname "$CHECK_DIR"`"
 	local PACK_ROOT="`basename "$CHECK_DIR"`"
 	mkdir -p "$BUILT_DIR"
-	tar -zcv -C "$BASE_ROOT" -f "$BUILT_DIR/project-source.tgz" "$PACK_ROOT"
+	tar \
+		-zcv \
+		--format=ustar \
+		--exclude='.DS_Store' \
+		--exclude='.AppleDouble' \
+		--exclude='Icon?' \
+		--exclude='._*' \
+		--exclude='.Spotlight-V100' \
+		--exclude='.Trashes' \
+		--exclude='.git' \
+		--exclude='.git/**' \
+		--exclude='CVS' \
+		$( if tar --version 2>/dev/null | grep -q GNU ; then echo "--no-xattrs --no-acls --no-selinux"; fi ) \
+		$( if tar --version 2>/dev/null | grep -qi bsdtar ; then echo "--disable-copyfile"; fi ) \
+		-C "$BASE_ROOT" \
+		-f "$BUILT_DIR/project-source.tgz" \
+		"$PACK_ROOT"
 }
 
 Require ListDistroProvides

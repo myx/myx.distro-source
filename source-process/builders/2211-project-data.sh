@@ -6,7 +6,23 @@ CheckMakeProjectDataFolder(){
 	if [ -d "$CHECK_DIR" ] ; then
 		local BUILT_DIR="$MDSC_OUTPUT/$PKG"
 		mkdir -p "$BUILT_DIR"
-		tar -cvj -C "$CHECK_DIR" -f "$BUILT_DIR/data.tbz" "./"
+		tar \
+			-cvj \
+			--format=ustar \
+			--exclude='.DS_Store' \
+			--exclude='.AppleDouble' \
+			--exclude='Icon?' \
+			--exclude='._*' \
+			--exclude='.Spotlight-V100' \
+			--exclude='.Trashes' \
+			--exclude='.git' \
+			--exclude='.git/**' \
+			--exclude='CVS' \
+			$( if tar --version 2>/dev/null | grep -q GNU ; then echo "--no-xattrs --no-acls --no-selinux"; fi ) \
+			$( if tar --version 2>/dev/null | grep -qi bsdtar ; then echo "--disable-copyfile"; fi ) \
+			-C "$CHECK_DIR" \
+			-f "$BUILT_DIR/data.tbz" \
+			"./"
 	fi
 }
 

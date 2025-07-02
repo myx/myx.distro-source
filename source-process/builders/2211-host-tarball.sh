@@ -13,9 +13,11 @@ CheckMakeProjectHostTarball(){
 		
 		( \
 			cd "$SRC/.." ; \
-			tar -cvj \
+			tar \
+				-cvj \
 				--format=ustar \
 				--exclude='.DS_Store' \
+				--exclude='.AppleDouble' \
 				--exclude='Icon?' \
 				--exclude='._*' \
 				--exclude='.Spotlight-V100' \
