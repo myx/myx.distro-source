@@ -37,22 +37,20 @@ SourcePrepareProjectSyncToCached(){
 		echo "already marked as changed." >&2 
 	fi
 
-	# 1) Common macOS junk excludes
-	local RSYNC_EXCLUDES="
-		--exclude='.DS_Store'
-		--exclude='Icon?'
-		--exclude='._*'
-		--exclude='.Spotlight-V100'
-		--exclude='.Trashes'
-		--exclude='.*' 
-		--exclude='CVS'
-	"
 
 	local ROUTPUT
 
 	# rlpgoDitO
 	if ROUTPUT="$( 
-		rsync -ai --delete $RSYNC_EXCLUDES "$projectSrc/" "$projectDst" 2>&1 
+		rsync -ai --delete \
+			--exclude='.DS_Store' \
+			--exclude='Icon?' \
+			--exclude='._*' \
+			--exclude='.Spotlight-V100' \
+			--exclude='.Trashes' \
+			--exclude='.*' \
+			--exclude='CVS' \
+			"$projectSrc/" "$projectDst" 2>&1 
 	)" ; then
 		if [ -z "$ROUTPUT" ] ; then
 			echo "not changed on this run."
