@@ -14,6 +14,14 @@ CheckMakeProjectHostTarball(){
 		( \
 			cd "$SRC/.." ; \
 			tar -cvj \
+				--exclude='.DS_Store' \
+				--exclude='Icon?' \
+				--exclude='._*' \
+				--exclude='.Spotlight-V100' \
+				--exclude='.Trashes' \
+				--exclude='.git' \
+				--exclude='.git/**' \
+				--exclude='CVS' \
 				-f "$BUILT_DIR/host-tarball.tbz" \
 				` [ ! -d "$SRC/host-freebsd/tarball" ] || echo "$PACK_ROOT/host-freebsd/tarball" ` \
 				` [ ! -d "$SRC/host-macosx/tarball" ]  || echo "$PACK_ROOT/host-macosx/tarball" ` \
