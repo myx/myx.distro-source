@@ -16,7 +16,7 @@ CleanSourceFileJunk(){
 
 	local ROOTPATH="${1:-"$MMDAPP/source"}"
 
-	printf "🔍 Scanning for cleanup targets…\n"
+	printf "CleanSourceFileJunk: 🔍 Scanning for cleanup targets…\n"
 	cleanup_count=0
 
 	# 1) Remove known junk files (skip .git)
@@ -28,7 +28,7 @@ CleanSourceFileJunk(){
 		-name '.Trashes' \
 	\) ! -path '*/.git/*' -print0 \
 	| while IFS= read -r -d '' f; do
-		printf "🗑 Removing file: %s\n" "$f"
+		printf "CleanSourceFileJunk: 🗑 Removing file: %s\n" "$f"
 		rm -f "$f" && cleanup_count=$((cleanup_count+1))
 	done
 
@@ -39,7 +39,7 @@ CleanSourceFileJunk(){
 		-name '.AppleDouble' \
 	\) ! -path '*/.git/*' -print0 \
 	| while IFS= read -r -d '' d; do
-		printf "📂 Removing dir: %s\n" "$d"
+		printf "CleanSourceFileJunk: 📂 Removing dir: %s\n" "$d"
 		rm -rf "$d" && cleanup_count=$((cleanup_count+1))
 	done
 
@@ -52,7 +52,7 @@ CleanSourceFileJunk(){
 			probe_attr() { getfattr -n "user.$1" --only-values "$2" >/dev/null 2>&1; }
 			delete_attr() { setfattr -x "user.$1" "$2" >/dev/null 2>&1; }
 		else
-			printf "📂 Extended attributes tool seems unavailable (no xattr or getfattr detected)" "$d"
+			printf "CleanSourceFileJunk: 📂 Extended attributes tool seems unavailable (no xattr or getfattr detected)" "$d"
 			break
 		fi
 
@@ -75,7 +75,7 @@ CleanSourceFileJunk(){
 					# check if it's in our junk list
 					case " $JUNK_XATTRS " in
 					*" $a "*) 
-						printf "🧼 Stripping xattr %s from %s\n" "$a" "$file"
+						printf "CleanSourceFileJunk: 🧼 Stripping xattr %s from %s\n" "$a" "$file"
 						xattr -d "$a" "$file" 2>/dev/null && cleanup_count=$((cleanup_count+1))
 						;;
 					esac
@@ -86,20 +86,20 @@ CleanSourceFileJunk(){
 
 	# 4) Summary
 	if [ "$cleanup_count" -eq 0 ]; then
-		echo "✅ Nothing to clean. Workspace is pristine."
+		echo "CleanSourceFileJunk: ✅ Nothing to clean. Workspace is pristine."
 	else
-		printf "✨ Cleanup complete: %s items removed/cleaned.\n" "$cleanup_count"
+		printf "CleanSourceFileJunk: ✨ Cleanup complete: %s items removed/cleaned.\n" "$cleanup_count"
 	fi
 
 
 	return 0
 
 
-	echo "CleanAllOutputs: 🧻 Cleaning Output directories" >&2
+	echo "CleanSourceFileJunk: 🧻 Cleaning Output directories" >&2
 	rm -rf "$MMDAPP"/{output,cached,export,distro}
 	
 	if type DistroSystemContext >/dev/null 2>&1 ; then
-		echo "CleanAllOutputs: 🧹 Cleaning DistroShell in-line caches" >&2
+		echo "CleanSourceFileJunk: 🧹 Cleaning DistroShell in-line caches" >&2
 		DistroSystemContext --uncache
 	fi
 }
