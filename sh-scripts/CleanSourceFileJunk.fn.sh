@@ -16,7 +16,7 @@ CleanSourceFileJunk(){
 
 	local ROOTPATH="${1:-"$MMDAPP/source"}"
 
-	printf "CleanSourceFileJunk: 🔍 Scanning for cleanup targets…\n"
+	printf "CleanSourceFileJunk: 🔍 Scanning for junk files @ $ROOTPATH\n"
 	cleanup_count=0
 
 	# 1) Remove known junk files (skip .git)
@@ -43,64 +43,66 @@ CleanSourceFileJunk(){
 		rm -rf "$d" && cleanup_count=$((cleanup_count+1))
 	done
 
-	# 1) Pick your Attr‐tool only once
-	while true; do
-		if command -v xattr >/dev/null 2>&1; then
-			probe_attr() { xattr -p "$1" "$2" >/dev/null 2>&1; }
-			delete_attr() { xattr -d "$1" "$2" >/dev/null 2>&1; }
-		elif command -v getfattr >/dev/null 2>&1 && command -v setfattr >/dev/null 2>&1; then
-			probe_attr() { getfattr -n "user.$1" --only-values "$2" >/dev/null 2>&1; }
-			delete_attr() { setfattr -x "user.$1" "$2" >/dev/null 2>&1; }
-		else
-			printf "CleanSourceFileJunk: 📂 Extended attributes tool seems unavailable (no xattr or getfattr detected)" "$d"
-			break
-		fi
 
-		# 3) Strip only unwanted xattrs
-		#    List of Mac junk xattrs to remove:
-		JUNK_XATTRS='
-		com.apple.provenance
-		com.apple.quarantine
-		com.apple.ResourceFork
-		com.apple.FinderInfo
-		'
 
-		if command -v xattr >/dev/null 2>&1; then
-			# macOS / FreeBSD
-			find "$ROOTPATH" ! -path '*/.git/*' -print0 \
-			| while IFS= read -r -d '' file; do
-				# list attrs for this file
-				attrs="$(xattr "$file" 2>/dev/null)"
-				for a in $attrs; do
-					# check if it's in our junk list
-					case " $JUNK_XATTRS " in
-					*" $a "*) 
-						printf "CleanSourceFileJunk: 🧼 Stripping xattr %s from %s\n" "$a" "$file"
-						xattr -d "$a" "$file" 2>/dev/null && cleanup_count=$((cleanup_count+1))
-						;;
-					esac
-				done
+	# 1) Detect which xattr tool we have
+	if command -v xattr >/dev/null 2>&1; then
+		# Regexp matching exactly the names you care about
+		local JUNK_RX='^(com\.apple\.provenance|com\.apple\.quarantine|com\.apple\.ResourceFork|com\.apple\.FinderInfo)$'
+		echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'xattr' @ $ROOTPATH"
+
+		local attrs f
+		find "$ROOTPATH" ! -path '*/.git/*' -print0 \
+		| while IFS= read -r -d '' f; do
+			# list only the junk attributes
+			attrs=$(xattr -l "$f" 2>/dev/null | cut -d: -f1 | grep -E "$JUNK_RX" || :)
+
+			[ -z "$attrs" ] && continue
+
+			# log and delete them in one go
+			printf "🧼 Removing [%s] from %s\n" "$attrs" "$f"
+			printf "%s\n" "$attrs" | xargs -I{} xattr -d {} "$f"
+			cleanup_count=$((cleanup+1))
+		done
+
+	elif command -v getfattr >/dev/null 2>&1 && command -v setfattr >/dev/null 2>&1; then
+		local NAMES="com.apple.provenance com.apple.quarantine com.apple.ResourceFork com.apple.FinderInfo"
+		echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'getfattr' @ $ROOTPATH"
+
+		local args attrs delflags f
+		find "$ROOTPATH" ! -path '*/.git/*' -print0 \
+		| while IFS= read -r -d '' f; do
+
+			# linux: build -n user.NAME args
+			args=""
+			for name in $NAMES; do
+			args="$args -n user.$name"
 			done
-		fi
-	done
+
+			# probe only those names
+			attrs=$(getfattr $args --only-names "$f" 2>/dev/null || :)
+
+			[ -z "$attrs" ] && continue
+
+			# build deletion flags in one shot
+			delflags=""
+			for a in $attrs; do
+			delflags="$delflags -x $a"
+			done
+
+			printf "🧼 Removing [%s] from %s\n" "$attrs" "$f"
+			setfattr $delflags "$f"
+			cleanup_count=$((cleanup+1))
+		done
+	else
+		printf "CleanSourceFileJunk: 📂 Extended attributes tool seems unavailable (no xattr or getfattr detected)" "$d"
+	fi
 
 	# 4) Summary
 	if [ "$cleanup_count" -eq 0 ]; then
 		echo "CleanSourceFileJunk: ✅ Nothing to clean. Workspace is pristine."
 	else
 		printf "CleanSourceFileJunk: ✨ Cleanup complete: %s items removed/cleaned.\n" "$cleanup_count"
-	fi
-
-
-	return 0
-
-
-	echo "CleanSourceFileJunk: 🧻 Cleaning Output directories" >&2
-	rm -rf "$MMDAPP"/{output,cached,export,distro}
-	
-	if type DistroSystemContext >/dev/null 2>&1 ; then
-		echo "CleanSourceFileJunk: 🧹 Cleaning DistroShell in-line caches" >&2
-		DistroSystemContext --uncache
 	fi
 }
 
