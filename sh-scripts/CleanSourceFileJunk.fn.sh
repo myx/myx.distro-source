@@ -58,9 +58,6 @@ CleanSourceFileJunk(){
 
 			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'xattr' @ $ROOTPATH"
 
-			# Regexp matching exactly the names you care about
-			local JUNK_PATTERN='^(com\.apple\.(provenance|quarantine|ResourceFork|FinderInfo))$'
-
 			# mac/bsd: build -e ^NAME$ args for grep
 			args=""
 			for name in $JUNK_NAMES; do
@@ -74,13 +71,10 @@ CleanSourceFileJunk(){
 
 			find . ! -path '*/.git/*' -print0 \
 			| while IFS= read -r -d '' f; do
-				# list only the junk attributes
- 				attrs=$(xattr "$f" 2>/dev/null | grep -q "$args") || continue
+ 				attrs=$(xattr "$f" 2>/dev/null | grep "$args") || continue
 				[ -z "$attrs" ] && continue
 
-				# log and delete them in one go
-				printf "CleanSourceFileJunk: 🧼 Removing [%s] from %s\n" "$attrs" "$f"
-				#printf "%s\n" "$attrs" | xargs -I{} xattr -d {} "$f"
+				printf "CleanSourceFileJunk: 🧼 Removing [%s] from %s\n" "$attrs" "$f" >&2
 				if xattr $delflags -- "$f" ; then
 					cleanup_count=$((cleanup_count+1))
 				else
@@ -105,17 +99,15 @@ CleanSourceFileJunk(){
 
 			find . ! -path '*/.git/*' -print0 \
 			| while IFS= read -r -d '' f; do
-
-
-				# probe only those names
-				attrs=$(getfattr $args --only-names "$f" 2>/dev/null || :)
-
+				attrs=$(getfattr $args --only-names "$f" 2>/dev/null) || continue
 				[ -z "$attrs" ] && continue
 
-
-				printf "🧼 Removing [%s] from %s\n" "$attrs" "$f"
-				setfattr $delflags "$f"
-				cleanup_count=$((cleanup_count+1))
+				printf "CleanSourceFileJunk: 🧼 Removing [%s] from %s\n" "$attrs" "$f"
+				if setfattr $delflags "$f" ; then
+					cleanup_count=$((cleanup_count+1))
+				else
+					printf "CleanSourceFileJunk: ⚠️ Failed to remove [%s] from %s (exit %d)\n" "$attrs" "$file" "$?" >&2
+				fi
 			done
 
 		else
