@@ -24,8 +24,12 @@ CheckMakeProjectHostTarball(){
 				--exclude='.git' \
 				--exclude='.git/**' \
 				--exclude='CVS' \
-				$( if tar --version 2>/dev/null | grep -q GNU ; then echo "--no-xattrs --no-acls --no-selinux"; fi ) \
-				$( if tar --version 2>/dev/null | grep -qi bsdtar ; then echo "--disable-copyfile"; fi ) \
+				$( if tar --version 2>/dev/null | grep -q GNU ; then
+					echo --no-xattrs --no-acls --no-selinux
+				fi ) \
+				$( if tar --version 2>/dev/null | grep -qi bsdtar ; then 
+					echo --disable-copyfile $( [ "$(uname)" != FreeBSD ] || echo --no-mac-metadata )
+				fi ) \
 				$( [ ! -d "$SRC/host-freebsd/tarball" ] || echo "$PACK_ROOT/host-freebsd/tarball" ) \
 				$( [ ! -d "$SRC/host-macosx/tarball" ]  || echo "$PACK_ROOT/host-macosx/tarball" ) \
 				$( [ ! -d "$SRC/host-ubuntu/tarball" ]  || echo "$PACK_ROOT/host-ubuntu/tarball" ) \
