@@ -7,7 +7,8 @@ MakeProjectSourceArchive(){
 	local BASE_ROOT="`dirname "$CHECK_DIR"`"
 	local PACK_ROOT="`basename "$CHECK_DIR"`"
 	mkdir -p "$BUILT_DIR"
-	tar -zcvf "$BUILT_DIR/project-source.tgz" --format=posix \
+	tar -zcvf "$BUILT_DIR/project-source.tgz" \
+		--format=posix \
 		--exclude='.DS_Store' \
 		--exclude='.AppleDouble' \
 		--exclude='Icon?' \
