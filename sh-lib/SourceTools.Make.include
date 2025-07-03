@@ -112,11 +112,13 @@ case "$1" in
     			"extensions.showRecommendationsOnlyOnDemand": true,
 				"files.exclude": {
 					"📦 Browse: output/**": true,
-					"📝 Browse: source/**": true
+					"📝 Browse: source/**": true,
+					"**/.git": true
 				},
 				"search.exclude": {
 					"📦 Browse: output/**": true,
-					"📝 Browse: source/**": true
+					"📝 Browse: source/**": true,
+					"**/.git": true
 				},
 				"files.watcherExclude": {
 					"📦 Browse: output/**": true,
