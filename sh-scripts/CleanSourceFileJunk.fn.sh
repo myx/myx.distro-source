@@ -56,21 +56,21 @@ CleanSourceFileJunk(){
 		# 1) Detect which xattr tool we have
 		if command -v xattr >/dev/null 2>&1; then
 
+			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'xattr' @ $ROOTPATH"
+
 			# Regexp matching exactly the names you care about
 			local JUNK_PATTERN='^(com\.apple\.(provenance|quarantine|ResourceFork|FinderInfo))$'
 
 			# mac/bsd: build -e ^NAME$ args for grep
 			args=""
 			for name in $JUNK_NAMES; do
-				args="$args -e '^${name}$'"
+				args="$args -e '^${name}\$'"
 			done
 
 			# build deletion flags in one shot
 			for name in $attrs; do
 				delflags="$delflags -d $name"
 			done
-
-			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'xattr' @ $ROOTPATH"
 
 			find . ! -path '*/.git/*' -print0 \
 			| while IFS= read -r -d '' f; do
@@ -89,6 +89,9 @@ CleanSourceFileJunk(){
 			done
 
 		elif command -v getfattr >/dev/null 2>&1 && command -v setfattr >/dev/null 2>&1; then
+
+			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'getfattr' @ $ROOTPATH"
+
 			# linux: build -n user.NAME args for xfattr
 			args=""
 			for name in $JUNK_NAMES; do
@@ -99,7 +102,6 @@ CleanSourceFileJunk(){
 			for name in $attrs; do
 				delflags="$delflags -x $name"
 			done
-			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'getfattr' @ $ROOTPATH"
 
 			find . ! -path '*/.git/*' -print0 \
 			| while IFS= read -r -d '' f; do
@@ -115,6 +117,7 @@ CleanSourceFileJunk(){
 				setfattr $delflags "$f"
 				cleanup_count=$((cleanup_count+1))
 			done
+
 		else
 			printf "CleanSourceFileJunk: 📂 Extended attributes tool seems unavailable (no xattr or getfattr detected)" "$d"
 		fi
