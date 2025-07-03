@@ -50,51 +50,66 @@ CleanSourceFileJunk(){
 		done
 
 
+		local args attrs delflags f name
+		local JUNK_NAMES="com.apple.provenance com.apple.quarantine com.apple.ResourceFork com.apple.FinderInfo"
 
 		# 1) Detect which xattr tool we have
 		if command -v xattr >/dev/null 2>&1; then
+
 			# Regexp matching exactly the names you care about
-			local JUNK_RX='^(com\.apple\.provenance|com\.apple\.quarantine|com\.apple\.ResourceFork|com\.apple\.FinderInfo)$'
+			local JUNK_PATTERN='^(com\.apple\.(provenance|quarantine|ResourceFork|FinderInfo))$'
+
+			# mac/bsd: build -e ^NAME$ args for grep
+			args=""
+			for name in $JUNK_NAMES; do
+				args="$args -e '^${name}$'"
+			done
+
+			# build deletion flags in one shot
+			for name in $attrs; do
+				delflags="$delflags -d $name"
+			done
+
 			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'xattr' @ $ROOTPATH"
 
-			local attrs f
 			find . ! -path '*/.git/*' -print0 \
 			| while IFS= read -r -d '' f; do
 				# list only the junk attributes
-				attrs=$(xattr -l "$f" 2>/dev/null | cut -d: -f1 | grep -E "$JUNK_RX" || :)
-
+ 				attrs=$(xattr "$f" 2>/dev/null | grep -q "$args") || continue
 				[ -z "$attrs" ] && continue
 
 				# log and delete them in one go
-				printf "🧼 Removing [%s] from %s\n" "$attrs" "$f"
-				printf "%s\n" "$attrs" | xargs -I{} xattr -d {} "$f"
-				cleanup_count=$((cleanup_count+1))
+				printf "CleanSourceFileJunk: 🧼 Removing [%s] from %s\n" "$attrs" "$f"
+				#printf "%s\n" "$attrs" | xargs -I{} xattr -d {} "$f"
+				if xattr $delflags -- "$f" ; then
+					cleanup_count=$((cleanup_count+1))
+				else
+					printf "CleanSourceFileJunk: ⚠️ Failed to remove [%s] from %s (exit %d)\n" "$attrs" "$file" "$?" >&2
+				fi
 			done
 
 		elif command -v getfattr >/dev/null 2>&1 && command -v setfattr >/dev/null 2>&1; then
-			local NAMES="com.apple.provenance com.apple.quarantine com.apple.ResourceFork com.apple.FinderInfo"
+			# linux: build -n user.NAME args for xfattr
+			args=""
+			for name in $JUNK_NAMES; do
+				args="$args -n user.$name"
+			done
+			# build deletion flags in one shot
+			delflags=""
+			for name in $attrs; do
+				delflags="$delflags -x $name"
+			done
 			echo "CleanSourceFileJunk: 🔍 Stripping junk attributes with 'getfattr' @ $ROOTPATH"
 
-			local args attrs delflags f
 			find . ! -path '*/.git/*' -print0 \
 			| while IFS= read -r -d '' f; do
 
-				# linux: build -n user.NAME args
-				args=""
-				for name in $NAMES; do
-				args="$args -n user.$name"
-				done
 
 				# probe only those names
 				attrs=$(getfattr $args --only-names "$f" 2>/dev/null || :)
 
 				[ -z "$attrs" ] && continue
 
-				# build deletion flags in one shot
-				delflags=""
-				for a in $attrs; do
-				delflags="$delflags -x $a"
-				done
 
 				printf "🧼 Removing [%s] from %s\n" "$attrs" "$f"
 				setfattr $delflags "$f"
