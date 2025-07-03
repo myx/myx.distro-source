@@ -14,7 +14,14 @@ CheckMakeProjectHostTarball(){
 		( \
 			cd "$SRC/.." ; \
 			tar -cvjf "$BUILT_DIR/host-tarball.tbz" \
-				--format=ustar \
+				--format=posix \
+				--no-xattrs \
+				$( if tar --version 2>/dev/null | grep -q GNU ; then
+					echo --no-acls --no-selinux
+				fi ) \
+				$( if tar --version 2>/dev/null | grep -qi bsdtar ; then 
+					echo --no-xattrs --disable-copyfile $( [ "$(uname)" != FreeBSD ] || echo --no-mac-metadata )
+				fi ) \
 				--exclude='.DS_Store' \
 				--exclude='.AppleDouble' \
 				--exclude='Icon?' \
@@ -24,12 +31,6 @@ CheckMakeProjectHostTarball(){
 				--exclude='.git' \
 				--exclude='.git/**' \
 				--exclude='CVS' \
-				$( if tar --version 2>/dev/null | grep -q GNU ; then
-					echo --no-xattrs --no-acls --no-selinux
-				fi ) \
-				$( if tar --version 2>/dev/null | grep -qi bsdtar ; then 
-					echo --disable-copyfile $( [ "$(uname)" != FreeBSD ] || echo --no-mac-metadata )
-				fi ) \
 				$( [ ! -d "$SRC/host-freebsd/tarball" ] || echo "$PACK_ROOT/host-freebsd/tarball" ) \
 				$( [ ! -d "$SRC/host-macosx/tarball" ]  || echo "$PACK_ROOT/host-macosx/tarball" ) \
 				$( [ ! -d "$SRC/host-ubuntu/tarball" ]  || echo "$PACK_ROOT/host-ubuntu/tarball" ) \

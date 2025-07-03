@@ -8,7 +8,14 @@ MakeProjectSourceArchive(){
 	local PACK_ROOT="`basename "$CHECK_DIR"`"
 	mkdir -p "$BUILT_DIR"
 	tar -czvf "$BUILT_DIR/project-source.tgz" \
-		--format=ustar \
+		--format=posix \
+		--no-xattrs \
+		$( if tar --version 2>/dev/null | grep -q GNU ; then
+			echo --no-acls --no-selinux
+		fi ) \
+		$( if tar --version 2>/dev/null | grep -qi bsdtar ; then 
+			echo --no-xattrs --disable-copyfile $( [ "$(uname)" != FreeBSD ] || echo --no-mac-metadata )
+		fi ) \
 		--exclude='.DS_Store' \
 		--exclude='.AppleDouble' \
 		--exclude='Icon?' \
@@ -18,12 +25,6 @@ MakeProjectSourceArchive(){
 		--exclude='.git' \
 		--exclude='.git/**' \
 		--exclude='CVS' \
-		$( if tar --version 2>/dev/null | grep -q GNU ; then
-			echo --no-xattrs --no-acls --no-selinux
-		fi ) \
-		$( if tar --version 2>/dev/null | grep -qi bsdtar ; then 
-			echo --disable-copyfile $( [ "$(uname)" != FreeBSD ] || echo --no-mac-metadata )
-		fi ) \
 		-C "$BASE_ROOT" \
 		"$PACK_ROOT"
 }
