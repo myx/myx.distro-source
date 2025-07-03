@@ -14,7 +14,7 @@ CheckMakeProjectHostTarball(){
 		( \
 			cd "$SRC/.." ; \
 			tar -cvjf "$BUILT_DIR/host-tarball.tbz" \
-				--format=posix \
+				--format=ustar \
 				--exclude='.DS_Store' \
 				--exclude='.AppleDouble' \
 				--exclude='Icon?' \
