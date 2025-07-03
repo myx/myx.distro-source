@@ -6,8 +6,7 @@ CheckMakeProjectDataFolder(){
 	if [ -d "$CHECK_DIR" ] ; then
 		local BUILT_DIR="$MDSC_OUTPUT/$PKG"
 		mkdir -p "$BUILT_DIR"
-		tar -cvjf "$BUILT_DIR/data.tbz" \
-			--format=ustar \
+		tar -cvjf "$BUILT_DIR/data.tbz" --format=posix \
 			--exclude='.DS_Store' \
 			--exclude='.AppleDouble' \
 			--exclude='Icon?' \
