@@ -18,8 +18,8 @@ for PROJECT in \
 	fi
 
 	echo "SYNC: 'source/$PROJECT/' --> '.local/$PROJECT'" >&2 
-	rsync -rltOoDv "$MMDAPP/source/$PROJECT/" "$MMDAPP/.local/$PROJECT"
-	# rsync -rltOoDv --delete "$MMDAPP/source/$PROJECT/" "$MMDAPP/.local/$PROJECT"
+	rsync -rltOoDi "$MMDAPP/source/$PROJECT/" "$MMDAPP/.local/$PROJECT"
+	# rsync -rltOoDi --delete "$MMDAPP/source/$PROJECT/" "$MMDAPP/.local/$PROJECT"
 
 done
 
