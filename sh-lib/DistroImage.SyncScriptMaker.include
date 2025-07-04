@@ -27,7 +27,6 @@ case "$1" in
 		echo 'fi'
 		echo '  mkdir -p "$tmpdir"'
 
-		[ "$MDSC_DETAIL" != full ] || echo 'set -x'
 		# echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
 		# echo 'pushd "$tmpdir" >/dev/null || exit 1'
 
@@ -148,6 +147,7 @@ if [ -z "$REPO_LIST" ] ; then
 fi
 
 echo 'set -e' 
+[ "$MDSC_DETAIL" != full ] || echo 'set -x'
 printf 'export MMDAPP="${MMDAPP:-%s}"\n' "$MMDAPP"
 echo 'mkdir -p "$MMDAPP/source"'
 echo 'cd "$MMDAPP/source"'
