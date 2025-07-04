@@ -25,7 +25,7 @@ case "$1" in
 		# fallback into system temp: TMPDIR on macOS, /tmp elsewhere
 		echo '  tmpdir="${TMPDIR:-/tmp}/ssh-cmx"'
 		echo 'fi'
-		echo '  mkdir -p "$tmpdir"'
+		echo 'mkdir -p "$tmpdir"'
 
 		# echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
 		# echo 'pushd "$tmpdir" >/dev/null || exit 1'

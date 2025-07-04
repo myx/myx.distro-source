@@ -13,7 +13,7 @@ if [ -z "`which rsync`" ] ; then
 fi
 
 type Prefix >/dev/null 2>&1 || \
-	. "`myx.common which lib/prefix`"
+	. "$( myx.common which lib/prefix )"
 
 if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"

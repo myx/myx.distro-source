@@ -39,10 +39,10 @@ BuildDistroFromOutputRunner(){
 	export BUILD_STAMP="$( date -u "+%Y%m%d%H%M%S" )"
 	
 	type Prefix >/dev/null 2>&1 || \
-		. "`myx.common which lib/prefix`"
+		. "$( myx.common which lib/prefix )"
 	
 	type Async >/dev/null 2>&1 || \
-		. "`myx.common which lib/async`"
+		. "$( myx.common which lib/async )"
 	
 	DistroSystemContext --distro-from-output
 	

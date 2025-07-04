@@ -13,7 +13,7 @@ if [ -z "`which rsync`" ] ; then
 fi
 
 type Async >/dev/null 2>&1 || \
-	. "`myx.common which lib/async`"
+	. "$( myx.common which lib/async )"
 
 SourcePrepareProjectSyncToCached(){
 	set -e

@@ -13,7 +13,7 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 fi
 
 # Gives: GitClonePull
-. "`myx.common which git/clonePull`"
+. "$( myx.common which git/clonePull )"
 
 SyncGitSource(){
 	local MDSC_CMD='SyncGitSource'
