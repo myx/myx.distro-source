@@ -60,12 +60,13 @@ case "$1" in
 	--intern-stdin-portable-block)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch rowCounter
+		local batchLimit="$( printf '@%.0s' $(seq 1 $parallelLimit) )"
 		printf '%s\n' "$REPO_LIST" \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
 			echo Async -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
 			rowCounter="${rowCounter}@"
-			if [ "$rowCounter" = "@@@@@@@@" ] ; then
+			if [ "$rowCounter" = "$batchLimit" ] ; then
 				echo wait
 				rowCounter=""
 			fi
@@ -131,7 +132,7 @@ case "$syncMode" in
 		parallelLimit=${2:-8}
 	;;
 	--portable)
-		parallelLimit=8
+		parallelLimit=${2:-8}
 	;;
 	*)
 		echo "⛔ ERROR: $MDSC_CMD: invalid sync mode: $syncMode ($MDSC_OPTION, $@)" >&2
@@ -159,7 +160,6 @@ echo '  -T -q \'
 echo '  -o BatchMode=yes \'
 [ -n "$SYNC_SSH_DEFAULTS" ] || {
 	echo '  -4 \'
-	# echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com \'
 	# bitbucket needs aes128-ctr:
 	echo '  -o Ciphers=chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr \'
 	echo '  -o KexAlgorithms=curve25519-sha256,diffie-hellman-group1-sha1 \'
