@@ -26,10 +26,11 @@ case "$1" in
 		echo '  tmpdir="${TMPDIR:-/tmp}/ssh-cmx"'
 		echo 'fi'
 		echo 'mkdir -p "$tmpdir"'
+
 		# shorten long tmpdir paths via a symlink if over 80 chars
 		echo 'if [ ${#tmpdir} -gt 80 ]; then'
 		echo '  shorttmp="/tmp/sshcmx-$$"'
-		[ -z "$MDSC_DETAIL" ] || echo "🍏 $MDSC_CMD: $1: using short control master path: $shorttmp -> $tmpdir" >&2
+		[ -z "$MDSC_DETAIL" ] || echo 'echo "🍏 $MDSC_CMD: $1: using short control master path: $shorttmp -> $tmpdir" >&2'
 		echo '  ln -s "$tmpdir" "$shorttmp"'
 		echo '  tmpdir="$shorttmp"'
 		echo "  trap 'rm -f $tmpdir' EXIT"
