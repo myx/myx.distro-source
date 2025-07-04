@@ -30,10 +30,10 @@ case "$1" in
 		# shorten long tmpdir paths via a symlink if over 60 chars
 		echo 'if [ ${#tmpdir} -gt 60 ]; then'
 		echo '  shorttmp="/tmp/sshcmx-$$"'
-		echo '  echo "🍏 $MDSC_CMD: link short control master path: $shorttmp -> $tmpdir" >&2'
 		echo '  ln -s "$tmpdir" "$shorttmp"'
 		echo '  tmpdir="$shorttmp"'
 		echo "  trap 'rm -f $tmpdir' EXIT"
+		[ -z "$MDSC_DETAIL" ] || printf '  echo "🍏 %s: link short control master path: $shorttmp -> $tmpdir" >&2' "$MDSC_CMD"
 		echo 'fi'
 
 		# echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
