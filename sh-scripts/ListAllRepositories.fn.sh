@@ -42,7 +42,7 @@ ListAllRepositories(){
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -n "$MDSC_CACHED" ] ; then
 		local cacheFile="$MDSC_CACHED/repository-names.txt"
 		if [ -f "$cacheFile" ] && \
-			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ) ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
@@ -56,7 +56,7 @@ ListAllRepositories(){
 	
 
 	echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
-	for LINE in `find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!'` ; do
+	for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
 		echo "${LINE#$MDSC_SOURCE/}"
 	done
 }
