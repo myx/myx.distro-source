@@ -20,12 +20,37 @@ DistroSourceTools(){
 
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 	case "$1" in
+		## List all repository roots by listing root configuration files directory
+		--list-repository-roots)
+			shift
+			local REPO_ROOTS="$MMDAPP/.local/roots"
+			[ -d "$REPO_ROOTS" ] || return 0
+			local REPO_ROOT_LIST=$(ls -d "$REPO_ROOTS"/*.distro-repository-root 2>/dev/null || :)
+			[ -n "$REPO_ROOT_LIST" ] || return 0
+			local repositoryName
+			for repositoryName in $REPO_ROOT_LIST; do
+				repositoryName="${repositoryName#$MMDAPP/.local/roots/}"
+				repositoryName="${repositoryName%.distro-repository-root}"
+				echo "$repositoryName"
+			done
+			return 0
+		;;
 		--register-repository-roots)
 			shift
 			while [ $# -gt 0 ] ; do
 				DistroSourceTools --register-repository-root "$1" --not-set --batch
 				shift
 			done
+			DistroSourceTools --make-code-workspace --quiet
+			return 0
+		;;
+		--unregister-repository-roots)
+			shift
+			while [ $# -gt 0 ] ; do
+				DistroSourceTools --unregister-repository-root "$1" --batch
+				shift
+			done
+			DistroSourceTools --make-code-workspace --quiet
 			return 0
 		;;
 		--register-repository-root)
@@ -51,8 +76,6 @@ DistroSourceTools(){
 				set +e ; return 1
 			fi
 
-			mkdir -p "$MMDAPP/source/$repositoryName"
-
 			local repositoryInf="$(
 				printf \
 					"# created by DistroSourceTools --register-repository-root '%s'\nName: %s\nHref: %s\nFetch: %s\n" \
@@ -62,15 +85,71 @@ DistroSourceTools(){
 					"$repositoryHref"
 			)"
 
+			mkdir -p "$MMDAPP/.local/roots" "$MMDAPP/source/$repositoryName"
+
+			local changed=""
+
+			local repositoryRoot="$MMDAPP/.local/roots/$repositoryName.distro-repository-root"
+
+			if [ ! -f "$repositoryRoot" ] || [ "$( cat "$repositoryRoot" 2>/dev/null )" == "$repositoryInf" ] ; then
+				echo -n "$repositoryInf" > "$repositoryRoot"
+				echo "> $MDSC_CMD: --register-repository-root: ${repositoryRoot#$MMDAPP/} (re-)created." >&2
+				changed=true
+			fi
+
+
 			local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
 
 			if [ ! -f "$repositoryFile" ] || [ "$( cat "$repositoryFile" 2>/dev/null )" == "$repositoryInf" ] ; then
 				echo -n "$repositoryInf" > "$repositoryFile"
-				echo "> $MDSC_CMD: --register-repository-root: $repositoryFile (re-)created." >&2
-				DistroSourceTools --make-code-workspace --quiet
+				echo "> $MDSC_CMD: --register-repository-root: ${repositoryFile#$MMDAPP/} (re-)created." >&2
+				changed=true
 			fi
 
+			[ -z "$changed" ] || [ -n "$partOfBatch" ] || DistroSourceTools --make-code-workspace --quiet
+
 			return 0
+		;;
+		--unregister-repository-root)
+			local repositoryName="$2"
+			if [ -z "$repositoryName" ] ; then
+				echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+				set +e ; return 1
+			fi
+
+			shift 2
+
+			if [ "$1" == "--batch" ] ; then
+				shift
+				local partOfBatch="false"
+			fi
+
+			local changed=""
+
+			local repositoryRoot="$MMDAPP/.local/roots/$repositoryName.distro-repository-root"
+			local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
+
+			[ -f "$repositoryRoot" || -f "$repositoryFile" ] || {
+				echo "🙋 WARNING: $MDSC_CMD: repository root $repositoryName is unknown." >&2
+				continue
+				# echo "⛔ ERROR: $MDSC_CMD: repository root $repositoryName is unknown." >&2
+				# set +e ; return 1
+			}
+
+			if [ -f "$repositoryRoot" ]; then
+				rm "$repositoryRoot"
+				echo "> $MDSC_CMD: --unregister-repository-root: ${repositoryRoot#$MMDAPP/} deleted." >&2
+				changed=true
+			fi
+
+			if [ -f "$repositoryFile" ] ; then
+				rm "$repositoryFile"
+				echo "> $MDSC_CMD: --unregister-repository-root: ${repositoryFile#$MMDAPP/} deleted." >&2
+			fi
+
+			[ -n "$partOfBatch" ] || DistroSourceTools --make-code-workspace --quiet
+
+			continue
 		;;
 		--make-*)
 			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/SourceTools.Make.include"

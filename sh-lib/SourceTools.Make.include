@@ -9,6 +9,8 @@ case "$1" in
 			touch $MMDAPP/.local/MDSC.source.settings.env
 		fi
 
+		DistroSourceTools --make-rebuild-repository-roots
+
 		DistroSourceTools --make-console-command "$@"
 		DistroSourceTools --make-code-workspace "$@"
 		return 0
@@ -31,7 +33,7 @@ case "$1" in
 		cat "${2:-"-"}" > "$1"
 
 		if [ -f "$1" ]; then
-			chmod 444 "$1" 2>/dev/null || true
+			# chmod 444 "$1" 2>/dev/null || true #### <-- sorry - seems to be bad idea
 			if command -v chflags >/dev/null 2>&1; then
 				chflags uchg "$1" 2>/dev/null || true
 			fi
@@ -267,6 +269,51 @@ CODEWORKSPACE
 			bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i
 DISTROCONSOLE
 
+		return 0
+	;;
+	## Synchronize-recover '.local/roots/*.distro-repository-root' and 'source/*/repository.inf'
+	--make-rebuild-repository-roots)
+		shift
+		local MDSC_NSPACE="$MMDAPP/.local/roots"
+		local repositoryName repositoryRoot
+		for repositoryFile in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort ) ; do
+			repositoryName="${repositoryFile#$MDSC_SOURCE/}"
+			repositoryName="${repositoryName%/repository.inf}"
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: check source: $repositoryName" >&2
+			repositoryRoot="$MDSC_NSPACE/$repositoryName.distro-repository-root"
+			[ -f "$repositoryRoot" ] || {
+				echo "$MDSC_CMD: sync .local: ${repositoryRoot#$MMDAPP/}" >&2
+			}
+		done
+		for repositoryRoot in $( find "$MDSC_NSPACE" -mindepth 1 -maxdepth 1 -name '*.distro-repository-root' | sort ) ; do
+			repositoryName="${repositoryRoot#$MDSC_NSPACE/}"
+			repositoryName="${repositoryName%.distro-repository-root}"
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: check .local: $repositoryName" >&2
+			repositoryFile="$MDSC_SOURCE/$repositoryName/repository.inf"
+			[ -f "$repositoryFile" ] || {
+				echo "$MDSC_CMD: sync source: ${repositoryFile#$MMDAPP/}" >&2
+			}
+		done
+		return 0
+	;;
+	--make-scan-source-repository-roots)
+		shift
+		[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
+		for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
+			echo "${LINE#$MDSC_SOURCE/}"
+		done
+		return 0
+	;;
+	--make-scan-source-projects)
+		shift
+		[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all projects ($MDSC_OPTION)" >&2
+		# descend into src; print each dir containing project.inf and prune its subtree
+		( cd "$MMDAPP/source" || return
+			find . -type d \
+			-exec test -f "{}/project.inf" \; -print -prune \
+			-o -false \
+			| sed 's#^\./##'
+		)
 		return 0
 	;;
 	*)
