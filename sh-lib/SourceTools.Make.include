@@ -274,6 +274,7 @@ DISTROCONSOLE
 	## Synchronize-recover '.local/roots/*.distro-namespace' and 'source/*/repository.inf'
 	--make-rebuild-repository-roots|--make-rebuild-namespace-roots)
 		shift
+		local MDSC_SOURCE="${MDSC_SOURCE:-"$MMDAPP/source"}"
 		local MDSC_NSPACE="$MMDAPP/.local/roots"
 		mkdir -p "$MDSC_NSPACE"
 		local repositoryName repositoryRoot
