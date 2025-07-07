@@ -284,6 +284,7 @@ DISTROCONSOLE
 			repositoryRoot="$MDSC_NSPACE/$repositoryName.distro-repository-root"
 			[ -f "$repositoryRoot" ] || {
 				echo "$MDSC_CMD: sync .local: ${repositoryRoot#$MMDAPP/}" >&2
+				cp "$repositoryFile" "$repositoryRoot"
 			}
 		done
 		for repositoryRoot in $( find "$MDSC_NSPACE" -mindepth 1 -maxdepth 1 -name '*.distro-repository-root' | sort ) ; do
@@ -293,6 +294,7 @@ DISTROCONSOLE
 			repositoryFile="$MDSC_SOURCE/$repositoryName/repository.inf"
 			[ -f "$repositoryFile" ] || {
 				echo "$MDSC_CMD: sync source: ${repositoryFile#$MMDAPP/}" >&2
+				cp "$repositoryRoot" "$repositoryFile"
 			}
 		done
 		return 0
