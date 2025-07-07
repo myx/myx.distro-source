@@ -281,7 +281,6 @@ DISTROCONSOLE
 		for repositoryFile in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort ) ; do
 			repositoryName="${repositoryFile#$MDSC_SOURCE/}"
 			repositoryName="${repositoryName%/repository.inf}"
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: check source: $repositoryName" >&2
 			repositoryRoot="$MDSC_NSPACE/$repositoryName.distro-namespace"
 			[ -f "$repositoryRoot" ] || {
 				echo "$MDSC_CMD: sync .local: ${repositoryRoot#$MMDAPP/}" >&2
@@ -291,7 +290,6 @@ DISTROCONSOLE
 		for repositoryRoot in $( find "$MDSC_NSPACE" -mindepth 1 -maxdepth 1 -name '*.distro-namespace' | sort ) ; do
 			repositoryName="${repositoryRoot#$MDSC_NSPACE/}"
 			repositoryName="${repositoryName%.distro-namespace}"
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: check .local: $repositoryName" >&2
 			repositoryFile="$MDSC_SOURCE/$repositoryName/repository.inf"
 			[ -f "$repositoryFile" ] || {
 				echo "$MDSC_CMD: sync source: ${repositoryFile#$MMDAPP/}" >&2
