@@ -65,7 +65,7 @@ ListDistroSequence(){
 					fi
 				fi
 				
-				if [ "$MDSC_INMODE" = "source" ] ; then
+				if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "$MDSC_CMD: --all extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
@@ -113,7 +113,7 @@ ListDistroSequence(){
 					fi
 				fi
 				
-				if [ "$MDSC_INMODE" = "source" ] ; then
+				if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "$MDSC_CMD: --all-projects extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
@@ -157,7 +157,7 @@ case "$0" in
 			echo "📘 syntax: ListDistroSequence.fn.sh [<options>] --all-projects" >&2
 			echo "📘 syntax: ListDistroSequence.fn.sh --help" >&2
 			if [ "$1" = "--help" ] ; then
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroSequence.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroSequence.include"
 			fi
 			exit 1
 		fi

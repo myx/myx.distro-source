@@ -27,7 +27,7 @@ ListDistroProjects(){
 				echo "📘 syntax: ListDistroProjects.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroProjects.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroProjects.include"
 				fi
 				return 0
 			;;
@@ -83,17 +83,16 @@ ListDistroProjects(){
 					fi
 				fi
 				
-				echo "| ListDistroProjects: scanning all projects... ($MDSC_OPTION)" >&2
-			
-				Require ListAllRepositories
-				Require ListRepositoryProjects
-				
-				ListAllRepositories --all-repositories | while read repositoryName ; do
-					[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: iterate repository: $repositoryName" >&2
-					ListRepositoryProjects "$repositoryName"
-				done
 
-				[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: done scanning all projects. ($MDSC_OPTION)" >&2
+				if [ "$MDSC_INMODE" = "source" ] || [ -d "$MDSC_SOURCE" ]; then
+					echo "| ListDistroProjects: scanning all source projects... ($MDSC_OPTION)" >&2
+					Require DistroSourcePrepare
+					DistroSourcePrepare --scan-source-projects
+				else
+					echo "| ListDistroProjects: scanning all deploy projects... ($MDSC_OPTION)" >&2
+					Require DistroDeployPrepare
+					DistroDeployPrepare --scan-deploy-projects
+				fi
 				return 0
 			;;
 			--print-selected)

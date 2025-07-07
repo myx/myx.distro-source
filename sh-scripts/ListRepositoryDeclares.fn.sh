@@ -140,7 +140,7 @@ ListRepositoryDeclares(){
 		fi
 	fi
 	
-	if [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
+	if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
 		echo "ListRepositoryDeclares: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand

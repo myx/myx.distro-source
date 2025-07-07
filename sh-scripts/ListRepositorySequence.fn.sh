@@ -84,7 +84,7 @@ ListRepositorySequence(){
 		fi
 	fi
 	
-	if [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
+	if command -v java 2>/dev/null && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
 		echo "$MDSC_CMD: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand

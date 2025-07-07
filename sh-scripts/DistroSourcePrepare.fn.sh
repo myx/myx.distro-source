@@ -26,44 +26,24 @@ DistroSourcePrepare(){
 	set -e
 
 	case "$1" in
-		--prepare-register-repository-root)
-			local repositoryName="$2"
-			if [ -z "$repositoryName" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
-				set +e ; return 1
-			fi
+		--scan-source-projects)
 			shift
-			shift
-
-			(
-				Require DistroSourceTools 
-				DistroSourceTools --register-repository-root "$repositoryName" "${repositoryFetch:-https://}"
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all projects ($MDSC_OPTION)" >&2
+			# descend into src; print each dir containing project.inf and prune its subtree
+			( cd "$MDSC_SOURCE" || return
+				find . -type d \
+				-exec test -f "{}/project.inf" \; -print -prune \
+				-o -false \
+				| sed 's#^\./##'
 			)
-
-			echo "> $MDSC_CMD: --prepare-register-repository-root: creating source directory: $MMDAPP/source/$repositoryName" >&2
-			mkdir -p "$MMDAPP/source/$repositoryName"
-			echo "> $MDSC_CMD: --prepare-register-repository-root: creating: $MMDAPP/source/$repositoryName/repository.inf" >&2
-			printf "# created at `date`\nName: $repositoryName\n" > "$MMDAPP/source/$repositoryName/repository.inf"
-
-			local initialProject="$1"
-			if [ -n "$initialProject" ] ; then
-				shift
-
-				( 
-					Require DistroImageSync
-					export useStage="source-prepare-pull"
-					export syncMode="--parallel"
-					eval "$( echo "$initialProject" | while read -r targetSpec sourceSpec sourceBranch ; do
-						echo "source-prepare-pull $targetSpec repo $targetSpec $sourceBranch:$sourceSpec"
-					done | DistroImageSync --intern-print-script-from-stdin-task-list )" 
-				)
-			fi
-
-			if [ -n "$1" ] ; then
-				echo "⛔ ERROR: $MDSC_CMD: no options allowed after --prepare-register-repository-root option ($MDSC_OPTION, $@)" >&2
-				set +e ; return 1
-			fi
-
+			return 0
+		;;
+		--scan-source-repository-roots)
+			shift
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
+			for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
+				echo "${LINE#$MDSC_SOURCE/}"
+			done
 			return 0
 		;;
 		--all-*)
@@ -168,7 +148,6 @@ case "$0" in
 	*/sh-scripts/DistroSourcePrepare.fn.sh)
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: DistroSourcePrepare.fn.sh --prepare-register-repository-root <repo-name> [projects-spec-to-pull]" >&2
 			echo "📘 syntax: DistroSourcePrepare.fn.sh [<options>] --all-projects" >&2
 			echo "📘 syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
 			echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2

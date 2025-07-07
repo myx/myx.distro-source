@@ -299,26 +299,6 @@ DISTROCONSOLE
 		done
 		return 0
 	;;
-	--make-scan-source-repository-roots)
-		shift
-		[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
-		for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
-			echo "${LINE#$MDSC_SOURCE/}"
-		done
-		return 0
-	;;
-	--make-scan-source-projects)
-		shift
-		[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all projects ($MDSC_OPTION)" >&2
-		# descend into src; print each dir containing project.inf and prune its subtree
-		( cd "$MMDAPP/source" || return
-			find . -type d \
-			-exec test -f "{}/project.inf" \; -print -prune \
-			-o -false \
-			| sed 's#^\./##'
-		)
-		return 0
-	;;
 	*)
 		echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 		set +e ; return 1

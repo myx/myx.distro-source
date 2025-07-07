@@ -85,7 +85,7 @@ Source(){
 fi
 
 Help(){
-	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceConsole.include" )
+	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceConsole.include" )
 	set +e ; return 1
 }
 

@@ -170,7 +170,7 @@ DistroSourceTools(){
 			echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
 			echo "📘 syntax: DistroSourceTools.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
-				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpDistroSourceTools.text" >&2
+				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.text" >&2
 			fi
 			return 0
 		;;

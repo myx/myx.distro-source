@@ -138,7 +138,7 @@ ListDistroKeywords(){
 					return 0
 				fi
 
-				if [ "$MDSC_INMODE" = "source" ] ; then
+				if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "| $MDSC_CMD: --all-keywords extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
@@ -240,7 +240,7 @@ ListDistroKeywords(){
 					return 0
 				fi
 
-				if [ "$MDSC_INMODE" = "source" ] ; then
+				if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "| $MDSC_CMD: --all-keywords-merged extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
@@ -433,7 +433,7 @@ case "$0" in
 			echo "📘 syntax: ListDistroKeywords.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListDistroKeywords.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroKeywords.include"
 			fi
 			exit 1
 		fi
