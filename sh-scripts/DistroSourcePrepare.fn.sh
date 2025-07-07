@@ -30,7 +30,8 @@ DistroSourcePrepare(){
 			shift
 			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all projects ($MDSC_OPTION)" >&2
 			# descend into src; print each dir containing project.inf and prune its subtree
-			( cd "$MDSC_SOURCE" || return
+			( 
+				cd "$MDSC_SOURCE" || return
 				find . -type d \
 				-exec test -f "{}/project.inf" \; -print -prune \
 				-o -false \

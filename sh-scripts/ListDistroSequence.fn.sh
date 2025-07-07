@@ -65,7 +65,7 @@ ListDistroSequence(){
 					fi
 				fi
 				
-				if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
+				if command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "$MDSC_CMD: --all extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
@@ -113,7 +113,7 @@ ListDistroSequence(){
 					fi
 				fi
 				
-				if command -v java 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
+				if command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "$MDSC_CMD: --all-projects extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
