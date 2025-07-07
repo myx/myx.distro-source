@@ -275,6 +275,7 @@ DISTROCONSOLE
 	--make-rebuild-repository-roots)
 		shift
 		local MDSC_NSPACE="$MMDAPP/.local/roots"
+		mkdir -p "$MDSC_NSPACE"
 		local repositoryName repositoryRoot
 		for repositoryFile in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort ) ; do
 			repositoryName="${repositoryFile#$MDSC_SOURCE/}"
