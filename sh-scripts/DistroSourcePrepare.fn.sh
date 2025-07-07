@@ -38,9 +38,9 @@ DistroSourcePrepare(){
 			)
 			return 0
 		;;
-		--scan-source-repository-roots)
+		--scan-source-namespaces)
 			shift
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all namespaces ($MDSC_OPTION)" >&2
 			for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
 				echo "${LINE#$MDSC_SOURCE/}"
 			done

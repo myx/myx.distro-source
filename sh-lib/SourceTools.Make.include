@@ -9,7 +9,7 @@ case "$1" in
 			touch $MMDAPP/.local/MDSC.source.settings.env
 		fi
 
-		DistroSourceTools --make-rebuild-repository-roots
+		DistroSourceTools --make-rebuild-namespace-roots
 
 		DistroSourceTools --make-console-command "$@"
 		DistroSourceTools --make-code-workspace "$@"
@@ -271,8 +271,8 @@ DISTROCONSOLE
 
 		return 0
 	;;
-	## Synchronize-recover '.local/roots/*.distro-repository-root' and 'source/*/repository.inf'
-	--make-rebuild-repository-roots)
+	## Synchronize-recover '.local/roots/*.distro-namespace' and 'source/*/repository.inf'
+	--make-rebuild-repository-roots|--make-rebuild-namespace-roots)
 		shift
 		local MDSC_NSPACE="$MMDAPP/.local/roots"
 		mkdir -p "$MDSC_NSPACE"
@@ -281,15 +281,15 @@ DISTROCONSOLE
 			repositoryName="${repositoryFile#$MDSC_SOURCE/}"
 			repositoryName="${repositoryName%/repository.inf}"
 			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: check source: $repositoryName" >&2
-			repositoryRoot="$MDSC_NSPACE/$repositoryName.distro-repository-root"
+			repositoryRoot="$MDSC_NSPACE/$repositoryName.distro-namespace"
 			[ -f "$repositoryRoot" ] || {
 				echo "$MDSC_CMD: sync .local: ${repositoryRoot#$MMDAPP/}" >&2
 				cp "$repositoryFile" "$repositoryRoot"
 			}
 		done
-		for repositoryRoot in $( find "$MDSC_NSPACE" -mindepth 1 -maxdepth 1 -name '*.distro-repository-root' | sort ) ; do
+		for repositoryRoot in $( find "$MDSC_NSPACE" -mindepth 1 -maxdepth 1 -name '*.distro-namespace' | sort ) ; do
 			repositoryName="${repositoryRoot#$MDSC_NSPACE/}"
-			repositoryName="${repositoryName%.distro-repository-root}"
+			repositoryName="${repositoryName%.distro-namespace}"
 			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: check .local: $repositoryName" >&2
 			repositoryFile="$MDSC_SOURCE/$repositoryName/repository.inf"
 			[ -f "$repositoryFile" ] || {

@@ -2,23 +2,24 @@
 
 	Options:
 
-		--list-repository-roots
-			Lists names of currently registered repository roots.
+		--list-namespace-roots
+			Lists names of currently registered root namespaces.
 
-		--register-repository-root <repo-name> <repo-url>|--not-set
-			Registers the distro root repository by (re-)creating corresponding directory
-			is sources root and (re-)creating the `repository.inf` file. This is required
+		--register-namespace-root <namespace-root-name> <disto-fetch-url>|--not-set
+			Registers the distro root namespace by (re-)creating corresponding directory
+			in sources root and (re-)creating the `repository.inf` file. This is required
 			for projects being pulled into that root to be treated as projects.
 
-		--unregister-repository-root <repo-name>
-			Drops root repository registration, removing root config from internal store 
+		--unregister-namespace-root <namespace-root-name>
+			Drops root namespace registration, removing root config from internal store 
 			and removing `repository.inf` file from source tree. After that, source directories
-			that are not under any repository roots are ignored in source build processes.
+			that are not under any registered namespace roots are ignored in source build 
+			processes.
 
-		--register-repository-roots <repo-name> [<repo-name>...]
-		--unregister-repository-roots <repo-name> [<repo-name>...]
-			Registers and unregisters multiple roots at ones. Uses '--not-set' as repo
-			url,
+		--register-namespace-roots <namespace-root-name> [<namespace-root-name>...]
+		--unregister-namespace-roots <namespace-root-name> [<namespace-root-name>...]
+			Registers and unregisters multiple namespace roots at ones. Uses '--not-set' as 
+			namespace public distro fetch url.
 
 		--upgrade-source-tools
 			Upgrades local source packages with latest `master` version.
@@ -83,7 +84,9 @@
 
 		DistroSourceTools.fn.sh --upgrade-source-tools
 
-		DistroSourceTools.fn.sh --register-repository-root myx
+		DistroSourceTools.fn.sh --register-namespace-root myx
+
+		DistroSourceTools.fn.sh --register-namespace-roots lib myx dev pub
 
 	Examples (in OS default shell):
 
