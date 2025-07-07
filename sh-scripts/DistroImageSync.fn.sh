@@ -231,6 +231,7 @@ DistroImageSync(){
 				( 
 					export useStage="stdin-repo-list-pull"
 					export syncMode="${1:---parallel}"
+					echo "$( DistroImageSync --script-from-stdin-repo-list )" >&2
 					eval "$( DistroImageSync --script-from-stdin-repo-list )" 
 				)
 				return 0
