@@ -33,7 +33,7 @@ case "$1" in
 		echo '  ln -s "$tmpdir" "$shorttmp"'
 		echo '  tmpdir="$shorttmp"'
 		echo "  trap 'rm -f $tmpdir' EXIT"
-		[ -z "$MDSC_DETAIL" ] || printf '  echo "🍏 %s: link short control master path: $shorttmp -> $tmpdir" >&2' "$MDSC_CMD"
+		[ -z "$MDSC_DETAIL" ] || printf '  echo "🍏 %s: link short control master path: $shorttmp -> $tmpdir" >&2\n' "$MDSC_CMD"
 		echo 'fi'
 
 		# echo "trap 'rm -rf \"\$tmpdir\" ; popd' EXIT"
