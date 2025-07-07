@@ -82,7 +82,6 @@ ListDistroProjects(){
 						fi
 					fi
 				fi
-				
 
 				if [ "$MDSC_INMODE" = "source" ] || [ -d "$MDSC_SOURCE" ]; then
 					echo "| ListDistroProjects: scanning all source projects... ($MDSC_OPTION)" >&2
