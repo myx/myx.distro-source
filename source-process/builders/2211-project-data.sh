@@ -31,6 +31,6 @@ CheckMakeProjectDataFolder(){
 }
 
 ListChangedSourceProjects | while read -r PKG ; do
-	Async "`basename "$PKG"`" CheckMakeProjectDataFolder "$PKG"
+	Prefix "`basename "$PKG"`" CheckMakeProjectDataFolder "$PKG" </dev/null & # parallel
 	wait
-done
+done # | Parallel --stdin-eval --limit 8

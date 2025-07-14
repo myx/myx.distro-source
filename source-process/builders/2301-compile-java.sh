@@ -28,6 +28,6 @@ CompileJavaSources(){
 
 Require ListDistroProvides
 ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " compile-java$" | cut -d" " -f1 | sort -u | while read -r projectName ; do
-	Async "`basename "$projectName"`" CompileJavaSources "$projectName"
+	Prefix "`basename "$projectName"`" CompileJavaSources "$projectName" </dev/null & # parallel
 	wait
-done
+done # | Parallel --stdin-eval --limit 8

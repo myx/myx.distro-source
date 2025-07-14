@@ -73,7 +73,7 @@ case "$1" in
 		printf '%s\n' "$REPO_LIST" \
 		| while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Async -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
+			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch" ' </dev/null & # parallel'
 			rowCounter="${rowCounter}@"
 			if [ "$rowCounter" = "$batchLimit" ] ; then
 				echo wait

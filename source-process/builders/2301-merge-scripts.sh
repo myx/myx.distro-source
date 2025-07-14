@@ -57,6 +57,6 @@ MergeScripts(){
 
 
 ListDistroProvides --select-changed --filter-and-cut "source-process-merge-scripts" | sed "s|:| |g" | while read -r projectName sourceName targetName ; do
-	Async -2 MergeScripts "$projectName" "$sourceName" "$targetName"
+	Prefix -2 MergeScripts "$projectName" "$sourceName" "$targetName" </dev/null & # parallel
 	wait
-done
+done # | Parallel --stdin-eval --limit 8

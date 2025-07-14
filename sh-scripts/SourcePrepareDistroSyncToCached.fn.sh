@@ -54,7 +54,7 @@ SourcePrepareDistroSyncToCached(){
 		local repositoryName
 		ListAllRepositories --all-repositories \
 		| while read -r repositoryName ; do
-			Async -2 SourcePrepareRepositorySyncToCached "$repositoryName"
+			Prefix -2 SourcePrepareRepositorySyncToCached "$repositoryName" </dev/null & # parallel
 		done
 		wait
 		return 0
