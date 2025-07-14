@@ -1,4 +1,3 @@
-Require ListChangedSourceProjects
 
 CheckMakeProjectDataFolder(){
 	local PKG="$1"
@@ -30,7 +29,9 @@ CheckMakeProjectDataFolder(){
 	fi
 }
 
-ListChangedSourceProjects | while read -r PKG ; do
-	Prefix "`basename "$PKG"`" CheckMakeProjectDataFolder "$PKG" </dev/null & # parallel
-	wait
-done # | Parallel --stdin-eval --limit 8
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+Require ListChangedSourceProjects
+
+ListChangedSourceProjects \
+| Parallel Prefix -2 CheckMakeProjectDataFolder # "$projectName" 

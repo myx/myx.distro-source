@@ -29,8 +29,12 @@ MakeProjectSourceArchive(){
 		"$PACK_ROOT"
 }
 
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
 Require ListDistroProvides
-ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " project-source.tgz$" | cut -d" " -f1 | sort -u | while read -r projectName ; do
-	Prefix "`basename "$projectName"`" MakeProjectSourceArchive "$projectName" </dev/null & # parallel
-	wait
-done # | Parallel --stdin-eval --limit 8
+
+ListDistroProvides --select-changed --filter-and-cut "source-process" \
+| grep -e " project-source.tgz$" \
+| cut -d" " -f1 \
+| sort -u \
+| Parallel Prefix -2 MakeProjectSourceArchive # "$projectName"

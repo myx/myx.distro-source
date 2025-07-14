@@ -12,9 +12,6 @@ if [ -z "`which rsync`" ] ; then
 	exit 1
 fi
 
-type Async >/dev/null 2>&1 || \
-	. "$( myx.common which lib/async )"
-
 SourcePrepareProjectSyncToCached(){
 	set -e
 

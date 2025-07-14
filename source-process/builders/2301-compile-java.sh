@@ -26,8 +26,12 @@ CompileJavaSources(){
 
 
 
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
 Require ListDistroProvides
-ListDistroProvides --select-changed --filter-and-cut "source-process" | grep -e " compile-java$" | cut -d" " -f1 | sort -u | while read -r projectName ; do
-	Prefix "`basename "$projectName"`" CompileJavaSources "$projectName" </dev/null & # parallel
-	wait
-done # | Parallel --stdin-eval --limit 8
+
+ListDistroProvides --select-changed --filter-and-cut "source-process" \
+| grep -e " compile-java$" \
+| cut -d" " -f1 \
+| sort -u \
+| Parallel Prefix -2 CompileJavaSources # "$projectName"

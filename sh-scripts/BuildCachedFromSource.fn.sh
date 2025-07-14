@@ -37,6 +37,9 @@ BuildCachedFromSourceRunner(){
 	type Prefix >/dev/null 2>&1 || \
 		. "$( myx.common which lib/prefix )"
 	
+	type Parallel >/dev/null 2>&1 || \
+		. "$( myx.common which lib/parallel )"
+	
 	type Async >/dev/null 2>&1 || \
 		. "$( myx.common which lib/async )"
 	

@@ -12,17 +12,18 @@ if [ -z "`which rsync`" ] ; then
 	exit 1
 fi
 
-type Prefix >/dev/null 2>&1 || \
-	. "$( myx.common which lib/prefix )"
-
 if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	DistroSystemContext --distro-from-source
 fi
 
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+
 Require ListAllRepositories
 Require ListRepositoryProjects
 Require SourcePrepareProjectSyncToCached
+
 
 SourcePrepareRepositorySyncToCached(){
 	local MDSC_CMD='SourcePrepareRepositorySyncToCached'
@@ -40,10 +41,8 @@ SourcePrepareRepositorySyncToCached(){
 	rsync -ai --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf" 2>&1 \
 	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
 
-	local packageName
-	for packageName in `ListRepositoryProjects "$repositoryName"` ; do
-		Prefix "`basename $packageName`" SourcePrepareProjectSyncToCached "$packageName"
-	done
+	ListRepositoryProjects "$repositoryName" \
+	| Parallel Prefix -2 SourcePrepareProjectSyncToCached # "$projectName" 
 }
 
 SourcePrepareDistroSyncToCached(){
@@ -61,9 +60,9 @@ SourcePrepareDistroSyncToCached(){
 	fi
 
 	# re-run itself with enforced 'source' mode
-	( \
-		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include" ; \
-		DistroSystemContext --distro-from-source ; \
+	( 
+		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include" 
+		DistroSystemContext --distro-from-source 
 		Distro SourcePrepareDistroSyncToCached "$@"
 	)
 }
