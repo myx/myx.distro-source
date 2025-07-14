@@ -34,8 +34,9 @@ DistroSourcePrepare(){
 			NAMESPACES=$( DistroSourcePrepare --scan-source-namespaces )
 			[ -z "$NAMESPACES" ] ||	( 
 				cd "$MDSC_SOURCE" || return
-				find $NAMESPACES -type d -exec test -f "{}/project.inf" \; -print -prune \
+				find $NAMESPACES -type d \( -exec test -f '{}/project.inf' \; -prune -print \) -o -false \
 				| sed 's#^\./##'
+#				find $NAMESPACES -type d -exec test -f "{}/project.inf" \; -prune -print \
 			)
 			return 0
 		;;
