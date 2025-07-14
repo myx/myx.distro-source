@@ -115,14 +115,14 @@ local syncCommandName=""
 
 
 if \
-[ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}" ] ; then
+[ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}.Common" ] ; then
 	syncCommandPath="$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin"
 	syncCommandName="git/clone${syncType}"
 elif \
 [ "$( which myx.common )" != "" ] ; then
 	syncCommandPath="$( dirname "$( dirname "$( myx.common which git/clone${syncType} )" )" )"
 	syncCommandName="git/clone${syncType}"
-	if [ ! -x "$syncCommandPath/$syncCommandName" ] ; then
+	if [ ! -x "$syncCommandPath/$syncCommandName.Common" ] ; then
 		echo "⛔ ERROR: $MDSC_CMD: myx.common which git/clone${syncType} failed ($MDSC_OPTION, $@)" >&2
 		set +e ; return 1
 	fi
@@ -183,19 +183,19 @@ case "$syncMode" in
 		echo 
 		echo '# 📚 lib/sedLineReader'
 		echo 
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader.${UNAME:-$(uname -s)}"
 		echo 
 		echo '# 📚 lib/prefix'
 		echo 
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix.Common"
 		echo 
 		echo '# 📚 lib/async'
 		echo 
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async.Common"
 		echo 
 		echo "# 📘 $syncCommandName"
 		echo 
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName"
+		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName.Common"
 		echo 
 		echo '# 🧾 Image Sync main block'
 		echo 
