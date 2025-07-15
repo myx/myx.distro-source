@@ -25,26 +25,6 @@ Require ListRepositoryProjects
 Require SourcePrepareProjectSyncToCached
 
 
-SourcePrepareRepositorySyncToCached(){
-	local MDSC_CMD='SourcePrepareRepositorySyncToCached'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-	
-	local repositoryName="${1#$MMDAPP/source/}"
-	if [ -z "$repositoryName" ] ; then
-		echo "⛔ ERROR: $MDSC_CMD: 'repositoryName' argument is required!" >&2
-		set +e ; return 1
-	fi
-	
-	set -e
-
-	mkdir -p "$MMDAPP/cached/sources/$repositoryName"
-	rsync -ai --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf" 2>&1 \
-	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
-
-	ListRepositoryProjects "$repositoryName" \
-	| Parallel Prefix -2 SourcePrepareProjectSyncToCached # "$projectName" 
-}
-
 SourcePrepareDistroSyncToCached(){
 	local MDSC_CMD='SourcePrepareDistroSyncToCached'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
@@ -52,7 +32,16 @@ SourcePrepareDistroSyncToCached(){
 	if [ "$MDSC_INMODE" = "source" ] ; then
 		local repositoryName
 		ListAllRepositories --all-repositories \
-		| Parallel Prefix -2 SourcePrepareRepositorySyncToCached # "$repositoryName"
+		| while IFS= read -r repositoryName; do
+
+			mkdir -p "$MMDAPP/cached/sources/$repositoryName"
+			rsync -ai --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf" 2>&1 \
+			| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
+
+			ListRepositoryProjects "$repositoryName"
+
+		done \
+		| Parallel Prefix -2 SourcePrepareProjectSyncToCached # "$projectName" 
 		return 0
 	fi
 
