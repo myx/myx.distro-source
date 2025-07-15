@@ -41,7 +41,7 @@ SourcePrepareDistroSyncToCached(){
 			ListRepositoryProjects "$repositoryName"
 
 		done \
-		| Parallel -w 32 Prefix -2 SourcePrepareProjectSyncToCached # "$projectName" 
+		| Parallel Prefix -2 SourcePrepareProjectSyncToCached # "$projectName" 
 		return 0
 	fi
 
