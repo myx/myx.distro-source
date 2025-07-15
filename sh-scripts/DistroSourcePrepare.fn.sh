@@ -36,27 +36,27 @@ DistroSourcePrepare(){
 			[ -z "$NAMESPACES" ] ||	( 
 				cd "$MDSC_SOURCE" || return
 
-				set -- $NAMESPACES
-
-				# process $1, shift it off, then append new dirs to the end of $@
-				while [ "$#" -gt 0 ]; do
-					dir=$1
-					shift
-
-					# if this dir has project.inf, emit it and do NOT descend
-					if [ -f "$dir/project.inf" ]; then
-						printf '%s\n' "$dir"
-						continue
+				# Recursion function scoped to this subshell
+				scan() {
+					# If this dir has project.inf, emit and stop
+					if [ -f "$1/project.inf" ]; then
+					printf '%s\n' "$1"
+					return
 					fi
 
-					# otherwise, queue each immediate subdir for later
-					for sub in "$dir"/*; do
-						[ -d "$sub" ] || continue;
-						[ -f "$sub/project.inf" ] \
-						&& printf '%s\n' "$sub" \
-						|| set -- "$@" "$sub"
+					# Otherwise descend one level into each child directory
+					local sub
+					for sub in "$1"/*; do
+					[ -d "$sub" ] || continue
+					scan "$sub"
 					done
+				}
+
+				# Kick off scanning, splitting $NAMESPACES on whitespace
+				for ns in $NAMESPACES; do
+					scan "$ns" &
 				done
+				wait
 				return 0
 
 				find $NAMESPACES -type d \( -exec test -f '{}/project.inf' \; -prune -print \) -o -false \
