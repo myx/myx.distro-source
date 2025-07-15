@@ -32,8 +32,33 @@ DistroSourcePrepare(){
 			# descend into src; print each dir containing project.inf and prune its subtree
 			local NAMESPACES
 			NAMESPACES=$( DistroSourcePrepare --scan-source-namespaces )
+			
 			[ -z "$NAMESPACES" ] ||	( 
 				cd "$MDSC_SOURCE" || return
+
+				set -- $NAMESPACES
+
+				# process $1, shift it off, then append new dirs to the end of $@
+				while [ "$#" -gt 0 ]; do
+					dir=$1
+					shift
+
+					# if this dir has project.inf, emit it and do NOT descend
+					if [ -f "$dir/project.inf" ]; then
+						printf '%s\n' "$dir"
+						continue
+					fi
+
+					# otherwise, queue each immediate subdir for later
+					for sub in "$dir"/*; do
+						[ -d "$sub" ] || continue;
+						[ -f "$sub/project.inf" ] \
+						&& printf '%s\n' "$sub" \
+						|| set -- "$@" "$sub"
+					done
+				done
+				return 0
+
 				find $NAMESPACES -type d \( -exec test -f '{}/project.inf' \; -prune -print \) -o -false \
 				| sed 's#^\./##'
 #				find $NAMESPACES -type d -exec test -f "{}/project.inf" \; -prune -print \
