@@ -7,7 +7,7 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "`which rsync`" ] ; then
+if ! command -v rsync >/dev/null ; then
 	echo "⛔ ERROR: $0: rsync utility is required!" >&2
 	exit 1
 fi
