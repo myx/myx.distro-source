@@ -1,8 +1,11 @@
-Require ListProjectSequence
-Require ListDistroProvides
+#!/bin/sh
 
 # 	source-process-merge-scripts:sh-scripts/extra/install-freebsd.sh:install-freebsd-instance.sh \
 
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+Require ListProjectSequence
+Require ListDistroProvides
 
 MergeScripts(){
 	local projectName="$1"
@@ -56,7 +59,9 @@ MergeScripts(){
 }
 
 
-ListDistroProvides --select-changed --filter-and-cut "source-process-merge-scripts" | sed "s|:| |g" | while read -r projectName sourceName targetName ; do
-	Prefix -2 MergeScripts "$projectName" "$sourceName" "$targetName" </dev/null & # parallel
-	wait
-done # | Parallel --stdin-eval --limit 8
+ListDistroProvides --select-changed --filter-and-cut "source-process-merge-scripts" \
+| sed "s|:| |g" \
+| while read -r projectName sourceName targetName ; do
+	"$projectName" "$sourceName" "$targetName"
+done \
+| Parallel Prefix -2 MergeScripts # "$projectName" "$sourceName" "$targetName"

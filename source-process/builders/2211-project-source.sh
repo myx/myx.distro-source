@@ -1,3 +1,9 @@
+#!/bin/sh
+
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+Require ListDistroProvides
+
 MakeProjectSourceArchive(){
 	local projectName="${1#$MMDAPP/source/}"
 	[ -z "$projectName" ] && echo "⛔ ERROR: MakeProjectSourceArchive: 'projectName' argument is required!" >&2 && return 1
@@ -28,10 +34,6 @@ MakeProjectSourceArchive(){
 		-C "$BASE_ROOT" \
 		"$PACK_ROOT"
 }
-
-type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
-type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
-Require ListDistroProvides
 
 ListDistroProvides --select-changed --filter-and-cut "source-process" \
 | grep -e " project-source.tgz$" \

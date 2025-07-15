@@ -1,3 +1,7 @@
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+Require ListDistroProvides
+
 CheckMakeProjectHostTarball(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
@@ -41,11 +45,6 @@ CheckMakeProjectHostTarball(){
 		echo done.
 	fi
 }
-
-type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
-type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
-
-Require ListDistroProvides
 
 ListDistroProvides --select-changed --filter-and-cut "source-process" \
 | grep -e " host-tarball.tbz$" \

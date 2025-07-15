@@ -1,3 +1,8 @@
+#!/bin/sh
+
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+Require ListChangedSourceProjects
 
 CheckMakeProjectDataFolder(){
 	local PKG="$1"
@@ -28,10 +33,6 @@ CheckMakeProjectDataFolder(){
 			"./"
 	fi
 }
-
-type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
-type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
-Require ListChangedSourceProjects
 
 ListChangedSourceProjects \
 | Parallel Prefix -2 CheckMakeProjectDataFolder # "$projectName" 
