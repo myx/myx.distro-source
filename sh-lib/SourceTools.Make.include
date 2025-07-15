@@ -65,6 +65,7 @@ case "$1" in
 		local VSES_PATH="$VSE_PATH/📝 Browse - source"
 
 		local VSS_PATH="$MMDAPP/.local/.vscode/status"
+		local VSSA_PATH="$VSS_PATH/⏩ Workspace - Actions"
 		local VSSB_PATH="$VSS_PATH/🧱 Workspace - Build"
 		local VSSR_PATH="$VSS_PATH/🩺 Workspace - Recover"
 
@@ -72,6 +73,9 @@ case "$1" in
 			"$VSE_PATH" \
 			"$VSSB_PATH" \
 			"$VSSR_PATH" \
+
+		mkdir -p "$MMDAPP/actions"
+		ln -sfn "$MMDAPP/actions" "$VSSA_PATH"
 
 		if [ -d "$MMDAPP/output" ]; then
 			ln -sfn "$MMDAPP/output" "$VSEO_PATH"
