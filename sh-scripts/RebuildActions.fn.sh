@@ -153,8 +153,15 @@ RebuildActions(){
 		done
 	done	
 	
-	rsync -irltoODC $( [ "--no-delete" == "$1" ] || echo "--delete" ) --chmod=ug+rwx "$TMP_DIR/" "$MMDAPP/actions" 2>&1 \
-	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
+	rsync -irltoODC $( [ "--no-delete" = "$1" ] || echo "--delete" ) \
+		--chmod=ug+rwx \
+		"$TMP_DIR/" \
+		"$MMDAPP/actions" \
+	2>&1 \
+	| (grep --line-buffered -e '^>f' -e '^cd' -e '^\*' || :) \
+	| (grep -v --line-buffered -E '>f\.\.t\.+ ' || :) \
+	>&2 # output to stderr
+
 	rm -rf "$TMP_DIR"
 }
 
