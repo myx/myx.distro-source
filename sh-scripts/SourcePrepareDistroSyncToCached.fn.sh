@@ -52,10 +52,7 @@ SourcePrepareDistroSyncToCached(){
 	if [ "$MDSC_INMODE" = "source" ] ; then
 		local repositoryName
 		ListAllRepositories --all-repositories \
-		| while read -r repositoryName ; do
-			Prefix -2 SourcePrepareRepositorySyncToCached "$repositoryName" </dev/null & # parallel
-		done
-		wait
+		| Parallel Prefix -2 SourcePrepareRepositorySyncToCached # "$repositoryName"
 		return 0
 	fi
 
