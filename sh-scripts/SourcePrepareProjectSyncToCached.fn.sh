@@ -39,10 +39,8 @@ SourcePrepareProjectSyncToCached(){
 
 	# rlpgoDitO
 	if ROUTPUT="$( 
-		rsync \
-			-aiO \
-			--delete \
-			--delete-excluded \
+
+		rsync -aiO --delete --delete-excluded \
 			--exclude='.DS_Store' \
 			--exclude='Icon?' \
 			--exclude='._*' \
@@ -51,15 +49,17 @@ SourcePrepareProjectSyncToCached(){
 			--exclude='.*' \
 			--exclude='CVS' \
 			"$projectSrc/" "$projectDst" \
-		2>&1 
+		2>&1
+
 	)" ; then
 		if [ -z "$ROUTPUT" ] ; then
-			echo "not changed on this run."
+			echo "not changed on this run." >&2
 		else
-			echo "$ROUTPUT"
+			echo "$ROUTPUT" >&2
+
 			mkdir -p "`dirname "$projectChg"`"
 			touch "$projectChg"
-			echo "changed."
+			echo "changed." >&2
 			
 			#### looking for embedded packages
 			local embeddedPath="$projectDst/source-projects"
@@ -74,18 +74,28 @@ SourcePrepareProjectSyncToCached(){
 					
 						local embeddedChg="$MMDAPP/cached/changed/$embeddedName"
 						if [ -f "$embeddedChg" ] ; then
-							echo "$embeddedName: already marked as changed." 
+							echo "$embeddedName: already marked as changed."  >&2
 						fi
 						
-						if local EOUTPUT="$( rsync -rlpgoDitO --delete --exclude '.*' --exclude 'CVS' "$embeddedSrc/" "$embeddedDst" 2>&1 \
-						| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true) )" ; then
+						local EOUTPUT
+						if EOUTPUT="$( 
+
+							rsync -rlpgoDitO --delete \
+								--exclude '.*' \
+								--exclude 'CVS' \
+								"$embeddedSrc/" \
+								"$embeddedDst" \
+							2>&1 \
+							| (grep --line-buffered -e '^>f' -e '^cd' -e '^\*' || :)
+							
+						)" ; then
 							if [ -z "$EOUTPUT" ] ; then
-								echo "$embeddedName: not changed on this run."
+								echo "$embeddedName: not changed on this run." >&2
 							else
-								echo "$EOUTPUT"
+								echo "$EOUTPUT" >&2
 								mkdir -p "`dirname "$embeddedChg"`"
 								touch "$embeddedChg"
-								echo "$embeddedName: changed."
+								echo "$embeddedName: changed." >&2
 							fi
 						else
 							echo "⛔ ERROR: $embeddedName: $EOUTPUT" >&2

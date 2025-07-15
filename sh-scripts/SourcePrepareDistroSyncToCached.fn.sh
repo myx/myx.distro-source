@@ -7,7 +7,7 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "`which rsync`" ] ; then
+if ! command -v rsync >/dev/null ; then
 	echo "⛔ ERROR: $0: rsync utility is required!" >&2
 	exit 1
 fi
@@ -35,8 +35,14 @@ SourcePrepareDistroSyncToCached(){
 		| while IFS= read -r repositoryName; do
 
 			mkdir -p "$MMDAPP/cached/sources/$repositoryName"
-			rsync -ai --delete "$MMDAPP/source/$repositoryName/repository.inf" "$MMDAPP/cached/sources/$repositoryName/repository.inf" 2>&1 \
-			| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
+
+			rsync -ai --delete \
+				"$MMDAPP/source/$repositoryName/repository.inf" \
+				"$MMDAPP/cached/sources/$repositoryName/repository.inf" \
+			2>&1 \
+			| (grep --line-buffered -e '^>f' -e '^cd' -e '^\*' || :) \
+			| (grep -v --line-buffered -E '>f\.\.t\.+ ' || :) \
+			>&2 # output to stderr
 
 			ListRepositoryProjects "$repositoryName"
 

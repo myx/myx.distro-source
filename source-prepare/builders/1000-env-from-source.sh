@@ -36,5 +36,5 @@ mkdir -p "$MMDAPP/cached/sources"
 
 echo "$BUILD_STAMP" > "$MMDAPP/cached/build-time-stamp.txt"
 
-Prefix "sync/check" Distro SourcePrepareDistroSyncToCached
+Prefix "🔄 scan/sync" Distro SourcePrepareDistroSyncToCached
 
