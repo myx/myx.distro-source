@@ -155,7 +155,7 @@ case "$1" in
 					{
 						"label": "🛠️ Update Local Tools...",
 						"type": "shell",
-						"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --make-upgrade-reconfigure-installed-tools",
+						"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --upgrade-installed-tools",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
