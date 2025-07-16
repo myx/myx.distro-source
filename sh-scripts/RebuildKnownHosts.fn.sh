@@ -52,7 +52,7 @@ RebuildKnownHosts() {
 			printf "\n\n## Stale, non-removed records:\n\n"
 			cat "$DEST" \
 			| awk ' $0 !~ /^#/ && !seen[$0]++' \
-			| grep -v '^[[:space:]]*$' > "$TMP_FILE"
+			| grep -v '^[[:space:]]*$'
 		fi
 
 	} \
