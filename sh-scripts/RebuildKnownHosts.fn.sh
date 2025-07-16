@@ -53,18 +53,20 @@ RebuildKnownHosts() {
 					knownHostsFile="$MMDAPP/source/$knownHostsProject"
 				fi
 
-				echo "Processing: ${knownHostsProject}" >&2
-				cat "$knownHostsFile"
+				[ -z "$MDSC_DETAIL" ] || echo "Processing: ${knownHostsProject}" >&2
+				echo "## Source: $knownHostsProject"
+				cat "$knownHostsFile" \
+				| sort -t' ' -k1,1 \
 				echo
 			done
 		done 
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
+			echo "## Stale, non-removed records"
 			cat "$DEST"
 			echo
 		fi
 	} \
-	| sort -t' ' -k1,1 \
-	| uniq -f0 \
+	| awk '!seen[$1]++' \
 	| grep -v '^$' > "$TMP_FILE"
 
 	mv -f "$TMP_FILE" "$DEST"
