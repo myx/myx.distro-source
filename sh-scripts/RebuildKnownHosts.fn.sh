@@ -41,13 +41,20 @@ RebuildKnownHosts() {
 	local knownHostsFile
 
 	{
+
+		# all known hosts
 		for projectName in $(ListDistroProjects --all-projects); do
 			ListProjectKnownHosts --add-comment "$projectName"
 		done 
+
+		# previous known hosts
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
 			echo "## Stale, non-removed records"
-			cat "$DEST"
+			cat "$DEST" \
+			| awk ' $0 !~ /^#/ && !seen[$0]++' \
+			| grep -v '^[[:space:]]*$' > "$TMP_FILE"
 		fi
+
 	} \
 	| awk '$0 ~ /^#/ || !seen[$1]++' \
 	| uniq \
