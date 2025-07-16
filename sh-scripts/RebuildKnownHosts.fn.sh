@@ -49,8 +49,9 @@ RebuildKnownHosts() {
 			cat "$DEST"
 		fi
 	} \
-	| awk '!seen[$1]++' \
-	| grep -v '^$' > "$TMP_FILE"
+	| awk '$0 ~ /^#/ || !seen[$1]++' \
+	| grep -v '^$' > "$TMP_FILE" \
+	| uniq
 
 	mv -f "$TMP_FILE" "$DEST"
 }
