@@ -1,6 +1,9 @@
+#!/bin/sh
 ###
 ### this script is included from builder
 ###
+
+[ "full" != "$MDSC_DETAIL" ] || set -x
 
 Require DistroSourceCommand
 

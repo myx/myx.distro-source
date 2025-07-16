@@ -1,3 +1,7 @@
+#!/bin/sh
+
+[ "full" != "$MDSC_DETAIL" ] || set -x
+
 Require ListDistroProvides
 ListDistroProvides --select-changed --filter-and-cut "source-prepare:increment" | grep -e " build.number$" \
 | cut -d" " -f1 | while read -r projectName ; do
