@@ -37,23 +37,15 @@ ListProjectKnownHosts(){
 		set +e ; return 1
 	fi
 
-	local findLocations=""
-	
-	[ ! -d "$MDSC_SOURCE/$projectName/ssh" ] \
-	|| local findLocations="$findLocations \"$MDSC_SOURCE/$projectName/ssh\""
+	[ ! -f "$MDSC_SOURCE/$projectName/ssh/known_hosts" ] || {
+		echo "$projectName/ssh/known_hosts"
+		return 0
+	}
 	
 	[ "$MDSC_SOURCE" = "$MMDAPP/source" ] \
-	|| [ ! -d "$MMDAPP/source/$projectName/ssh" ] \
-	|| local findLocations="$findLocations \"$MMDAPP/source/$projectName/ssh\""
-
-	if [ -z "${findLocations:0:1}" ] ; then
-		return 0
-	fi
-	
-	[ "full" != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
-	find $findLocations -mindepth 1 -type f -name 'known_hosts' \
-	| sed -e "s:^$MMDAPP/source/::g" -e "s:^$MDSC_SOURCE/::g" \
-	| sort -u
+	|| [ ! -f "$MMDAPP/source/$projectName/ssh/known_hosts" ] || {
+		echo "$projectName/ssh/known_hosts"
+	}
 
 	return 0
 }
