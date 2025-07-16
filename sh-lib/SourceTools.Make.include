@@ -130,7 +130,7 @@ case "$1" in
 					"📦 Browse: output/**": true,
 					"📝 Browse: source/**": true
 				}
-			}	
+			},
 			"tasks" : {
 				"version": "2.0.0",
 				"tasks": [
@@ -155,7 +155,7 @@ case "$1" in
 					{
 						"label": "🛠️ Update Local Tools...",
 						"type": "shell",
-						"command": "bash '${MMDAPP}/.local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh' --upgrade-source-tools",
+						"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --make-upgrade-reconfigure-installed-tools",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
