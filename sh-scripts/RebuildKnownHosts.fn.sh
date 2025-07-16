@@ -51,8 +51,7 @@ RebuildKnownHosts() {
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
 			printf "\n\n## Stale, non-removed records:\n\n"
 			cat "$DEST" \
-			| awk ' $0 !~ /^#/ && !seen[$0]++' \
-			| grep -v '^[[:space:]]*$'
+			| awk '!$0 && $0 !~ /^#/ && !seen[$0]++'
 		fi
 
 	} \
