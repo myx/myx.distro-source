@@ -37,7 +37,7 @@ ListProjectKnownHosts(){
 	fi
 
 	[ ! -f "$MDSC_SOURCE/$projectName/ssh/known_hosts" ] || {
-		[ -z "$addComment" ] || printf '\n## Source: %s\n' "$projectName"
+		[ -z "$addComment" ] || printf '\n\n## Source: %s\n\n' "$projectName"
 		cat "$MDSC_SOURCE/$projectName/ssh/known_hosts" \
 		| sort -t' ' -k1,1 \
 		| sed 's/[[:space:]]\{1,\}/\t/g' \
@@ -48,7 +48,7 @@ ListProjectKnownHosts(){
 	[ "$MDSC_SOURCE" != "$MMDAPP/source" ] || return 0
 
 	[ ! -f "$MMDAPP/source/$projectName/ssh/known_hosts" ] || {
-		[ -z "$addComment" ] || printf '\n## Source: %s\n' "$projectName"
+		[ -z "$addComment" ] || printf '\n\n## Source: %s\n\n' "$projectName"
 		cat "$MMDAPP/source/$projectName/ssh/known_hosts" \
 		| sort -t' ' -k1,1 \
 		| sed 's/[[:space:]]\{1,\}/\t/g' \

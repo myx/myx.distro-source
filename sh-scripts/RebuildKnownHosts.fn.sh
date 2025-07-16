@@ -49,7 +49,7 @@ RebuildKnownHosts() {
 
 		# previous known hosts
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
-			echo "## Stale, non-removed records"
+			printf "\n\n## Stale, non-removed records:\n\n"
 			cat "$DEST" \
 			| awk ' $0 !~ /^#/ && !seen[$0]++' \
 			| grep -v '^[[:space:]]*$' > "$TMP_FILE"
