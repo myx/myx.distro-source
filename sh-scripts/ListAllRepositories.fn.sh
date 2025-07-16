@@ -14,7 +14,7 @@ fi
 
 ListAllRepositories(){
 
-	local MDSC_CMD='LostAllRepositories'
+	local MDSC_CMD='ListAllRepositories'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 
