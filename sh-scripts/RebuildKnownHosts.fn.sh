@@ -56,7 +56,7 @@ RebuildKnownHosts() {
 		fi
 
 	} \
-	| awk '$0 ~ /^#/ || !seen[$1]++' \
+	| awk '!$0 || $0 ~ /^#/ || !seen[$1]++' \
 	| uniq \
 	> "$TMP_FILE"
 	
