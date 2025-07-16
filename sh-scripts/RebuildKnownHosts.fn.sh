@@ -30,43 +30,44 @@ RebuildKnownHosts() {
 		echo "⛔ ERROR: Can't make temporary file $TMP_FILE, exiting..." >&2
 		set +e ; return 1
 	fi
-	echo "Using temporary file: $TMP_FILE"
+
+	echo "RebuildKnownHosts: Using temporary file: $TMP_FILE"
 
 	mkdir -p "$MMDAPP/ssh"
 	DEST="$MMDAPP/ssh/known_hosts"
-
-	if [ "--no-delete" == "$1" ] && [ -s "$DEST" ]; then
-		cat "$DEST" > "$TMP_FILE"
-	fi
 
 	local projectName
 	local knownHostsProject
 	local knownHostsFile
 
-	for projectName in $(ListDistroProjects --all-projects); do
-		for knownHostsProject in $(ListProjectKnownHosts "$projectName"); do
-			if [ -f "$MDSC_SOURCE/$knownHostsProject" ]; then
-				if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$knownHostsProject" ]; then
-					knownHostsFile="$MMDAPP/source/$knownHostsProject"
+	{
+		for projectName in $(ListDistroProjects --all-projects); do
+			for knownHostsProject in $(ListProjectKnownHosts "$projectName"); do
+				if [ -f "$MDSC_SOURCE/$knownHostsProject" ]; then
+					if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$knownHostsProject" ]; then
+						knownHostsFile="$MMDAPP/source/$knownHostsProject"
+					else
+						knownHostsFile="$MDSC_SOURCE/$knownHostsProject"
+					fi
 				else
-					knownHostsFile="$MDSC_SOURCE/$knownHostsProject"
+					knownHostsFile="$MMDAPP/source/$knownHostsProject"
 				fi
-			else
-				knownHostsFile="$MMDAPP/source/$knownHostsProject"
-			fi
 
-			echo "Processing: ${knownHostsProject}" >&2
-			(cat "$knownHostsFile"; echo;) | while read -r KEY PK_TYPE PK _; do
-				if [ -n "$KEY" ] && [ -n "$PK_TYPE" ] && [ -n "$PK" ]; then
-					KEY_ESCAPED="$(echo "${KEY}" | sed 's/[^^]/[&]/g; s/\^/\\^/g')"
-					myx.common lib/replaceLine "$TMP_FILE" "^${KEY_ESCAPED} " "$KEY $PK_TYPE $PK"
-				fi
+				echo "Processing: ${knownHostsProject}" >&2
+				cat "$knownHostsFile"
+				echo
 			done
-		done
-	done
-	sort -u "$TMP_FILE" | grep "\S" > "${DEST}"
-	rm -rf "$TMP_FILE"
-	echo "Result: ${DEST}"
+		done 
+		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
+			cat "$DEST"
+			echo
+		fi
+	} \
+	| sort -t' ' -k1,1 \
+	| uniq -f0 \
+	| grep -v '^$' > "$TMP_FILE"
+
+	mv -f "$TMP_FILE" "$DEST"
 }
 
 case "$0" in

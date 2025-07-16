@@ -18,12 +18,12 @@ ListProjectKnownHosts(){
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
-	local forCompletion=""
 	while true ; do
 		case "$1" in
-			--completion)
+			--help)
 				shift
-				local forCompletion="true"
+				echo "$MDSC_CMD: list project's (ssh) known hosts items." >&2
+				return
 			;;
 			*)
 				break
@@ -50,14 +50,11 @@ ListProjectKnownHosts(){
 		return 0
 	fi
 	
-	if [ -n "$forCompletion" ] ; then
-		local sedEx="-e \"s:^$MMDAPP/source/$projectName/ssh/::g\" -e \"s:^$MDSC_SOURCE/$projectName/ssh/::g\""
-	else
-		local sedEx="-e \"s:^$MMDAPP/source/::g\" -e \"s:^$MDSC_SOURCE/::g\""
-	fi
-	
 	[ "full" != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
-	eval "find $findLocations -mindepth 1 -type f -name 'known_hosts'" | eval sed $sedEx | sort -u
+	find $findLocations -mindepth 1 -type f -name 'known_hosts' \
+	| sed -e "s:^$MMDAPP/source/::g" -e "s:^$MDSC_SOURCE/::g" \
+	| sort -u
+
 	return 0
 }
 

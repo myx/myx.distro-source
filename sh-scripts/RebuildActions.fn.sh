@@ -24,10 +24,10 @@ RebuildActions(){
 
 	local TMP_DIR="$( mktemp -d -t "rebuild-actions-XXXXXXXX" )"
 	if [ $? -ne 0 ]; then
-		echo "⛔ ERROR: Can't make temporary install directory $TMP_DIR, exiting..." >&2
+		echo "⛔ ERROR: Can't make temporary actions directory $TMP_DIR, exiting..." >&2
 		set +e ; return 1
 	fi
-	echo "Using temporary install directory: $TMP_DIR"
+	echo "RebuildKnownHosts: Using temporary actions directory: $TMP_DIR"
 
 	local projectName
 	local actionFullName
