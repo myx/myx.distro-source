@@ -42,28 +42,11 @@ RebuildKnownHosts() {
 
 	{
 		for projectName in $(ListDistroProjects --all-projects); do
-			for knownHostsProject in $(ListProjectKnownHosts "$projectName"); do
-				if [ -f "$MDSC_SOURCE/$knownHostsProject" ]; then
-					if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$knownHostsProject" ]; then
-						knownHostsFile="$MMDAPP/source/$knownHostsProject"
-					else
-						knownHostsFile="$MDSC_SOURCE/$knownHostsProject"
-					fi
-				else
-					knownHostsFile="$MMDAPP/source/$knownHostsProject"
-				fi
-
-				[ -z "$MDSC_DETAIL" ] || echo "Processing: ${knownHostsProject}" >&2
-				echo "## Source: $knownHostsProject"
-				cat "$knownHostsFile" \
-				| sort -t' ' -k1,1 \
-				echo
-			done
+			ListProjectKnownHosts --add-comment "$projectName"
 		done 
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
 			echo "## Stale, non-removed records"
 			cat "$DEST"
-			echo
 		fi
 	} \
 	| awk '!seen[$1]++' \

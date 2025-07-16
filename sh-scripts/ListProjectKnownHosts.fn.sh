@@ -18,18 +18,17 @@ ListProjectKnownHosts(){
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
-	while true ; do
-		case "$1" in
-			--help)
-				shift
-				echo "$MDSC_CMD: list project's (ssh) known hosts items." >&2
-				return
-			;;
-			*)
-				break
-			;;
-		esac
-	done
+
+	local addComment
+
+	while [ $# -gt 0 ]; do case "$1" in
+		--add-comment) shift ; addComment=true ;;
+		--help)
+			echo "$MDSC_CMD: list project's (ssh) known hosts items." >&2
+			return
+		;;
+		*) break ;;
+	esac done
 
 	local projectName="${1#$MDSC_SOURCE/}"
 	if [ -z "$projectName" ] ; then
@@ -38,13 +37,19 @@ ListProjectKnownHosts(){
 	fi
 
 	[ ! -f "$MDSC_SOURCE/$projectName/ssh/known_hosts" ] || {
-		echo "$projectName/ssh/known_hosts"
+		[ -z "$addComment" ] || printf '\n## Source: %s\n' "$projectName"
+		cat "$MDSC_SOURCE/$projectName/ssh/known_hosts" \
+		| sort -t' ' -k1,1
 		return 0
 	}
 	
-	[ "$MDSC_SOURCE" = "$MMDAPP/source" ] \
-	|| [ ! -f "$MMDAPP/source/$projectName/ssh/known_hosts" ] || {
-		echo "$projectName/ssh/known_hosts"
+	[ "$MDSC_SOURCE" != "$MMDAPP/source" ] || return 0
+
+	[ ! -f "$MMDAPP/source/$projectName/ssh/known_hosts" ] || {
+		[ -z "$addComment" ] || printf '\n## Source: %s\n' "$projectName"
+		cat "$MMDAPP/source/$projectName/ssh/known_hosts" \
+		| sort -t' ' -k1,1
+		return 0
 	}
 
 	return 0
