@@ -40,7 +40,7 @@ ListProjectKnownHosts(){
 		[ -z "$addComment" ] || printf '\n## Source: %s\n' "$projectName"
 		cat "$MDSC_SOURCE/$projectName/ssh/known_hosts" \
 		| sort -t' ' -k1,1 \
-		| column -t
+		| column -x -n -t
 		return 0
 	}
 	
@@ -50,7 +50,7 @@ ListProjectKnownHosts(){
 		[ -z "$addComment" ] || printf '\n## Source: %s\n' "$projectName"
 		cat "$MMDAPP/source/$projectName/ssh/known_hosts" \
 		| sort -t' ' -k1,1 \
-		| column -t
+		| column -x -n -t
 		return 0
 	}
 
