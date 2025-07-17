@@ -20,7 +20,7 @@ DistroSourcePrepare(){
 
 	local MDSC_CMD='DistroSourcePrepare'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-set -x
+
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
@@ -90,13 +90,13 @@ set -x
 				--exclude='node_modules/' \
 				--exclude='__pycache__/' \
   				"$MMDAPP/source/" "$MMDAPP/cached/sources/" \
-			| grep '^[<>cd]'
+			| grep '^[<>cd]' \
+			| cut -d' ' -f2
 
 			return 0
 
 			# 3. Grep Which Projects Changed
 			grep '^[<>cd]' changes.log |    # only lines with real changes
-			cut -d' ' -f2 |                 # pull the path
 			cut -d'/' -f1 |                 # grab project dir
 			sort -u                        # unique project names
 
