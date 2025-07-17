@@ -20,7 +20,7 @@ DistroSourcePrepare(){
 
 	local MDSC_CMD='DistroSourcePrepare'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-
+set -x
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
@@ -32,9 +32,9 @@ DistroSourcePrepare(){
 			# descend into src; print each dir containing project.inf and prune its subtree
 			local NAMESPACES
 			NAMESPACES=$( DistroSourcePrepare --scan-source-namespaces )
-			
-			[ -z "$NAMESPACES" ] ||	( 
-				cd "$MDSC_SOURCE" || return
+			[ -n "$NAMESPACES" ] ||	return 0
+			( 
+				cd "$MDSC_SOURCE" || return 0
 
 				# Recursion function scoped to this subshell
 				scan() {
@@ -57,11 +57,6 @@ DistroSourcePrepare(){
 					scan "$ns" &
 				done
 				wait
-				return 0
-
-				find $NAMESPACES -type d \( -exec test -f '{}/project.inf' \; -prune -print \) -o -false \
-				| sed 's#^\./##'
-#				find $NAMESPACES -type d -exec test -f "{}/project.inf" \; -prune -print \
 			)
 			return 0
 		;;
@@ -72,6 +67,44 @@ DistroSourcePrepare(){
 				echo "${LINE#$MDSC_SOURCE/}"
 			done
 			return 0
+		;;
+		--sync-cached-from-source) # ...-for-stdin-project-list)
+			shift
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to cached ($MDSC_OPTION)" >&2
+
+			local projectName
+			while IFS= read -r projectName; do
+				echo "$projectName/"
+			done \
+			| rsync -rtpi --dry-run --delete --delete-excluded \
+				--out-format='%i %n' \
+				--files-from=- \
+				--relative \
+				--exclude='.DS_Store' \
+				--exclude='Icon?' \
+				--exclude='._*' \
+				--exclude='.Spotlight-V100' \
+				--exclude='.Trashes' \
+				--exclude='.*' \
+				--exclude='CVS' \
+				--exclude='node_modules/' \
+				--exclude='__pycache__/' \
+  				"$MMDAPP/source/" "$MMDAPP/cached/sources/" \
+			| grep '^[<>cd]'
+
+			return 0
+
+			# 3. Grep Which Projects Changed
+			grep '^[<>cd]' changes.log |    # only lines with real changes
+			cut -d' ' -f2 |                 # pull the path
+			cut -d'/' -f1 |                 # grab project dir
+			sort -u                        # unique project names
+
+			return 0
+		;;
+		--check-ensure-index)
+		;;
+		--rebuild-source-index)
 		;;
 		--all-*)
 		;;
