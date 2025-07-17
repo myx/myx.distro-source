@@ -130,6 +130,8 @@ DistroSourcePrepare(){
 					fgrep -v '>f..t.' \
 					| tee /dev/fd/2
 				fi
+			else
+				cat
 			fi \
 			| cut -d' ' -f2 \
 			| awk -v FD=3 '
