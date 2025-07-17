@@ -71,17 +71,16 @@ DistroSourcePrepare(){
 		--scan-source-changes)
 			shift
 			local dryRun=--dry-run
-			if [ "$1" = "--sync" ]; then
+			if [ "$1" = "--execute-sync" ]; then
 				dryRun=
 			else
 				[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning to cached ($MDSC_OPTION)" >&2
 			fi
-			dryRun=
 			local projectName
 			while IFS= read -r projectName; do
 				printf '%s/\n' "$projectName"
 			done \
-			| rsync -rtpi --dry-run --delete --delete-excluded \
+			| rsync -rtpiO $dryRun --delete --delete-excluded \
 				--out-format='%i %n' \
 				--files-from=- \
 				--relative \
@@ -107,8 +106,10 @@ DistroSourcePrepare(){
 			exec 3<> "$FIFO"   # fd 3 is now the pipe
 			rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
 
+			local projectName
+
 			{ tee /dev/fd/3; echo >&3; } \
-			| DistroSourcePrepare --scan-source-changes --sync \
+			| DistroSourcePrepare --scan-source-changes --execute-sync \
 			| if [ -n "$MDSC_DETAIL" ]; then
 				if [ "full" = "$MDSC_DETAIL" ]; then
 					tee /dev/fd/2
@@ -134,7 +135,20 @@ DistroSourcePrepare(){
 					for (p in changed) print p
 				}
 			' \
-			| sort -u
+			| sort -u \
+			| (
+				mkdir -p "$MMDAPP/cached/changed"
+				cd "$MMDAPP/cached/changed"
+				while IFS= read -r projectName; do
+					if [ -f "$projectName" ]; then
+						printf '🔂 scan/sync: %s, already marked as changed\n' "$projectName" >&2
+						continue
+					fi
+					printf '🔄 scan/sync: %s, changed\n' "$projectName" >&2
+					mkdir -p "$( dirname "$projectName" )"					
+					touch "$projectName"
+				done
+			)
 
 			# 4) close fd 3
 			exec 3>&-
