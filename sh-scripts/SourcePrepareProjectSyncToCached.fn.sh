@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+##
+##
+##  TODO: unused, REMOVE
+##
+##
+
+
+
 if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"

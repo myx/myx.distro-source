@@ -7,23 +7,12 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if ! command -v rsync >/dev/null ; then
-	echo "⛔ ERROR: $0: rsync utility is required!" >&2
-	exit 1
-fi
-
 if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	DistroSystemContext --distro-from-source
 fi
 
-type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
-type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
-
-Require ListAllRepositories
-Require ListRepositoryProjects
-Require SourcePrepareProjectSyncToCached
-
+Require DistroSourcePrepare
 
 SourcePrepareDistroSyncToCached(){
 	local MDSC_CMD='SourcePrepareDistroSyncToCached'
@@ -44,10 +33,11 @@ SourcePrepareDistroSyncToCached(){
 			| (grep -v --line-buffered -E '>f\.\.t\.+ ' || :) \
 			>&2 # output to stderr
 
-			ListRepositoryProjects "$repositoryName"
+		done
 
-		done \
-		| Prefix "🔄 scan/sync" Parallel --workers-x2 Prefix -2 SourcePrepareProjectSyncToCached # "$projectName" 
+		DistroSourcePrepare --scan-source-projects \
+		| DistroSourcePrepare --sync-cached-from-source
+
 		return 0
 	fi
 
