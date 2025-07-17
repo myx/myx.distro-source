@@ -19,23 +19,9 @@ SourcePrepareDistroSyncToCached(){
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	if [ "$MDSC_INMODE" = "source" ] ; then
-		local repositoryName
-		ListAllRepositories --all-repositories \
-		| while IFS= read -r repositoryName; do
-
-			mkdir -p "$MMDAPP/cached/sources/$repositoryName"
-
-			rsync -ai --delete \
-				"$MMDAPP/source/$repositoryName/repository.inf" \
-				"$MMDAPP/cached/sources/$repositoryName/repository.inf" \
-			2>&1 \
-			| (grep --line-buffered -e '^>f' -e '^cd' -e '^\*' || :) \
-			| (grep -v --line-buffered -E '>f\.\.t\.+ ' || :) \
-			>&2 # output to stderr
-
-		done
-
-		DistroSourcePrepare --scan-source-projects \
+		{
+			DistroSourcePrepare --scan-source-projects
+		} \
 		| DistroSourcePrepare --sync-cached-from-source
 
 		return 0

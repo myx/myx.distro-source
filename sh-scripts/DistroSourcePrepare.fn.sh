@@ -76,10 +76,20 @@ DistroSourcePrepare(){
 			else
 				[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning to cached ($MDSC_OPTION)" >&2
 			fi
-			local projectName
-			while IFS= read -r projectName; do
-				printf '%s/\n' "$projectName"
-			done \
+			{
+				local repositoryName
+				DistroSourcePrepare --scan-source-namespaces \
+				| while IFS= read -r repositoryName; do
+
+					echo "$repositoryName/repository.inf"
+
+				done
+
+				local projectName
+				while IFS= read -r projectName; do
+					printf '%s/\n' "$projectName"
+				done
+			} \
 			| rsync -rtpiO $dryRun --delete --delete-excluded \
 				--out-format='%i %n' \
 				--files-from=- \
@@ -108,7 +118,10 @@ DistroSourcePrepare(){
 
 			local projectName
 
-			{ tee /dev/fd/3; echo >&3; } \
+			{
+				tee /dev/fd/3
+				echo >&3
+			} \
 			| DistroSourcePrepare --scan-source-changes --execute-sync \
 			| if [ -n "$MDSC_DETAIL" ]; then
 				if [ "full" = "$MDSC_DETAIL" ]; then
