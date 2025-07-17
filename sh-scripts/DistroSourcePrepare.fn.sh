@@ -156,10 +156,10 @@ DistroSourcePrepare(){
 				cd "$MMDAPP/cached/changed"
 				while IFS= read -r projectName; do
 					if [ -f "$projectName" ]; then
-						printf '🔂 scan/sync: %s, already marked as changed\n' "$projectName" >&2
+						printf '🔂 scan/sync: updated: %s\n' "$projectName" >&2
 						continue
 					fi
-					printf '🔄 scan/sync: %s, changed\n' "$projectName" >&2
+					printf '🔄 scan/sync: changed: %s\n' "$projectName" >&2
 					mkdir -p "$( dirname "$projectName" )"					
 					touch "$projectName"
 				done
