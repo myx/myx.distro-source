@@ -68,13 +68,18 @@ DistroSourcePrepare(){
 			done
 			return 0
 		;;
-		--sync-cached-from-source) # ...-for-stdin-project-list)
+		--scan-source-changes)
 			shift
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to cached ($MDSC_OPTION)" >&2
-
+			local dryRun=--dry-run
+			if [ "$1" = "--sync" ]; then
+				dryRun=
+			else
+				[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning to cached ($MDSC_OPTION)" >&2
+			fi
+			dryRun=
 			local projectName
 			while IFS= read -r projectName; do
-				echo "$projectName/"
+				printf '%s/\n' "$projectName"
 			done \
 			| rsync -rtpi --dry-run --delete --delete-excluded \
 				--out-format='%i %n' \
@@ -90,15 +95,49 @@ DistroSourcePrepare(){
 				--exclude='node_modules/' \
 				--exclude='__pycache__/' \
   				"$MMDAPP/source/" "$MMDAPP/cached/sources/" \
-			| grep '^[<>cd]' \
-			| cut -d' ' -f2
-
+			| grep '^[<>cd]'
 			return 0
+		;;
+		--sync-cached-from-source) # ...-for-stdin-project-list)
+			shift
+			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to cached ($MDSC_OPTION)" >&2
 
-			# 3. Grep Which Projects Changed
-			grep '^[<>cd]' changes.log |    # only lines with real changes
-			cut -d'/' -f1 |                 # grab project dir
-			sort -u                        # unique project names
+			local FIFO="$MMDAPP/.local/temp/scan-source-changes-$$.fifo"
+			mkfifo "$FIFO"
+			exec 3<> "$FIFO"   # fd 3 is now the pipe
+			rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
+
+			{ tee /dev/fd/3; echo >&3; } \
+			| DistroSourcePrepare --scan-source-changes --sync \
+			| if [ -n "$MDSC_DETAIL" ]; then
+				if [ "full" = "$MDSC_DETAIL" ]; then
+					tee /dev/fd/2
+				else
+					fgrep -v '>f..t.' \
+					| tee /dev/fd/2
+				fi
+			fi \
+			| cut -d' ' -f2 \
+			| awk -v FD=3 '
+				BEGIN {
+					while (getline proj < ("/dev/fd/" FD)) {
+						if (proj == "") break
+						projects[proj] = 1
+					}
+				}
+				{
+					for (p in projects)
+						if (index($0, p"/") == 1)
+						changed[p] = 1
+				}
+				END {
+					for (p in changed) print p
+				}
+			' \
+			| sort -u
+
+			# 4) close fd 3
+			exec 3>&-
 
 			return 0
 		;;
