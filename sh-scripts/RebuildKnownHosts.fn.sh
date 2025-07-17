@@ -31,7 +31,7 @@ RebuildKnownHosts() {
 		set +e ; return 1
 	fi
 
-	echo "RebuildKnownHosts: Using temporary file: $TMP_FILE"
+	[ -z "$MDSC_DETAIL" ]  || echo "RebuildKnownHosts: Using temporary file: $TMP_FILE" >&2
 
 	mkdir -p "$MMDAPP/ssh"
 	DEST="$MMDAPP/ssh/known_hosts"
