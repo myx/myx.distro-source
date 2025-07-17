@@ -320,6 +320,3 @@ fi
 
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
-
-# INF="$MMDAPP/source/myx/util.repository-myx/sh-data/repository/repository.inf"
-# ( set -e ; echo "# copied from $INF at `date`" ; cat "$INF" ) > "$MMDAPP/source/myx/repository.inf"

@@ -53,12 +53,9 @@ ListAllRepositories(){
 			return 0
 		fi
 	fi
-	
 
-	echo "$MDSC_CMD: scanning all repositories ($MDSC_OPTION)" >&2
-	for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
-		echo "${LINE#$MDSC_SOURCE/}"
-	done
+	
+	Distro DistroSourcePrepare --scan-source-namespaces
 }
 
 case "$0" in

@@ -57,7 +57,7 @@ SourcePrepareProjectSyncToCached(){
 		else
 			echo "$ROUTPUT" >&2
 
-			mkdir -p "`dirname "$projectChg"`"
+			mkdir -p "$( dirname "$projectChg" )"
 			touch "$projectChg"
 			echo "changed." >&2
 			
@@ -93,7 +93,7 @@ SourcePrepareProjectSyncToCached(){
 								echo "$embeddedName: not changed on this run." >&2
 							else
 								echo "$EOUTPUT" >&2
-								mkdir -p "`dirname "$embeddedChg"`"
+								mkdir -p "$( dirname "$embeddedChg" )"
 								touch "$embeddedChg"
 								echo "$embeddedName: changed." >&2
 							fi

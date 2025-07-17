@@ -141,7 +141,7 @@ ListRepositoryKeywords(){
 		fi
 	fi
 	
-	if command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$repositoryName/repository.inf" ] ; then
+	if command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
 		echo "ListRepositoryKeywords: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
