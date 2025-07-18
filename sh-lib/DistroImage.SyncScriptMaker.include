@@ -59,8 +59,7 @@ case "$1" in
 	--intern-stdin-sequence-block)
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
-		printf '%s\n' "$REPO_LIST" \
-		| while read -r itemTarget itemSource useBranch _; do
+		while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
 			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
 		done
@@ -70,8 +69,7 @@ case "$1" in
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch rowCounter
 		local batchLimit="$( printf '@%.0s' $(seq 1 $parallelLimit) )"
-		printf '%s\n' "$REPO_LIST" \
-		| while read -r itemTarget itemSource useBranch _; do
+		while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
 			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch" ' </dev/null & # parallel'
 			rowCounter="${rowCounter}@"
@@ -115,11 +113,13 @@ local syncCommandName=""
 
 
 if \
-[ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}.Common" ] ; then
+	[ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin/git/clone${syncType}.Common" ]
+then
 	syncCommandPath="$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/share/myx.common/bin"
 	syncCommandName="git/clone${syncType}"
 elif \
-[ "$( which myx.common )" != "" ] ; then
+	command -v which myx.common >/dev/null 2>&1
+then
 	syncCommandPath="$( dirname "$( dirname "$( myx.common which git/clone${syncType} )" )" )"
 	syncCommandName="git/clone${syncType}"
 	if [ ! -x "$syncCommandPath/$syncCommandName.Common" ] ; then
@@ -137,10 +137,7 @@ case "$syncMode" in
 	--sequence|--obsolete)
 		parallelLimit=1
 	;;
-	--parallel)
-		parallelLimit=${2:-8}
-	;;
-	--portable)
+	--parallel|xargs|portable)
 		parallelLimit=${2:-8}
 	;;
 	*)
@@ -180,25 +177,13 @@ echo '"'
 # embed functions (xargs from --parallel doesn't support functions)
 case "$syncMode" in
 	--sequence|--obsolete|--portable)
-		echo 
-		echo '# 📚 lib/sedLineReader'
-		echo 
+		printf '\n# 📚 lib/sedLineReader\n'
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/sedLineReader.${UNAME:-$(uname -s)}"
-		echo 
-		echo '# 📚 lib/prefix'
-		echo 
+		printf '\n# 📚 lib/prefix\n'
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/prefix.Common"
-		echo 
-		echo '# 📚 lib/async'
-		echo 
-		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/lib/async.Common"
-		echo 
-		echo "# 📘 $syncCommandName"
-		echo 
+		printf '\n# 📘 %s\n' "$syncCommandName"
 		grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$syncCommandPath/$syncCommandName.Common"
-		echo 
-		echo '# 🧾 Image Sync main block'
-		echo 
+		printf '\n# 🧾 Image Sync main block\n'
 	;;
 esac
 
