@@ -51,7 +51,8 @@ BuildCachedFromSourceRunner(){
 	fi
 	
 	local BUILDERS="$( ListDistroBuilders source-prepare --1 )"
-	echo "BuildCachedFromSource: Builders list:" $BUILDERS >&2
+	echo 'BuildCachedFromSource: Builders list:' >&2
+	printf '\t%s\n' $BUILDERS >&2
 	
 	for BUILDER in $BUILDERS ; do
 		Prefix "s $( basename $BUILDER )" RebuildCachedFromSourceBuilderRaw "$BUILDER"

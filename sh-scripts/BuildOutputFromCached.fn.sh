@@ -53,7 +53,8 @@ BuildOutputFromCachedRunner(){
 	export OUTPUT_PATH="$MMDAPP/output"
 
 	local BUILDERS="$( ListDistroBuilders source-process --2 )"
-	echo "BuildOutputFromCached: Builders list:" $BUILDERS >&2
+	echo "BuildOutputFromCached: Builders list:' >&2
+	printf '\t%s\n' $BUILDERS >&2
 	
 	for BUILDER in $BUILDERS ; do
 		Prefix "c $( basename $BUILDER )" RebuildOutputFromCachedBuilderRaw "$BUILDER"
