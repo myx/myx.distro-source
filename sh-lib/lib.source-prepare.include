@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
 [ -z "$MDSC_DETAIL" ] || echo "+ SourcePrepare: library included" >&2
 
 if ! type DistroSource >/dev/null 2>&1 ; then

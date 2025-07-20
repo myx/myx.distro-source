@@ -5,6 +5,8 @@
 
 [ "full" != "$MDSC_DETAIL" ] || set -x
 
+[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
+
 Require DistroSourceCommand
 
 DistroSourceCommand \

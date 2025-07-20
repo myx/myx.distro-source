@@ -28,83 +28,17 @@ DistroSourcePrepare(){
 	case "$1" in
 		--scan-source-projects)
 			shift
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all projects ($MDSC_OPTION)" >&2
-			# descend into src; print each dir containing project.inf and prune its subtree
-			local NAMESPACES
-			NAMESPACES=$( DistroSourcePrepare --scan-source-namespaces )
-			[ -n "$NAMESPACES" ] ||	return 0
-			( 
-				cd "$MDSC_SOURCE" || return 0
-
-				# Recursion function scoped to this subshell
-				scan() {
-					# If this dir has project.inf, emit and stop
-					if [ -f "$1/project.inf" ]; then
-					printf '%s\n' "$1"
-					return
-					fi
-
-					# Otherwise descend one level into each child directory
-					local sub
-					for sub in "$1"/*; do
-					[ -d "$sub" ] || continue
-					scan "$sub"
-					done
-				}
-
-				# Kick off scanning, splitting $NAMESPACES on whitespace
-				for ns in $NAMESPACES; do
-					scan "$ns" &
-				done
-				wait
-			)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include"
 			return 0
 		;;
 		--scan-source-namespaces)
 			shift
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning all namespaces ($MDSC_OPTION)" >&2
-			for LINE in $( find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -name repository.inf | sort | sed 's!/repository.inf$!!' ) ; do
-				echo "${LINE#$MDSC_SOURCE/}"
-			done
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include"
 			return 0
 		;;
 		--scan-source-changes)
 			shift
-			local dryRun=--dry-run
-			if [ "$1" = "--execute-sync" ]; then
-				dryRun=
-			else
-				[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning to cached ($MDSC_OPTION)" >&2
-			fi
-			{
-				local repositoryName
-				DistroSourcePrepare --scan-source-namespaces \
-				| while IFS= read -r repositoryName; do
-
-					echo "$repositoryName/repository.inf"
-
-				done
-
-				local projectName
-				while IFS= read -r projectName; do
-					printf '%s/\n' "$projectName"
-				done
-			} \
-			| rsync -rtpiO $dryRun --delete --delete-excluded \
-				--out-format='%i %n' \
-				--files-from=- \
-				--relative \
-				--exclude='.DS_Store' \
-				--exclude='Icon?' \
-				--exclude='._*' \
-				--exclude='.Spotlight-V100' \
-				--exclude='.Trashes' \
-				--exclude='.*' \
-				--exclude='CVS' \
-				--exclude='node_modules/' \
-				--exclude='__pycache__/' \
-  				"$MMDAPP/source/" "$MMDAPP/cached/sources/" \
-			| grep '^[<>cd]'
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceChanges.include"
 			return 0
 		;;
 		--sync-cached-from-source) # ...-for-stdin-project-list)
@@ -122,7 +56,10 @@ DistroSourcePrepare(){
 				tee /dev/fd/3
 				echo >&3
 			} \
-			| DistroSourcePrepare --scan-source-changes --execute-sync \
+			| (
+				set -- --execute-sync
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceChanges.include"
+			) \
 			| if [ -n "$MDSC_DETAIL" ]; then
 				if [ "full" = "$MDSC_DETAIL" ]; then
 					tee /dev/fd/2

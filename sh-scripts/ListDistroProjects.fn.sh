@@ -85,8 +85,7 @@ ListDistroProjects(){
 
 				if [ "$MDSC_INMODE" = "source" ] || [ -d "$MDSC_SOURCE" ]; then
 					echo "| ListDistroProjects: scanning all source projects... ($MDSC_OPTION)" >&2
-					Require DistroSourcePrepare
-					DistroSourcePrepare --scan-source-projects
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include"
 				else
 					echo "| ListDistroProjects: scanning all deploy projects... ($MDSC_OPTION)" >&2
 					Require DistroDeployPrepare

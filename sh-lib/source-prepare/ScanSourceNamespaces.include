@@ -1,0 +1,11 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning local source namespaces ($MDSC_OPTION)" >&2
+
+find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -type f -name repository.inf -print0 \
+| sort -z \
+| while IFS= read -r -d '' file; do
+	file=${file%/repository.inf}
+	echo "${file#$MDSC_SOURCE/}"
+done

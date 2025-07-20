@@ -17,6 +17,7 @@ fi
 #
 DistroSourceCommand(){
 
+	[ -z "$MDSC_DETAIL" ] || set -x
 	local MDSC_OUTPUT="${MDSC_OUTPUT:-$MMDAPP/output}"
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local MDSC_CACHED="${MDSC_CACHED:-$MMDAPP/output/cached}"
@@ -28,6 +29,9 @@ DistroSourceCommand(){
 		local DIR_OUT="$MDLT_ORIGIN/cached/myx/myx.distro-source"
 		local DIR_SRC="$MDLT_ORIGIN/myx/myx.distro-source"
 	fi
+
+	[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
+	set +x
 
 
 	set -e
@@ -92,6 +96,7 @@ case "$0" in
 		# DistroSourceCommand.fn.sh --import-from-source --select-providers ndm/location-c1 --print-selected 2> /dev/null
 		# DistroSourceCommand.fn.sh --import-from-cached --select-providers ndm/location-c1 --print-selected 2> /dev/null
 		
+		ENV_DISTRO_SOURCE_JAVA=javac \
 		DistroSourceCommand "$@" --print ''
 	;;
 esac

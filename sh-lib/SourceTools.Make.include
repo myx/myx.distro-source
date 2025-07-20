@@ -144,7 +144,7 @@ case "$1" in
 						}
 					},
 					{
-						"label": "⬇️ Pull All Known Sources...",
+						"label": "⬇️ Pull/Sync All Known Sources...",
 						"type": "shell",
 						"command": "bash -c 'echo \"DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
 						"group": { 

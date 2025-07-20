@@ -55,7 +55,7 @@ ListAllRepositories(){
 	fi
 
 	
-	Distro DistroSourcePrepare --scan-source-namespaces
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include"
 }
 
 case "$0" in

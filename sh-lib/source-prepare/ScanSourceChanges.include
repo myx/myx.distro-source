@@ -1,0 +1,38 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+local dryRun=--dry-run
+if [ "$1" = "--execute-sync" ] || [ "$EXECUTE_SYNC" = "--execute-sync" ]; then
+	dryRun=
+else
+	[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning local source changes ($MDSC_OPTION)" >&2
+fi
+{
+	local repositoryName
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
+	| while IFS= read -r repositoryName; do
+
+		echo "$repositoryName/repository.inf"
+
+	done
+
+	local projectName
+	while IFS= read -r projectName; do
+		printf '%s/\n' "$projectName"
+	done
+} \
+| rsync -rtpiO $dryRun --delete --delete-excluded \
+	--out-format='%i %n' \
+	--files-from=- \
+	--relative \
+	--exclude='.DS_Store' \
+	--exclude='Icon?' \
+	--exclude='._*' \
+	--exclude='.Spotlight-V100' \
+	--exclude='.Trashes' \
+	--exclude='.*' \
+	--exclude='CVS' \
+	--exclude='node_modules/' \
+	--exclude='__pycache__/' \
+	"$MMDAPP/source/" "$MMDAPP/cached/sources/" \
+| grep '^[<>cd]'
