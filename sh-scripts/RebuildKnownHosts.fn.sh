@@ -28,7 +28,7 @@ RebuildKnownHosts() {
 
 	local TEMP
 	TEMP="$MMDAPP/ssh/known_hosts-$$.$RANDOM"
-	if [ $? -ne 0 ]; then
+	if ! touch "$TEMP"; then
 		echo "⛔ ERROR: Can't make temporary file $TEMP, exiting..." >&2
 		set +e ; return 1
 	fi
@@ -59,7 +59,7 @@ RebuildKnownHosts() {
 	} \
 	| awk '!$0 || $0 ~ /^#/ || !seen[$1]++' \
 	| uniq \
-	> "$TEMP"
+	>> "$TEMP"
 	
 	chmod 664
 	mv -f "$TEMP" "$DEST"
