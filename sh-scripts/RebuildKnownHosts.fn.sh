@@ -27,7 +27,7 @@ RebuildKnownHosts() {
 	mkdir -p "$MMDAPP/ssh"
 
 	local TEMP
-	TEMP="$(mktemp -t "$MMDAPP/ssh/known_hosts-XXXXXXXX")"
+	TEMP="$(mktemp "$MMDAPP/ssh/known_hosts-XXXXXXXX")"
 	if [ $? -ne 0 ]; then
 		echo "⛔ ERROR: Can't make temporary file $TEMP, exiting..." >&2
 		set +e ; return 1
