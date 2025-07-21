@@ -24,17 +24,19 @@ RebuildKnownHosts() {
 		set +e ; return 1
 	fi
 
+	mkdir -p "$MMDAPP/ssh"
+	
 	local TMP_FILE
-	TMP_FILE="$(mktemp -t "rebuild-knownhosts-XXXXXXXX")"
+	TMP_FILE="$(mktemp -t "$MMDAPP/ssh/known_hosts-XXXXXXXX")"
 	if [ $? -ne 0 ]; then
 		echo "⛔ ERROR: Can't make temporary file $TMP_FILE, exiting..." >&2
 		set +e ; return 1
 	fi
 
+	local DEST="$MMDAPP/ssh/known_hosts"
+
 	[ -z "$MDSC_DETAIL" ]  || echo "RebuildKnownHosts: Using temporary file: $TMP_FILE" >&2
 
-	mkdir -p "$MMDAPP/ssh"
-	DEST="$MMDAPP/ssh/known_hosts"
 
 	local projectName
 	local knownHostsProject
