@@ -80,6 +80,9 @@ RebuildActions(){
 
 						echo 	"local actionScript='${actionFullName#"$projectName/actions/"}'"
 						echo 	"local actionFullName='$actionFullName'"
+						
+						echo 	"set -e"
+
 						echo 	'local actionPath="$( realpath "$0" )"'
 
 						echo 	'[ full != "$MDSC_DETAIL" ] || set -x'
