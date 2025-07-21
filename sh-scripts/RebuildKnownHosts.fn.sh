@@ -59,7 +59,7 @@ RebuildKnownHosts() {
 	| uniq \
 	> "$TMP_FILE"
 	
-
+	chmod 664
 	mv -f "$TMP_FILE" "$DEST"
 }
 
