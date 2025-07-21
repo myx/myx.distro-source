@@ -7,16 +7,14 @@ if [ "$1" = "--execute-sync" ] || [ "$EXECUTE_SYNC" = "--execute-sync" ]; then
 else
 	[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning local source changes ($MDSC_OPTION)" >&2
 fi
+
+local repositoryName projectName
 {
-	local repositoryName
-	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
+	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" ) \
 	| while IFS= read -r repositoryName; do
-
 		echo "$repositoryName/repository.inf"
-
 	done
 
-	local projectName
 	while IFS= read -r projectName; do
 		printf '%s/\n' "$projectName"
 	done
