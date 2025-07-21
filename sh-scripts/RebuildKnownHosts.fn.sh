@@ -61,7 +61,7 @@ RebuildKnownHosts() {
 	| uniq \
 	>> "$TEMP"
 	
-	chmod 664
+	chmod 664 "$TEMP"
 	mv -f "$TEMP" "$DEST"
 }
 
