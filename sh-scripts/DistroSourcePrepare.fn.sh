@@ -48,12 +48,12 @@ DistroSourcePrepare(){
 			local FIFO="$MMDAPP/.local/temp/scan-source-changes-$$.fifo"
 			mkfifo "$FIFO"
 			exec 3<> "$FIFO"   # fd 3 is now the pipe
+			rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
 
 			local projectName
 
 			{
-				tee "$FIFO"
-				rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
+				tee /dev/fd/2 2>&3 
 				echo >&3
 			} \
 			| {
