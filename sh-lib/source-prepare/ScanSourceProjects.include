@@ -2,10 +2,14 @@
 # ^^^ for syntax checking in the editor only
 
 [ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning local source projects ($MDSC_OPTION)" >&2
-# descend into src; print each dir containing project.inf and prune its subtree
+
+set -e
+
 local NAMESPACES
 NAMESPACES=$( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" )
+
 [ -n "$NAMESPACES" ] ||	return 0
+
 ( 
 	cd "$MDSC_SOURCE" || return 0
 

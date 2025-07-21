@@ -18,6 +18,8 @@ SourcePrepareDistroSyncToCached(){
 	local MDSC_CMD='SourcePrepareDistroSyncToCached'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
+	set -e
+
 	if [ "$MDSC_INMODE" = "source" ] ; then
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
 		| DistroSourcePrepare --sync-cached-from-source

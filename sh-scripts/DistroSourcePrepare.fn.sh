@@ -56,10 +56,10 @@ DistroSourcePrepare(){
 				rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
 				echo >&3
 			} \
-			| (
+			| {
 				set -- --execute-sync
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceChanges.include"
-			) \
+			} \
 			| if [ -n "$MDSC_DETAIL" ]; then
 				if [ "full" = "$MDSC_DETAIL" ]; then
 					tee /dev/fd/2

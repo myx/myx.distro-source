@@ -8,9 +8,11 @@ else
 	[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning local source changes ($MDSC_OPTION)" >&2
 fi
 
+set -e
+
 local repositoryName projectName
 {
-	( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" ) \
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
 	| while IFS= read -r repositoryName; do
 		echo "$repositoryName/repository.inf"
 	done
