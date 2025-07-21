@@ -138,7 +138,7 @@ ListDistroDeclares(){
 					return 0
 				fi
 
-				if [ -n "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ]; then
+				if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ]; then
 					echo "| $MDSC_CMD: --all-declares extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand
@@ -255,7 +255,7 @@ ListDistroDeclares(){
 					return 0
 				fi
 
-				if [ -n "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
+				if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "| $MDSC_CMD: --all-declares-merged extracting from source (java) ($MDSC_OPTION)" >&2
 			
 					Require DistroSourceCommand

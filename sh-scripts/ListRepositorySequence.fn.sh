@@ -84,7 +84,7 @@ ListRepositorySequence(){
 		fi
 	fi
 	
-	if command -v javac 2>/dev/null && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
+	if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
 		echo "$MDSC_CMD: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand

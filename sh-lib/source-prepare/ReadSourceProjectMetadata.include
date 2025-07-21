@@ -2,52 +2,36 @@
 # ^^^ for syntax checking in the editor only
 
 
-local infile="$1"
-local allowed="Name Requires Declares Provides Keywords"
-local line key value sep continued
+  local inf="$1"
+  [ -r "$inf" ] || return 1
 
-[ -f "$infile" ] || return 1
+  local line sep key value continued
 
-while IFS= read -r line || [ -n "$line" ]; do
-case "$line" in
-	''|\#*|\!*) continue ;;
-esac
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+      ''|\#*|\!*) continue ;;
+    esac
 
-if printf '%s' "$line" | grep -q '\\$'; then
-	continued="${continued} $(printf '%s' "$line" | sed 's/\\$//' | sed 's/^[[:space:]]*//')"
-	continue
-else
-	line="${continued} $line"
-	continued=""
-fi
+    if printf '%s' "$line" | grep -q '\\$'; then
+      continued="${continued} ${line%\\}"
+      continue
+    else
+      line="${continued} $line"
+      continued=""
+    fi
 
-sep=$(printf '%s\n' "$line" | grep -o '[:=]' | head -n1)
-key=$(printf '%s' "$line" | cut -d"$sep" -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-value=$(printf '%s' "$line" | cut -d"$sep" -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    sep="$(printf '%s' "$line" | grep -o '[:=]' | head -1)"
+    key="$(printf '%s' "$line" | cut -d"$sep" -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    value="$(printf '%s' "$line" | cut -d"$sep" -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 
-printf '%s\n' "$allowed" | grep -q "^$key\$" || continue
+    case "$key" in
+      Name|Requires|Provides|Declares|Keywords)
+        value="$(printf '%s' "$value" \
+          | sed -e 's/\\\\/\\/g' -e 's/\\:/\:/g' -e 's/\\=/\=/g')"
+        printf '%s=%s\n' "$key" "$(printf '%s' "$value" | tr -s ' ')"
+        ;;
+    esac
 
-value=$(printf '%s' "$value" | sed \
-	-e 's/\\\\/\\/g' \
-	-e 's/\\:/:/g' \
-	-e 's/\\=/=/g' \
-	-e 's/\\n/ /g' \
-	-e 's/\\r/ /g' \
-	-e 's/\\t/ /g')
-value=$(printf '%s' "$value" | perl -C -pe 's/\\u([0-9A-Fa-f]{4})/chr(hex($1))/ge')
+  done < "$inf"
 
-eval "existing=\${P_$key}"
-if [ -n "$existing" ]; then
-	eval "P_$key=\"$existing $value\""
-	printf 'Warning: duplicate key "%s"\n' "$key" >&2
-else
-	eval "P_$key=\"$value\""
-fi
-done < "$infile"
-
-for key in $allowed; do
-	eval "val=\${P_$key}"
-	[ -n "$val" ] && printf '%s=%s\n' "$key" "$(printf '%s' "$val" | tr -s ' ')"
-done
-
-return 0
+  return 0
