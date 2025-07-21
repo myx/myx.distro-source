@@ -49,11 +49,11 @@ ListAllRepositories(){
 		fi
 		if [ -d "$MDSC_CACHED" ] ; then
 			echo "$MDSC_CMD: caching repositories ($MDSC_OPTION)" >&2
-			ListAllRepositories --no-cache --all-repositories | tee "$cacheFile"
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
+			| tee "$cacheFile"
 			return 0
 		fi
 	fi
-
 	
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include"
 }
