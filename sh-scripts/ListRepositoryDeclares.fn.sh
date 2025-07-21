@@ -88,7 +88,7 @@ ListRepositoryDeclares(){
 				local filterDeclares="$1" ; shift
 
 				local filterDeclares="$1" projectName projectDeclares ; shift
-				ListRepositoryDeclares "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" \
+				ListRepositoryDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$repositoryName" "$@" \
 				| while read -r projectName projectDeclares ; do
 				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
 						echo "$projectName ${projectDeclares#${filterDeclares}:}"
@@ -159,7 +159,7 @@ ListRepositoryDeclares(){
 
 	local projectName
 	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectDeclares $projectName $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" || true
+		ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
 	done
 }
 

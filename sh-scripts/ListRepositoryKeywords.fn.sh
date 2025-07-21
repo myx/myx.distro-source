@@ -89,7 +89,7 @@ ListRepositoryKeywords(){
 				local filterKeywords="$1" ; shift
 
 				local filterKeywords="$1" projectName projectKeywords ; shift
-				ListRepositoryKeywords "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" \
+				ListRepositoryKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$repositoryName" "$@" \
 				| while read -r projectName projectKeywords ; do
 				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
 						echo "$projectName ${projectKeywords#${filterKeywords}:}"
@@ -160,7 +160,7 @@ ListRepositoryKeywords(){
 
 	local projectName
 	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectKeywords $projectName $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" || true
+		ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
 	done
 }
 

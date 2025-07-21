@@ -89,7 +89,7 @@ ListRepositoryProvides(){
 				local filterProvides="$1" ; shift
 
 				local filterProvides="$1" projectName projectProvides ; shift
-				ListRepositoryProvides "$repositoryName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" \
+				ListRepositoryProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$repositoryName" "$@" \
 				| while read -r projectName projectProvides ; do
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
@@ -161,7 +161,7 @@ ListRepositoryProvides(){
 
 	local projectName
 	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectProvides $projectName $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" || true
+		ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
 	done
 }
 

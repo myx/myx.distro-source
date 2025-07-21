@@ -161,7 +161,7 @@ ListDistroDeclares(){
 			
 				local repositoryName
 				ListAllRepositories --all-repositories | while read -r repositoryName ; do
-					ListRepositoryDeclares $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
+					ListRepositoryDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX $repositoryName || true
 				done
 	
 				return 0
@@ -291,7 +291,7 @@ ListDistroDeclares(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -408,7 +408,7 @@ ListDistroDeclares(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;

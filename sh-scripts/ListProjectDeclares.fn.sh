@@ -34,13 +34,13 @@ ListProjectDeclares(){
 		case "$1" in
 			--print-declares-only)
 				shift
-				ListProjectDeclares "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
 				shift
 				break;
-				#ListProjectDeclares "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" # | sed "s|^|$projectName |g"
+				#ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" # | sed "s|^|$projectName |g"
 				#return 0
 			;;
 			--filter-and-cut)
@@ -51,7 +51,7 @@ ListProjectDeclares(){
 				fi
 				local filterDeclares="$1" projectDeclares ; shift
 
-				ListProjectDeclares "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" --print-declares-only \
+				ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" --print-declares-only \
 				| while read -r projectDeclares ; do
 				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
 						echo "$projectName ${projectDeclares#${filterDeclares}:}"

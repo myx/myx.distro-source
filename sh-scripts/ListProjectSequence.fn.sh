@@ -56,7 +56,7 @@ ListProjectSequence(){
 						Require ListProjectProvides
 						
 						echo "$MDSC_CMD: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
-						for sequenceProjectName in $( ListProjectSequence "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX ) ; do
+						for sequenceProjectName in $( ListProjectSequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" ) ; do
 							ListProjectProvides "$sequenceProjectName" --print-project "$@"
 						done | awk '!x[$2]++' | tee "$cacheFile"
 						return 0

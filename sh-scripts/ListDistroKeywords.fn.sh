@@ -161,7 +161,7 @@ ListDistroKeywords(){
 			
 				local repositoryName
 				ListAllRepositories --all-repositories | while read -r repositoryName ; do
-					ListRepositoryKeywords $repositoryName $MDSC_NO_CACHE $MDSC_NO_INDEX || true
+					ListRepositoryKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX $repositoryName || true
 				done
 	
 				return 0
@@ -276,7 +276,7 @@ ListDistroKeywords(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
-					ListProjectKeywords "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;
@@ -393,7 +393,7 @@ ListDistroKeywords(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectKeywords "$sequenceProjectName" --merge-sequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
 			;;

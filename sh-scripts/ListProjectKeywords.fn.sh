@@ -34,13 +34,13 @@ ListProjectKeywords(){
 		case "$1" in
 			--print-keywords-only)
 				shift
-				ListProjectKeywords "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
 				shift
 				break;
-				#ListProjectKeywords "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" # | sed "s|^|$projectName |g"
+				#ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" # | sed "s|^|$projectName |g"
 				#return 0
 			;;
 			--filter-and-cut)
@@ -51,7 +51,7 @@ ListProjectKeywords(){
 				fi
 				local filterKeywords="$1" projectKeywords ; shift
 
-				ListProjectKeywords "$projectName" $MDSC_NO_CACHE $MDSC_NO_INDEX "$@" --print-keywords-only \
+				ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" --print-keywords-only \
 				| while read -r projectKeywords ; do
 				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
 						echo "$projectName ${projectKeywords#${filterKeywords}:}"
