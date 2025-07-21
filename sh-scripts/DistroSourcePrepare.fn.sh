@@ -53,8 +53,8 @@ DistroSourcePrepare(){
 			local projectName
 
 			{
-				tee /dev/fd/2 2>&3 
-				echo >&3
+				tee /dev/fd/2 2>&3 # to awk
+				echo >&3 # end-of-stream for awk
 			} \
 			| {
 				set -- --execute-sync
