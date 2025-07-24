@@ -50,7 +50,7 @@ BuildDistroFromOutputRunner(){
 	DistroSystemContext --distro-from-output
 	
 	local BUILDERS="$( ListDistroBuilders image-prepare --3 )"
-	echo "BuildDistroFromSource: Builders list:' >&2
+	echo 'BuildDistroFromSource: Builders list:' >&2
 	printf '\t%s\n' $BUILDERS >&2
 	
 	for BUILDER in $BUILDERS ; do
