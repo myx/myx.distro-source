@@ -620,16 +620,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		"ProjectClassLoader[" + project + "]", //
 		urls.toArray(new URL[urls.size()]), //
 		this.getClass().getClassLoader()//
-	) {
-	    @Override
-	    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		if (name.startsWith("ru.myx.distro.")) {
-		    return getParent().loadClass(name);
-		}
-		return super.loadClass(name, resolve);
-	    }
-
-	}) {
+	)) {
 
 	    final Class<?> cls = loader.loadClass(className);
 
