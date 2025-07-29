@@ -145,11 +145,11 @@ public abstract class AbstractCommand extends OperationContext implements Operat
 	}
     }
 
-    AbstractCommand() {
+    protected AbstractCommand() {
 	this.console = new ConsoleOutput();
     }
 
-    AbstractCommand(final ConsoleOutput console) {
+    protected AbstractCommand(final ConsoleOutput console) {
 	this.console = console;
     }
 
