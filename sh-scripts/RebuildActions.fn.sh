@@ -126,12 +126,9 @@ RebuildActions(){
 					chmod ug=rx,o=r "$actionLocation" 
 					;;
 		        *.url)
-		        	# ( grep -q '\[InternetShortcut\]' "$actionSourceFile" ) && echo "GREP=EYS"
-		        	# [ "`wc -l < "$actionSourceFile"`" -gt 1 ] && echo "WCS"
-		        	# echo "$actionSourceFile: `wc -l < "$actionSourceFile"`"
 					if ( grep -q '\[InternetShortcut\]' "$actionSourceFile" ) || [ "`wc -l < "$actionSourceFile"`" -gt 1 ] ; then
 						## sym-link is being created:
-						ln -fsv "$actionSourceFile" "$actionLocation"
+						ln -fs "$actionSourceFile" "$actionLocation"
 						chmod -h ug=rx,o=r "$actionLocation" 
 					else
 			        	local SRCCODE="`cat "$actionSourceFile"`"
@@ -145,7 +142,11 @@ RebuildActions(){
 			        	fi
 
 						## source code of script being created:
-						( echo "[InternetShortcut]" ; echo "URL=$SRCCODE" ; echo "WorkingDirectory=$WRKPATH" ) > "$actionLocation"
+						{
+							echo "[InternetShortcut]"
+							echo "URL=$SRCCODE"
+							echo "WorkingDirectory=$WRKPATH" 
+						} > "$actionLocation"
 						chmod ug=rx,o=r "$actionLocation" 
 					fi 
 					;;
