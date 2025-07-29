@@ -617,6 +617,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	this.console.outDebug("arguments: ", arguments);
 
 	try (final URLClassLoader loader = new URLClassLoader(//
+		"ProjectClassLoader[" + project + "]", //
 		urls.toArray(new URL[urls.size()]), //
 		this.getClass().getClassLoader()//
 	)) {
