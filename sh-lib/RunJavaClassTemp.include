@@ -17,7 +17,7 @@ RunJavaClassTemp(){
 
 	echo "Compiling $SRC_PATH to temporary folder: $TMP_DIR" >&2
 	
-	javac -d "$TMP_DIR" -cp "$TMP_DIR:$SRC_PATH" -sourcepath "$SRC_PATH" -g -parameters "$SRC_PATH/$(echo "$CLS_NAME" | sed 's/\./\//g').java"
+	javac -d "$TMP_DIR" -cp "$TMP_DIR" -sourcepath "$SRC_PATH" -g -parameters "$SRC_PATH/$(echo "$CLS_NAME" | sed 's/\./\//g').java"
 	
 	java -cp "$TMP_DIR" "$CLS_NAME" "$@"
 

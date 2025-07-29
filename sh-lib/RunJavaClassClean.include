@@ -19,7 +19,7 @@ RunJavaClassClean(){
 
 	DST_PATH="$DIR_OUT/$SRC_NAME/java"
 	SRC_PATH="$DIR_SRC/$SRC_NAME/java"
-	CLS_PATH="$DST_PATH:$SRC_PATH"
+	CLS_PATH="$DST_PATH:"
 
 	# echo "  >  Running Java Class (Clean): $CLS_NAME"  >&2
 
