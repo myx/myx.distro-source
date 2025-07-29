@@ -21,8 +21,8 @@ PrepareBuildDependencyIndex(){
 	for projectName in $projectList ; do
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
 		local projectSources="$MMDAPP/cached/sources/$projectName/java"
-		local javaClassPath="$projectClasses;$javaClassPath"
-		local javaSourcePath="$projectSources;$javaSourcePath"
+		local javaClassPath="$projectClasses:$javaClassPath"
+		local javaSourcePath="$projectSources:$javaSourcePath"
 	done
 
 	for projectName in $projectList ; do
@@ -56,7 +56,7 @@ PrepareBuildDependencyIndex(){
 	
 	fi
 	
-	( \
+	(
 		DistroSourceCommand \
 			-v \
 			--source-root "$MMDAPP/cached/sources" \
