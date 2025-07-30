@@ -62,7 +62,7 @@ PrepareBuildDependencyIndex(){
 			--source-root "$MMDAPP/cached/sources" \
 			--output-root "$MMDAPP/output" \
 			--import-from-source --select-all-from-source \
-			--print ''  -vv \
+			--print ''  -v \
 			--build-all \
 			--print '' \
 	)
