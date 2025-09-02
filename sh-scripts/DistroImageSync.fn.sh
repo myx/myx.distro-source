@@ -9,9 +9,8 @@ fi
 
 
 DistroImageSync(){
-	if ! type DistroSource >/dev/null 2>&1 ; then
+	type DistroSource >/dev/null 2>&1 || \
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
-	fi
 
 	local MDSC_CMD='DistroImageSync'
 	set -e

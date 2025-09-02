@@ -3,9 +3,8 @@
 
 [ -z "$MDSC_DETAIL" ] || echo "+ SourcePrepare: library included" >&2
 
-if ! type DistroSource >/dev/null 2>&1 ; then
+type DistroSource >/dev/null 2>&1 || \
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
-fi
 
 # main shell command
 SourcePrepare(){

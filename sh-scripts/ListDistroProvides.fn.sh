@@ -12,9 +12,8 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-path-auto
 fi
 
-if ! type DistroSource >/dev/null 2>&1 ; then
+type DistroSource >/dev/null 2>&1 || \
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
-fi
 
 ListDistroProvides(){
 	local MDSC_CMD='ListDistroProvides'
