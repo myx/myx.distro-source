@@ -53,8 +53,9 @@
 			to this list, but these options are actively used by scripts of this package):
 
 				MDLT_CONSOLE_SCRIPT
-					Shell script to include in console start. Allows to setup extra commands 
-					or settings.
+					Shell script to include in console initialisation process. Allows to setup 
+					extra commands or settings. Note: before including this script, $HOME/.bashrc
+					will be included automatically, if present.
 
 				MDLT_CONSOLE_HISTORY
 					Defines where and how your interactive shell (Console) history is stored. The
