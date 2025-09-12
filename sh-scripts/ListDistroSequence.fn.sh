@@ -102,7 +102,8 @@ ListDistroSequence(){
 							local projectSequence
 							local currentProject
 
-							grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' -e 's|\\:|:|g' \
+							grep -e "^PRJ-SEQ-" "$indexFile" \
+							| sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' -e 's|\\:|:|g' \
 							| while read -r sequenceProject projectSequence ; do
 								for currentProject in $projectSequence ; do
 									echo "$sequenceProject" "$currentProject"

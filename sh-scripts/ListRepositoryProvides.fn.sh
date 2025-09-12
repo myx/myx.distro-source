@@ -133,7 +133,9 @@ ListRepositoryProvides(){
 				local MTC="^PRJ-PRV-$repositoryName/"
 				
 				local indexValueLine
-				grep "$MTC" "$indexFile" | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r indexValueLine ; do
+				grep "$MTC" "$indexFile" \
+				| sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' \
+				| while read -r indexValueLine ; do
 					ListRepositoryProvides --internal-print-project-provides $indexValueLine
 				done
 			

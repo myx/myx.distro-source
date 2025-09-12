@@ -28,8 +28,6 @@ ListProjectSequence(){
 
 	set -e
 
-	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
-
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
@@ -80,47 +78,47 @@ ListProjectSequence(){
 	done
 
 
-	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-			local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
-			if [ -f "$cacheFile" ] && \
-				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
-			then
-				[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
-				cat "$cacheFile"
-				return 0
-			fi
-
-			if [ ! -d "$MDSC_CACHED/$projectName" ] ; then
-				echo "$MDSC_CMD: $projectName: bypass ($MDSC_OPTION)" >&2
-				ListProjectSequence --no-cache "$projectName"
-				return 0
-			fi
-
-			echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectSequence --no-cache "$projectName" | tee "$cacheFile"
+	if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
+		local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
+		if [ -f "$cacheFile" ] && \
+			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
+		then
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
+			cat "$cacheFile"
 			return 0
 		fi
 
-		if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
-			if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
-				
-				local FILTER="$1"
-				local currentProject
-				if [ -z "$FILTER" ] ; then
-					for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
-						echo $currentProject
-					done
-				else
-					for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
-						if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
-							echo ${currentProject#${FILTER}:} | tr "|" "\n"
-						fi
-					done
-				fi
-				return 0
+		if [ ! -d "$MDSC_CACHED/$projectName" ] ; then
+			echo "$MDSC_CMD: $projectName: bypass ($MDSC_OPTION)" >&2
+			ListProjectSequence --no-cache "$projectName"
+			return 0
+		fi
+
+		echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
+		ListProjectSequence --no-cache "$projectName" | tee "$cacheFile"
+		return 0
+	fi
+
+	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
+
+	if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] ; then
+		if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+			echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
+			
+			local FILTER="$1"
+			local currentProject
+			if [ -z "$FILTER" ] ; then
+				for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
+					echo $currentProject
+				done
+			else
+				for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
+					if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
+						echo ${currentProject#${FILTER}:} | tr "|" "\n"
+					fi
+				done
 			fi
+			return 0
 		fi
 	fi
 	

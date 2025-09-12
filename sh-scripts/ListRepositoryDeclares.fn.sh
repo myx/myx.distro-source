@@ -131,7 +131,9 @@ ListRepositoryDeclares(){
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryDeclares: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-DCL-$repositoryName/"
 				
-				grep "$MTC" "$indexFile" | sed -e 's:^PRJ-DCL-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do
+				grep "$MTC" "$indexFile" \
+				| sed -e 's:^PRJ-DCL-::' -e 's:=: :g' -e 's|\\:|:|g' \
+				| while read -r LINE ; do
 					ListRepositoryDeclares --internal-print-project-declares $LINE
 				done
 			

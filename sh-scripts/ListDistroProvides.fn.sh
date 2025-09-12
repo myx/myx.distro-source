@@ -121,7 +121,9 @@ ListDistroProvides(){
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using index" >&2
 						
 						local projectName extraText
-						grep -e "^PRJ-PRV-" "$indexFile" | sort | sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' \
+						grep -e "^PRJ-PRV-" "$indexFile" \
+						| sort \
+						| sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' \
 						| while read -r projectName extraText ; do
 							echo "$extraText" | tr ' ' '\n' | sed -e "s:^:$projectName :"
 						done

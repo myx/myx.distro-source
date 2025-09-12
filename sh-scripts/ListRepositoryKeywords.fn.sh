@@ -132,7 +132,9 @@ ListRepositoryKeywords(){
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryKeywords: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-KWD-$repositoryName/"
 				
-				grep "$MTC" "$indexFile" | sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\:|:|g' | while read -r LINE ; do
+				grep "$MTC" "$indexFile" \
+				| sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\:|:|g' \
+				| while read -r LINE ; do
 					ListRepositoryKeywords --internal-print-project-keywords $LINE
 				done
 			

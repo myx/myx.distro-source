@@ -121,7 +121,9 @@ ListDistroKeywords(){
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using index" >&2
 						
 						local projectName extraText
-						grep -e "^PRJ-KWD-" "$indexFile" | sort | sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\:|:|g' \
+						grep -e "^PRJ-KWD-" "$indexFile" \
+						| sort \
+						| sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\:|:|g' \
 						| while read -r projectName extraText ; do
 							echo "$extraText" | tr ' ' '\n' | sed -e "s:^:$projectName :"
 						done
