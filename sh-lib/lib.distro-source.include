@@ -140,6 +140,7 @@ DistroSourceProjectSequenceFile(){
 # sets MDSC_IDAPRV_NAME variable to all merged provides table file name
 DistroSourceEnsureProvidesMergedFile(){
 	local MDSC_CMD='DistroSourceEnsureProvidesMergedFile'
+	set -e
 
 	if [ "$1" != "MDSC_IDAPRV_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_IDAPRV_NAME" >&2
@@ -166,7 +167,6 @@ DistroSourceEnsureProvidesMergedFile(){
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
 		fi
 	
-		set -e
 		Require ListDistroProvides
 		ListDistroProvides --explicit-noop --no-cache --all-provides-merged > "$cacheFile.tmp"
 		mv -f "$cacheFile.tmp" "$cacheFile"
@@ -181,6 +181,7 @@ DistroSourceEnsureProvidesMergedFile(){
 # sets MDSC_IDOPRV_NAME variable to all merged provides table file name
 DistroSourceEnsureProvidesOwnedFile(){
 	local MDSC_CMD='DistroSourceEnsureProvidesOwnedFile'
+	set -e
 
 	if [ "$1" != "MDSC_IDOPRV_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_IDOPRV_NAME" >&2
@@ -206,7 +207,6 @@ DistroSourceEnsureProvidesOwnedFile(){
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
 		fi
 	
-		set -e
 		Require ListDistroProvides
 		ListDistroProvides --explicit-noop --all-provides > "$cacheFile.tmp"
 		mv -f "$cacheFile.tmp" "$cacheFile"
