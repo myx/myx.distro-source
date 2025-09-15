@@ -87,13 +87,13 @@ ListDistroProvides(){
 					fi
 					if [ -n "$MDSC_IDAPRV_NAME" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using MDSC_IDAPRV_NAME (--all-provides-merged) ($MDSC_OPTION)" >&2
-						export MDSC_IDOPRV="` cat "$MDSC_IDAPRV_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' `"
+						export MDSC_IDOPRV="$( cat "$MDSC_IDAPRV_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' )"
 						echo "$MDSC_IDOPRV"
 						return 0
 					fi
 					if [ -n "${MDSC_IDAPRV:0:1}" ] ; then 
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using MDSC_IDAPRV (--all-provides-merged) ($MDSC_OPTION)" >&2
-						export MDSC_IDOPRV="` echo "$MDSC_IDAPRV" | cut -d" " -f2,3 | awk '!x[$0]++' `"
+						export MDSC_IDOPRV="$( echo "$MDSC_IDAPRV" | cut -d" " -f2,3 | awk '!x[$0]++' )"
 						echo "$MDSC_IDOPRV"
 						return 0
 					fi
@@ -134,7 +134,7 @@ ListDistroProvides(){
 
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides env-caching projects ($MDSC_OPTION)" >&2
-					export MDSC_IDOPRV="` ListDistroProvides --explicit-noop --no-cache --all-provides `"
+					export MDSC_IDOPRV="$( ListDistroProvides --explicit-noop --no-cache --all-provides )"
 					echo "$MDSC_IDOPRV"
 					return 0
 				fi
@@ -236,7 +236,7 @@ ListDistroProvides(){
 
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides-merged env-caching projects ($MDSC_OPTION)" >&2
-					export MDSC_IDAPRV="` ListDistroProvides --no-cache --all-provides-merged `"
+					export MDSC_IDAPRV="$( ListDistroProvides --no-cache --all-provides-merged )"
 					echo "$MDSC_IDAPRV"
 					return 0
 				fi
