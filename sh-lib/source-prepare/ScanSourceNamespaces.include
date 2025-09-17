@@ -5,9 +5,9 @@
 
 set -e
 
-find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -type f -name repository.inf -print0 \
+find "$MDSC_SOURCE" -mindepth 2 -maxdepth 2 -type f -name repository.inf \
 | sort -z \
-| while IFS= read -r -d '' file; do
+| while IFS= read -r file; do
 	file=${file%/repository.inf}
 	echo "${file#$MDSC_SOURCE/}"
 done
