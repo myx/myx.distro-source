@@ -33,7 +33,7 @@ DistroImageSync(){
 
 			local projectName buildStage syncOperation targetSpec sourceSpec extra
 			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
-				if [ "." == "$targetSpec" ] ; then
+				if [ "." = "$targetSpec" ] ; then
 					targetSpec="$projectName"
 				fi
 				case "$syncOperation" in
@@ -80,7 +80,7 @@ DistroImageSync(){
 			while read -r buildStage projectName syncOperation targetSpec sourceSpec extra ; do
 				case "$syncOperation" in
 					repo)
-						if [ "." == "$targetSpec" ] ; then
+						if [ "." = "$targetSpec" ] ; then
 							targetSpec="$projectName"
 						fi
 						local sourceBranch sourceUrl

@@ -22,7 +22,7 @@ DistroSourceCommand(){
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local MDSC_CACHED="${MDSC_CACHED:-$MMDAPP/output/cached}"
 
-	if [ "$MDLT_ORIGIN" == "$MMDAPP/source" ] ; then
+	if [ "$MDLT_ORIGIN" = "$MMDAPP/source" ] ; then
 		local DIR_OUT="$MDSC_CACHED/myx/myx.distro-source"
 		local DIR_SRC="$MDSC_SOURCE/myx/myx.distro-source"
 	else

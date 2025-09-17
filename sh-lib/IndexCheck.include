@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+: "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
+
+IndexCheck(){
+	local cacheFile="$1" indexFile="$2"
+
+	if [ ! -f "$cacheFile" ]; then
+		return 1
+	fi
+
+	if [ "$MDSC_INMODE" = "deploy" ]; then
+			return 0
+	fi
+
+	if [ -z "$BUILD_STAMP" ]; then
+		
+		return 1
+	fi
+
+	return 1
+}

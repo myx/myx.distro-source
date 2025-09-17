@@ -96,7 +96,7 @@ DistroSourceTools(){
 
 				local repositoryRoot="$MMDAPP/.local/roots/$repositoryName.distro-namespace"
 
-				if [ ! -f "$repositoryRoot" ] || [ "$( cat "$repositoryRoot" 2>/dev/null )" == "$repositoryInf" ] ; then
+				if [ ! -f "$repositoryRoot" ] || [ "$( cat "$repositoryRoot" 2>/dev/null )" = "$repositoryInf" ] ; then
 					echo -n "$repositoryInf" > "$repositoryRoot"
 					echo "> $MDSC_CMD: --register-namespace-root: ${repositoryRoot#$MMDAPP/} (re-)created." >&2
 					changed=true
@@ -105,7 +105,7 @@ DistroSourceTools(){
 
 				local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
 
-				if [ ! -f "$repositoryFile" ] || [ "$( cat "$repositoryFile" 2>/dev/null )" == "$repositoryInf" ] ; then
+				if [ ! -f "$repositoryFile" ] || [ "$( cat "$repositoryFile" 2>/dev/null )" = "$repositoryInf" ] ; then
 					echo -n "$repositoryInf" > "$repositoryFile"
 					echo "> $MDSC_CMD: --register-namespace-root: ${repositoryFile#$MMDAPP/} (re-)created." >&2
 					changed=true
