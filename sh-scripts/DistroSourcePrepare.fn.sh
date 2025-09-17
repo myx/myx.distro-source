@@ -52,7 +52,7 @@ DistroSourcePrepare(){
 			local projectName
 
 			{
-				tee /dev/fd/2 2>&3 # to awk
+				tee /dev/fd/2 2>&3 || : # to awk
 				echo >&3 # end-of-stream for awk
 			} \
 			| {
@@ -61,10 +61,10 @@ DistroSourcePrepare(){
 			} \
 			| if [ -n "$MDSC_DETAIL" ]; then
 				if [ "full" = "$MDSC_DETAIL" ]; then
-					tee /dev/fd/2
+					tee /dev/fd/2 || :
 				else
 					fgrep -v '>f..t.' \
-					| tee /dev/fd/2
+					| tee /dev/fd/2 || :
 				fi
 			else
 				cat

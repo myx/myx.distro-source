@@ -14,7 +14,7 @@ local repositoryName projectName
 {
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
 	| while IFS= read -r repositoryName; do
-		echo "$repositoryName/repository.inf"
+		printf '%s/repository.inf\n' "$repositoryName"
 	done
 
 	while IFS= read -r projectName; do
