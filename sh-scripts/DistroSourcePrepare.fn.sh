@@ -37,7 +37,7 @@ DistroSourcePrepare(){
 		;;
 		--scan-source-changes)
 			shift
-			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceChanges.include"
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceChanges.include" < /dev/null
 			return 0
 		;;
 		--sync-cached-from-source) # ...-for-stdin-project-list)
