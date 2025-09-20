@@ -153,6 +153,15 @@ case "$1" in
 						}
 					},
 					{
+						"label": "🛫 Ingest Source Changes, Index Snapshot...",
+						"type": "shell",
+						"command": "bash -c 'echo \"BuildCachedFromSource.fn.sh\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+						"group": { 
+							"kind": "build", 
+							"isDefault": true 
+						}
+					},
+					{
 						"label": "🛠️ Update Local Tools...",
 						"type": "shell",
 						"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --upgrade-installed-tools",
