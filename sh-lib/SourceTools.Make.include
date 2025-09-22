@@ -146,7 +146,7 @@ case "$1" in
 					{
 						"label": "⬇️ Pull/Sync All Known Sources...",
 						"type": "shell",
-						"command": "bash -c 'echo \"DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+						"command": "bash -c 'echo \"Distro DistroImageSync --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
@@ -156,6 +156,15 @@ case "$1" in
 						"label": "🛫 Ingest Source Changes, Index Snapshot...",
 						"type": "shell",
 						"command": "bash -c 'echo \"BuildCachedFromSource.fn.sh\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+						"group": { 
+							"kind": "build", 
+							"isDefault": true 
+						}
+					},
+					{
+						"label": "🛫 Ingest Source Changes...",
+						"type": "shell",
+						"command": "bash -c 'echo \"Distro DistroSourcePrepare --sync-cached-from-source\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
 						"group": { 
 							"kind": "build", 
 							"isDefault": true 
