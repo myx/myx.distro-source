@@ -18,22 +18,18 @@ ListDistroProjects(){
 
 	local executeDefault=""
 	
-	while true ; do
-		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
-		case "$1" in
-			''|--help|--help-syntax)
-				echo "📘 syntax: ListDistroProjects.fn.sh --all-projects" >&2
-				echo "📘 syntax: ListDistroProjects.fn.sh <project-selector> [<command-options>] [<execute-extra-args>]" >&2
-				echo "📘 syntax: ListDistroProjects.fn.sh [--help]" >&2
-				if [ "$1" = "--help" ] ; then
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroProjects.include"
-				fi
-				return 0
-			;;
-		esac
-		break
-	done
+	case "$1" in
+		''|--help|--help-syntax)
+			echo "📘 syntax: ListDistroProjects.fn.sh --all-projects" >&2
+			echo "📘 syntax: ListDistroProjects.fn.sh <project-selector> [<command-options>] [<execute-extra-args>]" >&2
+			echo "📘 syntax: ListDistroProjects.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroProjects.include"
+			fi
+			return 0
+		;;
+	esac
 	
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
@@ -52,6 +48,9 @@ ListDistroProjects(){
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
+
+				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include"
+				return 0
 				
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then

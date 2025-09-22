@@ -7,9 +7,7 @@
 
 [ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
-Require DistroSourceCommand
-
-DistroSourceCommand \
+Distro DistroSourceCommand \
 	-v \
 	--import-from-source --select-all-from-source \
 	--prepare-source-to-cached-index \

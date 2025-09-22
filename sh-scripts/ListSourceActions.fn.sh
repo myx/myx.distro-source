@@ -20,12 +20,11 @@ ListSourceActions(){
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 
-	Require ListDistroProjects
 	# override to source, explicit
 	local MDSC_SOURCE="$MMDAPP/source"
 
 	local projectName
-	for projectName in $( ListDistroProjects --all-projects ) ; do
+	for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 		
 		[ -d "$MDSC_SOURCE/$projectName/actions" ] && \
 			find "$MDSC_SOURCE/$projectName/actions" -mindepth 1 -type f \

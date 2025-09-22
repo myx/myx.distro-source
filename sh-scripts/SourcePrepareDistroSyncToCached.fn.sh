@@ -12,8 +12,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-from-source
 fi
 
-Require DistroSourcePrepare
-
 SourcePrepareDistroSyncToCached(){
 	local MDSC_CMD='SourcePrepareDistroSyncToCached'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
@@ -21,8 +19,7 @@ SourcePrepareDistroSyncToCached(){
 	set -e
 
 	if [ "$MDSC_INMODE" = "source" ] ; then
-		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
-		| DistroSourcePrepare --sync-cached-from-source
+		Distro DistroSourcePrepare --sync-cached-from-source
 
 		return 0
 	fi

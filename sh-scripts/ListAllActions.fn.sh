@@ -35,7 +35,7 @@ ListAllActions(){
 	local projectName findLocations
 
 	Require ListDistroProjects
-	for projectName in ` ListDistroProjects --all-projects ` ; do
+	for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 		local findLocations=""
 		
 		[ ! -d "$MDSC_SOURCE/$projectName/actions" ] \
@@ -61,7 +61,7 @@ ListAllActions(){
 	
 	Require ListProjectActions
 	
-	for projectName in ` ListDistroProjects --all-projects ` ; do
+	for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 		ListProjectActions $forCompletion "$projectName"
 	done
 		

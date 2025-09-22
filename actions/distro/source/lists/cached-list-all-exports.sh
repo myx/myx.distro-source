@@ -9,7 +9,7 @@ type ListProjectProvides >/dev/null 2>&1 || \
 . "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/ListProjectProvides.fn.sh"
 
 
-for projectName in `ListDistroProjects --all-projects` ; do
+for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 	for ITEM in `ListProjectProvides "$projectName" --print-provides-only --filter-and-cut deploy-export` ; do
 		echo "$projectName: $( echo $ITEM | tr '\\' ' ' | sed "s|:| |g" )"
 	done

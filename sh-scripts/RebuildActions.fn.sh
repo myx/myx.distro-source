@@ -36,7 +36,7 @@ RebuildActions(){
 
 	if [ "$1" == "--test1" ] ; then
 		cd "$MDSC_SOURCE"
-		find $( ListDistroProjects --all-projects | tr '\n' ' ' ) -type d -name "actions" -prune
+		find $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" | tr '\n' ' ' ) -type d -name "actions" -prune
 		exit 0
 	fi
 	if [ "$1" == "--test2" ] ; then
@@ -49,7 +49,7 @@ RebuildActions(){
 		exit 0
 	fi
 	
-	for projectName in $( ListDistroProjects --all-projects ) ; do
+	for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 		
 		for actionFullName in $( ListProjectActions "$projectName" ) ; do
 			

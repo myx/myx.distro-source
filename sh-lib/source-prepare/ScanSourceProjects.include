@@ -11,25 +11,29 @@ NAMESPACES=$( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSo
 [ -n "$NAMESPACES" ] ||	return 0
 
 ( 
-	cd "$MDSC_SOURCE" || return 0
+	cd "$MDSC_SOURCE" || {
+		echo "⛔ ERROR: $MDSC_CMD: ScanSourceProjects.include: no source folder!" >&2
+		set +e ; return 1
+	}
 
 	# Recursion function scoped to this subshell
 	scan() {
 		# If this dir has project.inf, emit and stop
 		if [ -f "$1/project.inf" ]; then
-		printf '%s\n' "$1"
-		return
+			printf '%s\n' "$1"
+			return
 		fi
 
 		# Otherwise descend one level into each child directory
 		local sub
 		for sub in "$1"/*; do
-		[ -d "$sub" ] || continue
-		scan "$sub"
+			[ -d "$sub" ] || continue
+			scan "$sub"
 		done
 	}
 
 	# Kick off scanning, splitting $NAMESPACES on whitespace
+	local ns
 	for ns in $NAMESPACES; do
 		scan "$ns" &
 	done

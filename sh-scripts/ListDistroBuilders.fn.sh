@@ -49,7 +49,7 @@ ListDistroBuilders(){
 
 			if [ "$printBuildStage" == "--print-build-stage" ] || [ "$stageType" == "--all-build-stages" ] ; then
 				local buildStage
-				for projectName in $( ListDistroProjects --all-projects ) ; do
+				for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 					ListProjectBuilders "$projectName" $printBuildStage "$stageType" "$@" | while read -r buildStage builderName ; do
 						echo "$buildStage" "$builderName" "` basename "$builderName" `" 
 					done
@@ -63,7 +63,7 @@ ListDistroBuilders(){
 				return 0
 			fi
 
-			for projectName in $( ListDistroProjects --all-projects ) ; do
+			for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 				ListProjectBuilders "$projectName" "$stageType" "$@" | while read -r builderName ; do
 					echo "$builderName" "` basename "$builderName" `" 
 				done

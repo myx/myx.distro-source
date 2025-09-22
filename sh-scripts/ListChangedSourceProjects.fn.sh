@@ -29,7 +29,7 @@ ListChangedSourceProjects(){
 
 	if [ -d "$MDSC_CACHED/changed" ] ; then
 		local projectName=""
-		for projectName in ` ListDistroProjects --all-projects ` ; do
+		for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
 			if [ -f "$MDCS_CACHED/changed/$projectName" ] ; then
 				echo "$projectName"
 			fi
@@ -37,7 +37,7 @@ ListChangedSourceProjects(){
 		return 0
 	fi
 	
-	ListDistroProjects --all-projects
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include"
 }
 
 case "$0" in
