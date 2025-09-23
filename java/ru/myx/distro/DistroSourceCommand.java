@@ -223,7 +223,8 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 	this.repositories.buildPrepareDistroIndex(//
 		this, //
 		this.outputRoot.resolve("distro").normalize(), //
-		true//
+		true, //
+		true //
 	);
     }
 
@@ -256,7 +257,8 @@ public class DistroSourceCommand extends AbstractDistroCommand {
 	this.repositories.buildPrepareDistroIndex(//
 		this, //
 		this.cachedRoot.normalize(), //
-		true//
+		true, //
+		false //
 	);
     }
 

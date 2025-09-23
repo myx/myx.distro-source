@@ -129,8 +129,9 @@ public class Repository {
 	set.add(project);
     }
 
-    public void buildPrepareDistroIndex(final OperationContext context, final Distro repositories,
-	    final Path repositoryOutput) throws Exception {
+    public void buildPrepareDistroIndex(//
+	    final OperationContext context, final Distro repositories, final Path repositoryOutput, final boolean full//
+    ) throws Exception {
 	Files.createDirectories(repositoryOutput);
 	if (!Files.isDirectory(repositoryOutput)) {
 	    throw new IllegalStateException("repositoryOutput is not a folder, " + repositoryOutput);
@@ -191,7 +192,7 @@ public class Repository {
 		    true//
 	    );
 	}
-	{
+	if (full) {
 	    // final Collection<String> lines = new TreeSet<>();
 	    final Collection<String> lines = new LinkedHashSet<>();
 	    for (final Project project : this.byName.values()) {

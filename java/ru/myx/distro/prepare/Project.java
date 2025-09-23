@@ -220,7 +220,7 @@ public class Project {
 
     public void buildPrepareCompileIndex(final OperationContext context, final Path projectOutput,
 	    final List<String> compileJava) throws Exception {
-	this.buildPrepareDistroIndex(context, projectOutput, false);
+	this.buildPrepareDistroIndex(context, projectOutput, false, false);
 
 	Utils.save(//
 		context.console, //
@@ -296,14 +296,15 @@ public class Project {
 	return list;
     }
 
-    public void buildPrepareDistroIndex(final OperationContext context, final Path packageOutput, final boolean deep)
-	    throws Exception {
+    public void buildPrepareDistroIndex(//
+	    final OperationContext context, final Path packageOutput, final boolean deep, final boolean full//
+    ) throws Exception {
 	Files.createDirectories(packageOutput);
 	if (!Files.isDirectory(packageOutput)) {
 	    throw new IllegalStateException("packageOutput is not a folder, " + packageOutput);
 	}
 
-	{
+	if (full) {
 	    final Properties info = new Properties();
 	    info.setProperty("Name", this.getFullName());
 	    info.setProperty("Declares", this.lstDeclares.toString());
@@ -335,7 +336,7 @@ public class Project {
 	    );
 	}
 
-	{
+	if (full) {
 	    final Collection<String> lines = new LinkedHashSet<>();
 	    {
 		lines.add(/* project.getFullName() + ' ' + */this.name);
@@ -349,7 +350,7 @@ public class Project {
 		    lines.stream()//
 	    );
 	}
-	{
+	if (full) {
 	    final Collection<String> lines = new LinkedHashSet<>();
 	    {
 		lines.add(/* project.getFullName() + ' ' + */this.name);
@@ -363,7 +364,7 @@ public class Project {
 		    lines.stream()//
 	    );
 	}
-	{
+	if (full) {
 	    final Collection<String> lines = new LinkedHashSet<>();
 	    {
 		lines.add(/* project.getFullName() + ' ' + */this.name);
@@ -378,7 +379,7 @@ public class Project {
 	    );
 	}
 
-	{
+	if (full) {
 	    Utils.save(//
 		    context.console, //
 		    packageOutput.resolve("project-build-sequence.txt"), //

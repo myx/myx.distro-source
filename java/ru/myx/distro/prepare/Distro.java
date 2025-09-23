@@ -83,13 +83,13 @@ public final class Distro {
     }
 
     public void buildPrepareCompileIndex(final OperationContext context, final Path outputTarget) throws Exception {
-	this.buildPrepareDistroIndex(context, outputTarget, false);
+	this.buildPrepareDistroIndex(context, outputTarget, false, true);
 
 	final List<String> compileJava = new ArrayList<>();
 	final ClasspathBuilder classpath = new ClasspathBuilder();
 
 	for (final Repository repo : this.byRepositoryName.values()) {
-	    repo.buildPrepareDistroIndex(context, this, outputTarget.resolve(repo.name));
+	    repo.buildPrepareDistroIndex(context, this, outputTarget.resolve(repo.name), true);
 	}
 	for (final Project project : this.sequenceProjects) {
 	    project.buildPrepareCompileIndex(context, outputTarget.resolve(project.repo.name).resolve(project.name),
@@ -110,8 +110,9 @@ public final class Distro {
 	);
     }
 
-    public void buildPrepareDistroIndex(final OperationContext context, final Path outputTarget, final boolean deep)
-	    throws Exception {
+    public void buildPrepareDistroIndex(//
+	    final OperationContext context, final Path outputTarget, final boolean deep, final boolean full//
+    ) throws Exception {
 	if (!Files.isDirectory(outputTarget)) {
 	    throw new IllegalStateException("outputTarget is not a folder, " + outputTarget);
 	}
@@ -129,11 +130,15 @@ public final class Distro {
 
 	if (deep) {
 	    for (final Repository repo : this.byRepositoryName.values()) {
-		repo.buildPrepareDistroIndex(context, this, outputTarget.resolve(repo.name));
+		repo.buildPrepareDistroIndex(context, this, outputTarget.resolve(repo.name), full);
 	    }
 	    for (final Project project : this.sequenceProjects) {
-		project.buildPrepareDistroIndex(context, outputTarget.resolve(project.repo.name).resolve(project.name),
-			true);
+		project.buildPrepareDistroIndex(//
+			context, //
+			outputTarget.resolve(project.repo.name).resolve(project.name), //
+			true, //
+			full//
+		);
 	    }
 	}
 

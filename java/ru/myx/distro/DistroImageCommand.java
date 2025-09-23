@@ -82,7 +82,8 @@ public class DistroImageCommand extends AbstractDistroCommand {
 		context.repositories.buildPrepareDistroIndex(//
 			context, //
 			context.outputRoot.resolve("distro").normalize(), //
-			true//
+			true, //
+			false //
 		);
 		return true;
 	    }, "--prepare-build-distro-index");
@@ -95,7 +96,8 @@ public class DistroImageCommand extends AbstractDistroCommand {
 		context.repositories.buildPrepareDistroIndex(//
 			context, //
 			context.outputRoot.resolve("distro").normalize(), //
-			true//
+			true, //
+			true //
 		);
 		context.repositories.buildPrepareCompileIndex(//
 			context, //
