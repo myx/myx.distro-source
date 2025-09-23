@@ -29,4 +29,4 @@ if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/source-cache/enh
 	return 1
 fi
 
-Distro DistroSourcePrepare --ingest-distro-index-from-source
+Prefix "sync/check" Distro DistroSourcePrepare --ingest-distro-index-from-source
