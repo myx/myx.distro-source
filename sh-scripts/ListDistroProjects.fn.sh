@@ -44,52 +44,14 @@ ListDistroProjects(){
 			;;
 			--all-projects)
 				shift
+
 				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
 				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include"
-				return 0
 				
-				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-						local cacheFile="$MDSC_CACHED/all-project-names.txt"
-						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
-							return 0
-						fi
-						if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-							echo "| ListDistroProjects: caching projects ($MDSC_OPTION)" >&2
-							ListDistroProjects --no-cache --all-projects | tee "$cacheFile"
-							return 0
-						fi
-					fi
-					if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
-						local indexFile="$MDSC_CACHED/distro-index.inf"
-						if [ -f "$indexFile" ] && \
-							( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] )
-						then
-							echo "| ListDistroProjects: using image ($MDSC_OPTION)" >&2
-							local projectName
-							for projectName in $( grep -e "^PRJS=" "$indexFile" | sed "s:^.*=::" | tr ' ' '\n' ) ; do
-								echo "$projectName"
-							done
-							return 0
-						fi
-					fi
-				fi
-
-				if [ "$MDSC_INMODE" = "source" ] || [ -d "$MDSC_SOURCE" ]; then
-					echo "| ListDistroProjects: scanning all source projects... ($MDSC_OPTION)" >&2
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include"
-				else
-					echo "| ListDistroProjects: scanning all deploy projects... ($MDSC_OPTION)" >&2
-					Require DistroDeployPrepare
-					DistroDeployPrepare --scan-deploy-projects
-				fi
 				return 0
 			;;
 			--print-selected)
