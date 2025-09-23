@@ -175,6 +175,13 @@ public final class Distro {
 		    true//
 	    );
 	}
+	{
+	    Utils.save(//
+		    context.console, //
+		    outputTarget.resolve("distro-build-sequence.txt"), //
+		    this.sequenceProjects.stream().map(Project::projectFullName)//
+	    );
+	}
     }
 
     public boolean buildPrepareIndexFromSource(final Path outputRoot, final Path sourceRoot) throws Exception {
