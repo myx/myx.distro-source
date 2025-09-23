@@ -26,7 +26,7 @@ fi
 
 
 if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/source-cache/enhance" ] ; then
-	echo "⛔ ERROR: MDSC_CACHED is invalid or not set!" >&2
+	echo "⛔ ERROR: MDSC_CACHED is invalid or not set: $MDSC_CACHED" >&2
 	return 1
 fi
 
