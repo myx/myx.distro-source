@@ -197,12 +197,54 @@ public class Repository {
 	    final Collection<String> lines = new LinkedHashSet<>();
 	    for (final Project project : this.byName.values()) {
 		lines.add(project.getFullName() + ' ' + project.name);
+		for (final OptionListItem item : project.getRequires()) {
+		    item.fillList(project.getFullName() + ' ', lines);
+		}
+	    }
+	    Utils.save(//
+		    context.console, repositoryOutput.resolve("repository-requires.txt"), //
+		    lines.stream() //
+	    );
+	}
+	if (full) {
+	    // final Collection<String> lines = new TreeSet<>();
+	    final Collection<String> lines = new LinkedHashSet<>();
+	    for (final Project project : this.byName.values()) {
+		lines.add(project.getFullName() + ' ' + project.name);
 		for (final OptionListItem item : project.getProvides()) {
 		    item.fillList(project.getFullName() + ' ', lines);
 		}
 	    }
 	    Utils.save(//
 		    context.console, repositoryOutput.resolve("repository-provides.txt"), //
+		    lines.stream() //
+	    );
+	}
+	if (full) {
+	    // final Collection<String> lines = new TreeSet<>();
+	    final Collection<String> lines = new LinkedHashSet<>();
+	    for (final Project project : this.byName.values()) {
+		lines.add(project.getFullName() + ' ' + project.name);
+		for (final OptionListItem item : project.getDeclares()) {
+		    item.fillList(project.getFullName() + ' ', lines);
+		}
+	    }
+	    Utils.save(//
+		    context.console, repositoryOutput.resolve("repository-declares.txt"), //
+		    lines.stream() //
+	    );
+	}
+	if (full) {
+	    // final Collection<String> lines = new TreeSet<>();
+	    final Collection<String> lines = new LinkedHashSet<>();
+	    for (final Project project : this.byName.values()) {
+		lines.add(project.getFullName() + ' ' + project.name);
+		for (final OptionListItem item : project.getKeywords()) {
+		    item.fillList(project.getFullName() + ' ', lines);
+		}
+	    }
+	    Utils.save(//
+		    context.console, repositoryOutput.resolve("repository-keywords.txt"), //
 		    lines.stream() //
 	    );
 	}
