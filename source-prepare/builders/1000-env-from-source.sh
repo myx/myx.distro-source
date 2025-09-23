@@ -24,16 +24,9 @@ if [ ! -d "$MDSC_SOURCE" ] ; then
 	return 1
 fi
 
-
 if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/source-cache/enhance" ] ; then
-	echo "⛔ ERROR: MDSC_CACHED is invalid or not set: $MDSC_CACHED" >&2
+	echo "⛔ ERROR: MDSC_CACHED is invalid or not set!" >&2
 	return 1
 fi
-
-mkdir -p "$MMDAPP/.local/source-cache/changed"
-mkdir -p "$MMDAPP/.local/source-cache/enhance"
-mkdir -p "$MMDAPP/.local/source-cache/sources"
-
-echo "$BUILD_STAMP" > "$MMDAPP/.local/source-cache/build-time-stamp.txt"
 
 Distro DistroSourcePrepare --ingest-distro-index-from-source
