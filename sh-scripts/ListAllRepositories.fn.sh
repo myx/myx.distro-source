@@ -35,7 +35,7 @@ ListAllRepositories(){
 	done
 
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -n "$MDSC_CACHED" ] ; then
-		local cacheFile="$MDSC_CACHED/repository-names.txt"
+		local cacheFile="$MDSC_CACHED/distro-namespaces.txt"
 		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using cached ($MDSC_OPTION)" >&2

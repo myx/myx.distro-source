@@ -125,7 +125,7 @@ public final class Distro {
 		}
 	    }
 
-	    Files.write(outputTarget.resolve("repository-names.txt"), repositoryNames, StandardCharsets.UTF_8);
+	    Files.write(outputTarget.resolve("distro-namespaces.txt"), repositoryNames, StandardCharsets.UTF_8);
 	}
 
 	if (deep) {

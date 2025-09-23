@@ -76,10 +76,22 @@ DistroSourcePrepare(){
 
 			cp -f "$INGEST_TIMESTAMP" "$INDEX_ROOT/build-time-stamp.txt"
 
-			cat "$ALL_NAMESPACES" > "$INDEX_ROOT/repository-names.txt"
-			cat "$ALL_PROJECTS" > "$INDEX_ROOT/all-project-names.txt"
+			cat "$ALL_NAMESPACES" > "$INDEX_ROOT/distro-distro-namespaces.txt"
+			cat "$ALL_PROJECTS" > "$INDEX_ROOT/all-project-names.txt" # <<< this is not needed and not used, sequence is better
 			cat "$ALL_CHANGED" > "$INDEX_ROOT/changed-project-names.txt"
 			return 0
+		;;
+		--build-project-metadata)
+			shift
+			local inf
+			cat "$MMDAPP/.local/source-cache/all-projects.index.txt" \
+			| while IFS= read -r inf; do
+				(
+					[ -z "$MDSC_DETAIL" ] || echo "| 📑 BuildSourceProjectMedatata.include: project: $inf" >&2
+					inf="$MMDAPP/.local/source-cache/sources/$inf/project.inf"
+					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ReadSourceProjectMetadata.include"
+				)
+			done
 		;;
 		--check-ensure-index)
 			set +e ; return 1

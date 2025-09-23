@@ -534,7 +534,7 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 	    throw new IllegalArgumentException("distro: Path " + distroRoot + " does not exsist or not a directory!");
 	}
 
-	final List<String> repositoryNames = Files.readAllLines(distroRoot.resolve("repository-names.txt"));
+	final List<String> repositoryNames = Files.readAllLines(distroRoot.resolve("distro-namespaces.txt"));
 
 	for (final String repositoryName : repositoryNames) {
 	    final Path repositoryRoot = distroRoot.resolve(repositoryName);

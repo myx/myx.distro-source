@@ -2,36 +2,43 @@
 # ^^^ for syntax checking in the editor only
 
 
-  local inf="$1"
-  [ -r "$inf" ] || return 1
+local inf="${inf:-$1}"
+[ -r "$inf" ] || return 1
 
-  local line sep key value continued
+local line key continued
 
-  while IFS= read -r line || [ -n "$line" ]; do
-    case "$line" in
-      ''|\#*|\!*) continue ;;
-    esac
+while IFS= read -r line || [ -n "$line" ]; do
+	case "$line" in
+		\#*|\!*) 
+	        # skip comments
+			continue 
+		;;
+		*\\)
+			continued="${continued}${line%\\}"
+			continue
+		;;
+		*)
+			[ -z "${continued}" ] || {
+				line="${continued}${line}"
+				continued=""
+			}
+		;;
+	esac
 
-    if printf '%s' "$line" | grep -q '\\$'; then
-      continued="${continued} ${line%\\}"
-      continue
-    else
-      line="${continued} $line"
-      continued=""
-    fi
+	key="$(
+		printf '%s' "${line%%[:=]*}" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+	)"
 
-    sep="$(printf '%s' "$line" | grep -o '[:=]' | head -1)"
-    key="$(printf '%s' "$line" | cut -d"$sep" -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-    value="$(printf '%s' "$line" | cut -d"$sep" -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+	case "$key" in
+	Name|Requires|Provides|Declares|Keywords)
+		printf '%s=%s\n' "$key" "$( 
+			printf '%s' "${line#*[:=]}" \
+			| sed 's/^[[:space:]]*//; s/[[:space:]][[:space:]]*/ /g; s/[[:space:]]*$//; s/\\\\/\\/g; s/\\:/\:/g; s/\\=/\=/g' \
+			| tr -s ' '
+		)"
+	;;
+	esac
 
-    case "$key" in
-      Name|Requires|Provides|Declares|Keywords)
-        value="$(printf '%s' "$value" \
-          | sed -e 's/\\\\/\\/g' -e 's/\\:/\:/g' -e 's/\\=/\=/g')"
-        printf '%s=%s\n' "$key" "$(printf '%s' "$value" | tr -s ' ')"
-        ;;
-    esac
+done < "$inf"
 
-  done < "$inf"
-
-  return 0
+return 0
