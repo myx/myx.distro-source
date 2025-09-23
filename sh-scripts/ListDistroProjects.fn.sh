@@ -55,8 +55,8 @@ ListDistroProjects(){
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 						local cacheFile="$MDSC_CACHED/all-project-names.txt"
-						if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
-							( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ) ; then
+						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 							[ -z "$MDSC_DETAIL" ] || echo "| ListDistroProjects: using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0

@@ -10,7 +10,7 @@ mkdir -p "$MMDAPP/output/distro"
 	DistroSourceCommand \
 		-v \
 		--output-root "$MMDAPP/output" \
-		--source-root "$MMDAPP/cached/sources" \
+		--source-root "$MMDAPP/.local/source-cache/sources" \
 		--cached-root "$MMDAPP/output/cached" \
 		--import-from-source --select-all-from-source \
 		--print ''  -v \

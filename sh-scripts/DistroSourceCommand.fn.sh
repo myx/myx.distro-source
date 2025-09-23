@@ -17,35 +17,39 @@ fi
 #
 DistroSourceCommand(){
 
-	[ -z "$MDSC_DETAIL" ] || set -x
 	local MDSC_OUTPUT="${MDSC_OUTPUT:-$MMDAPP/output}"
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local MDSC_CACHED="${MDSC_CACHED:-$MMDAPP/output/cached}"
 
-	if [ "$MDLT_ORIGIN" = "$MMDAPP/source" ] ; then
-		local DIR_OUT="$MDSC_CACHED/myx/myx.distro-source"
-		local DIR_SRC="$MDSC_SOURCE/myx/myx.distro-source"
-	else
-		local DIR_OUT="$MDLT_ORIGIN/cached/myx/myx.distro-source"
-		local DIR_SRC="$MDLT_ORIGIN/myx/myx.distro-source"
-	fi
+	local CHECK_DIR
 
-	[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
-	set +x
-
+	# [ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || { echo "⛔ ERROR: DistroSourceCommand." >&2; set +e; return 1 }
 
 	set -e
+	[ full != "$MDSC_DETAIL" ] || set -x
 
-	if [ -f "$DIR_OUT/bin/ru/myx/distro/DistroSourceCommand.class" ] ; then
-		java -cp "$DIR_OUT/bin" ru.myx.distro.DistroSourceCommand \
+	CHECK_DIR="$MDLT_SOURCE/myx/myx.distro-source"
+	if [ -f "$CHECK_DIR/bin/ru/myx/distro/DistroSourceCommand.class" ] ; then
+		java -cp "$CHECK_DIR/bin" ru.myx.distro.DistroSourceCommand \
 			--output-root "$MDSC_OUTPUT" \
 			--source-root "$MDSC_SOURCE" \
 			--cached-root "$MDSC_CACHED" \
 			"$@"
 		return 0
 	fi
-	
-	if [ -f "$DIR_SRC/bin/ru/myx/distro/DistroSourceCommand.class" ] ; then
+
+	CHECK_DIR="$MDLT_ORIGIN/temp/javac/myx/myx.distro-source/java"
+	if [ -f "$CHECK_DIR/ru/myx/distro/DistroSourceCommand.class" ] ; then
+		java -cp "$CHECK_DIR" ru.myx.distro.DistroSourceCommand \
+			--output-root "$MDSC_OUTPUT" \
+			--source-root "$MDSC_SOURCE" \
+			--cached-root "$MDSC_CACHED" \
+			"$@"
+		return 0
+	fi
+
+	CHECK_DIR="$MDSC_CACHED/myx/myx.distro-source"
+	if [ -f "$DIR_SRC/java/ru/myx/distro/DistroSourceCommand.class" ] ; then
 		java -cp "$DIR_SRC/bin" ru.myx.distro.DistroSourceCommand \
 			--output-root "$MDSC_OUTPUT" \
 			--source-root "$MDSC_SOURCE" \
@@ -54,7 +58,8 @@ DistroSourceCommand(){
 		return 0
 	fi
 	
-	if [ -f "$DIR_SRC/java/ru/myx/distro/DistroSourceCommand.java" ] ; then
+	CHECK_DIR="$MDLT_ORIGIN/myx/myx.distro-source"
+	if [ -f "$CHECK_DIR/java/ru/myx/distro/DistroSourceCommand.java" ] ; then
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassClean.include"
 		RunJavaClassClean \
 			"myx/myx.distro-source" \

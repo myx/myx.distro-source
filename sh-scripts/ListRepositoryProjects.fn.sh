@@ -73,8 +73,8 @@ ListRepositoryProjects(){
 
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -n "$MDSC_CACHED" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/project-names.txt"
-		if [ -f "$cacheFile" ] && \
-			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $repositoryName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0

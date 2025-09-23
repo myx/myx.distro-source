@@ -198,7 +198,7 @@ DistroSourceEnsureProvidesOwnedFile(){
 	local cacheFile="$MDSC_CACHED/distro-provides.txt"
 	if [ -f "$checkFile" ] ; then
 		if [ -f "$cacheFile" ] ; then
-			if [ "$( date -u -r "$checkFile" "+%Y%m%d%H%M%S" )" -lt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] ; then
+			if [ ! "$cacheFile" -ot "$checkFile" ] ; then
 				MDSC_IDOPRV_NAME="$cacheFile"
 				return 0
 			fi

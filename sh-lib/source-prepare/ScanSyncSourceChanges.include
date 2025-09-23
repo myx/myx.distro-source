@@ -10,18 +10,12 @@ fi
 
 set -e
 
-local repositoryName projectName
-{
-	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
-	| while IFS= read -r repositoryName; do
-		printf '%s/repository.inf\n' "$repositoryName"
-	done
+[ ! -t 0 ] || {
+	echo "⛔ ERROR: $MDSC_CMD: ScanSyncSourceChanges.include: needs list on stdin pipe!" >&2
+	set +e ; return 1
+}
 
-	while IFS= read -r projectName; do
-		printf '%s/\n' "$projectName"
-	done
-} \
-| rsync -rtpiO $dryRun --delete --delete-excluded \
+rsync -rtpiO $dryRun --delete --delete-excluded \
 	--out-format='%i %n' \
 	--files-from=- \
 	--relative \
@@ -34,5 +28,5 @@ local repositoryName projectName
 	--exclude='CVS' \
 	--exclude='node_modules/' \
 	--exclude='__pycache__/' \
-	"$MMDAPP/source/" "$MMDAPP/cached/sources/" \
+	"$MMDAPP/source/" "$MMDAPP/.local/source-cache/sources/" \
 | grep '^[<>cd]'

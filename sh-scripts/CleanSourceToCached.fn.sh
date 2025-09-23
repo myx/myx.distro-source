@@ -10,7 +10,8 @@ fi
 CleanSourceToCached(){
 
 	echo "CleanSourceToCached: 🧻 Cleaning Output directory" >&2
-	rm -rf "$MMDAPP/cached"
+	rm -rf "$MMDAPP/cached" # << old location
+	rm -rf "$MMDAPP/.local/source-cache"
 	
 	if type DistroSystemContext >/dev/null 2>&1 ; then
 		echo "CleanSourceToCached: 🧹 Cleaning DistroShell in-line caches" >&2

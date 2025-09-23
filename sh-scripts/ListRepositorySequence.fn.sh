@@ -47,8 +47,8 @@ ListRepositorySequence(){
 
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$repositoryName/repository-build-sequence.txt"
-		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
-			( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0

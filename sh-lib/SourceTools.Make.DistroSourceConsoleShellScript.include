@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+cat <<- 'DISTROCONSOLE'
+	#!/usr/bin/env bash
+
+	set -e
+
+	if [ -z "$MMDAPP" ] || [ ! -d "$MMDAPP" ] ; then
+		MMDAPP="$( ( cd $(dirname "$0") ; pwd ) )"
+	fi
+
+	[ -d "$MMDAPP/.local" ] || ( echo "⛔ ERROR: expecting '$MMDAPP/.local' directory." >&2 && exit 1 )
+
+	MDLT_CONSOLE_ORIGIN="$( ( \
+		. "$MMDAPP/.local/MDLT.settings.env" ; \
+		echo "${MDLT_CONSOLE_ORIGIN:-.local}" \
+	) )"
+	MDLC_INMODE="${MDLT_CONSOLE_ORIGIN#$MMDAPP/}"
+	case "$MDLC_INMODE" in
+		.local)
+			export MDLT_ORIGIN="$MMDAPP/.local"
+		;;
+		source)
+			if [ -f "$MMDAPP/source/myx/myx.distro-system/sh-lib/SystemContext.include" ] ; then
+				export MDLT_ORIGIN="$MMDAPP/$MDLC_INMODE"
+			else
+				export MDLT_ORIGIN="$MMDAPP/.local"
+			fi
+		;;
+		/*)
+			if [ -f "$MDLC_INMODE/myx/myx.distro-system/sh-lib/SystemContext.include" ] ; then
+				export MDLT_ORIGIN="$MDLC_INMODE"
+			else
+				export MDLT_ORIGIN="$MMDAPP/.local"
+			fi
+		;;
+		*)
+			export MDLT_ORIGIN="$MMDAPP/.local"
+		;;
+	esac
+	if [ ! -f "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include" ] ; then
+		echo "⛔ ERROR: SourceContext.SetInputSpec: can't find/detect origin, spec: $MDLT_CONSOLE_ORIGIN, origin: $MDLT_ORIGIN" >&2
+		exit 1
+	fi
+
+	cd "$MMDAPP"
+	export MMDAPP
+
+	if [ "$1" == "--non-interactive" ] ; then
+		shift
+		{
+			echo MDSC_ARGUMENTS="$@"
+			echo ". '$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc'"
+			cat
+		} | bash -s
+		exit 0
+	fi
+	
+	export MDSC_ARGUMENTS="$@"
+	bash --rcfile "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc" -i
+DISTROCONSOLE

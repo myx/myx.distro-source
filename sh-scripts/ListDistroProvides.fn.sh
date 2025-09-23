@@ -142,9 +142,7 @@ ListDistroProvides(){
 				if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] ; then
 					echo "| $MDSC_CMD: --all-provides extracting from source (java) ($MDSC_OPTION)" >&2
 			
-					Require DistroSourceCommand
-					
-					DistroSourceCommand \
+					Distro DistroSourceCommand \
 						-q \
 						--import-from-source \
 						--print-all-provides-separate-lines
@@ -157,11 +155,9 @@ ListDistroProvides(){
 				
 				echo "| $MDSC_CMD: --all-provides extracting from source (shell) ($MDSC_OPTION)" >&2
 
-				Require ListAllRepositories
 				Require ListRepositoryProvides
-			
 				local repositoryName
-				ListAllRepositories --all-repositories | while read -r repositoryName ; do
+				Distro ListAllRepositories --all-repositories | while read -r repositoryName ; do
 					ListRepositoryProvides $MDSC_NO_CACHE $MDSC_NO_INDEX $repositoryName || true
 				done
 	
@@ -246,23 +242,23 @@ ListDistroProvides(){
 			
 					Require DistroSourceCommand
 					
-					local indexProvides="` \
+					local indexProvides="$( \
 						DistroSourceCommand \
 							-q \
 							--import-from-source \
 							--select-all \
 							--print-provides-separate-lines \
 						| cat -n | sort -k 2
-					`"
+					)"
 
-					local indexSequence="` \
+					local indexSequence="$( \
 						DistroSourceCommand \
 							-q \
 							--import-from-source \
 							--select-all \
 							--print-sequence-separate-lines \
 						| cat -n | sort -k 3
-					`"
+					)"
 					
 					join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexProvides" ) <( echo "$indexSequence" ) \
 					| sort -n -k 1,2 | cut -d" " -f 3-
@@ -272,11 +268,9 @@ ListDistroProvides(){
 
 				echo "| $MDSC_CMD: --all-provides-merged extracting from source (shell) ($MDSC_OPTION)" >&2
 
-				Require ListDistroSequence
 				Require ListProjectProvides
-		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+				for sequenceProjectName in $( Distro ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
 					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
@@ -391,7 +385,6 @@ ListDistroProvides(){
 				fi
 				
 				Require ListProjectProvides
-		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
 					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"

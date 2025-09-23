@@ -21,7 +21,7 @@ CompileCachedJavaProject(){
 		RunJavaClassSource \
 			myx/myx.distro-source \
 			ru.myx.distro.prepare.MakeCompileSources \
-			--source-root "$MMDAPP/cached/sources" \
+			--source-root "$MMDAPP/.local/source-cache/sources" \
 			--output-root "$MMDAPP/output" \
 			--import-from-source \
 			--project "$projectName" \
@@ -29,7 +29,7 @@ CompileCachedJavaProject(){
 
 	return 0
 
-	rsync -azivC --exclude '*.class' --exclude '.*' --delete "$MMDAPP/cached/sources/$projectName/java/" "$MMDAPP/output/cached/$projectName/java" 2>&1 \
+	rsync -azivC --exclude '*.class' --exclude '.*' --delete "$MMDAPP/.local/source-cache/sources/$projectName/java/" "$MMDAPP/output/cached/$projectName/java" 2>&1 \
 	| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
 	
 	( \

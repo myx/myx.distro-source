@@ -20,14 +20,14 @@ PrepareBuildDependencyIndex(){
 	local projectName projectClasses projectSources
 	for projectName in $projectList ; do
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
-		local projectSources="$MMDAPP/cached/sources/$projectName/java"
+		local projectSources="$MMDAPP/.local/source-cache/sources/$projectName/java"
 		local javaClassPath="$projectClasses:$javaClassPath"
 		local javaSourcePath="$projectSources:$javaSourcePath"
 	done
 
 	for projectName in $projectList ; do
 		local projectClasses="$MMDAPP/output/cached/$projectName/java"
-		local projectSources="$MMDAPP/cached/sources/$projectName/java"
+		local projectSources="$MMDAPP/.local/source-cache/sources/$projectName/java"
 		local projectQueue="$( find "$projectSources" -type f -name '*.java' | sed 's|$projectSources||g' )"
 		if [ -n "${projectQueue:0:1}" ] ; then
 			local checkSourceFile checkClassFile
@@ -59,7 +59,7 @@ PrepareBuildDependencyIndex(){
 	(
 		DistroSourceCommand \
 			-v \
-			--source-root "$MMDAPP/cached/sources" \
+			--source-root "$MMDAPP/.local/source-cache/sources" \
 			--output-root "$MMDAPP/output" \
 			--import-from-source --select-all-from-source \
 			--print ''  -v \

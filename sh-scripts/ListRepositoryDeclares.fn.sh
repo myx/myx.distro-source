@@ -109,10 +109,8 @@ ListRepositoryDeclares(){
 	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$repositoryName/repository-declares.txt"
-			
-			if [ -f "$cacheFile" ] && \
-				( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] )
-			then
+			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+			if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryDeclares: using cached ($MDSC_OPTION)" >&2
 				cat "$cacheFile"
 				return 0
@@ -145,9 +143,7 @@ ListRepositoryDeclares(){
 	if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
 		echo "ListRepositoryDeclares: extracting from source (java) ($MDSC_OPTION)" >&2
 
-		Require DistroSourceCommand
-		
-		DistroSourceCommand \
+		Distro DistroSourceCommand \
 			-q \
 			--import-from-source \
 			--select-repository "$repositoryName" \
@@ -156,11 +152,10 @@ ListRepositoryDeclares(){
 		return 0
 	fi
 	
-	Require ListRepositoryProjects
 	Require ListProjectDeclares
 
 	local projectName
-	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
+	Distro ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
 		ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
 	done
 }

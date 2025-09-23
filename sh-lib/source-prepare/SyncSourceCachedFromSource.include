@@ -1,0 +1,113 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to cached ($MDSC_OPTION)" >&2
+
+mkdir -p "$MMDAPP/.local/source-cache/changed"
+
+local ALL_CHANGED="$MMDAPP/.local/source-cache/all-changed.index.txt"
+local NEW_CHANGED="$MMDAPP/.local/source-cache/new-changed.index.txt"
+
+local NEW_CONTENT="$MMDAPP/.local/source-cache/new-content.index.txt"
+
+local TMP_SUFFIX="$$.tmp"
+
+local ALL_PROJECTS="$MMDAPP/.local/source-cache/all-projects.index.txt"
+local NEW_PROJECTS="$MMDAPP/.local/source-cache/new-projects.index.txt.$TMP_SUFFIX"
+
+local ALL_NAMESPACES="$MMDAPP/.local/source-cache/all-namespaces.index.txt"
+local NEW_NAMESPACES="$MMDAPP/.local/source-cache/new-namespaces.index.txt.$TMP_SUFFIX"
+
+local FIFO="$MMDAPP/.local/temp/scan-source-changes.fifo.$TMP_SUFFIX"
+mkfifo "$FIFO"
+exec 3<> "$FIFO"   # fd 3 is now the pipe
+rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
+
+local projectName
+
+{
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
+	| tee "$NEW_PROJECTS" /dev/fd/2 2>&3 || : # to awk
+	echo >&3 # end-of-stream for awk
+
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
+	| tee "$NEW_NAMESPACES" | while IFS= read -r repositoryName; do
+		printf '%s/repository.inf\n' "$repositoryName"
+	done
+} \
+| {
+	set -- --execute-sync
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSyncSourceChanges.include"
+} \
+| if [ -n "$MDSC_DETAIL" ]; then
+	if [ "full" = "$MDSC_DETAIL" ]; then
+		tee "$NEW_CONTENT" /dev/fd/2 || :
+	else
+		fgrep -v '>f..t.' \
+		| tee "$NEW_CONTENT" /dev/fd/2 || :
+	fi
+else
+	tee "$NEW_CONTENT"
+fi \
+| cut -d' ' -f2 \
+| awk -v FD=3 '
+	BEGIN {
+		while (getline proj < ("/dev/fd/" FD)) {
+			if (proj == "") break
+			projects[proj] = 1
+		}
+	}
+	{
+		for (p in projects)
+			if (index($0, p"/") == 1)
+			changed[p] = 1
+	}
+	END {
+		for (p in changed) print p
+	}
+' \
+| sort -u \
+| (
+	touch "$ALL_CHANGED"
+	: > "$NEW_CHANGED"
+
+	cd "$MMDAPP/.local/source-cache/changed"
+
+	while IFS= read -r projectName; do
+		printf '%s\n' "$projectName" >> "$NEW_CHANGED"
+		if [ -f "$projectName" ]; then
+			printf '🔂 scan/sync: updated: %s\n' "$projectName" >&2
+			touch "$projectName"
+			continue
+		fi
+		printf '🔄 scan/sync: changed: %s\n' "$projectName" >&2
+		mkdir -p "$( dirname "$projectName" )"					
+		touch "$projectName"
+	done
+)
+
+# 4) close fd 3
+exec 3>&-
+
+if [ -s "$NEW_CHANGED" ]; then
+
+	# update source ingest timestamp
+
+	date -u "+%Y%m%d%H%M%S" > "$MMDAPP/.local/source-cache/source-ingest.timestamp.txt"
+
+	# update all-changed index
+
+	local TMP_CHANGED="$ALL_CHANGED.$TMP_SUFFIX"
+	grep -Fvx -f "$NEW_CHANGED" "$ALL_CHANGED" > "$TMP_CHANGED" 2>/dev/null || :
+	cat "$NEW_CHANGED" >> "$TMP_CHANGED"
+	mv "$TMP_CHANGED" "$ALL_CHANGED"
+	chmod 664 "$ALL_CHANGED" 2>/dev/null || true
+
+	# update all-projects all-namespaces lists
+	
+	mv "$NEW_PROJECTS" "$ALL_PROJECTS"
+	mv "$NEW_NAMESPACES" "$ALL_NAMESPACES"
+	touch "$ALL_PROJECTS" "$ALL_NAMESPACES"
+else
+	rm -rf "$NEW_PROJECTS" "$NEW_NAMESPACES"
+fi

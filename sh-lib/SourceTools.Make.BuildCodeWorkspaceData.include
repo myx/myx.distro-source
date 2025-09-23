@@ -1,0 +1,163 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+local WS_NAME="$( basename "$MMDAPP" ).code-workspace"
+local WS_FILE="$MMDAPP/$WS_NAME"
+
+local REPOS="$( 
+	local ITEM
+	echo 'DistroSourceTools.fn.sh --list-namespace-roots' \
+	| "$MMDAPP/DistroSourceConsole.sh" --non-interactive \
+	| while read -r ITEM ; do
+		printf \
+			'{ "path" : "%s", "name" : "%s" },\n' \
+			"$MMDAPP/source/$ITEM/" \
+			"📁 Repository Root: $ITEM"
+	done
+)"
+
+local VSE_PATH="$MMDAPP/.local/.vscode/browse"
+local VSEO_PATH="$VSE_PATH/📦 Browse - output"
+local VSES_PATH="$VSE_PATH/📝 Browse - source"
+
+local VSS_PATH="$MMDAPP/.local/.vscode/status"
+local VSSA_PATH="$VSS_PATH/⏩ Workspace - Actions"
+local VSSB_PATH="$VSS_PATH/🧱 Workspace - Build"
+local VSSR_PATH="$VSS_PATH/🩺 Workspace - Recover"
+
+mkdir -p \
+	"$VSE_PATH" \
+	"$VSSB_PATH" \
+	"$VSSR_PATH" \
+
+mkdir -p "$MMDAPP/actions"
+ln -sfn "$MMDAPP/actions" "$VSSA_PATH"
+
+if [ -d "$MMDAPP/output" ]; then
+	ln -sfn "$MMDAPP/output" "$VSEO_PATH"
+else
+	[ ! -L "$VSEO_PATH" ] || rm "$VSEO_PATH"		
+fi
+ln -sfn "$MMDAPP/source" "$VSES_PATH"
+
+ln -sfn "$MMDAPP/.local/source-cache/build-time-stamp.txt" "$VSSB_PATH/LatestBuildTimeStamp.txt"
+
+ln -sfn "$MMDAPP/.local/source-cache/enhance" "$VSSB_PATH/basic-indices"
+
+echo "Hello! This is generated folder. It contains symlinks to some internal directories that are used in this workspace." \
+| DistroSourceTools --make-static-non-editable "$VSE_PATH/🔍 README.md"
+
+echo "Hello! This is generated folder. Some content may appear here as result of operations executed." \
+| DistroSourceTools --make-static-non-editable "$VSS_PATH/🛠️ README.md"
+
+echo "Hello! This is generated folder. Here you may find build logs and inventory reports after builds." \
+| DistroSourceTools --make-static-non-editable "$VSSB_PATH/🧱 README.md"
+
+echo "Hello! This is generated folder. Here you may find commands and handy information to fix, reinstall or export your workspace." \
+| DistroSourceTools --make-static-non-editable "$VSSR_PATH/🩺 README.md"
+
+cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
+{
+	"folders": [ 
+		$REPOS
+		{ 
+			"path": "$MMDAPP/.local/.vscode/browse",
+			"name": "🔍 Browse"
+		},
+		{ 
+			"path": "$MMDAPP/.local/.vscode/status",
+			"name": "🛠️ Workspace"
+		}
+	],
+	"settings": {
+		"search.followSymlinks": false,
+		"extensions.showRecommendationsOnlyOnDemand": true,
+		"files.exclude": {
+			"📦 Browse: output/**": true,
+			"📝 Browse: source/**": true,
+			"**/.git": true
+		},
+		"search.exclude": {
+			"📦 Browse: output/**": true,
+			"📝 Browse: source/**": true,
+			"**/.git": true
+		},
+		"files.watcherExclude": {
+			"📦 Browse: output/**": true,
+			"📝 Browse: source/**": true
+		}
+	},
+	"tasks" : {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "🖥️ Start Source Console...",
+				"type": "shell",
+				"command": "bash '$MMDAPP/DistroSourceConsole.sh'",
+				"group": { 
+					"kind": "build", 
+					"isDefault": true 
+				}
+			},
+			{
+				"label": "⬇️ Pull/Sync All Known Sources...",
+				"type": "shell",
+				"command": "bash -c 'echo \"Distro DistroImageSync --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+				"group": { 
+					"kind": "build", 
+					"isDefault": true 
+				}
+			},
+			{
+				"label": "🛫 Ingest Sources, Build Index Snapshot...",
+				"type": "shell",
+				"command": "bash -c 'echo \"BuildCachedFromSource.fn.sh\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+				"group": { 
+					"kind": "build", 
+					"isDefault": true 
+				}
+			},
+			{
+				"label": "🛫 Ingest Source Changes...",
+				"type": "shell",
+				"command": "bash -c 'echo \"Distro DistroSourcePrepare --ingest-distro-index-from-source\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+				"group": { 
+					"kind": "build", 
+					"isDefault": true 
+				}
+			},
+			{
+				"label": "🛠️ Update Local Tools...",
+				"type": "shell",
+				"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --upgrade-installed-tools",
+				"group": { 
+					"kind": "build", 
+					"isDefault": true 
+				}
+			}
+		]
+	}
+}
+CODEWORKSPACE
+
+chmod 640 "$MMDAPP/$WS_NAME"
+
+mkdir -p "$MMDAPP/.vscode/"{extensions,user-data}
+
+{
+	echo '#!/usr/bin/env bash'
+	echo 'cd "\$(dirname "\$0")"'
+	echo 'code \'
+	echo '--extensions-dir "\$PWD/.vscode/extensions" \'
+	echo '--user-data-dir   "\$PWD/.vscode/user-data" \'
+	echo '"\$PWD/project.code-workspace"'
+} > "$MMDAPP/start.sh"
+
+chmod +x "$MMDAPP/start.sh"
+
+if [ "$1" != "--quiet" ] ; then
+	printf \
+		"\nNote: $WS_NAME created, you can start Code with:\n\t%s\n\n" \
+		"$MMDAPP/$WS_NAME" \
+	>&2
+fi

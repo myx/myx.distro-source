@@ -8,12 +8,15 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListChangedSourceProjects(){
+
+	set -e
+
 	if [ "$1" = "--no-cache" ] ; then
 		shift
 	else
-		local cacheFile="$MDSC_CACHED/changed-project-names.txt"
-		if [ -n "$MDSC_CACHED" ] && [ -f "$cacheFile" ] && \
-			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+		local cacheFile="$MMDAPP/.local/source-cache/all-changed.index.txt"
+		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
@@ -24,19 +27,25 @@ ListChangedSourceProjects(){
 			return 0
 		fi
 	fi
-	
-	Require ListDistroProjects
 
-	if [ -d "$MDSC_CACHED/changed" ] ; then
+	if [ -d "$MMDAPP/.local/source-cache/changed" ] ; then
+		[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: intersecting cached/changed with projects" >&2
 		local projectName=""
 		for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
-			if [ -f "$MDCS_CACHED/changed/$projectName" ] ; then
+			if [ -f "$MMDAPP/.local/source-cache/changed/$projectName" ] ; then
 				echo "$projectName"
 			fi
 		done	
 		return 0
 	fi
 	
+	if [ -d "$MMDAPP/.local/source-cache/changed" ]; then
+		[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: using find in cached/changed" >&2
+		( cd "$MMDAPP/.local/source-cache/changed" ; find . -type f -print0 | xargs -0 ls -1 -tr -- | sed 's|^\./||'	)
+		return 0
+	fi
+	
+	[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: source-only mode, listing all projects" >&2
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include"
 }
 

@@ -37,74 +37,48 @@ DistroSourcePrepare(){
 		;;
 		--scan-source-changes)
 			shift
-			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSyncSourceChanges.include" < /dev/null
+			{
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
+				| while IFS= read -r repositoryName; do
+					printf '%s/repository.inf\n' "$repositoryName"
+				done
+
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include"
+			} \
+			| . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSyncSourceChanges.include"
 			return 0
 		;;
-		--sync-cached-from-source) # ...-for-stdin-project-list)
+		--sync-cached-from-source)
 			shift
-			[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to cached ($MDSC_OPTION)" >&2
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/SyncSourceCachedFromSource.include"
+			return 0
+		;;
+		--ingest-distro-index-from-source)
+			shift
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/SyncSourceCachedFromSource.include"
 
-			local FIFO="$MMDAPP/.local/temp/scan-source-changes-$$.fifo"
-			mkfifo "$FIFO"
-			exec 3<> "$FIFO"   # fd 3 is now the pipe
-			rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
+			local INDEX_ROOT="$MMDAPP/.local/source-cache/enhance"
+			mkdir -p "$INDEX_ROOT"
 
-			local projectName
+			local NEW_CHANGED="$MMDAPP/.local/source-cache/new-changed.index.txt"
+			if [ ! -s "$NEW_CHANGED" ]; then
+				echo "> $MDSC_CMD IngetDistroIndexFromSource.include: 🫙 no changes." >&2
+				return 0
+			fi
 
-			{
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
-				| tee /dev/fd/2 2>&3 || : # to awk
-				echo >&3 # end-of-stream for awk
-			} \
-			| {
-				set -- --execute-sync
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSyncSourceChanges.include"
-			} \
-			| if [ -n "$MDSC_DETAIL" ]; then
-				if [ "full" = "$MDSC_DETAIL" ]; then
-					tee /dev/fd/2 || :
-				else
-					fgrep -v '>f..t.' \
-					| tee /dev/fd/2 || :
-				fi
-			else
-				cat
-			fi \
-			| cut -d' ' -f2 \
-			| awk -v FD=3 '
-				BEGIN {
-					while (getline proj < ("/dev/fd/" FD)) {
-						if (proj == "") break
-						projects[proj] = 1
-					}
-				}
-				{
-					for (p in projects)
-						if (index($0, p"/") == 1)
-						changed[p] = 1
-				}
-				END {
-					for (p in changed) print p
-				}
-			' \
-			| sort -u \
-			| (
-				mkdir -p "$MMDAPP/cached/changed"
-				cd "$MMDAPP/cached/changed"
-				while IFS= read -r projectName; do
-					if [ -f "$projectName" ]; then
-						printf '🔂 scan/sync: updated: %s\n' "$projectName" >&2
-						continue
-					fi
-					printf '🔄 scan/sync: changed: %s\n' "$projectName" >&2
-					mkdir -p "$( dirname "$projectName" )"					
-					touch "$projectName"
-				done
-			)
+			local NEW_CONTENT="$MMDAPP/.local/source-cache/new-content.index.txt"
 
-			# 4) close fd 3
-			exec 3>&-
+			local ALL_CHANGED="$MMDAPP/.local/source-cache/all-changed.index.txt"
+			local ALL_PROJECTS="$MMDAPP/.local/source-cache/all-projects.index.txt"
+			local ALL_NAMESPACES="$MMDAPP/.local/source-cache/all-namespaces.index.txt"
 
+			local INGEST_TIMESTAMP="$MMDAPP/.local/source-cache/source-ingest.timestamp.txt"
+
+			cp -f "$INGEST_TIMESTAMP" "$INDEX_ROOT/build-time-stamp.txt"
+
+			cat "$ALL_NAMESPACES" > "$INDEX_ROOT/repository-names.txt"
+			cat "$ALL_PROJECTS" > "$INDEX_ROOT/all-project-names.txt"
+			cat "$ALL_CHANGED" > "$INDEX_ROOT/changed-project-names.txt"
 			return 0
 		;;
 		--check-ensure-index)
