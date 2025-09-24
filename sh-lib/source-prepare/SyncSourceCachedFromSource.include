@@ -23,13 +23,12 @@ local NEW_NAMESPACES="$MMDAPP/.local/source-cache/new-namespaces.index.txt.$TMP_
 local FIFO="$MMDAPP/.local/temp/scan-source-changes.fifo.$TMP_SUFFIX"
 mkfifo "$FIFO"
 exec 3<> "$FIFO"   # fd 3 is now the pipe
-rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
 
 local projectName
 
 {
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
-	| tee "$NEW_PROJECTS" /dev/fd/2 2>&3 || : # to awk
+	| tee "$NEW_PROJECTS" "$FIFO" || : # to awk
 	echo >&3 # end-of-stream for awk
 
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
@@ -52,7 +51,7 @@ else
 	tee "$NEW_CONTENT"
 fi \
 | cut -d' ' -f2 \
-| awk -v projectList=/dev/fd/3 '
+| awk -v projectList="$FIFO" '
 	BEGIN {
 		while ((getline proj < projectList) > 0) {
 			if (proj == "") break
@@ -89,6 +88,7 @@ fi \
 	done
 )
 
+rm "$FIFO"         # no more name on disk, pipe lives on via fd 3
 # 4) close fd 3
 exec 3>&-
 
