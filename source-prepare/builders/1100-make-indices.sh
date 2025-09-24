@@ -8,7 +8,9 @@
 [ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
 Distro DistroSourceCommand \
-	-v \
+	-vv \
+	--no-fail \
 	--import-from-source --select-all-from-source \
 	--prepare-source-to-cached-index \
 	--print '' \
+	--fail-if-errors \
