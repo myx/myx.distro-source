@@ -51,11 +51,10 @@ ListRepositoryProvides(){
 			--print-project)
 				shift
 				
-				Require ListRepositorySequence
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+				for sequenceProjectName in $( Distro ListRepositorySequence "$repositoryName" ) ; do
 					ListProjectProvides "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
@@ -63,11 +62,10 @@ ListRepositoryProvides(){
 			--merge-sequence)
 				shift
 				
-				Require ListRepositorySequence
 				Require ListProjectProvides
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+				for sequenceProjectName in $( Distro ListRepositorySequence "$repositoryName" ) ; do
 					ListProjectProvides "$sequenceProjectName" --merge-sequence "$@"
 				done	
 				return 0

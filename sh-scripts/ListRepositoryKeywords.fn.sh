@@ -50,11 +50,10 @@ ListRepositoryKeywords(){
 			--print-project)
 				shift
 				
-				Require ListRepositorySequence
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+				for sequenceProjectName in $( Distro ListRepositorySequence "$repositoryName" ) ; do
 					ListProjectKeywords "$sequenceProjectName" "$@" | sed "s|^|$sequenceProjectName |g"
 				done	
 				return 0
@@ -62,11 +61,10 @@ ListRepositoryKeywords(){
 			--merge-sequence)
 				shift
 				
-				Require ListRepositorySequence
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListRepositorySequence "$repositoryName" ) ; do
+				for sequenceProjectName in $( Distro ListRepositorySequence "$repositoryName" ) ; do
 					ListProjectKeywords "$sequenceProjectName" --merge-sequence "$@"
 				done	
 				return 0
