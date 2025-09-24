@@ -56,61 +56,31 @@ ListDistroSequence(){
 			--all-projects)
 				shift
 				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --all-projects. no extra options allowed" >&2
 					set +e ; return 1
 				fi
 
-				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					
-					local indexFile="$MDSC_CACHED/distro-index.inf"
-					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-							
-							echo "$MDSC_CMD: --all-projects using index ($MDSC_OPTION)" >&2
-
-							local sequenceProject
-							local projectSequence
-							local currentProject
-
-							grep -e "^PRJ-SEQ-" "$indexFile" \
-							| sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' -e 's|\\:|:|g' \
-							| while read -r sequenceProject projectSequence ; do
-								for currentProject in $projectSequence ; do
-									echo "$sequenceProject" "$currentProject"
-								done
-							done | awk '!x[$0]++'
+				if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
+					local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+					if [ -f "$buildDate" ]; then
+						local cacheFile="$MDSC_CACHED/distro-all-sequences.txt"
+						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
+							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-projects using cached ($MDSC_OPTION)" >&2
+							cat "$cacheFile"
 							return 0
 						fi
+
+						echo "| $MDSC_CMD: --all-projects, build sequence, caching ($MDSC_OPTION)" >&2
+						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllSequencesNoCache.include" \
+						| tee "$cacheFile.$$.tmp"
+						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+						return 0
 					fi
 				fi
-				
-				if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
-					echo "$MDSC_CMD: --all-projects extracting from source (java) ($MDSC_OPTION)" >&2
-			
-					Require DistroSourceCommand
-					
-					DistroSourceCommand \
-						-q \
-						--import-from-source \
-						--select-all \
-						--print-sequence-separate-lines
-						
-					return 0
-				fi
-				
-				Require ListDistroSequence
-				Require ListProjectSequence
 
-				local sequenceProjectName
-				local currentProjectName
-				for sequenceProjectName in $( ListDistroSequence --all ) ; do
-					ListProjectSequence "$sequenceProjectName" | while read -r currentProjectName ; do
-						echo "$sequenceProjectName" "$currentProjectName"
-					done
-				done
+				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllSequencesNoCache.include"
 				return 0
 				;;
-
 			*)
 				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
 				set +e ; return 1
