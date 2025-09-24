@@ -3,7 +3,7 @@
 
 [ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to cached ($MDSC_OPTION)" >&2
 
-set -ex
+set -e
 
 mkdir -p "$MMDAPP/.local/source-cache/changed"
 
