@@ -16,15 +16,6 @@ ListRepositoryKeywords(){
 	
 	local MDSC_CMD='ListRepositoryKeywords'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
-
-
-	case "$1" in
-		--internal-print-project-keywords)
-			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
-			return 0
-		;;
-	esac
-
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local repositoryName="$1"
@@ -118,7 +109,7 @@ ListRepositoryKeywords(){
 			fi
 
 			echo "ListRepositoryKeywords: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryKeywords $repositoryName --no-cache | tee "$cacheFile"
+			ListRepositoryKeywords --no-cache $repositoryName | tee "$cacheFile"
 			return 0
 		fi
 		
@@ -132,9 +123,7 @@ ListRepositoryKeywords(){
 				
 				grep "$MTC" "$indexFile" \
 				| sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\:|:|g' \
-				| while read -r LINE ; do
-					ListRepositoryKeywords --internal-print-project-keywords $LINE
-				done
+				| awk '{ for (i=2;i<=NF;i++) print $1, $i }'
 			
 				return 0
 			fi
@@ -144,9 +133,7 @@ ListRepositoryKeywords(){
 	if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
 		echo "ListRepositoryKeywords: extracting from source (java) ($MDSC_OPTION)" >&2
 
-		Require DistroSourceCommand
-		
-		DistroSourceCommand \
+		Distro DistroSourceCommand \
 			-q \
 			--import-from-source \
 			--select-repository "$repositoryName" \
@@ -155,11 +142,10 @@ ListRepositoryKeywords(){
 		return 0
 	fi
 	
-	Require ListRepositoryProjects
 	Require ListProjectKeywords
 
 	local projectName
-	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
+	Distro ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
 		ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
 	done
 }

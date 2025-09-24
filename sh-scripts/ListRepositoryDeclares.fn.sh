@@ -17,13 +17,6 @@ ListRepositoryDeclares(){
 	local MDSC_CMD='ListRepositoryDeclares'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	case "$1" in
-		--internal-print-project-declares)
-			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
-			return 0
-		;;
-	esac
-
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	local repositoryName="$1"
@@ -117,7 +110,7 @@ ListRepositoryDeclares(){
 			fi
 
 			echo "ListRepositoryDeclares: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryDeclares $repositoryName --no-cache | tee "$cacheFile"
+			ListRepositoryDeclares --no-cache $repositoryName | tee "$cacheFile"
 			return 0
 		fi
 		
@@ -131,9 +124,7 @@ ListRepositoryDeclares(){
 				
 				grep "$MTC" "$indexFile" \
 				| sed -e 's:^PRJ-DCL-::' -e 's:=: :g' -e 's|\\:|:|g' \
-				| while read -r LINE ; do
-					ListRepositoryDeclares --internal-print-project-declares $LINE
-				done
+				| awk '{ for (i=2;i<=NF;i++) print $1, $i }'
 			
 				return 0
 			fi

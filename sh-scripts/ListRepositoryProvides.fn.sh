@@ -122,7 +122,6 @@ ListRepositoryProvides(){
 				[ -z "$MDSC_DETAIL" ] || echo "| ListRepositoryProvides: using index ($MDSC_OPTION)" >&2
 				local MTC="^PRJ-PRV-$repositoryName/"
 				
-				local indexValueLine
 				grep "$MTC" "$indexFile" \
 				| sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' \
 				| awk '{ for (i=2;i<=NF;i++) print $1, $i }'
@@ -135,9 +134,7 @@ ListRepositoryProvides(){
 	if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
 		echo "ListRepositoryProvides: extracting from source (java) ($MDSC_OPTION)" >&2
 
-		Require DistroSourceCommand
-		
-		DistroSourceCommand \
+		Distro DistroSourceCommand \
 			-q \
 			--import-from-source \
 			--select-repository "$repositoryName" \
@@ -146,11 +143,10 @@ ListRepositoryProvides(){
 		return 0
 	fi
 	
-	Require ListRepositoryProjects
 	Require ListProjectProvides
 
 	local projectName
-	ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
+	Distro ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
 		ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
 	done
 }
