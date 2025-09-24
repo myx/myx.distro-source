@@ -110,7 +110,9 @@ ListRepositoryDeclares(){
 			fi
 
 			echo "ListRepositoryDeclares: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryDeclares --no-cache $repositoryName | tee "$cacheFile"
+			mkdir -p "$MDSC_CACHED/$repositoryName"
+			ListRepositoryDeclares --no-cache $repositoryName | tee "$cacheFile.$$.tmp"
+			mv "$cacheFile.$$.tmp" "$cacheFile"
 			return 0
 		fi
 		

@@ -110,7 +110,8 @@ ListDistroDeclares(){
 						## Build cache index file, no MDSC_IDxxx variables
 						##
 						echo "| $MDSC_CMD: --all-declares caching projects ($MDSC_OPTION)" >&2
-						ListDistroDeclares --explicit-noop --no-cache --all-declares | tee "$cacheFile"
+						ListDistroDeclares --explicit-noop --no-cache --all-declares | tee "$cacheFile.$$.tmp"
+						mv "$cacheFile.$$.tmp" "$cacheFile"
 						return 0
 					fi
 				fi
@@ -213,7 +214,8 @@ ListDistroDeclares(){
 						## Build cache index file, no MDSC_IDxxx variables
 						##
 						echo "| $MDSC_CMD: --all-declares-merged caching projects ($MDSC_OPTION)" >&2
-						ListDistroDeclares --explicit-noop --no-cache --all-declares-merged | tee "$cacheFile"
+						ListDistroDeclares --explicit-noop --no-cache --all-declares-merged | tee "$cacheFile.$$.tmp"
+						mv "$cacheFile.$$.tmp" "$cacheFile"
 						return 0
 					fi
 				fi

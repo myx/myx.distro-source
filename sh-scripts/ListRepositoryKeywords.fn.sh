@@ -109,7 +109,9 @@ ListRepositoryKeywords(){
 			fi
 
 			echo "ListRepositoryKeywords: caching projects ($MDSC_OPTION)" >&2
-			ListRepositoryKeywords --no-cache $repositoryName | tee "$cacheFile"
+			mkdir -p "$MDSC_CACHED/$repositoryName"
+			ListRepositoryKeywords --no-cache $repositoryName | tee "$cacheFile.$$.tmp"
+			mv "$cacheFile.$$.tmp" "$cacheFile"
 			return 0
 		fi
 		
