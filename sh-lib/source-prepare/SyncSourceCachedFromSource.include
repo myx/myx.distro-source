@@ -54,10 +54,11 @@ fi \
 | cut -d' ' -f2 \
 | awk -v projectList=/dev/fd/3 '
 	BEGIN {
-		while (getline proj < (projectList)) {
+		while ((getline proj < projectList) > 0) {
 			if (proj == "") break
 			projects[proj] = 1
 		}
+		close(projectList)
 	}
 	{
 		for (p in projects)
