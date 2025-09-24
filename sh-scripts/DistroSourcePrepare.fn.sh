@@ -98,6 +98,8 @@ DistroSourcePrepare(){
 				--print '' \
 				--fail-if-errors \
 
+			[ ! -f "$MDSC_CACHED/distro-index.inf" ] || touch "$MDSC_CACHED/distro-index.inf"
+
 			return 0
 		;;
 		--build-project-metadata)
