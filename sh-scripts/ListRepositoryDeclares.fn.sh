@@ -131,7 +131,7 @@ ListRepositoryDeclares(){
 		fi
 	fi
 	
-	if [ -z "$MDSC_JAVAC" ] && command -v javac 2>/dev/null && [ "$MDSC_INMODE" = "source" ] && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
+	if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] && [ -f "$MMDAPP/.local/roots/$repositoryName.distro-namespace" ] ; then
 		echo "ListRepositoryDeclares: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Distro DistroSourceCommand \
