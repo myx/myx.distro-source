@@ -51,7 +51,7 @@ ListDistroProjects(){
 				shift
 
 				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: --all-projects, no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --all-projects, no extra options allowed" >&2
 					set +e ; return 1
 				fi
 
@@ -67,7 +67,7 @@ ListDistroProjects(){
 
 						echo "| $MDSC_CMD: --all-projects, caching projects ($MDSC_OPTION)" >&2
 						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjectsNoCache.include" \
-							| tee "$cacheFile.$$.tmp"
+						| tee "$cacheFile.$$.tmp"
 						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 						return 0
 					fi
@@ -95,9 +95,8 @@ ListDistroProjects(){
 				##
 				shift
 				
-				Require ListDistroSequence
 				local selectProjects
-				selectProjects="$( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all )"
+				selectProjects="$( Distro ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all )"
 			;;
 			--select-none)
 				##
@@ -467,8 +466,7 @@ ListDistroProjects(){
 			;;
 			--required|--required-projects)
 
-				Require ListDistroSequence
-				ListDistroSequence --all-projects \
+				Distro ListDistroSequence --all-projects \
 				| awk -v list="$( echo $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
@@ -481,8 +479,7 @@ ListDistroProjects(){
 			;;
 			--affected|--affected-projects)
 
-				Require ListDistroSequence
-				ListDistroSequence --all-projects \
+				Distro ListDistroSequence --all-projects \
 				| awk -v list="$( echo $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
