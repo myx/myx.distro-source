@@ -81,6 +81,25 @@ DistroSourcePrepare(){
 			cat "$ALL_CHANGED" > "$INDEX_ROOT/changed-project-names.txt"
 			return 0
 		;;
+		--rebuild-cached-index)
+			shift
+			[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
+
+			#[ "full" != "$MDSC_DETAIL" ] || set -x
+
+			Distro DistroSourceCommand \
+				-v$( 
+					[ -z "$MDSC_DETAIL" ] || printf 'v' 
+					[ "full" != "$MDSC_DETAIL" ] || printf 'v' 
+				) \
+				--no-fail \
+				--import-from-source --select-all-from-source \
+				--prepare-source-to-cached-index \
+				--print '' \
+				--fail-if-errors \
+
+			return 0
+		;;
 		--build-project-metadata)
 			shift
 			local inf
