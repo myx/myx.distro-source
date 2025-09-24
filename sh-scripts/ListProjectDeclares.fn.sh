@@ -91,7 +91,7 @@ ListProjectDeclares(){
 			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 			if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 				[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
-				cat "$cacheFile" | sed "s|^|$projectName |g"
+				cat "$cacheFile"
 				return 0
 			fi
 	
