@@ -52,9 +52,9 @@ else
 	tee "$NEW_CONTENT"
 fi \
 | cut -d' ' -f2 \
-| awk -v FD=3 '
+| awk -v projectList=/dev/fd/3 '
 	BEGIN {
-		while (getline proj < ("/dev/fd/" FD)) {
+		while (getline proj < (projectList)) {
 			if (proj == "") break
 			projects[proj] = 1
 		}
