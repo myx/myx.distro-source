@@ -42,17 +42,43 @@ ListDistroProjects(){
 					set +e ; return 1
 				fi
 			;;
+			--grep-projects)
+				shift
+				ListDistroProjects --all-projects | { grep "$@" || true ; }
+				return 0
+			;;
 			--all-projects)
 				shift
 
 				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: ListDistroProjects: no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: --all-projects, no options allowed after --all-projects option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
-				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include"
+				if [ "$MDSC_NO_CACHE" = "--no-cache" ] || [ ! -d "$MDSC_CACHED" ] ; then
+					. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjectsNoCache.include"
+					return 0
+				fi
+
+				local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+				if [ -f "$buildDate" ]; then
+					local cacheFile="$MDSC_CACHED/all-project-names.txt"
+					if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
+						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-projects, using cached: all-project-names.txt" >&2
+						cat "$cacheFile"
+						return 0
+					fi
+
+					echo "| $MDSC_CMD: --all-projects, caching projects ($MDSC_OPTION)" >&2
+					. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjectsNoCache.include" \
+						| tee "$cacheFile.$$.tmp"
+					mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+					return 0
+				fi
 				
+				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjectsNoCache.include"
 				return 0
+
 			;;
 			--print-selected)
 				shift

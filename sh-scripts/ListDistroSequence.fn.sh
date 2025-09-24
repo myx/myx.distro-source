@@ -44,7 +44,7 @@ ListDistroSequence(){
 						echo "$MDSC_CMD: caching projects ($MDSC_OPTION)" >&2
 
 						ListDistroSequence --no-cache --all | tee "$cacheFile.$$.tmp"
-						mv "$cacheFile.$$.tmp" "$cacheFile"
+						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 
 						return 0
 					fi

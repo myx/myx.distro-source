@@ -24,7 +24,7 @@ ListChangedSourceProjects(){
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListChangedSourceProjects: caching projects ($MDSC_OPTION)" >&2
 			ListChangedSourceProjects --no-cache | tee "$cacheFile.$$.tmp"
-			mv "$cacheFile.$$.tmp" "$cacheFile"
+			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 	fi
@@ -32,7 +32,7 @@ ListChangedSourceProjects(){
 	if [ -d "$MMDAPP/.local/source-cache/changed" ] ; then
 		[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: intersecting cached/changed with projects" >&2
 		local projectName=""
-		for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
+		for projectName in $( Distro ListDistroProjects --all-projects ) ; do
 			if [ -f "$MMDAPP/.local/source-cache/changed/$projectName" ] ; then
 				echo "$projectName"
 			fi
@@ -47,7 +47,7 @@ ListChangedSourceProjects(){
 	fi
 	
 	[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: source-only mode, listing all projects" >&2
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include"
+	Distro ListDistroProjects --all-projects
 }
 
 case "$0" in

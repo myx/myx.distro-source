@@ -57,7 +57,7 @@ ListRepositorySequence(){
 			echo "$MDSC_CMD: caching projects ($MDSC_OPTION)" >&2
 			mkdir -p "$MDSC_CACHED/$repositoryName"
 			ListRepositorySequence --no-cache "$repositoryName" | tee "$cacheFile.$$.tmp"
-			mv "$cacheFile.$$.tmp" "$cacheFile"
+			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 	fi

@@ -83,7 +83,7 @@ ListRepositoryProjects(){
 			echo "$MDSC_CMD: $repositoryName: caching repositories ($MDSC_OPTION)" >&2
 			mkdir -p "$MDSC_CACHED/$repositoryName"
 			ListRepositoryProjects --no-cache "$repositoryName" | tee "$cacheFile.$$.tmp"
-			mv "$cacheFile.$$.tmp" "$cacheFile"
+			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 	fi

@@ -111,7 +111,7 @@ ListDistroKeywords(){
 						##
 						echo "| $MDSC_CMD: --all-keywords caching projects ($MDSC_OPTION)" >&2
 						ListDistroKeywords --explicit-noop --no-cache --all-keywords | tee "$cacheFile.$$.tmp"
-						mv "$cacheFile.$$.tmp" "$cacheFile"
+						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 						return 0
 					fi
 				fi
@@ -200,7 +200,7 @@ ListDistroKeywords(){
 						##
 						echo "| $MDSC_CMD: --all-keywords-merged caching projects ($MDSC_OPTION)" >&2
 						ListDistroKeywords --explicit-noop --no-cache --all-keywords-merged | tee "$cacheFile.$$.tmp"
-						mv "$cacheFile.$$.tmp" "$cacheFile"
+						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 						return 0
 					fi
 				fi

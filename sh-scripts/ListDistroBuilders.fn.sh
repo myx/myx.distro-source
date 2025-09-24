@@ -12,8 +12,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-from-source
 fi
 
-Require ListDistroProjects
-Require ListProjectBuilders
 
 ListDistroBuilders(){
 	local MDSC_CMD='ListDistroBuilders'
@@ -47,9 +45,11 @@ ListDistroBuilders(){
 			local projectName
 			local builderName
 
+			Require ListProjectBuilders
+
 			if [ "$printBuildStage" == "--print-build-stage" ] || [ "$stageType" == "--all-build-stages" ] ; then
 				local buildStage
-				for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
+				for projectName in $( Distro ListDistroProjects --all-projects ) ; do
 					ListProjectBuilders "$projectName" $printBuildStage "$stageType" "$@" | while read -r buildStage builderName ; do
 						echo "$buildStage" "$builderName" "` basename "$builderName" `" 
 					done
@@ -63,7 +63,7 @@ ListDistroBuilders(){
 				return 0
 			fi
 
-			for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ) ; do
+			for projectName in $( Distro ListDistroProjects --all-projects ) ; do
 				ListProjectBuilders "$projectName" "$stageType" "$@" | while read -r builderName ; do
 					echo "$builderName" "` basename "$builderName" `" 
 				done

@@ -111,7 +111,7 @@ ListDistroDeclares(){
 						##
 						echo "| $MDSC_CMD: --all-declares caching projects ($MDSC_OPTION)" >&2
 						ListDistroDeclares --explicit-noop --no-cache --all-declares | tee "$cacheFile.$$.tmp"
-						mv "$cacheFile.$$.tmp" "$cacheFile"
+						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 						return 0
 					fi
 				fi
@@ -215,7 +215,7 @@ ListDistroDeclares(){
 						##
 						echo "| $MDSC_CMD: --all-declares-merged caching projects ($MDSC_OPTION)" >&2
 						ListDistroDeclares --explicit-noop --no-cache --all-declares-merged | tee "$cacheFile.$$.tmp"
-						mv "$cacheFile.$$.tmp" "$cacheFile"
+						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 						return 0
 					fi
 				fi

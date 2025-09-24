@@ -45,7 +45,7 @@ RebuildKnownHosts() {
 	{
 
 		# all known hosts
-		for projectName in $( . "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjects.include" ); do
+		for projectName in $( ListDistroProjects --all-projects ); do
 			ListProjectKnownHosts --add-comment "$projectName"
 		done 
 
