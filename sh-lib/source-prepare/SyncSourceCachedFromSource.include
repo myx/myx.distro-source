@@ -31,6 +31,7 @@ local projectName
 	| tee "$NEW_PROJECTS" "$FIFO" || : # to awk
 	echo >&3 # end-of-stream for awk
 
+	local repositoryName
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
 	| tee "$NEW_NAMESPACES" | while IFS= read -r repositoryName; do
 		printf '%s/repository.inf\n' "$repositoryName"
