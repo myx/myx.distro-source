@@ -16,14 +16,6 @@ ListRepositoryProvides(){
 	
 	local MDSC_CMD='ListRepositoryProvides'
 
-
-	case "$1" in
-		--internal-print-project-provides)
-			echo "${@:3}"  | tr ' ' '\n' | xargs -I % echo "$2" %
-			return 0
-		;;
-	esac
-
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
@@ -133,9 +125,7 @@ ListRepositoryProvides(){
 				local indexValueLine
 				grep "$MTC" "$indexFile" \
 				| sed -e 's:^PRJ-PRV-::' -e 's:=: :g' -e 's|\\:|:|g' \
-				| while read -r indexValueLine ; do
-					ListRepositoryProvides --internal-print-project-provides $indexValueLine
-				done
+				| awk '{ for (i=2;i<=NF;i++) print $1, $i }'
 			
 				return 0
 			fi
