@@ -17,12 +17,12 @@ ListAllActions(){
 	local MDSC_CMD='ListAllActions'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	local forCompletion=""
-	while true ; do
+	local forCompletion
+	while [ $# -gt 0 ]; do
 		case "$1" in
 			--completion)
 				shift
-				local forCompletion="--completion"
+				forCompletion="--completion"
 			;;
 			*)
 				break
