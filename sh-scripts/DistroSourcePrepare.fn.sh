@@ -57,24 +57,37 @@ DistroSourcePrepare(){
 			shift
 			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/SyncSourceCachedFromSource.include"
 
+			local CACHE_ROOT="$MMDAPP/.local/source-cache"
 			local INDEX_ROOT="$MMDAPP/.local/source-cache/enhance"
 			mkdir -p "$INDEX_ROOT"
 
-			local NEW_CHANGED="$MMDAPP/.local/source-cache/new-changed.index.txt"
+			local CACHE_DATE="$CACHE_ROOT/source-ingest.timestamp.txt"
+
+			[ -f "$CACHE_DATE" ] || {
+				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
+				set +e ; return 1
+			}
+
+			local INDEX_DATE="$INDEX_ROOT/source-ingest.timestamp.txt"
+
+			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
+				cp -f "$CACHE_DATE" "$INDEX_DATE"
+			fi
+
+			local NEW_CHANGED="$CACHE_ROOT/new-changed.index.txt"
 			if [ ! -s "$NEW_CHANGED" ]; then
-				echo "> $MDSC_CMD IngetDistroIndexFromSource.include: 🫙 no changes." >&2
+				echo "> $MDSC_CMD IngetDistroIndexFromSource.include: 🫙 no new changes." >&2
 				return 0
 			fi
 
-			local NEW_CONTENT="$MMDAPP/.local/source-cache/new-content.index.txt"
+			# local NEW_CONTENT="$CACHE_ROOT/new-content.index.txt"
 
-			local ALL_CHANGED="$MMDAPP/.local/source-cache/all-changed.index.txt"
-			local ALL_PROJECTS="$MMDAPP/.local/source-cache/all-projects.index.txt"
-			local ALL_NAMESPACES="$MMDAPP/.local/source-cache/all-namespaces.index.txt"
+			local ALL_CHANGED="$CACHE_ROOT/all-changed.index.txt"
+			local ALL_PROJECTS="$CACHE_ROOT/all-projects.index.txt"
+			local ALL_NAMESPACES="$CACHE_ROOT/all-namespaces.index.txt"
 
-			local INGEST_TIMESTAMP="$MMDAPP/.local/source-cache/source-ingest.timestamp.txt"
 
-			cp -f "$INGEST_TIMESTAMP" "$INDEX_ROOT/build-time-stamp.txt"
+			cp -f "$CACHE_DATE" "$INDEX_ROOT/build-time-stamp.txt"
 
 			cat "$ALL_NAMESPACES" > "$INDEX_ROOT/distro-namespaces.txt"
 			cat "$ALL_PROJECTS" > "$INDEX_ROOT/all-project-names.txt" # <<< this is not needed and not used, sequence is better
@@ -98,7 +111,12 @@ DistroSourcePrepare(){
 				--print '' \
 				--fail-if-errors \
 
-			[ ! -f "$MDSC_CACHED/distro-index.inf" ] || touch "$MDSC_CACHED/distro-index.inf"
+			[ -f "$MDSC_CACHED/distro-index.inf" ] || {
+				echo "⛔ ERROR: $MDSC_CMD: distro-index.inf is expected!" >&2
+				set +e ; return 1
+			}
+			
+			touch -r "$MDSC_CACHED/distro-index.inf" "$MDSC_CACHED/build-time-stamp.txt"
 
 			return 0
 		;;
