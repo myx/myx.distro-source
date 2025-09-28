@@ -113,7 +113,7 @@ RebuildActions(){
 						echo		'set +e ; return 1'
 						echo 	'}'
 						
-						echo 	'[ -n "$MDSC_ORIGIN" ] || {'
+						echo 	'[ -n "$MDLT_ORIGIN" ] || {'
 						echo 		'. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/SourceContext.include"'
 						echo 		'DistroSourceContext --distro-path-auto'
 						echo 	'}'
