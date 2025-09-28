@@ -52,7 +52,7 @@ ListAllActions(){
 			local sedEx="-e \"s:^$MMDAPP/source/$projectName/actions/::g\" -e \"s:^$MDSC_SOURCE/$projectName/actions/::g\""
 		fi
 		
-		[ "full" != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
+		[ full != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
 		eval "find $findLocations -mindepth 1 -type f -not -name '.*'" | eval "sed $sedEx"
 	done | sort -u
 	return 0
