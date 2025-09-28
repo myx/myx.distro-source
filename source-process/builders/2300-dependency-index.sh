@@ -7,7 +7,7 @@ PrepareBuildDependencyIndex(){
 	# Require CompileCachedJavaProject
 	# CompileCachedJavaProject myx/myx.distro-deploy
 	
-	if [ "0" = "1" ] ; then
+	if false ; then
 	
 	##
 	## temp? fix - java runtime compile doesn't work 
@@ -15,14 +15,13 @@ PrepareBuildDependencyIndex(){
 	echo "Making java distro classes..." >&2
 	
 	local projectList="myx/myx.distro-source myx/myx.distro-deploy"
-	local javaClassPath=""
-	local javaSourcePath=""
+	local javaClassPath= javaSourcePath=
 	local projectName projectClasses projectSources
 	for projectName in $projectList ; do
-		local projectClasses="$MMDAPP/output/cached/$projectName/java"
-		local projectSources="$MMDAPP/.local/source-cache/sources/$projectName/java"
-		local javaClassPath="$projectClasses:$javaClassPath"
-		local javaSourcePath="$projectSources:$javaSourcePath"
+		projectClasses="$MMDAPP/output/cached/$projectName/java"
+		projectSources="$MMDAPP/.local/source-cache/sources/$projectName/java"
+		javaClassPath="$projectClasses:$javaClassPath"
+		javaSourcePath="$projectSources:$javaSourcePath"
 	done
 
 	for projectName in $projectList ; do
@@ -58,7 +57,9 @@ PrepareBuildDependencyIndex(){
 	
 	(
 		DistroSourceCommand \
-			-v \
+			-v$( 
+				[ -z "$MDSC_DETAIL" ] || printf 'v' 
+			) \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
 			--output-root "$MMDAPP/output" \
 			--import-from-source --select-all-from-source \
