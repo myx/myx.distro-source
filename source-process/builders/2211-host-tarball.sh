@@ -56,7 +56,7 @@ CheckMakeProjectHostTarball(){
 }
 
 ListDistroProvides --select-changed --filter-and-cut "source-process" \
-| grep -e " host-tarball.tbz$" \
+| { grep -e " host-tarball.tbz$" || [ $? -eq 1 ] ; } \
 | cut -d" " -f1 \
 | sort -u \
 | Parallel Prefix -2 CheckMakeProjectHostTarball # "$projectName" 
