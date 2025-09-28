@@ -1,8 +1,5 @@
-#!/bin/sh
-
-type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
-type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
-Require ListDistroProvides
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
 
 CompileJavaSources(){
 	local projectName="$1"
@@ -11,16 +8,16 @@ CompileJavaSources(){
 	fi
 
 	( \
-		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/CompileCachedJavaProject.fn.sh" ; \
-		CompileCachedJavaProject $projectName \
+		Distro CompileCachedJavaProject $projectName \
 	)
 	
 	return 0
 	
 	( \
-		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh" ; \
-		DistroSourceCommand \
-			-v \
+		Distro DistroSourceCommand \
+			-v$( 
+				[ -z "$MDSC_DETAIL" ] || printf 'v' 
+			) \
 			--output-root "$MMDAPP/output" \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
 			--cached-root "$MMDAPP/output/cached" \
@@ -30,10 +27,11 @@ CompileJavaSources(){
 	)
 }
 
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
 
-
-ListDistroProvides --select-changed --filter-and-cut "source-process" \
-| grep -e " compile-java$" \
+Distro ListDistroProvides --select-changed --filter-and-cut "source-process" \
+| { grep -e " compile-java$" || [ $? -eq 1 ] ; } \
 | cut -d" " -f1 \
 | sort -u \
 | Parallel Prefix -2 CompileJavaSources # "$projectName"
