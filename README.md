@@ -44,8 +44,8 @@ Variables (context environment) available in: actions, build-step scripts and co
 	MDSC_INMODE - cosole mode ("source")
 	MDSC_OPTION - console mode settings (something like: "--distro-from-source")
 	MDSC_SOURCE - current source root (something like: "/Volumes/ws-2017/myx-work/source")
-	MDSC_CACHED - current cache root (something like: "/Volumes/ws-2017/myx-work/cached/enhance")
-	MDSC_OUTPUT - current target root (something like: "/Volumes/ws-2017/myx-work/cached/source")
+	MDSC_CACHED - current index cache root (something like: "/Volumes/ws-2017/myx-work/.local/system-index")
+	MDSC_OUTPUT - current target root (something like: "/Volumes/ws-2017/myx-work/.local/source-cache/sources")
 	MDSC_DETAIL - debug settings, values: <empty>, "true", "full"
 	useSshUser - override from ssh user calculated from project sequence variables
 	useSshHome - override from ssh home calculated from project sequence variables
@@ -58,16 +58,21 @@ Variables (context environment) specific to build-step scripts:
 App Folders:
 
 	/
-	/.local - system tools, utilities and system integrations
 	/source - source codes, all repositories and projects
 	/source/repo[/group]/project - project tree structure
-	/cached - build system space
-	/cached/sources - synched source for source->distro builders
-	/cached/changed - package names that are changed and need to be built
-	/cached/built - package names that are built
-	/output - output products
+	/output - output products (generated)
+	/export - export resources (generated or cloned)
 	/distro - distro structure (alternative to /source, BTW)
+	/distro/distro-namespaces.txt - repository names db file (prepared)
+	/distro/build-time-stamp.txt - distro timestamp file (prepared)
+	/distro/distro-index.inf - distro index shell-env file (prepared)
 	/actions - workspace actions - non-editable (generated)
+	/.local - system tools, utilities and system integrations
+	/.local/distro-index - system index space (generated)
+	/.local/source-cache - build system cache space (generated), before source-prepare
+	/.local/source-cache/sources - synched source for source->distro builders
+	/.local/source-cache/changed - package names that are changed and need to be built
+	/cached/built - package names that are built
 
 
 source-prepare, source-process, image-prepare directives:
