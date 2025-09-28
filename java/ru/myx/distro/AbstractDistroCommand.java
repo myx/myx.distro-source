@@ -48,9 +48,18 @@ public abstract class AbstractDistroCommand extends AbstractRepositoryCommand {
 		    throw new IllegalArgumentException("path is expected for --output-root agrument");
 		}
 		context.outputRoot = Paths.get(context.arguments.next());
-		context.cachedRoot = context.outputRoot.resolve("cached");
+		if (context.cachedRoot == null) {
+		    context.cachedRoot = context.outputRoot.resolve("cached");
+		}
 		return true;
 	    }, "--output-root");
+	    AbstractCommand.registerOperation(operations, context -> {
+		if (!context.arguments.hasNext()) {
+		    throw new IllegalArgumentException("path is expected for --output-root agrument");
+		}
+		context.cachedRoot = Paths.get(context.arguments.next());
+		return true;
+	    }, "--cached-root");
 
 	    AbstractCommand.registerOperation(operations, context -> {
 		System.out.println(context.sourceRoot == null ? "" : context.sourceRoot);
