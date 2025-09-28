@@ -29,4 +29,4 @@ rsync -rtpiO $dryRun --delete --delete-excluded \
 	--exclude='node_modules/' \
 	--exclude='__pycache__/' \
 	"$MMDAPP/source/" "$MMDAPP/.local/source-cache/sources/" \
-| grep '^[<>cd]'
+| { grep '^[<>cd]' || [ $? -eq 1 ] ; }

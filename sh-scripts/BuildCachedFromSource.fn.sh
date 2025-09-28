@@ -21,7 +21,7 @@ RebuildCachedFromSourceBuilderRaw(){
 	local BUILDER="$1"
 	echo "BuildCachedFromSource: $( basename $BUILDER ) builder started" >&2
 	#### want to run in separate process anyways
-	if ( . "$MMDAPP/source/$BUILDER" | cat -u ) ; then
+	if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" | tee /dev/stderr >/dev/null ) ; then
 		echo "BuildCachedFromSource: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "⛔ ERROR: BuildCachedFromSource: $( basename $BUILDER ) failed!" >&2
