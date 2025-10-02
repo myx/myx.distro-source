@@ -1,13 +1,8 @@
-if [ "`type -t DistroSourceCommand`" != "function" ] ; then
-. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh"
-fi
-
-Require DistroSourceCommand
 
 mkdir -p "$MMDAPP/output/distro"
 
 ( \
-	DistroSourceCommand \
+	Distro DistroSourceCommand \
 		-v \
 		--output-root "$MMDAPP/output" \
 		--source-root "$MMDAPP/.local/source-cache/sources" \
