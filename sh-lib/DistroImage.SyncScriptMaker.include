@@ -44,7 +44,7 @@ case "$1" in
 	--intern-stdin-parallel-block)
 		printf '( %s | %s ) <<XARGS_INPUT\n' \
 			"tr '\n' '\0'" \
-			"xargs -0 -P '$parallelLimit' -I% -- sh -c 'myx.common lib/prefix -3 %'"
+			"xargs -0 -P '$parallelLimit' -I% -- sh -c 'myx.common lib/prefix -o -3 %'"
 		
 		# awk '$0 !~ /^$|^[ \t]+$|^#|^[ \t]+#/ { print $0; }' | \
 		local itemTarget itemSource useBranch
@@ -61,7 +61,7 @@ case "$1" in
 		local itemTarget itemSource useBranch
 		while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
+			echo Prefix -o -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch"
 		done
 		return 0
 	;;
@@ -71,7 +71,7 @@ case "$1" in
 		local batchLimit="$( printf '@%.0s' $(seq 1 $parallelLimit) )"
 		while read -r itemTarget itemSource useBranch _; do
 			# ${syncType} - GitCloneSync GitClonePull
-			echo Prefix -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch" ' </dev/null & # parallel'
+			echo Prefix -o -2 GitClone${syncType} "$itemTarget" "$itemSource" "$useBranch" ' </dev/null & # parallel'
 			rowCounter="${rowCounter}@"
 			if [ "$rowCounter" = "$batchLimit" ] ; then
 				echo wait
