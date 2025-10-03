@@ -12,9 +12,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-path-auto
 fi
 
-type DistroSource >/dev/null 2>&1 || \
-	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/lib.distro-source.include"
-
 ListDistroKeywords(){
 	local MDSC_CMD='ListDistroKeywords'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
