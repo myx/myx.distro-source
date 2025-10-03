@@ -290,15 +290,17 @@ ListDistroProjects(){
 				fi
 				local providesFilter="$1" ; shift
 
-				Require ListDistroProvides
-				
 				case "$providesFilter" in
 					*:)
-						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
+						| grep -e "^.* $providesFilter.*$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
+						| grep -e "^.* $providesFilter$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -321,15 +323,17 @@ ListDistroProjects(){
 				fi
 				local providesFilter="$1" ; shift
 
-				Require ListDistroProvides
-
 				case "$providesFilter" in
 					*:)
-						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged | grep -e "^.* $providesFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged \
+						| grep -e "^.* $providesFilter.*$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged | grep -e "^.* $providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged \
+						| grep -e "^.* $providesFilter$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -349,15 +353,17 @@ ListDistroProjects(){
 				fi
 				local declaresFilter="$1" ; shift
 
-				Require ListDistroDeclares
-				
 				case "$declaresFilter" in
 					*:)
-						ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares | grep -e "^.* $declaresFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
+						| grep -e "^.* $declaresFilter.*$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares | grep -e "^.* $declaresFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
+						| grep -e "^.* $declaresFilter$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -378,9 +384,9 @@ ListDistroProjects(){
 
 				local providesFilter="$1" ; shift
 
-				Require ListDistroProvides
-				
-				ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+				Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
+				| grep -e "^.* deploy-keyword:$providesFilter$" \
+				| awk '$1 && !x[$1]++ { print $1; }'
 				return 0
 			;;
 			--keywords)
@@ -398,15 +404,17 @@ ListDistroProjects(){
 				fi
 				local keywordsFilter="$1" ; shift
 
-				Require ListDistroKeywords
-				
 				case "$keywordsFilter" in
 					*:)
-						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
+						| grep -e "^.* $keywordsFilter.*$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
+						| grep -e "^.* $keywordsFilter$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
@@ -451,11 +459,22 @@ ListDistroProjects(){
 				case "$keywordsFilter" in
 					*:)
 						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
-						| grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$keywordsFilter" 'index($0, " " f) { if ($1 && !seen[$1]++) print $1 }'
+						return 0
+
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
+						| grep -e "^.* $keywordsFilter.*$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
+						| awk -v f="$keywordsFilter" '$0 ~ (" " f "$") && $1 && !seen[$1]++ { print $1 }'
+						return 0
+
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
+						| grep -e "^.* $keywordsFilter$" \
+						| awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac

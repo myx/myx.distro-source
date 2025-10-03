@@ -228,7 +228,7 @@ ListDistroKeywords(){
 									done
 								done | cat -n | sort -k 3
 							`"
-
+set -x
 							join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexKeywords" ) <( echo "$indexSequence" ) \
 							| sort -n -k 1,2 | cut -d" " -f 3-
 							
