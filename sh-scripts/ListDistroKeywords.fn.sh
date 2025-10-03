@@ -100,7 +100,7 @@ ListDistroKeywords(){
 					if [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-keywords.txt"
 						if [ -f "$cacheFile" ]; then
-							if [ -f "$indexFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
+							if [ -f "$indexFile" ] && [ ! "$cacheFile" -nt "$indexFile" ] \
 							|| [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] \
 							|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$cacheFile" ] ; then
 

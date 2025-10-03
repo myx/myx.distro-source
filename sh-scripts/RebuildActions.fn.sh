@@ -12,9 +12,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-path-auto
 fi
 
-Require ListDistroProjects
-Require ListProjectActions
-
 type Parallel >/dev/null 2>&1 || \
 	. "${MYXROOT:-/usr/local/share/myx.common}/bin/lib/parallel.Common"
 
@@ -48,6 +45,9 @@ RebuildActions(){
 	fi
 	
 	(
+		Require ListDistroProjects
+		Require ListProjectActions
+
 		RebuildActionsForProject(){
 			local projectName="$1" actionFullName actionLocation actionSourceFile
 
@@ -159,7 +159,7 @@ RebuildActions(){
 			done
 		}
 
-		ListDistroProjects --all-projects | Parallel --workers-x2 RebuildActionsForProject "$projectName" 
+		ListDistroProjects --all-projects | Parallel --workers-x4 RebuildActionsForProject
 	)
 	
 	rsync -irltoODC $( [ "--no-delete" = "$1" ] || echo "--delete" ) \

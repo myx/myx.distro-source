@@ -7,15 +7,15 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
-fi
-
 ListProjectActions(){
 
 	local MDSC_CMD='ListProjectActions'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-path-auto
+	fi
 
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local forCompletion=""
@@ -37,27 +37,26 @@ ListProjectActions(){
 		set +e ; return 1
 	fi
 
-	local findLocations=""
+	local findLocation sedEx
 	
-	[ ! -d "$MDSC_SOURCE/$projectName/actions" ] \
-	|| local findLocations="$findLocations \"$MDSC_SOURCE/$projectName/actions\""
-	
-	[ "$MDSC_SOURCE" = "$MMDAPP/source" ] \
-	|| [ ! -d "$MMDAPP/source/$projectName/actions" ] \
-	|| local findLocations="$findLocations \"$MMDAPP/source/$projectName/actions\""
+	if [ -d "$MDSC_SOURCE/$projectName/actions" ]; then
+		findLocation="$MDSC_SOURCE/$projectName/actions"
+	elif [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -d "$MMDAPP/source/$projectName/actions" ]; then
+		findLocation="$MMDAPP/source/$projectName/actions"
+	fi
 
-	if [ -z "${findLocations:0:1}" ] ; then
+	if [ -z "${findLocation:0:1}" ] ; then
 		return 0
 	fi
-	
+
 	if [ -n "$forCompletion" ] ; then
-		local sedEx="-e \"s:^$MMDAPP/source/$projectName/actions/::g\" -e \"s:^$MDSC_SOURCE/$projectName/actions/::g\""
+		local sedEx="s:^$findLocation/::g"
 	else
-		local sedEx="-e \"s:^$MMDAPP/source/::g\" -e \"s:^$MDSC_SOURCE/::g\""
+		local sedEx="s:^${findLocation%$projectName/actions}::g"
 	fi
 	
-	[ full != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocations'" >&2
-	eval "find $findLocations -mindepth 1 -type f -not -name '.*'" | eval sed $sedEx | sort -u
+	[ full != "$MDSC_DETAIL" ] || echo "- $MDSC_CMD: will search at '$findLocation'" >&2
+	find "$findLocation" -mindepth 1 -type f -not -name '.*' | sed -e "$sedEx" | sort -u
 	return 0
 }
 
