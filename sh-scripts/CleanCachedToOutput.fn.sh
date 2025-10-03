@@ -10,7 +10,7 @@ fi
 CleanCachedToOutput(){
 
 	echo "CleanCachedToOutput: 🧻 Cleaning Output directory" >&2
-	rm -rf "$MMDAPP/output"
+	rm -rf "$MMDAPP/output" "$MMDAPP/.local/output-cache"
 	
 	if type DistroSystemContext >/dev/null 2>&1 ; then
 		echo "CleanCachedToOutput: 🧹 Cleaning DistroShell in-line caches" >&2

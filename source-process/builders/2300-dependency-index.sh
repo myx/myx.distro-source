@@ -2,8 +2,6 @@
 Require DistroSourceCommand
 
 PrepareBuildDependencyIndex(){
-	mkdir -p "$MMDAPP/output/distro"
-	
 	# Require CompileCachedJavaProject
 	# CompileCachedJavaProject myx/myx.distro-deploy
 	
@@ -18,14 +16,14 @@ PrepareBuildDependencyIndex(){
 	local javaClassPath= javaSourcePath=
 	local projectName projectClasses projectSources
 	for projectName in $projectList ; do
-		projectClasses="$MMDAPP/output/cached/$projectName/java"
+		projectClasses="$MMDAPP/.local/output-cache/$projectName/java"
 		projectSources="$MMDAPP/.local/source-cache/sources/$projectName/java"
 		javaClassPath="$projectClasses:$javaClassPath"
 		javaSourcePath="$projectSources:$javaSourcePath"
 	done
 
 	for projectName in $projectList ; do
-		local projectClasses="$MMDAPP/output/cached/$projectName/java"
+		local projectClasses="$MMDAPP/.local/output-cache/$projectName/java"
 		local projectSources="$MMDAPP/.local/source-cache/sources/$projectName/java"
 		local projectQueue="$( find "$projectSources" -type f -name '*.java' | sed 's|$projectSources||g' )"
 		if [ -n "${projectQueue:0:1}" ] ; then
@@ -41,8 +39,8 @@ PrepareBuildDependencyIndex(){
 			)" 
 			if [ -n "$sourceFilesQueue" ] ; then
 				echo "Compiling: $projectName..." >&2
-				javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue || true
-				echo "javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue 2> /dev/null || true"
+				javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue || :
+				echo "javac -nowarn -d "$projectClasses" -classpath "$javaClassPath" -sourcepath "$javaSourcePath" -g -parameters $sourceFilesQueue 2> /dev/null || :"
 				echo "Done compiling: $projectName." >&2
 			fi
 		fi
@@ -60,8 +58,6 @@ PrepareBuildDependencyIndex(){
 			-v$( 
 				[ -z "$MDSC_DETAIL" ] || printf 'v' 
 			) \
-			--source-root "$MMDAPP/.local/source-cache/sources" \
-			--output-root "$MMDAPP/output" \
 			--import-from-source --select-all-from-source \
 			--print ''  -v \
 			--build-all \

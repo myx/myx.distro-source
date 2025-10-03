@@ -85,7 +85,7 @@ ListProjectProvides(){
 		esac
 	done
 
-	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+	if [ -d "$MDSC_CACHED" ] ; then
 		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 			local cacheFile="$MDSC_CACHED/$projectName/project-provides.txt"
 			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
@@ -114,10 +114,8 @@ ListProjectProvides(){
 		
 		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
-			if [ -f "$indexFile" ] && \
-				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
-			then
-				
+			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+			if [ -f "$indexFile" ] && [ -f "$buildDate" ] && [ ! "$indexFile" -ot "$buildDate" ] ; then
 				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
 				
 				for LINE in $( grep "PRJ-PRV-$projectName=" "$indexFile" | sed -e 's:^.*=::g' -e 's|\\:|:|g' ) ; do
@@ -129,7 +127,12 @@ ListProjectProvides(){
 		fi
 	fi
 	
-	if [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
+	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		set +e ; return 1
+	fi
+	
+	if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
 			Require DistroSourceCommand
@@ -142,7 +145,7 @@ ListProjectProvides(){
 		return 0
 	fi
 	
-	echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: $projectName: can't produce index, needs build." >&2
 	set +e ; return 1
 }
 

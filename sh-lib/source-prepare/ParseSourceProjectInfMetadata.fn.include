@@ -1,0 +1,83 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+ParseSourceProjectInfMetadata(){
+
+set -e
+
+[ -z "$1" ] || if [ -f "$1/$3/project.inf" ] && [ -d "$2" ] && [ -n "$3" ]; then
+	exec < "$1/$3/project.inf"
+	local T="$2/$3" S="$$.tmp" idx item
+	mkdir -p "$T"
+	echo "$3" "$3" | tee "$T/project-requires.txt.$S" "$T/project-provides.txt.$S" "$T/project-declares.txt.$S" >/dev/null
+	echo "$3" "${3#*/}" | tee -a "$T/project-provides.txt.$S" "$T/project-keywords.txt.$S" >/dev/null
+	# echo "$3" "${3#*/}" | tee -a "$T/project-provides.txt" "$T/project-declares.txt" "$T/project-keywords.txt" >/dev/null
+else
+	echo "⛔ ERROR: ParseSourceProjectInfMetadata.fn.include: srcFile tgtBase projectName: srcFile and tgtBase must exist when in 'prepare' mode!" >&2
+	set +e ; return 1
+fi
+
+[ -z "$MDSC_DETAIL" ] || echo "| 📜 ParseSourceProjectInfMetadata.fn.include: projectName: $3" >&2
+
+local line cont key value name
+
+while IFS= read -r line || [ -n "$line" ]; do
+	case "$line" in
+		\#*|\!*) continue; ;; # skip comments
+		*\\) cont="${cont}${line%\\}"; continue; ;; # append continuiation
+		*) [ -z "${cont}" ] || { line="${cont}${line}"; cont=""; } ;; # flush
+	esac
+
+	key="$(
+		printf '%s' "${line%%[:=]*}" \
+		| sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+	)"
+
+	case "$key" in
+	Name|Requires|Provides|Declares|Keywords)
+		value=$(
+			printf '%s' "${line#*[:=]}" \
+			| sed 's/^[[:space:]]*//; s/[[:space:]][[:space:]]*/ /g; s/[[:space:]]*$//; s/\\\\/\\/g; s/\\:/\:/g; s/\\=/\=/g' \
+			| tr -s ' '
+		)
+		[ -n "$2" ] || {
+			printf '%s=%s\n' "$key" "$value"
+			continue
+		}
+		printf '%s=%s\n' "$key" "$value" > "$T/project.inf"
+		if [ "$key" = "Name" ]; then
+			if [ "$value" != "${3#*/}" ]; then
+				echo "$3" "$value" >> "$T/project-provides.txt.$S"
+				# echo "$3" "$value" | tee -a "$T/project-provides.txt.$S" "$T/project-declares.txt.$S" "$T/project-keywords.txt.$S" >/dev/null
+			fi
+			continue
+		fi
+		idx="$T/project-$(printf '%s' "$key" | tr '[:upper:]' '[:lower:]').txt.$S"
+		item=$( < "$idx" )
+		{
+			printf '%s\n' "$item"
+			for item in $value ; do
+				echo "$3" "$item"
+			done 
+		} | awk '!seen[$0]++' > "$idx"
+	;;
+	esac
+
+done
+
+[ -z "$2" ] || {
+	for idx in declares keywords provides requires ; do 
+		mv -f -- "$T/project-$idx.txt.$S" "$T/project-$idx.txt"
+	done
+	printf '%s\n' "$3"
+}
+
+return 0
+
+}
+
+# Used like:
+# 				while IFS= read -r projectName; do
+#					ParseSourceProjectInfMetadata < "sources/$projectName/project.inf" > "prepare/$projectName/project.inf"
+#				done
+#

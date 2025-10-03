@@ -26,7 +26,7 @@ if [ ! -d "$MDSC_SOURCE" ] ; then
 fi
 
 
-if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/output/cached" ] ; then
+if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/output-cache/distro-index" ] ; then
 	echo "⛔ ERROR: MDSC_CACHED is invalid or not set!" >&2 ; return 1
 fi
 

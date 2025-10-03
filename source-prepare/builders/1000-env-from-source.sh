@@ -14,8 +14,13 @@ if [ -z "$BUILD_STAMP" ] ; then
 	return 1
 fi
 
-if [ -z "$MDSC_SOURCE" ] || [ "$MDSC_SOURCE" != "$MMDAPP/source" ] ; then
+if [ -z "$MDSC_SOURCE" ] || [ "$MDSC_SOURCE" != "$MMDAPP/.local/source-cache/sources" ] ; then
 	echo "⛔ ERROR: MDSC_SOURCE is invalid or not set!" >&2
+	return 1
+fi
+
+if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/source-cache/prepare" ] ; then
+	echo "⛔ ERROR: MDSC_CACHED is invalid or not set!" >&2
 	return 1
 fi
 
@@ -24,10 +29,3 @@ if [ ! -d "$MDSC_SOURCE" ] ; then
 	return 1
 fi
 
-if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/source-cache/enhance" ] ; then
-	echo "⛔ ERROR: MDSC_CACHED is invalid or not set!" >&2
-	return 1
-fi
-
-# Prefix "sync/check" \
-Distro DistroSourcePrepare --ingest-distro-index-from-source

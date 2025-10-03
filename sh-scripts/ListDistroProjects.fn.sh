@@ -44,7 +44,7 @@ ListDistroProjects(){
 			;;
 			--grep-projects)
 				shift
-				ListDistroProjects --all-projects | { grep "$@" || true ; }
+				ListDistroProjects --all-projects | { grep "$@" || : ; }
 				return 0
 			;;
 			--all-projects)
@@ -53,6 +53,14 @@ ListDistroProjects(){
 				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: --all-projects, no extra options allowed" >&2
 					set +e ; return 1
+				fi
+
+				if false && [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
+					local cacheFiles=$( DistroSystemContext --ensure-index-cache-files MDSC_IDAPRJ_NAME all-project-names.txt )
+					if [ -n "$cacheFiles" ]; then
+						( set -f; IFS=$'\n'; arr=($cacheFiles); [ "${#arr[@]}" -gt 0 ] && cat -- "${arr[@]}" )
+						cat -- $cacheFiles
+					fi
 				fi
 
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
@@ -66,14 +74,14 @@ ListDistroProjects(){
 						fi
 
 						echo "| $MDSC_CMD: --all-projects, caching projects ($MDSC_OPTION)" >&2
-						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjectsNoCache.include" \
+						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ListAllProjectsNoCache.include" \
 						| tee "$cacheFile.$$.tmp"
 						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
 						return 0
 					fi
 				fi
 				
-				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllProjectsNoCache.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ListAllProjectsNoCache.include"
 				return 0
 
 			;;
@@ -233,7 +241,7 @@ ListDistroProjects(){
 				local projectFilter="$1" ; shift
 
 				local matchedProjects
-				matchedProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects | ( grep -e "^.*$projectFilter.*$" || true ) )"
+				matchedProjects="$( ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects | ( grep -e "^.*$projectFilter.*$" || : ) )"
 
 				if [ -z "$matchedProjects" ] ; then
 					echo "ListDistroProjects: ⛔ ERROR: No matching projects found (exactly one requested, --one-project $projectFilter)." >&2
@@ -455,7 +463,7 @@ ListDistroProjects(){
 
 			--select-required|--select-affected|--select-required-projects|--select-affected-projects)
 				## Adds projects required or affected by current selection
-				[ "$MDSC_DETAIL" == "full" ] || echo "* ListDistroProjects: $1, selected: $( echo $selectProjects )" >&2
+				[ full != "$MDSC_DETAIL" ] || echo "* ListDistroProjects: $1, selected: $( echo $selectProjects )" >&2
 
 				local selectVariant="--${1#--select-}" ; shift
 

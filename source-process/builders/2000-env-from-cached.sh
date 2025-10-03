@@ -20,28 +20,17 @@ if [ -z "$MDSC_SOURCE" ] || [ "$MDSC_SOURCE" != "$MMDAPP/.local/source-cache/sou
 	return 1
 fi
 
-if [ ! -d "$MDSC_SOURCE" ] ; then
-	echo "⛔ ERROR: MDSC_SOURCE does not exist!" >&2
-	return 1
-fi
-
-
-if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/source-cache/enhance" ] ; then
+if [ -z "$MDSC_CACHED" ] || [ "$MDSC_CACHED" != "$MMDAPP/.local/output-cache/prepared" ] ; then
 	echo "⛔ ERROR: MDSC_CACHED is invalid or not set!" >&2
 	return 1
 fi
 
-
-
-if [ -z "$OUTPUT_PATH" ] || [ "$OUTPUT_PATH" != "$MMDAPP/output" ] ; then
+if [ -z "$OUTPUT_PATH" ] || [ "$OUTPUT_PATH" != "$MMDAPP/.local/output-cache/output" ] ; then
 	echo "⛔ ERROR: OUTPUT_PATH is invalid or not set!" >&2
 	return 1
 fi
 
-mkdir -p "$OUTPUT_PATH"
-mkdir -p "$MDSC_CACHED"
-
-mkdir -p "$OUTPUT_PATH/distro"
-mkdir -p "$OUTPUT_PATH/export"
-
-echo "$BUILD_STAMP" > "$MMDAPP/output/build-time-stamp.txt"
+if [ ! -d "$MDSC_SOURCE" ] ; then
+	echo "⛔ ERROR: MDSC_SOURCE does not exist!" >&2
+	return 1
+fi

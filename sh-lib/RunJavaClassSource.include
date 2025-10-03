@@ -6,21 +6,31 @@
 RunJavaClassSource(){
 	set -e
 	
-	local SRC_NAME=$1; shift
-	local CLS_NAME=$1; shift
+	local SRC_NAME=$1 CLS_NAME=$2 CLS_PATH=; shift 2
+	if [ "$1" = -cp ]; then
+		CLS_PATH="$2"
+		shift 2
+	fi
 	
-	local DST_NAME="$MMDAPP/output/cached/$SRC_NAME/java"
-	local CLS_PATH="$DST_NAME:"
+	local DST_PATH="$MMDAPP/.local/output-cache/$SRC_NAME/java"
 
-	# echo "  >  Running Java Class (Clean): $CLS_NAME"  >&2
+	local SRC_PATH="${MDSC_SOURCE:-$MMDAPP/source}/$SRC_NAME/java"
 
-	mkdir -p "$DST_NAME"
-
-	# todo: .local/source-cache/sources ?
-	local SRC_PATH="$MMDAPP/source/$SRC_NAME/java"
+	CLS_PATH="$DST_PATH:$CLS_PATH"
+	mkdir -p "$DST_PATH"
 	
-	# echo "Running $CLS_NAME from $SRC_NAME at $CLS_PATH" >&2
+	[ -z "$MDSC_DETAIL" ] || {
+		echo ">> RunJavaClassSource: Running $CLS_NAME @ $SRC_NAME, class path: $CLS_PATH" >&2
+	}
 	
-	javac -d "$DST_PATH" -cp "CLS_PATH" -sourcepath "$SRC_PATH" -g -parameters "$SRC_PATH/$( echo "$CLS_NAME" | sed 's/\./\//g' ).java"
+	javac \
+		-d "$DST_PATH" \
+		-cp "$CLS_PATH" \
+		-sourcepath "$SRC_PATH" \
+		-g \
+		-parameters "$SRC_PATH/$( 
+			echo "$CLS_NAME" | sed 's/\./\//g' 
+		).java" >&2
+
 	java -cp "$CLS_PATH" "$CLS_NAME" "$@"
 }

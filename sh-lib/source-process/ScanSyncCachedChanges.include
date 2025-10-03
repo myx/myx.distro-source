@@ -1,0 +1,24 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+local dryRun=--dry-run
+if [ "$1" = "--execute-sync" ]; then
+	dryRun=; shift
+else
+	[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning source-cache changes ($MDSC_OPTION)" >&2
+fi
+
+set -e
+
+[ ! -t 0 ] || {
+	echo "⛔ ERROR: $MDSC_CMD: ScanSyncCachedChanges.include: needs list on stdin pipe!" >&2
+	set +e ; return 1
+}
+
+rsync -rtpiO $dryRun --delete --delete-excluded \
+	--out-format='%i %n' \
+	--files-from=- \
+	--relative \
+	--exclude='.*' \
+	"$MMDAPP/.local/source-cache/" "$MMDAPP/.local/output-cache/" \
+| { grep '^[<>cd]' || [ $? -eq 1 ] ; }

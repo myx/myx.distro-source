@@ -63,7 +63,7 @@ ListDistroSequence(){
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
 					local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 					if [ -f "$buildDate" ]; then
-						local cacheFile="$MDSC_CACHED/distro-all-sequences.txt"
+						local cacheFile="$MDSC_CACHED/distro-sequences.txt"
 						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-projects using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"

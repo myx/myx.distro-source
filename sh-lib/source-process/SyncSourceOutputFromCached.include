@@ -1,0 +1,51 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: syncing to output-cache ($MDSC_OPTION)" >&2
+
+set -e
+
+local NEW_CONTENT="$MMDAPP/.local/output-cache/new-content.index.txt"
+
+local TMP_SUFFIX="$$.tmp"
+
+mkdir -p "$MMDAPP/.local/output-cache/prepared"
+
+local ALL_CHANGED="$MMDAPP/.local/output-cache/all-changed.index.txt"
+local NEW_CHANGED="$MMDAPP/.local/source-cache/all-changed.index.txt"
+
+{
+	rsync -rtpiO -vv $dryRun --delete --delete-excluded \
+		--out-format='%i %n' \
+		--exclude='.*' \
+		--exclude='*.tmp' \
+		"$MMDAPP/.local/source-cache/prepare/" "$MMDAPP/.local/output-cache/prepared/" \
+	| { grep '^[<>cd]' || [ $? -eq 1 ] ; }
+} \
+| if [ -n "$MDSC_DETAIL" ]; then
+	if [ "full" = "$MDSC_DETAIL" ]; then
+		tee "$NEW_CONTENT" /dev/fd/2
+	else
+		{ fgrep -v '>f..t.' || [ $? -eq 1 ] ; } \
+		| tee "$NEW_CONTENT" /dev/fd/2
+	fi
+else
+	tee "$NEW_CONTENT"
+fi > /dev/null
+
+if [ -s "$NEW_CONTENT" ]; then
+
+	# update source ingest timestamp
+
+	date -u "+%Y%m%d%H%M%S" > "$MMDAPP/.local/output-cache/process-ingest.timestamp.txt"
+
+	# update all-changed index
+
+	touch "$ALL_CHANGED"
+	local TMP_CHANGED="$ALL_CHANGED.$TMP_SUFFIX"
+	grep -Fvx -f "$NEW_CHANGED" "$ALL_CHANGED" > "$TMP_CHANGED" 2>/dev/null || [ $? -eq 1 ]
+	cat "$NEW_CHANGED" >> "$TMP_CHANGED"
+	mv "$TMP_CHANGED" "$ALL_CHANGED"
+	chmod 664 "$ALL_CHANGED" 2>/dev/null || :
+
+fi

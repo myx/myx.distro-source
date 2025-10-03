@@ -5,7 +5,7 @@
 
 CompileCachedJavaRepository(){
 	REPO_NAME=$1; shift
-	REPO_JAVA="$MMDAPP/output/cached/$REPO_NAME"
+	REPO_JAVA="$MMDAPP/.local/output-cache/$REPO_NAME"
 
 	echo "Compiling repository $REPO_NAME" >&2
 

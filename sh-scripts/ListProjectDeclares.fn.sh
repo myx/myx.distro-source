@@ -129,7 +129,12 @@ ListProjectDeclares(){
 		fi
 	fi
 	
-	if [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
+	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		set +e ; return 1
+	fi
+	
+	if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
 			Require DistroSourceCommand
@@ -142,7 +147,7 @@ ListProjectDeclares(){
 		return 0
 	fi
 	
-	echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: $projectName: can't produce index, needs build." >&2
 	set +e ; return 1
 }
 

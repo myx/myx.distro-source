@@ -34,7 +34,7 @@ SyncExportsFromCached(){
 		printf 'sync-export: %s %s (source) \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 		mkdir -p "`dirname "$EXPORT_DST"`"
 		rsync -ai --delete "$SOURCE_DIR/$SRC" "$EXPORT_DST" 2>&1 \
-		| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
+		| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || :)
 		return 0
 	fi
 
@@ -42,7 +42,7 @@ SyncExportsFromCached(){
 		printf 'sync-export: %s %s (cached) \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 		mkdir -p "`dirname "$EXPORT_DST"`"
 		rsync -ai --delete "$CACHED_DIR/$SRC" "$EXPORT_DST" 2>&1 \
-		| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || true)
+		| (grep -v --line-buffered -E '>f\.\.t\.+ ' >&2 || :)
 		return 0
 	fi
 

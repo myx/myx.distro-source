@@ -51,105 +51,172 @@ DistroSourcePrepare(){
 		--sync-cached-from-source)
 			shift
 			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/SyncSourceCachedFromSource.include"
-			return 0
-		;;
-		--ingest-distro-index-from-source)
-			shift
-			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/SyncSourceCachedFromSource.include"
 
 			local CACHE_ROOT="$MMDAPP/.local/source-cache"
-			local INDEX_ROOT="$MMDAPP/.local/source-cache/enhance"
-			mkdir -p "$INDEX_ROOT"
 
-			local CACHE_DATE="$CACHE_ROOT/source-ingest.timestamp.txt"
+			local NEW_CHANGED="$CACHE_ROOT/new-changed.index.txt"
+			if [ ! -s "$NEW_CHANGED" ]; then
+				echo "< $MDSC_CMD IngestCacheFromSource.include: 🫙 no new changes." >&2
+				return 0
+			fi
+
+			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
 
 			[ -f "$CACHE_DATE" ] || {
 				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
 				set +e ; return 1
 			}
 
-			local INDEX_DATE="$INDEX_ROOT/source-ingest.timestamp.txt"
+			local BUILT_ROOT="$CACHE_ROOT/prepare"; mkdir -p "$BUILT_ROOT"
 
-			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
-				cp -f "$CACHE_DATE" "$INDEX_DATE"
-			fi
-
-			local NEW_CHANGED="$CACHE_ROOT/new-changed.index.txt"
-			if [ ! -s "$NEW_CHANGED" ]; then
-				echo "> $MDSC_CMD IngetDistroIndexFromSource.include: 🫙 no new changes." >&2
-				return 0
-			fi
-
-			# local NEW_CONTENT="$CACHE_ROOT/new-content.index.txt"
+			date -u "+%Y%m%d%H%M%S" > "$CACHE_ROOT/prepare-output.timestamp.txt"
+			cp -f "$CACHE_DATE" "$BUILT_ROOT/build-time-stamp.txt"
 
 			local ALL_CHANGED="$CACHE_ROOT/all-changed.index.txt"
 			local ALL_PROJECTS="$CACHE_ROOT/all-projects.index.txt"
 			local ALL_NAMESPACES="$CACHE_ROOT/all-namespaces.index.txt"
 
+			cat "$ALL_NAMESPACES" > "$BUILT_ROOT/distro-namespaces.txt"
+			cat "$ALL_PROJECTS" > "$BUILT_ROOT/all-project-names.txt" # <<< this is not needed and not used, sequence is better
+			cat "$ALL_CHANGED" > "$BUILT_ROOT/changed-project-names.txt"
 
-			cp -f "$CACHE_DATE" "$INDEX_ROOT/build-time-stamp.txt"
+			return 0
+		;;
+		--ingest-distro-index-from-prepared)
+			shift
 
-			cat "$ALL_NAMESPACES" > "$INDEX_ROOT/distro-namespaces.txt"
-			cat "$ALL_PROJECTS" > "$INDEX_ROOT/all-project-names.txt" # <<< this is not needed and not used, sequence is better
-			cat "$ALL_CHANGED" > "$INDEX_ROOT/changed-project-names.txt"
+			local CACHE_ROOT="$MMDAPP/.local/source-cache"
+			local INDEX_ROOT="$MMDAPP/.local/system-index"
+			mkdir -p "$INDEX_ROOT"
+
+			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
+			[ -f "$CACHE_DATE" ] || {
+				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
+				set +e ; return 1
+			}
+
+			local INDEX_DATE="$INDEX_ROOT/source-ingest.timestamp.txt"
+			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
+				cp -f "$CACHE_DATE" "$INDEX_DATE"
+			fi
+
+			(
+				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ScanSyncSystemIndexChanges.fn.include"
+				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/prepare" "$INDEX_ROOT"
+			)
+
+
+			[ -z "$MDSC_DETAIL" ] || echo "< $MDSC_CMD: system-index published." >&2
+
+			return 0
+		;;
+		--ingest-distro-index-from-source)
+			shift
+			DistroSourcePrepare --sync-cached-from-source
+			DistroSourcePrepare --ingest-distro-index-from-prepared
 			return 0
 		;;
 		--rebuild-cached-index)
 			shift
-			[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
-			#[ "full" != "$MDSC_DETAIL" ] || set -x
+			if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
+				[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
-			Distro DistroSourceCommand \
-				-v$( 
-					[ -z "$MDSC_DETAIL" ] || printf 'v' 
-					[ "full" != "$MDSC_DETAIL" ] || printf 'v' 
-				) \
-				--no-fail \
-				--import-from-source --select-all-from-source \
-				--prepare-source-to-cached-index \
-				--print '' \
-				--fail-if-errors \
+				local indexFile="$MDSC_CACHED/distro-index.inf"
+				local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+				#[ full != "$MDSC_DETAIL" ] || set -x
 
-			[ -f "$MDSC_CACHED/distro-index.inf" ] || {
-				echo "⛔ ERROR: $MDSC_CMD: distro-index.inf is expected!" >&2
-				set +e ; return 1
-			}
-			
-			touch -r "$MDSC_CACHED/distro-index.inf" "$MDSC_CACHED/build-time-stamp.txt"
+				Distro DistroSourceCommand \
+					-v$( 
+						[ -z "$MDSC_DETAIL" ] || printf 'v' 
+					) \
+					--no-fail \
+					--import-from-source --select-all-from-source \
+					--prepare-source-to-cached-index \
+					--print '' \
+					--fail-if-errors \
+
+				[ -f "$indexFile" ] || {
+					echo "⛔ ERROR: $MDSC_CMD: distro-index.inf is expected!" >&2
+					set +e ; return 1
+				}
+				
+				touch -r "$indexFile" "$buildDate"
+			else
+				DistroSourcePrepare.fn.sh --build-project-metadata
+			fi
+
+			# build index ready, prepare secondary indices
+
+			ListDistroSequence.fn.sh --all >/dev/null
+
+			ListDistroSequence.fn.sh --all-projects >/dev/null &
+			ListDistroProjects.fn.sh --all-projects >/dev/null &
+			ListDistroDeclares.fn.sh --all-declares >/dev/null &
+			ListDistroKeywords.fn.sh --all-keywords >/dev/null &
+			ListDistroProvides.fn.sh --all-provides >/dev/null &
+
+			wait
 
 			return 0
 		;;
 		--build-project-metadata)
 			shift
-			local inf
-			cat "$MMDAPP/.local/source-cache/all-projects.index.txt" \
-			| while IFS= read -r inf; do
-				(
-					[ -z "$MDSC_DETAIL" ] || echo "| 📑 BuildSourceProjectMedatata.include: project: $inf" >&2
-					inf="$MMDAPP/.local/source-cache/sources/$inf/project.inf"
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ReadSourceProjectMetadata.include"
-				)
-			done
-		;;
-		--check-ensure-index)
-			set +e ; return 1
-		;;
-		--rebuild-source-index)
-			set +e ; return 1
-		;;
-		'')
-			if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-				awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
-					echo "$MDSC_SELECT_PROJECTS" \
-				) <( \
-					DistroSourcePrepare --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects \
-				)
-				break
-			fi
+			type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+			type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+			local TGT_PREPARE="$MMDAPP/.local/source-cache/prepare"
 
-			echo "⛔ ERROR: $MDSC_CMD: no projects selected!" >&2
-			set +e ; return 1
+			local CACHE_ROOT="$MMDAPP/.local/source-cache"
+			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
+
+			[ -f "$CACHE_DATE" ] || {
+				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
+				set +e ; return 1
+			}
+
+			mkdir -p "$TGT_PREPARE"
+
+			(
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ParseSourceProjectInfMetadata.fn.include"
+				Parallel ParseSourceProjectInfMetadata "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
+				# Parallel Prefix -4 ParseSourceProjectInfMetadata "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
+			) < "$MMDAPP/.local/source-cache/all-projects.index.txt" \
+			| (
+				local TMP_SUFFIX="$$.tmp"
+				local NEW_INDEX="$MMDAPP/.local/source-cache/prepare/distro"
+				local ALL_DECLARES="$TGT_PREPARE/distro-declares.txt"
+				local ALL_KEYWORDS="$TGT_PREPARE/distro-keywords.txt"
+				local ALL_PROVIDES="$TGT_PREPARE/distro-provides.txt"
+				local ALL_REQUIRES="$TGT_PREPARE/distro-requires.txt"
+				touch "$ALL_DECLARES.$TMP_SUFFIX" "$ALL_KEYWORDS.$TMP_SUFFIX" "$ALL_PROVIDES.$TMP_SUFFIX" "$ALL_REQUIRES.$TMP_SUFFIX"
+				local projectName
+				while IFS= read -r projectName; do
+					[ full != "$MDSC_DETAIL" ] || echo "| 📑 CollectDistoMetadataFromProjects.include: project: $projectName" >&2
+					cat "$TGT_PREPARE/$projectName/project-declares.txt" >> "$ALL_DECLARES.$TMP_SUFFIX"
+					cat "$TGT_PREPARE/$projectName/project-keywords.txt" >> "$ALL_KEYWORDS.$TMP_SUFFIX"
+					cat "$TGT_PREPARE/$projectName/project-provides.txt" >> "$ALL_PROVIDES.$TMP_SUFFIX"
+					cat "$TGT_PREPARE/$projectName/project-requires.txt" >> "$ALL_REQUIRES.$TMP_SUFFIX"
+					# ( echo "BUILD" "$MMDAPP/.local/source-cache/sources" "$MMDAPP/.local/source-cache/prepare" "$projectName" )
+				done
+				mv -f "$ALL_DECLARES.$TMP_SUFFIX" "$ALL_DECLARES"
+				mv -f "$ALL_KEYWORDS.$TMP_SUFFIX" "$ALL_KEYWORDS"
+				mv -f "$ALL_PROVIDES.$TMP_SUFFIX" "$ALL_PROVIDES"
+				mv -f "$ALL_REQUIRES.$TMP_SUFFIX" "$ALL_REQUIRES"
+
+				awk -f "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/BuildSequencesFromProvidesAndRequires.awk" \
+					"$ALL_REQUIRES" "$ALL_PROVIDES" > "$TGT_PREPARE/distro-sequences.txt"
+			)
+
+			return 0
+		;;
+		--help|--help-syntax)
+			echo "📘 syntax: DistroSourcePrepare.fn.sh --ingest-distro-index-from-source" >&2
+			echo "📘 syntax: DistroSourcePrepare.fn.sh <option>" >&2
+			# echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.text" >&2
+			fi
+			return 0
 		;;
 		*)
 			echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
@@ -164,36 +231,6 @@ case "$0" in
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			DistroSourcePrepare "${1:-"--help-syntax"}"
-			exit 1
-		fi
-		
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: DistroSourcePrepare.fn.sh [<options>] --all-projects" >&2
-			echo "📘 syntax: DistroSourcePrepare.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
-			echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-				echo >&2
-				echo "  Options:" >&2
-				echo >&2
-				echo "    --explicit-noop" >&2
-				echo "                Explicit argument that safely does nothing." >&2
-				echo >&2
-				echo "    --no-index" >&2
-				echo "                Use no index." >&2
-				echo >&2
-				echo "    --no-cache" >&2
-				echo "                Use no cache." >&2
-				echo >&2
-				echo "    --merge-sequence" >&2
-				echo "                Include all inherited provides for each project selected." >&2
-				echo >&2
-				echo "  Examples:" >&2
-				echo >&2
-				echo "    DistroSourcePrepare.fn.sh --all-projects" >&2
-				echo >&2
-				echo ""
-			fi
 			exit 1
 		fi
 		

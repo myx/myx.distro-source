@@ -50,9 +50,8 @@ ListProjectSequence(){
 							return 0
 						fi
 			
-						Require ListProjectProvides
-						
 						echo "$MDSC_CMD: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
+						Require ListProjectProvides
 						for sequenceProjectName in $( ListProjectSequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" ) ; do
 							ListProjectProvides "$sequenceProjectName" --print-project "$@"
 						done | awk '!x[$2]++' | tee "$cacheFile"
@@ -60,9 +59,7 @@ ListProjectSequence(){
 					fi
 				fi			
 				
-				
-				Require ListProjectProvides
-				ListProjectProvides "$projectName" --merge-sequence --print-project "$@"
+				Distro ListProjectProvides "$projectName" --merge-sequence --print-project "$@"
 		
 				return 0
 			;;
@@ -120,8 +117,12 @@ ListProjectSequence(){
 		fi
 	fi
 	
+	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		set +e ; return 1
+	fi
 	
-	if [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
+	if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
@@ -135,7 +136,7 @@ ListProjectSequence(){
 		return 0
 	fi
 	
-	echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: $projectName: can't produce index, needs build." >&2
 	set +e ; return 1
 }
 

@@ -7,12 +7,12 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-. "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts/DistroSourceCommand.fn.sh"
+. "$MDLT_ORIGIN/myx/myx.distro-system/sh-scripts/DistroSourceCommand.fn.sh"
 
 DistroSourceCommand \
 	--output-root "$MMDAPP/output" \
 	--source-root "${MDSC_SOURCE:-$MMDAPP/source}" \
-	--cached-root "${MDSC_CACHED:-$MMDAPP/output/cached}" \
+	--cached-root "${MDSC_CACHED:-$MMDAPP/.local/system-index}" \
 	"$@" \
 	--print ''
 

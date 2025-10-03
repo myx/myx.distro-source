@@ -24,18 +24,18 @@ case "$1" in
 
 		if [ -f "$1" ]; then
 			if command -v chflags >/dev/null 2>&1; then
-				chflags nouchg "$1" 2>/dev/null || true
+				chflags nouchg "$1" 2>/dev/null || :
 			fi
 			rm -f "$1"
-			#chmod u+w "$1" 2>/dev/null || true
+			#chmod u+w "$1" 2>/dev/null || :
 		fi
 
 		cat "${2:-"-"}" > "$1"
 
 		if [ -f "$1" ]; then
-			# chmod 444 "$1" 2>/dev/null || true #### <-- sorry - seems to be bad idea
+			# chmod 444 "$1" 2>/dev/null || : #### <-- sorry - seems to be bad idea
 			if command -v chflags >/dev/null 2>&1; then
-				chflags uchg "$1" 2>/dev/null || true
+				chflags uchg "$1" 2>/dev/null || :
 			fi
 		fi
 

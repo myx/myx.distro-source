@@ -40,9 +40,9 @@ else
 fi
 ln -sfn "$MMDAPP/source" "$VSES_PATH"
 
-ln -sfn "$MMDAPP/.local/source-cache/enhance/build-time-stamp.txt" "$VSSB_PATH/LatestBuildTimeStamp.txt"
+ln -sfn "$MMDAPP/.local/system-index/build-time-stamp.txt" "$VSSB_PATH/LatestBuildTimeStamp.txt"
 
-ln -sfn "$MMDAPP/.local/source-cache/enhance" "$VSSB_PATH/basic-indices"
+ln -sfn "$MMDAPP/.local/system-index" "$VSSB_PATH/basic-indices"
 
 echo "Hello! This is generated folder. It contains symlinks to some internal directories that are used in this workspace." \
 | DistroSourceTools --make-static-non-editable "$VSE_PATH/🔍 README.md"
@@ -60,6 +60,11 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 {
 	"folders": [ 
 		$REPOS
+		$(
+			[ ! -x "$MMDAPP/DistroDeployConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeFoldersFragment.include" ] || {
+				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeFoldersFragment.include"
+			}
+		)
 		{ 
 			"path": "$MMDAPP/.local/.vscode/browse",
 			"name": "🔍 Browse"
@@ -72,6 +77,11 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 	"settings": {
 		"search.followSymlinks": false,
 		"extensions.showRecommendationsOnlyOnDemand": true,
+		$(
+			[ ! -x "$MMDAPP/DistroDeployConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeSettingsFragment.include" ] || {
+				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeSettingsFragment.include"
+			}
+		)
 		"files.exclude": {
 			"📦 Browse: output/**": true,
 			"📝 Browse: source/**": true,
@@ -99,6 +109,16 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 					"isDefault": true 
 				}
 			},
+			$(
+				[ ! -x "$MMDAPP/DistroDeployConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeTasksFragment.include" ] || {
+					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeTasksFragment.include"
+				}
+			)
+			$(
+				[ ! -x "$MMDAPP/DistroRemoteConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-remote/sh-lib/RemoteTools.Make.VSCodeTasksFragment.include" ] || {
+					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-remote/sh-lib/RemoteTools.Make.VSCodeTasksFragment.include"
+				}
+			)
 			{
 				"label": "⬇️ Pull/Sync All Known Sources...",
 				"type": "shell",

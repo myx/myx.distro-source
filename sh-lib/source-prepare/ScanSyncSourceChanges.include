@@ -2,8 +2,8 @@
 # ^^^ for syntax checking in the editor only
 
 local dryRun=--dry-run
-if [ "$1" = "--execute-sync" ] || [ "$EXECUTE_SYNC" = "--execute-sync" ]; then
-	dryRun=
+if [ "$1" = "--execute-sync" ]; then
+	dryRun=; shift
 else
 	[ -z "$MDSC_DETAIL" ] || echo "$MDSC_CMD: scanning local source changes ($MDSC_OPTION)" >&2
 fi

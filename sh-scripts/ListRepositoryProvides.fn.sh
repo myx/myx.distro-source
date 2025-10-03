@@ -147,7 +147,7 @@ ListRepositoryProvides(){
 
 	local projectName
 	Distro ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
+		ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || :
 	done
 }
 

@@ -14,62 +14,78 @@ fi
 Require ListDistroProjects
 Require ListDistroBuilders
 
-
-RebuildOutputFromCachedBuilderRaw(){
-	set -e
-	
-	local BUILDER="$1"
-	echo "BuildOutputFromCached: $( basename $BUILDER ) builder started" >&2
-	#### want to run in separate process anyways
-	if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" | tee /dev/stderr >/dev/null ) ; then
-		echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
-	else
-		echo "⛔ ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
-		set +e ; return 1
-	fi
-}
-
-BuildOutputFromCachedRunner(){
-	set -e
-	
-	export BUILD_STAMP="$( date -u "+%Y%m%d%H%M%S" )"
-	
-	type Prefix >/dev/null 2>&1 || \
-		. "$( myx.common which lib/prefix )"
-	
-	type Parallel >/dev/null 2>&1 || \
-		. "$( myx.common which lib/parallel )"
-	
-	type Async >/dev/null 2>&1 || \
-		. "$( myx.common which lib/async )"
-	
-	DistroSystemContext --distro-from-cached
-	
-	if [ ! -d "$MDSC_SOURCE" ] ; then
-		echo "⛔ ERROR: source path does not exist!" >&2
-		set +e ; return 1
-	fi
-	
-	export OUTPUT_PATH="$MMDAPP/output"
-
-	local BUILDERS="$( ListDistroBuilders source-process --2 )"
-	echo 'BuildOutputFromCached: Builders list:' >&2
-	printf '\t%s\n' $BUILDERS >&2
-	
-	for BUILDER in $BUILDERS ; do
-		Prefix "c $( basename $BUILDER )" RebuildOutputFromCachedBuilderRaw "$BUILDER"
-		wait
-	done
-
-	echo "BuildOutputFromCached: All Builders passed." >&2
-}
-
 BuildOutputFromCached(){
 	set -e
 	echo "BuildOutputFromCached: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
 	#### want to run in separate process anyways
-	BuildOutputFromCachedRunner "$@" | cat -u
-	wait
+	(
+		
+		RebuildOutputFromCachedBuilderRaw(){
+			set -e
+			
+			local BUILDER="$1"
+			echo "BuildOutputFromCached: $( basename $BUILDER ) builder started" >&2
+			#### want to run in separate process anyways
+			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" | tee /dev/stderr >/dev/null ) ; then
+				echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
+				return 0
+			fi
+			echo "⛔ ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
+			set +e ; return 1
+		}
+
+		set -e
+		
+		export BUILD_STAMP
+		BUILD_STAMP="$( 
+			[ -z "$MDSC_CACHED/build-time-stamp.txt" ] \
+			&& date -u -r "$MDSC_CACHED/build-time-stamp.txt" "+%Y%m%d%H%M%S" \
+			|| date -u "+%Y%m%d%H%M%S" 
+		)"
+		
+		type Prefix >/dev/null 2>&1 || \
+			. "$( myx.common which lib/prefix )"
+		
+		type Parallel >/dev/null 2>&1 || \
+			. "$( myx.common which lib/parallel )"
+		
+		type Async >/dev/null 2>&1 || \
+			. "$( myx.common which lib/async )"
+		
+		DistroSystemContext --distro-from-cached
+		
+		if [ ! -d "$MDSC_SOURCE" ] ; then
+			echo "⛔ ERROR: source path does not exist!" >&2
+			set +e ; return 1
+		fi
+		
+		Prefix "IngestCachedChanges" \
+		Distro DistroSourceProcess --ingest-distro-output-from-cached
+
+		export MDSC_CACHED="$MMDAPP/.local/output-cache/prepared"
+		export MDSC_SOURCE="$MMDAPP/.local/source-cache/sources"
+		export MDSC_OUTPUT="$MMDAPP/.local/output-cache/process"
+		export OUTPUT_PATH="$MMDAPP/.local/output-cache/output"
+
+		local BUILDERS
+		BUILDERS="$( ListDistroBuilders source-process --2 )"
+		echo 'BuildOutputFromCached: Builders list:' >&2
+		printf '\t%s\n' $BUILDERS >&2
+		
+		for BUILDER in $BUILDERS ; do
+			Prefix "c $( basename $BUILDER )" RebuildOutputFromCachedBuilderRaw "$BUILDER"
+			wait
+		done
+
+		echo "BuildOutputFromCached: All Builders passed." >&2
+
+		Prefix "PopulateSystemIndex" \
+		Distro DistroSourceProcess --ingest-distro-index-from-processed
+
+		echo "BuildOutputFromCached: done." >&2
+
+	) | tee /dev/stderr >/dev/null
+	wait || :
 }
 
 case "$0" in

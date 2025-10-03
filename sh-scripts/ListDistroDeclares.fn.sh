@@ -97,13 +97,18 @@ ListDistroDeclares(){
 						echo "$MDSC_IDODCL"
 						return 0
 					fi
-					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-declares.txt"
-						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
-						&& ([ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
-							return 0
+						if [ -f "$cacheFile" ]; then
+							if [ -f "$indexFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
+							|| [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] \
+							|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$cacheFile" ] ; then
+
+								[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using cached ($MDSC_OPTION)" >&2
+								cat "$cacheFile"
+								return 0
+
+							fi
 						fi
 			
 						##
@@ -116,8 +121,9 @@ ListDistroDeclares(){
 					fi
 				fi
 	
-				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] \
+						|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$indexFile" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using index" >&2
 						
@@ -158,12 +164,11 @@ ListDistroDeclares(){
 				
 				echo "| $MDSC_CMD: --all-declares extracting from source (shell) ($MDSC_OPTION)" >&2
 
-				Require ListAllRepositories
 				Require ListRepositoryDeclares
 			
 				local repositoryName
-				ListAllRepositories --all-repositories | while read -r repositoryName ; do
-					ListRepositoryDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX $repositoryName || true
+				Distro ListAllRepositories --all-repositories | while read -r repositoryName ; do
+					ListRepositoryDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX $repositoryName || :
 				done
 	
 				return 0

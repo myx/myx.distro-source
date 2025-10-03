@@ -13,14 +13,14 @@ CompileJavaSources(){
 	
 	return 0
 	
-	( \
+	(
 		Distro DistroSourceCommand \
 			-v$( 
 				[ -z "$MDSC_DETAIL" ] || printf 'v' 
 			) \
 			--output-root "$MMDAPP/output" \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
-			--cached-root "$MMDAPP/output/cached" \
+			--cached-root "$MMDAPP/.local/output-cache/distro-index" \
 			--import-from-source --select-all-from-source \
 			--prepare-build-roots --prepare-build-distro-index --prepare-build-compile-index \
 			--print '' \

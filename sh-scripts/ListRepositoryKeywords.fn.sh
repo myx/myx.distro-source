@@ -146,7 +146,7 @@ ListRepositoryKeywords(){
 
 	local projectName
 	Distro ListRepositoryProjects "$repositoryName" | while read -r projectName ; do
-		ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || true
+		ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX $projectName "$@" || :
 	done
 }
 

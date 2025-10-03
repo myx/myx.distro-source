@@ -36,7 +36,12 @@ BuildDistroFromOutputRunner(){
 	export DISTRO_PATH="$MMDAPP/output/distro"
 	export EXPORT_PATH="$MMDAPP/output/export"
 	
-	export BUILD_STAMP="$( date -u "+%Y%m%d%H%M%S" )"
+	export BUILD_STAMP
+	BUILD_STAMP="$( 
+		[ -z "$MDSC_CACHED/build-time-stamp.txt" ] \
+		&& date -u -r "$MDSC_CACHED/build-time-stamp.txt" "+%Y%m%d%H%M%S" \
+		|| date -u "+%Y%m%d%H%M%S" 
+	)"
 	
 	type Prefix >/dev/null 2>&1 || \
 		. "$( myx.common which lib/prefix )"
@@ -68,7 +73,7 @@ BuildDistroFromSource(){
 	BuildOutputFromCached "$@"
 	
 	#### want to run in separate process anyways
-	BuildDistroFromOutputRunner "$@" | cat -u
+	BuildDistroFromOutputRunner "$@" | tee /dev/stderr >/dev/null
 }
 
 case "$0" in
