@@ -19,7 +19,6 @@ ListDistroKeywords(){
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
-	set -x
 
 	while true ; do
 		case "$1" in
