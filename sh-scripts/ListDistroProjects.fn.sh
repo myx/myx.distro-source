@@ -355,14 +355,12 @@ ListDistroProjects(){
 				case "$declaresFilter" in
 					*:)
 						Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
-						| grep -e "^.* $declaresFilter.*$" \
-						| awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$declaresFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
 						Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
-						| grep -e "^.* $declaresFilter$" \
-						| awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$declaresFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
@@ -385,14 +383,12 @@ ListDistroProjects(){
 				case "$keywordsFilter" in
 					*:)
 						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
-						| grep -e "^.* $keywordsFilter.*$" \
-						| awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$keywordsFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
 						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
-						| grep -e "^.* $keywordsFilter$" \
-						| awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$keywordsFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
