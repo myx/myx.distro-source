@@ -165,7 +165,11 @@ RebuildActions(){
 			done
 		}
 
-		ListDistroProjects --all-projects | Parallel --workers-x4 RebuildActionsForProject
+		ListDistroProjects --all-projects \
+		| while read -r projectName; do
+			RebuildActionsForProject "$projectName"
+		done
+
 	)
 	
 	wait
@@ -182,7 +186,7 @@ RebuildActions(){
 }
 
 case "$0" in
-	*/sh-scripts/RebuildActions.fn.sh) 
+	*/sh-scripts/RebuildActions2.fn.sh) 
 		RebuildActions "$@"
 	;;
 esac
