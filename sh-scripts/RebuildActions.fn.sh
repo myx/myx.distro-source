@@ -44,11 +44,13 @@ RebuildActions(){
 		exit 0
 	fi
 	
+	set -e
 	(
 		Require ListDistroProjects
 		Require ListProjectActions
 
 		RebuildActionsForProject(){
+			set -e
 			local projectName="$1" actionFullName actionLocation actionSourceFile
 
 			for actionFullName in $( ListProjectActions "$projectName" ) ; do
@@ -65,7 +67,7 @@ RebuildActions(){
 					actionSourceFile="$MMDAPP/source/$actionFullName"
 				fi
 				
-				printf "Processing: %s \n \t \t \t <= %s\n" "${actionLocation#$TMP_DIR/}" "${actionFullName}" >&2
+				printf "Processing: %s \n \t \t ^ %s\n" "${actionLocation#$TMP_DIR/}" "${actionFullName}" >&2
 
 				mkdir -p "$( dirname "$actionLocation" )"
 
@@ -123,37 +125,40 @@ RebuildActions(){
 							
 							echo 'ActionExecutionWrap "$@"'
 						} > "$actionLocation"
-						chmod ug=rx,o=r "$actionLocation" 
+						chmod ug=rx,o=r "$actionLocation" &
+						continue
 						;;
 					*.url)
-						if ( grep -q '\[InternetShortcut\]' "$actionSourceFile" ) || [ "`wc -l < "$actionSourceFile"`" -gt 1 ] ; then
+						if grep -q '\[InternetShortcut\]' "$actionSourceFile" || [ "$( wc -l < "$actionSourceFile" )" -gt 1 ] ; then
 							## sym-link is being created:
 							ln -fs "$actionSourceFile" "$actionLocation"
-							chmod -h ug=rx,o=r "$actionLocation" 
+							chmod -h ug=rx,o=r "$actionLocation"  &
+							continue
+						fi
+						local SRCCODE="`cat "$actionSourceFile"`"
+						local WRKPATH
+						if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$projectName/$SRCCODE" ] ; then
+							local SRCCODE="file://$MMDAPP/source/$projectName/$SRCCODE"
+							local WRKPATH="$MMDAPP/source/$projectName"
 						else
-							local SRCCODE="`cat "$actionSourceFile"`"
-							local WRKPATH
-							if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$projectName/$SRCCODE" ] ; then
-								local SRCCODE="file://$MMDAPP/source/$projectName/$SRCCODE"
-								local WRKPATH="$MMDAPP/source/$projectName"
-							else
-								local SRCCODE="file://$MDSC_SOURCE/$projectName/$SRCCODE"
-								local WRKPATH="$MDSC_SOURCE/$projectName"
-							fi
+							local SRCCODE="file://$MDSC_SOURCE/$projectName/$SRCCODE"
+							local WRKPATH="$MDSC_SOURCE/$projectName"
+						fi
 
-							## source code of script being created:
-							{
-								echo "[InternetShortcut]"
-								echo "URL=$SRCCODE"
-								echo "WorkingDirectory=$WRKPATH" 
-							} > "$actionLocation"
-							chmod ug=rx,o=r "$actionLocation" 
-						fi 
+						## source code of script being created:
+						{
+							echo "[InternetShortcut]"
+							echo "URL=$SRCCODE"
+							echo "WorkingDirectory=$WRKPATH" 
+						} > "$actionLocation"
+						chmod ug=rx,o=r "$actionLocation" &
+						continue
 						;;
 					*)
 						## sym-link is being created:
 						ln -fsv "$actionSourceFile" "$actionLocation"
-						chmod -h ug=rx,o=r "$actionLocation" 
+						chmod -h ug=rx,o=r "$actionLocation" &
+						continue
 						;;
 				esac
 			done
@@ -162,6 +167,7 @@ RebuildActions(){
 		ListDistroProjects --all-projects | Parallel --workers-x4 RebuildActionsForProject
 	)
 	
+	wait
 	rsync -irltoODC $( [ "--no-delete" = "$1" ] || echo "--delete" ) \
 		--chmod=ug+rwx \
 		"$TMP_DIR/" \
