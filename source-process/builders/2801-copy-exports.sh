@@ -20,7 +20,7 @@ SyncExportsFromCached(){
 	local EXPORT_DST="$MDSC_OUTPUT/$projectName/$SRC"
 
 	if [ -f "$EXPORT_DST" ] ; then
-		if [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$EXPORT_DST" "+%Y%m%d%H%M%S"`" ] ; then
+		if [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$EXPORT_DST" "+%Y%m%d%H%M%S"`" ] ; then
 			echo "SyncExportsFromCached: "$SRC" skipped, present and fresh"
 			return 0
 		fi

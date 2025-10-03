@@ -115,7 +115,7 @@ ListProjectDeclares(){
 		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
 			local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 			if [ -f "$indexFile" ] && \
-				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
+				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
 			then
 				
 				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2

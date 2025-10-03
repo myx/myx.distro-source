@@ -92,7 +92,7 @@ ListRepositoryProjects(){
 	if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -n "$MDSC_CACHED" ] ; then
 		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
 		if [ -f "$indexFile" ] && \
-			( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+			( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			echo "$MDSC_CMD: $repositoryName: using image ($MDSC_OPTION)" >&2
 			local PKG
 			for PKG in $( grep "PRJS=" "$indexFile" | sed "s:^.*=::" | tr ' ' '\n' ) ; do

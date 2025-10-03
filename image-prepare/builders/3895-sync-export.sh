@@ -20,7 +20,7 @@ SyncExportsFromOutput(){
 	local EXPORT_DST="$MMDAPP/output/export/$DST"
 
 	if [ "0" = "1" ] && [ -f "$EXPORT_DST" ] ; then
-		if [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$EXPORT_DST" "+%Y%m%d%H%M%S"`" ] ; then
+		if [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$EXPORT_DST" "+%Y%m%d%H%M%S"`" ] ; then
 			echo "SyncExportsFromOutput: "$SRC" skipped, present and fresh"
 			return 0
 		fi

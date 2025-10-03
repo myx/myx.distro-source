@@ -122,7 +122,7 @@ ListDistroDeclares(){
 				fi
 	
 				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -d "$MDSC_CACHED" ] ; then
-					if { [ -n "$BUILD_STAMP" ] && [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ]; } \
+					if { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ]; } \
 						|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$indexFile" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares using index" >&2
@@ -209,7 +209,7 @@ ListDistroDeclares(){
 					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-merged-declares.txt"
 						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
-						&& ([ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
+						&& ([ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged using cached ($MDSC_OPTION)" >&2
 							cat "$cacheFile"
 							return 0
@@ -227,7 +227,7 @@ ListDistroDeclares(){
 
 				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 
 							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-declares-merged using index ($MDSC_OPTION)" >&2
 

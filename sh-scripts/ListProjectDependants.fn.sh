@@ -39,7 +39,7 @@ ListProjectDependants(){
 	
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 	if [ "0" = "1" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
-		( [ -z "$BUILD_STAMP" ] || [ "$BUILD_STAMP" -lt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
+		( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
 		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2
 	
