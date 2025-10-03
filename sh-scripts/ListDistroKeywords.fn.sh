@@ -19,6 +19,7 @@ ListDistroKeywords(){
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
+	set -x
 
 	while true ; do
 		case "$1" in
@@ -175,7 +176,6 @@ ListDistroKeywords(){
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-keywords-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
-set -x
 
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
