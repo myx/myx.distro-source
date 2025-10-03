@@ -100,9 +100,9 @@ ListDistroProvides(){
 					if [ -d "$MDSC_CACHED" ] ; then
 						local cacheFile="$MDSC_CACHED/distro-provides.txt"
 						if [ -f "$cacheFile" ]; then
-							if [ -f "$indexFile" -a ! "$cacheFile" -ot "$indexFile" ] \
-							|| [ -n "$BUILD_STAMP" -a ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ] \
-							|| [ -f "$MDSC_CACHED/build-time-stamp.txt" -a ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$cacheFile" ]; then
+							if [ -f "$indexFile" ] && [ ! "$cacheFile" -ot "$indexFile" ] \
+							|| { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ]; } \
+							|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$cacheFile" ]; then
 
 								[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using cached" >&2
 								cat "$cacheFile"
@@ -121,9 +121,9 @@ ListDistroProvides(){
 					fi
 				fi
 	
-				if [ "$MDSC_NO_INDEX" != "--no-index" -a -f "$indexFile" -a -d "$MDSC_CACHED" ] ; then
-					if [ -n "$BUILD_STAMP" -a "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ] \
-						|| [ -f "$MDSC_CACHED/build-time-stamp.txt" -a ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$indexFile" ] ; then
+				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -d "$MDSC_CACHED" ] ; then
+					if { [ -n "$BUILD_STAMP" ] && [ "$BUILD_STAMP" -lt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ]; } \
+						|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$indexFile" ] ; then
 						
 						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-provides using index" >&2
 						
