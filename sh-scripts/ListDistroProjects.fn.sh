@@ -296,14 +296,12 @@ ListDistroProjects(){
 				case "$providesFilter" in
 					*:)
 						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
-						| grep -e "^.* $providesFilter.*$" \
-						| awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$providesFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
 						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
-						| grep -e "^.* $providesFilter$" \
-						| awk '$1 && !x[$1]++ { print $1; }'
+						| awk -v f="$providesFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
