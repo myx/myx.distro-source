@@ -427,9 +427,10 @@ ListDistroProjects(){
 
 				local providesFilter="$1" ; shift
 
-				Require ListDistroProvides
-				
-				ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged | grep -e "^.* deploy-keyword:$providesFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+				Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged \
+				| grep -e "^.* deploy-keyword:$providesFilter$" \
+				| awk '$1 && !x[$1]++ { print $1; }'
+
 				return 0
 			;;
 			--merged-keywords)
@@ -447,15 +448,14 @@ ListDistroProjects(){
 				fi
 				local keywordsFilter="$1" ; shift
 
-				Require ListDistroKeywords
-				
 				case "$keywordsFilter" in
 					*:)
-						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged | grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
+						| grep -e "^.* $keywordsFilter.*$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 					*)
-						ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
+						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged | grep -e "^.* $keywordsFilter$" | awk '$1 && !x[$1]++ { print $1; }'
 						return 0
 					;;
 				esac
