@@ -119,8 +119,10 @@ case "$0" in
 			exit 1
 		fi
 
-		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
-		DistroSystemContext --distro-path-auto
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-path-auto
+		fi
 		
 		ListRepositoryProjects "$@"
 	;;

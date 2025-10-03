@@ -43,11 +43,6 @@ ListDistroProjects(){
 				fi
 				continue
 			;;
-			--grep-projects)
-				shift
-				ListDistroProjects --all-projects | { grep "$@" || : ; }
-				return 0
-			;;
 			--all-projects)
 				shift
 
@@ -159,9 +154,9 @@ ListDistroProjects(){
 				fi
 
 				local selectProjects
-				selectProjects="$( \
+				selectProjects="$(
 					printf "%s\n%s" "$selectProjects" "$matchingProjects" \
-					| awk '$0 && !x[$0]++' \
+					| awk '$0 && !x[$0]++'
 				)"
 				continue
 			;;
@@ -189,6 +184,9 @@ ListDistroProjects(){
 						<( echo "$matchingProjects" ) \
 						<( echo "$selectProjects" ) \
 					| awk '$0 && !x[$0]++' 
+					#awk 'NR==FNR{ seen[$0]=1; next; } $0 && seen[$0] && !printed[$0]++ { print; }' \
+					#	<(printf '%s\n' "$matchingProjects") \
+					#	<(printf '%s\n' "$selectProjects")
 				)"
 				continue
 			;;
@@ -215,6 +213,10 @@ ListDistroProjects(){
 						<( echo "$matchingProjects" ) \
 						<( echo "$selectProjects" ) \
 					| awk '$0 && !x[$0]++'
+
+					#awk 'NR==FNR{ seen[$0]=1; next; } $0 && !seen[$0] && !printed[$0]++ { print; }' \
+					#	<(printf '%s\n' "$matchingProjects") \
+					#	<(printf '%s\n' "$selectProjects")
 				)"
 				continue
 			;;
@@ -242,7 +244,8 @@ ListDistroProjects(){
 
 				local matchedProjects
 				matchedProjects="$( 
-					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects | ( grep -e "^.*$projectFilter.*$" || : ) 
+					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects \
+					| awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
 				)"
 
 				if [ -z "$matchedProjects" ] ; then
@@ -275,7 +278,8 @@ ListDistroProjects(){
 				fi
 				local projectFilter="$1" ; shift
 
-				ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects | grep -e "^.*$projectFilter.*$"
+				ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects \
+				| awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
 				return 0
 			;;
 			--provides)

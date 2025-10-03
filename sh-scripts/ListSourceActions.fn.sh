@@ -7,13 +7,6 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-from-source
-fi
-
-
 ListSourceActions(){
 	set +x	
 	local MDSC_CMD='ListSourceActions'
@@ -46,6 +39,11 @@ case "$0" in
 				echo "	ListSourceActions.fn.sh --distro-source-only --all" >&2
 			fi
 			exit 1
+		fi
+
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-from-source
 		fi
 
 		ListSourceActions "$@"

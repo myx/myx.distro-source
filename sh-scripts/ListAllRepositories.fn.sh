@@ -61,6 +61,7 @@ case "$0" in
 		#	ListAllRepositories.fn.sh --distro-from-source 2> /dev/null
 		#	ListAllRepositories.fn.sh --distro-from-cached 2> /dev/null
 		#	ListAllRepositories.fn.sh --distro-from-output 2> /dev/null
+		
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto

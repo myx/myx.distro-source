@@ -12,11 +12,6 @@ ListProjectActions(){
 	local MDSC_CMD='ListProjectActions'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-		DistroSystemContext --distro-path-auto
-	fi
-
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local forCompletion=""
 	while true ; do
@@ -74,6 +69,11 @@ case "$0" in
 			exit 1
 		fi
 		
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-path-auto
+		fi
+
 		ListProjectActions "$@"
 	;;
 esac
