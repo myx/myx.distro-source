@@ -175,6 +175,7 @@ ListDistroKeywords(){
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-keywords-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
+set -x
 
 				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
@@ -228,7 +229,7 @@ ListDistroKeywords(){
 									done
 								done | cat -n | sort -k 3
 							`"
-set -x
+
 							join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexKeywords" ) <( echo "$indexSequence" ) \
 							| sort -n -k 1,2 | cut -d" " -f 3-
 							
