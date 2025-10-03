@@ -28,4 +28,3 @@ if [ ! -d "$MDSC_SOURCE" ] ; then
 	echo "⛔ ERROR: MDSC_SOURCE does not exist!" >&2
 	return 1
 fi
-
