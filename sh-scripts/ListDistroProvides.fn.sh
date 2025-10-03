@@ -299,7 +299,7 @@ ListDistroProvides(){
 							if [ "--add-own" = "lastOperation" ] || [ "--filter-own" = "lastOperation" ] ; then
 								echo "$indexOwnProvides" | cut -d" " -f1
 							else
-								echo "$indexAllProvides" | cut -d" " -f1 | awk '!x[$0]++'
+								echo "$indexAllProvides" | awk '$1 && !seen[$1]++ { print $1; }'
 							fi
 						else
 							echo "$MDSC_SELECT_PROJECTS"
@@ -398,11 +398,9 @@ ListDistroProvides(){
 				fi
 				
 				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
-						echo "$MDSC_SELECT_PROJECTS" \
-					) <( \
-						ListDistroProvides --explicit-noop --all-provides \
-					)
+					awk 'NR==FNR{a[$1]=$0; next;} ($1 in a){ print a[$1], $2; }' \
+						<( printf '%s\n' "$MDSC_SELECT_PROJECTS" ) \
+						<( ListDistroProvides --explicit-noop --all-provides )
 					return 0
 				fi
 

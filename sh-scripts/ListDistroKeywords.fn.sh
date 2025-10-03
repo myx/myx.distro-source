@@ -303,7 +303,7 @@ ListDistroKeywords(){
 							if [ "--add-own" = "lastOperation" ] || [ "--filter-own" = "lastOperation" ] ; then
 								echo "$indexOwnKeywords" | cut -d" " -f1
 							else
-								echo "$indexAllKeywords" | cut -d" " -f1 | awk '!x[$0]++'
+								echo "$indexAllKeywords" | awk '$1 && !seen[$1]++ { print $1; }'
 							fi
 						else
 							echo "$MDSC_SELECT_PROJECTS"

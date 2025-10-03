@@ -319,7 +319,7 @@ ListDistroDeclares(){
 							if [ "--add-own" = "lastOperation" ] || [ "--filter-own" = "lastOperation" ] ; then
 								echo "$indexOwnDeclares" | cut -d" " -f1
 							else
-								echo "$indexAllDeclares" | cut -d" " -f1 | awk '!x[$0]++'
+								echo "$indexAllDeclares" | awk '$1 && !seen[$1]++ { print $1; }'
 							fi
 						else
 							echo "$MDSC_SELECT_PROJECTS"
