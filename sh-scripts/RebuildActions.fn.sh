@@ -28,7 +28,7 @@ RebuildActions(){
 
 	if [ "$1" == "--test1" ] ; then
 		cd "$MDSC_SOURCE"
-		find $( ListDistroProjects --all-projects | tr '\n' ' ' ) -type d -name "actions" -prune
+		find $( DistroSystemContext --index-projects cat | tr '\n' ' ' ) -type d -name "actions" -prune
 		exit 0
 	fi
 	if [ "$1" == "--test2" ] ; then
@@ -37,16 +37,15 @@ RebuildActions(){
 		exit 0
 	fi
 	if [ "$1" == "--test3" ] ; then
-		ListDistroProjects --select-projects-with-path "-d" "actions"
+		Distro ListDistroProjects --select-projects-with-path "-d" "actions"
 		exit 0
 	fi
 	
 	set -e
-	Require ListDistroProjects
 	Require ListProjectActions
 	local projectName actionFullName actionLocation actionSourceFile
 
-	ListDistroProjects --all-projects \
+	DistroSystemContext --index-projects cat \
 	| while read -r projectName; do
 		ListProjectActions "$projectName" \
 		| while read -r actionFullName; do

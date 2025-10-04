@@ -31,11 +31,10 @@ ListChangedSourceProjects(){
 
 	if [ -d "$MMDAPP/.local/source-cache/changed" ] ; then
 		[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: intersecting cached/changed with projects" >&2
-		local projectName=""
-		for projectName in $( Distro ListDistroProjects --all-projects ) ; do
-			if [ -f "$MMDAPP/.local/source-cache/changed/$projectName" ] ; then
-				echo "$projectName"
-			fi
+		local projectName=
+		DistroSystemContext --index-projects cat \
+		| while read -r projectName; do
+			[ ! -f "$MMDAPP/.local/source-cache/changed/$projectName" ] || echo "$projectName"
 		done	
 		return 0
 	fi
@@ -47,7 +46,7 @@ ListChangedSourceProjects(){
 	fi
 	
 	[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: source-only mode, listing all projects" >&2
-	Distro ListDistroProjects --all-projects
+	DistroSystemContext --index-projects cat
 }
 
 case "$0" in

@@ -235,8 +235,7 @@ DistroImageSync(){
 				break
 			;;
 			--*)
-				Require ListDistroProjects
-				ListDistroProjects --select-execute-default DistroImageSync "$@"
+				Distro ListDistroProjects --select-execute-default DistroImageSync "$@"
 				return 0
 			;;
 			*)

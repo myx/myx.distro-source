@@ -17,7 +17,7 @@ ListSourceActions(){
 	local MDSC_SOURCE="$MMDAPP/source"
 
 	local projectName
-	for projectName in $( Distro ListDistroProjects --all-projects ) ; do
+	for projectName in $( DistroSystemContext --index-projects cat ) ; do
 		
 		[ -d "$MDSC_SOURCE/$projectName/actions" ] && \
 			find "$MDSC_SOURCE/$projectName/actions" -mindepth 1 -type f \

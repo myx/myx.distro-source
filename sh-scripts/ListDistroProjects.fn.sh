@@ -45,41 +45,11 @@ ListDistroProjects(){
 			;;
 			--all-projects)
 				shift
-
-				if [ -n "$1" ] ; then
+				[ -z "$1" ] || {
 					echo "⛔ ERROR: $MDSC_CMD: --all-projects, no extra options allowed" >&2
 					set +e ; return 1
-				fi
-
-				if false && [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
-					local cacheFiles=$( 
-						DistroSystemContext --ensure-index-cache-files MDSC_IDAPRJ_NAME all-project-names.txt 
-					)
-					if [ -n "$cacheFiles" ]; then
-						( set -f; IFS=$'\n'; arr=($cacheFiles); [ "${#arr[@]}" -gt 0 ] && cat -- "${arr[@]}" )
-						cat -- $cacheFiles
-					fi
-				fi
-
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
-					local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-					if [ -f "$buildDate" ]; then
-						local cacheFile="$MDSC_CACHED/all-project-names.txt"
-						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-projects, using cached: all-project-names.txt" >&2
-							cat "$cacheFile"
-							return 0
-						fi
-
-						echo "| $MDSC_CMD: --all-projects, caching projects ($MDSC_OPTION)" >&2
-						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ListAllProjectsNoCache.include" \
-						| tee "$cacheFile.$$.tmp"
-						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
-						return 0
-					fi
-				fi
-				
-				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ListAllProjectsNoCache.include"
+				}
+				DistroSystemContext --index-projects cat
 				return 0
 
 			;;
@@ -95,7 +65,7 @@ ListDistroProjects(){
 				shift
 				local selectProjects
 				selectProjects="$( 
-					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects 
+					DistroSystemContext --index-projects cat
 				)"
 				continue
 			;;
@@ -106,7 +76,7 @@ ListDistroProjects(){
 				shift
 				local selectProjects
 				selectProjects="$( 
-					Distro ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all 
+					DistroSystemContext --index-build-sequence cat
 				)"
 				continue
 			;;
@@ -133,8 +103,8 @@ ListDistroProjects(){
 				continue
 			;;
 
-			#--select-{projects|provides|merged-provides|declares|keywords|merged-keywords|keywords2|merged-keywords2|one-project})
-			--select-projects|--select-provides|--select-merged-provides|--select-declares|--select-keywords|--select-merged-keywords|--select-keywords2|--select-merged-keywords2|--select-one-project)
+			#--select-{projects|provides|merged-provides|declares|keywords|merged-keywords|one-project})
+			--select-projects|--select-provides|--select-merged-provides|--select-declares|--select-keywords|--select-merged-keywords|--select-one-project)
 				## Unions with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -160,7 +130,7 @@ ListDistroProjects(){
 				)"
 				continue
 			;;
-			--filter-projects|--filter-provides|--filter-merged-provides|--filter-declares|--filter-keywords|--filter-merged-keywords|--filter-keywords2|--filter-merged-keywords2|--filter-one-project)
+			--filter-projects|--filter-provides|--filter-merged-provides|--filter-declares|--filter-keywords|--filter-merged-keywords|--filter-one-project)
 				## Intersects with selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -190,7 +160,7 @@ ListDistroProjects(){
 				)"
 				continue
 			;;
-			--remove-projects|--remove-provides|--remove-merged-provides|--remove-provides|--remove-keywords|--remove-merged-keywords|--remove-keywords2|--remove-merged-keywords2|--remove-one-project)
+			--remove-projects|--remove-provides|--remove-merged-provides|--remove-provides|--remove-keywords|--remove-merged-keywords|--remove-one-project)
 				## Subtracts from selection
 				local selectVariant="$1" ; shift
 				if [ -z "$1" ] ; then
@@ -243,9 +213,8 @@ ListDistroProjects(){
 				local projectFilter="$1" ; shift
 
 				local matchedProjects
-				matchedProjects="$( 
-					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects \
-					| awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
+				matchedProjects="$(
+					DistroSystemContext --index-projects awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
 				)"
 
 				if [ -z "$matchedProjects" ] ; then
@@ -278,8 +247,7 @@ ListDistroProjects(){
 				fi
 				local projectFilter="$1" ; shift
 
-				ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --all-projects \
-				| awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
+				DistroSystemContext --index-projects awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
 				return 0
 			;;
 			--provides)
@@ -440,8 +408,7 @@ ListDistroProjects(){
 			;;
 			--required|--required-projects)
 				shift
-				Distro ListDistroSequence --all-projects \
-				| awk -v list="$( echo $selectProjects )" '
+				DistroSystemContext --index-sequences awk -v list="$( echo $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
 						for (i = 1; i <= n; i++) keys[arr[i]] = 1
@@ -452,8 +419,7 @@ ListDistroProjects(){
 			;;
 			--affected|--affected-projects)
 				shift
-				Distro ListDistroSequence --all-projects \
-				| awk -v list="$( echo $selectProjects )" '
+				DistroSystemContext --index-sequences awk -v list="$( echo $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
 						for (i = 1; i <= n; i++) keys[arr[i]] = 1

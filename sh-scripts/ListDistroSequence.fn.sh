@@ -26,25 +26,7 @@ ListDistroSequence(){
 					set +e ; return 1
 				fi
 
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
-					local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-					if [ -f "$buildDate" ]; then
-						local cacheFile="$MDSC_CACHED/distro-build-sequence.txt"
-						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
-							return 0
-						fi
-
-						echo "| $MDSC_CMD: --all, build sequence, caching projects ($MDSC_OPTION)" >&2
-						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListBuildSequenceNoCache.include" \
-						| tee "$cacheFile.$$.tmp"
-						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
-						return 0
-					fi
-				fi
-
-				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListBuildSequenceNoCache.include"
+				DistroSystemContext --index-build-sequence cat
 				return 0
 				;;
 
@@ -55,25 +37,7 @@ ListDistroSequence(){
 					set +e ; return 1
 				fi
 
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
-					local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-					if [ -f "$buildDate" ]; then
-						local cacheFile="$MDSC_CACHED/distro-sequences.txt"
-						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-projects using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
-							return 0
-						fi
-
-						echo "| $MDSC_CMD: --all-projects, build sequence, caching ($MDSC_OPTION)" >&2
-						. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllSequencesNoCache.include" \
-						| tee "$cacheFile.$$.tmp"
-						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
-						return 0
-					fi
-				fi
-
-				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/DistroSystemListAllSequencesNoCache.include"
+				DistroSystemContext --index-sequences cat
 				return 0
 				;;
 			*)

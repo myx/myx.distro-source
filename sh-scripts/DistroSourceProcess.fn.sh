@@ -79,6 +79,7 @@ DistroSourceProcess(){
 				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/process" "$INDEX_ROOT"
 			)
 
+			DistroSystemContext --uncache-index
 			[ -z "$MDSC_DETAIL" ] || echo "< $MDSC_CMD: system-index published." >&2
 
 			return 0

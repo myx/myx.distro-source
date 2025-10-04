@@ -15,7 +15,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-path-auto
 fi
 
-Require ListDistroProjects
 Require ListProjectKnownHosts
 
 RebuildKnownHosts() {
@@ -45,7 +44,8 @@ RebuildKnownHosts() {
 	{
 
 		# all known hosts
-		for projectName in $( ListDistroProjects --all-projects ); do
+		DistroSystemContext --index-projects cat \
+		| while read -r projectName; do
 			ListProjectKnownHosts --add-comment "$projectName"
 		done 
 

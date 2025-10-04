@@ -10,7 +10,6 @@ fi
 ListAllActions(){
 
 	local MDSC_CMD='ListAllActions'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	local forCompletion
 	while [ $# -gt 0 ]; do
@@ -18,8 +17,10 @@ ListAllActions(){
 			--completion)
 				shift
 				forCompletion="--completion"
+				[ full != "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 			;;
 			*)
+				[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 				break
 			;;
 		esac
@@ -29,7 +30,8 @@ ListAllActions(){
 
 	local projectName findLocations
 
-	for projectName in $( Distro ListDistroProjects --all-projects ) ; do
+	DistroSystemContext --index-projects cat \
+	| while read -r projectName; do
 		local findLocations=""
 		
 		[ ! -d "$MDSC_SOURCE/$projectName/actions" ] \
@@ -52,9 +54,9 @@ ListAllActions(){
 	done | sort -u
 	return 0
 	
-	
 	Require ListProjectActions
-	for projectName in $( Distro ListDistroProjects --all-projects ) ; do
+	DistroSystemContext --index-projects cat \
+	| while read -r projectName; do
 		ListProjectActions $forCompletion "$projectName"
 	done
 		

@@ -43,8 +43,7 @@ ListDistroKeywords(){
 				return 0
 			;;
 			--*)
-				Require ListDistroProjects
-				ListDistroProjects --select-execute-default ListDistroKeywords "$@"
+				Distro ListDistroProjects --select-execute-default ListDistroKeywords "$@"
 				return 0
 			;;
 			*)
@@ -270,11 +269,11 @@ ListDistroKeywords(){
 
 				echo "| $MDSC_CMD: --all-keywords-merged extracting from source (shell) ($MDSC_OPTION)" >&2
 
-				Require ListDistroSequence
 				Require ListProjectKeywords
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+				DistroSystemContext --index-build-sequence cat \
+				| while read -r sequenceProjectName; do
 					ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0

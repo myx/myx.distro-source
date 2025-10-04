@@ -43,8 +43,7 @@ ListDistroDeclares(){
 				return 0
 			;;
 			--*)
-				Require ListDistroProjects
-				ListDistroProjects --select-execute-default ListDistroDeclares "$@"
+				Distro ListDistroProjects --select-execute-default ListDistroDeclares "$@"
 				return 0
 			;;
 			*)
@@ -66,6 +65,11 @@ ListDistroDeclares(){
 				if [ -n "$1" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
+				fi
+
+				if false; then
+					DistroSourceContext --index-declares
+					return 0
 				fi
 
 				##
@@ -286,11 +290,11 @@ ListDistroDeclares(){
 
 				echo "| $MDSC_CMD: --all-declares-merged extracting from source (shell) ($MDSC_OPTION)" >&2
 
-				Require ListDistroSequence
 				Require ListProjectDeclares
 		
 				local sequenceProjectName
-				for sequenceProjectName in $( ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+				DistroSystemContext --index-build-sequence cat \
+				| while read -r sequenceProjectName; do
 					ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0

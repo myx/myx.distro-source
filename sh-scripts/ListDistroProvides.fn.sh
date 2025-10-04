@@ -43,8 +43,7 @@ ListDistroProvides(){
 				return 0
 			;;
 			--*)
-				Require ListDistroProjects
-				ListDistroProjects --select-execute-default ListDistroProvides "$@"
+				Distro ListDistroProjects --select-execute-default ListDistroProvides "$@"
 				return 0
 			;;
 			*)
@@ -270,7 +269,8 @@ ListDistroProvides(){
 
 				Require ListProjectProvides
 				local sequenceProjectName
-				for sequenceProjectName in $( Distro ListDistroSequence $MDSC_NO_CACHE $MDSC_NO_INDEX --all ) ; do
+				DistroSystemContext --index-build-sequence cat \
+				| while read -r sequenceProjectName; do
 					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
 				done | awk '!x[$0]++'
 				return 0
