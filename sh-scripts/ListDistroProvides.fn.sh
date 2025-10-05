@@ -121,7 +121,7 @@ ListDistroProvides(){
 						;;
 					esac
 				`"
-				
+
 				case "$lastOperation" in
 					--add-own|--add-merged)
 						indexFiltered="$(
@@ -152,7 +152,7 @@ ListDistroProvides(){
 				`"
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: ${lastOperation}-provides-column $columnMatcher no projects selected!" >&2
 					set +e ; return 1
 				fi
 
