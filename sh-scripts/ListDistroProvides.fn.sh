@@ -79,7 +79,7 @@ ListDistroProvides(){
 				return 0
 			;;
 			--add-own-provides-column|--filter-own-provides-column|--add-merged-provides-column|--filter-merged-provides-column)
-				local lastOperation="${1%"-provides-column"}"; shift
+				local lastOperation=${1%"-provides-column"}; shift
 				if [ -z "$1" ]; then
 					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
 					set +e; return 1
@@ -88,6 +88,7 @@ ListDistroProvides(){
 				
 				local indexCurrent indexFiltered indexColumns
 
+				# currently selected projects, 1 column, or iterative ++ columns
 				indexCurrent="$(
 					if [ -z "${indexColumns:0:1}" ]; then
 						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
@@ -96,14 +97,14 @@ ListDistroProvides(){
 							echo "$MDSC_SELECT_PROJECTS"
 						fi
 					else
-						echo "$indexColumns" \
-						| sort -k 2 \
-						| cut -d' ' -f1
+						echo "$indexColumns"
 					fi
 				)"
+				echo ">>>>>>>> CURRENT" >&2
+				echo "$indexCurrent" >&2
 
-				indexFiltered="$(
-					case "$columnMatcher:$lastOperation" in
+				indexFiltered="`
+					case "${columnMatcher}:${lastOperation}" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
 							awk -v m="$columnMatcher" 'index($2,m)==1 { ro=$1 " " substr($2,length(m)+1); if (!x[ro]++) print ro; }'
@@ -120,36 +121,43 @@ ListDistroProvides(){
 							DistroSystemContext --index-merged-provides \
 							awk -v m="$columnMatcher" '$3==m { r= $1 " " $3; if (!x[r]++) print r; }'
 						;;
-					esac \
-					| sort -k 2
-				)"
+					esac
+				`"
+				echo ">>>>>>>> FILTERED" >&2
+				echo "$indexFiltered" >&2
 
-				indexColumns="$(
-					case "$lastOperation" in
-						--add-own|--add-merged)
-							local indexVirtual; indexVirtual="$(
-								{
-									echo "$indexFiltered" \
-									| tr '\t' ' ' \
-									| sed -E -e 's|^[ ]+||'
-									
-									join -v 2 -12 -22 \
-									<( echo "$indexFiltered" ) \
-									<( echo "$indexCurrent" ) \
-									| sed -e 's|$| -|'
-								} \
-								| sort -k 2
-							)"
-							join -12 -22 <( echo "$indexVirtual" ) <( echo "$indexCurrent" )
-						;;
-						--filter-own|--filter-merged)
-							join -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
-						;;
-					esac \
-					| sort -n -k 2,4 \
-					| awk 'print $1, $5, $3' \
-					| awk '$0 && !x[$0]++'
-				)"
+				case "$lastOperation" in
+					--add-own|--add-merged)
+						indexFiltered="$(
+							{
+								awk '{ gsub(/\t/, " "); sub(/^[ ]+/, ""); print }' \
+									<<< "$indexFiltered"
+								
+								awk '
+									NR==FNR { exclude[$2]; next }
+									!($2 in exclude) { print $0, "-" }
+								' <(echo "$indexFiltered") <(echo "$indexCurrent")
+							} \
+							| sort -k 2
+						)"
+					;;
+				esac
+
+				indexColumns="`
+					awk '
+						NR==FNR { key[$1]=$2; next }
+						$1 in key {
+							out = $0 " " key[$1]
+							if (!seen[out]++) print out
+						}
+					' \
+						<(printf "%s\n" "$indexFiltered") \
+						<(printf "%s\n" "$indexCurrent")
+				`"
+
+				echo ">>>>>>>> COLUMNS" >&2
+				echo "$indexColumns" >&2
+
 				
 				if [ -z "$indexColumns" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
@@ -165,13 +173,15 @@ ListDistroProvides(){
 					set +e ; return 1
 				fi
 				local filterProvides="$1" projectName projectProvides ; shift
-				DistroSystemContext --index-provides cat \
-				| while read -r projectName projectProvides ; do
-				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ]; then
-						echo "$projectName ${projectProvides#${filterProvides}:}"
-					fi
-				done \
-				| awk '!x[$0]++'
+
+				DistroSystemContext --index-provides cat | awk -v f="$filterProvides" '
+				{
+					if (index($2, f ":") == 1) {
+						out = $1 " " substr($2, length(f) + 2)
+						if (!seen[out]++) print out
+					}
+				}
+				'
 				return 0
 			;;
 			--merge-sequence)
@@ -229,7 +239,7 @@ case "$0" in
 			fi
 			exit 1
 		fi
-				
+
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
