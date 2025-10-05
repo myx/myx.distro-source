@@ -134,7 +134,6 @@ ListDistroProvides(){
 				local indexColumns; indexColumns="$(
 					case "$lastOperation" in
 						--add-own|--add-merged)
-							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
 							indexVirtual="$(
 								{
 									echo "$indexFiltered" \
@@ -145,7 +144,7 @@ ListDistroProvides(){
 									<( echo "$indexFiltered" ) \
 									<( echo "$indexCurrent" ) \
 									| sed -e 's|$| -|'
-								}
+								} \
 								| sort -k 2
 							)"
 							join -12 -22 <( echo "$indexVirtual" ) <( echo "$indexCurrent" )
