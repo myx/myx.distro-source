@@ -86,10 +86,10 @@ ListDistroProvides(){
 				fi
 				local columnMatcher="$1" ; shift
 				
-				local indexCurrent="$(
+				local indexCurrent; indexCurrent="$(
 					if [ -z "${indexColumns:0:1}" ]; then
 						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
-							if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ]; then
+							if [ --add-own = "$lastOperation" ] || [ --filter-own = "$lastOperation" ]; then
 								DistroSystemContext --index-provides \
 								cut -d" " -f1
 							else
@@ -106,7 +106,7 @@ ListDistroProvides(){
 					| sort -k 2
 				)"
 				
-				local indexFiltered="$(
+				local indexFiltered; indexFiltered="$(
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
@@ -131,14 +131,20 @@ ListDistroProvides(){
 				)"
 
 				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns
-				local indexColumns="$(
+				local indexColumns; indexColumns="$(
 					case "$lastOperation" in
 						--add-own|--add-merged)
 							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
 							local indexVirtual; indexVirtual="$(
 								{
-									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||'
-									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|'
+									echo "$indexFiltered" \
+									| tr '\t' ' ' \
+									| sed -E -e 's|^[ ]+||'
+									
+									join -v 2 -12 -22 \
+									<( echo "$indexFiltered" ) \
+									<( echo "$indexCurrent" ) \
+									| sed -e 's|$| -|'
 								}
 								| sort -k 2
 							)"
@@ -173,7 +179,8 @@ ListDistroProvides(){
 				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
 					fi
-				done | awk '!x[$0]++'
+				done \
+				| awk '!x[$0]++'
 				return 0
 			;;
 			--merge-sequence)
@@ -186,8 +193,10 @@ ListDistroProvides(){
 				Require ListProjectProvides
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
-				done | awk '!x[$0]++'
+					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" \
+					| sed "s|^|$sequenceProjectName |g"
+				done \
+				| awk '!x[$0]++'
 				return 0
 			;;
 			'')
