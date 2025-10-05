@@ -110,25 +110,25 @@ ListDistroProvides(){
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" 'index($2, m)==1 && !seen[$1]++ { print " " $1 }'
+							awk -v m="$columnMatcher" 'index($2, m)==1 && !seen[$1]++ {
+								rest = substr($2, length(m) + 1) 
+    						print $1, rest }'
 						;;
 						*:--add-own|*:--filter-own)
 							DistroSystemContext --index-provides \
-							grep -e "^\S* $columnMatcher$"
+							awk -v m="$columnMatcher" '$2 == m && !seen[$0]++ { print }'
 						;;
 						*::--add-merged|*::--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							cut -d" " -f1,3 \
-							| grep -e "^\S* $columnMatcher.*$" \
-							| sed -e "s| $columnMatcher| |"
+							awk -v m="$columnMatcher" 'index($3, m)==1 && !seen[$1]++ { 
+								rest = substr($2, length(m) + 1) 
+    						print $1, rest }'
 						;;
 						*:--add-merged|*:--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							cut -d" " -f1,3 \
-							| grep -e "^\S* $columnMatcher$"
+							awk -v m="$columnMatcher" '$3 == m && !seen[$0]++ { print $1, $3 }'
 						;;
 					esac \
-					| awk '$0 && !x[$0]++' \
 					| cat -n \
 					| sort -k 2
 				)"
