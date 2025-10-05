@@ -91,19 +91,14 @@ ListDistroProvides(){
 				indexCurrent="$(
 					if [ -z "${indexColumns:0:1}" ]; then
 						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
-							if [ --add-own = "$lastOperation" ] || [ --filter-own = "$lastOperation" ]; then
-								DistroSystemContext --index-provides \
-								awk '$1 && !seen[$1]++ { print $1; }'
-							else
-								DistroSystemContext --index-merged-provides \
-								awk '$1 && !seen[$1]++ { print $1; }'
-							fi
+							DistroSystemContext --index-projects cat
 						else
 							echo "$MDSC_SELECT_PROJECTS"
 						fi
 					else
 						echo "$indexColumns" \
-						| sort -k 2
+						| sort -k 2 \
+						| cut -d' ' -f1
 					fi
 				)"
 
@@ -111,23 +106,21 @@ ListDistroProvides(){
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" 'index($2,m)==1 { rest=substr($2,length(m)+1); print $1,rest; }'
+							awk -v m="$columnMatcher" 'index($2,m)==1 { ro=$1 " " substr($2,length(m)+1); if (!x[ro]++) print ro; }'
 						;;
 						*::--add-merged|*::--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" 'index($3,m)==1 { rest=substr($3,length(m)+1); print $1,rest; }'
+							awk -v m="$columnMatcher" 'index($3,m)==1 { rm=$1 " " substr($3,length(m)+1); if (!x[rm]++) print rm; }'
 						;;
 						*:--add-own|*:--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" '$2==m { print; }'
+							awk -v m="$columnMatcher" '$2==m && !x[$0]++ { print; }'
 						;;
 						*:--add-merged|*:--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" '$3==m { print $1,$3; }'
+							awk -v m="$columnMatcher" '$3==m { r= $1 " " $3; if (!x[r]++) print r; }'
 						;;
 					esac \
-					| awk '$0 && !x[$0]++' \
-					| cat -n \
 					| sort -k 2
 				)"
 
