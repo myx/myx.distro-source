@@ -60,7 +60,7 @@ ListDistroProvides(){
 		case "$1" in
 			--all-provides)
 				shift
-				if [ -n "$1" ] ; then
+				if [ -n "$1" ]; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -70,7 +70,7 @@ ListDistroProvides(){
 			;;
 			--all-provides-merged)
 				shift
-				if [ -n "$1" ] ; then
+				if [ -n "$1" ]; then
 					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
@@ -79,14 +79,16 @@ ListDistroProvides(){
 				return 0
 			;;
 			--add-own-provides-column|--filter-own-provides-column|--add-merged-provides-column|--filter-merged-provides-column)
-				local lastOperation=${1%"-provides-column"} ; shift
-				if [ -z "$1" ] ; then
+				local lastOperation="${1%"-provides-column"}"; shift
+				if [ -z "$1" ]; then
 					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
-					set +e ; return 1
+					set +e; return 1
 				fi
 				local columnMatcher="$1" ; shift
 				
-				local indexCurrent; indexCurrent="$(
+				local indexCurrent indexFiltered indexColumns
+
+				indexCurrent="$(
 					if [ -z "${indexColumns:0:1}" ]; then
 						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
 							if [ --add-own = "$lastOperation" ] || [ --filter-own = "$lastOperation" ]; then
@@ -106,23 +108,23 @@ ListDistroProvides(){
 					| sort -k 2
 				)"
 				
-				local indexFiltered; indexFiltered="$(
+				indexFiltered="$(
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" 'index($2,m)==1 { rest=substr($2, length(m)+1); print $1, rest }'
+							awk -v m="$columnMatcher" 'index($2,m)==1 { rest=substr($2, length(m)+1); print $1, rest; }'
 						;;
 						*:--add-own|*:--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" '$2==m { print }'
+							awk -v m="$columnMatcher" '$2==m { print; }'
 						;;
 						*::--add-merged|*::--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" 'index($3,m)==1 { rest=substr($3, length(m)+1); print $1, rest }'
+							awk -v m="$columnMatcher" 'index($3,m)==1 { rest=substr($3, length(m)+1); print $1, rest; }'
 						;;
 						*:--add-merged|*:--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" '$3==m { print $1, $3 }'
+							awk -v m="$columnMatcher" '$3==m { print $1, $3; }'
 						;;
 					esac \
 					| awk '$0 && !x[$0]++' \
@@ -130,8 +132,8 @@ ListDistroProvides(){
 					| sort -k 2
 				)"
 
-				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns indexVirtual
-				local indexColumns; indexColumns="$(
+				indexColumns="$(
+					local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns indexVirtual
 					case "$lastOperation" in
 						--add-own|--add-merged)
 							indexVirtual="$(
@@ -154,9 +156,7 @@ ListDistroProvides(){
 						;;
 					esac \
 					| sort -n -k 2,4 \
-					| while read -r tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns; do
-						echo $tmpKey $tmpColumns $tmpColumn
-					done \
+					| awk 'print $1, $5, $3' \
 					| awk '$0 && !x[$0]++'
 				)"
 				
@@ -174,7 +174,7 @@ ListDistroProvides(){
 				local filterProvides="$1" projectName projectProvides ; shift
 				DistroSystemContext --index-provides cat \
 				| while read -r projectName projectProvides ; do
-				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
+				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ]; then
 						echo "$projectName ${projectProvides#${filterProvides}:}"
 					fi
 				done \
