@@ -76,7 +76,7 @@ ListDistroProjects(){
 				shift
 				local selectProjects
 				selectProjects="$( 
-					DistroSystemContext --index-build-sequence cat
+					DistroSystemContext --index-sequence cat
 				)"
 				continue
 			;;
@@ -300,12 +300,12 @@ ListDistroProjects(){
 
 				case "$providesFilter" in
 					*:)
-						DistroSystemContext --index-merged-provides \
+						DistroSystemContext --index-provides-merged \
 						awk -v f="$providesFilter" 'index($3,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						DistroSystemContext --index-merged-provides \
+						DistroSystemContext --index-provides-merged \
 						awk -v f="$providesFilter" '$3 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
@@ -384,12 +384,12 @@ ListDistroProjects(){
 
 				case "$keywordsFilter" in
 					*:)
-						DistroSystemContext --index-merged-keywords \
+						DistroSystemContext --index-keywords-merged \
 						awk -v f="$keywordsFilter" 'index($3,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						DistroSystemContext --index-merged-keywords \
+						DistroSystemContext --index-keywords-merged \
 						awk -v f="$keywordsFilter" '$3 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
@@ -410,7 +410,7 @@ ListDistroProjects(){
 			;;
 			--required|--required-projects)
 				shift
-				DistroSystemContext --index-sequences awk -v list="$( echo $selectProjects )" '
+				DistroSystemContext --index-sequence-merged awk -v list="$( echo $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
 						for (i = 1; i <= n; i++) keys[arr[i]] = 1
@@ -421,7 +421,7 @@ ListDistroProjects(){
 			;;
 			--affected|--affected-projects)
 				shift
-				DistroSystemContext --index-sequences awk -v list="$( echo $selectProjects )" '
+				DistroSystemContext --index-sequence-merged awk -v list="$( echo $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
 						for (i = 1; i <= n; i++) keys[arr[i]] = 1

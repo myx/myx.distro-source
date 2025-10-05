@@ -26,7 +26,7 @@ ListDistroSequence(){
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --index-build-sequence cat
+				DistroSystemContext --index-sequence cat
 				return 0
 				;;
 
@@ -37,7 +37,7 @@ ListDistroSequence(){
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --index-sequences cat
+				DistroSystemContext --index-sequence-merged cat
 				return 0
 				;;
 			*)

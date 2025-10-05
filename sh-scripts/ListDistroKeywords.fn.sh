@@ -77,7 +77,7 @@ ListDistroKeywords(){
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --index-merged-keywords cat
+				DistroSystemContext --index-keywords-merged cat
 				return 0
 			;;
 			--add-own-keywords-column|--filter-own-keywords-column|--add-merged-keywords-column|--filter-merged-keywords-column)
@@ -96,7 +96,7 @@ ListDistroKeywords(){
 				else
 					if [ -z "${indexAllKeywords:0:1}" ] ; then
 						local indexAllKeywords="$(
-							DistroSystemContext --index-merged-keywords cat
+							DistroSystemContext --index-keywords-merged cat
 						)"
 					fi
 				fi

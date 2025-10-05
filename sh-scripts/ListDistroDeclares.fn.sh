@@ -77,7 +77,7 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --index-merged-declares cat
+				DistroSystemContext --index-declares-merged cat
 				return 0
 			;;
 			--add-own-declares-column|--filter-own-declares-column|--add-merged-declares-column|--filter-merged-declares-column)
@@ -96,7 +96,7 @@ ListDistroDeclares(){
 				else
 					if [ -z "${indexAllDeclares:0:1}" ] ; then
 						local indexAllDeclares="$( 
-							DistroSystemContext --index-merged-declares cat
+							DistroSystemContext --index-declares-merged cat
 						)"
 					fi
 				fi

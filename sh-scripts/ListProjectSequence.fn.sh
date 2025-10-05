@@ -96,7 +96,7 @@ ListProjectSequence(){
 
 
 	if [ "$MDSC_NO_CACHE" != "--no-cache" ] && [ -d "$MDSC_CACHED" ] ; then
-		local cacheFile="$MDSC_CACHED/$projectName/project-build-sequence.txt"
+		local cacheFile="$MDSC_CACHED/$projectName/project-sequence.txt"
 		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
 			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
