@@ -79,12 +79,12 @@ ListDistroDeclares(){
 				return 0
 			;;
 			--add-own-declares-column|--filter-own-declares-column|--add-merged-declares-column|--filter-merged-declares-column)
-				local lastOperation=${1%"-declares-column"} ; shift
+				local columnOp=${1%"-declares-column"} ; shift
 				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project declares filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $columnOp project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local columnMatcher="$1" ; shift
+				local columnMatch="$1" ; shift
 				local indexCurrent indexFiltered indexColumns
 
 				# currently selected projects, 1 column, or iterative ++ columns
@@ -95,27 +95,27 @@ ListDistroDeclares(){
 				)"
 
 				indexFiltered="`
-					case "${columnMatcher}:${lastOperation}" in
+					case "${columnMatch}:${columnOp}" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-declares \
-							awk -v m="$columnMatcher" 'index($2,m)==1 { ro=$1 " " substr($2,length(m)+1); if (!x[ro]++) print ro; }'
+							awk -v m="$columnMatch" 'index($2,m)==1 { ro=$1 " " substr($2,length(m)+1); if (!x[ro]++) print ro; }'
 						;;
 						*::--add-merged|*::--filter-merged)
 							DistroSystemContext --index-declares-merged \
-							awk -v m="$columnMatcher" 'index($3,m)==1 { rm=$1 " " substr($3,length(m)+1); if (!x[rm]++) print rm; }'
+							awk -v m="$columnMatch" 'index($3,m)==1 { rm=$1 " " substr($3,length(m)+1); if (!x[rm]++) print rm; }'
 						;;
 						*:--add-own|*:--filter-own)
 							DistroSystemContext --index-declares \
-							awk -v m="$columnMatcher" '$2==m && !x[$0]++ { print; }'
+							awk -v m="$columnMatch" '$2==m && !x[$0]++ { print; }'
 						;;
 						*:--add-merged|*:--filter-merged)
 							DistroSystemContext --index-declares-merged \
-							awk -v m="$columnMatcher" '$3==m { r= $1 " " $3; if (!x[r]++) print r; }'
+							awk -v m="$columnMatch" '$3==m { r= $1 " " $3; if (!x[r]++) print r; }'
 						;;
 					esac
 				`"
 
-				case "$lastOperation" in
+				case "$columnOp" in
 					--add-own|--add-merged)
 						indexFiltered="$(
 							awk '
@@ -144,7 +144,7 @@ ListDistroDeclares(){
 				`"
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: ${lastOperation}-declares-column $columnMatcher no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: ${columnOp}-declares-column $columnMatch no projects selected!" >&2
 					set +e ; return 1
 				fi
 
@@ -156,8 +156,9 @@ ListDistroDeclares(){
 					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local filterDeclares="$1"; shift
-				DistroSystemContext --index-declares awk -v f="${filterDeclares}:" '
+				local filterDeclares="$1" indexSpec=; shift
+				[ -z "${MDSC_SELECT_PROJECTS:0:1}" ] || indexSpec='--select-index'
+				DistroSystemContext ${indexSpec:-'--index'}-declares awk -v f="${filterDeclares}:" '
 				{
 					if (index($2, f) == 1) {
 						out = $1 " " substr($2, length(f) + 1)
