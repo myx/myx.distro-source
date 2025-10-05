@@ -31,7 +31,7 @@ ListChangedSourceProjects(){
 
 	if [ -d "$MMDAPP/.local/source-cache/changed" ] ; then
 		[ -z "$MDSC_DETAIL" ] || echo "| ListChangedSourceProjects: intersecting cached/changed with projects" >&2
-		local projectName=
+		local projectName
 		DistroSystemContext --index-projects cat \
 		| while read -r projectName; do
 			[ ! -f "$MMDAPP/.local/source-cache/changed/$projectName" ] || echo "$projectName"
