@@ -7,17 +7,17 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-ListDistroDeclares(){
-	local MDSC_CMD='ListDistroDeclares'
+ListDistroProvides(){
+	local MDSC_CMD='ListDistroProvides'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
 	set -e
-	
+
 	while true ; do
 		case "$1" in
-			--all-*|--add-*-column|--filter-and-cut)
+			--all-*|--add-*-column)
 				break
 			;;
 			--explicit-noop)
@@ -43,7 +43,7 @@ ListDistroDeclares(){
 				return 0
 			;;
 			--*)
-				Distro ListDistroProjects --select-execute-default ListDistroDeclares "$@"
+				Distro ListDistroProjects --select-execute-default ListDistroProvides "$@"
 				return 0
 			;;
 			*)
@@ -53,86 +53,87 @@ ListDistroDeclares(){
 	done
 
 	local indexFile="$MDSC_CACHED/distro-index.inf"
-	local indexAllDeclares=""
-	local indexOwnDeclares=""
+	local indexAllProvides=""
+	local indexOwnProvides=""
 	local indexColumns=""
 
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
-			--all-declares)
+			--all-provides)
 				shift
 				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-provides option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --index-declares cat
+				DistroSystemContext --index-provides cat
 				return 0
 			;;
-			--all-declares-merged)
+			--all-provides-merged)
 				shift
-				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-declares-merged option ($MDSC_OPTION, $@)" >&2
+				if [ -n "$1" ]; then
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-provides-merged option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --index-declares-merged cat
+				DistroSystemContext --index-provides-merged cat
 				return 0
 			;;
-			--add-own-declares-column|--filter-own-declares-column|--add-merged-declares-column|--filter-merged-declares-column)
-				local lastOperation=${1%"-declares-column"} ; shift
-				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project declares filter is expected!" >&2
-					set +e ; return 1
+			--add-own-provides-column|--filter-own-provides-column|--add-merged-provides-column|--filter-merged-provides-column)
+				local lastOperation=${1%"-provides-column"}; shift
+				if [ -z "$1" ]; then
+					echo "⛔ ERROR: $MDSC_CMD: $lastOperation project provides filter is expected!" >&2
+					set +e; return 1
 				fi
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
-					if [ -z "${indexOwnDeclares:0:1}" ] ; then
-						local indexOwnDeclares="$( 
-							DistroSystemContext --index-declares cat
-						)"
+					if [ -z "${indexOwnProvides:0:1}" ] ; then
+						local indexOwnProvides="` ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides `"
 					fi
 				else
-					if [ -z "${indexAllDeclares:0:1}" ] ; then
-						local indexAllDeclares="$( 
-							DistroSystemContext --index-declares-merged cat
-						)"
+					if [ -z "${indexAllProvides:0:1}" ] ; then
+						local indexAllProvides="` ListDistroProvides --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged `"
 					fi
 				fi
 				
+				local indexCurrent indexFiltered indexColumns
 				
-				local indexCurrent="` \
+				# currently selected projects, 1 column
+				indexCurrent="` \
 					if [ -z "${indexColumns:0:1}" ] ; then
 						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 							if [ "--add-own" = "lastOperation" ] || [ "--filter-own" = "lastOperation" ] ; then
-								echo "$indexOwnDeclares" | cut -d" " -f1
+								echo "$indexOwnProvides" | cut -d" " -f1
 							else
-								echo "$indexAllDeclares" | awk '$1 && !seen[$1]++ { print $1; }'
+								echo "$indexAllProvides" | cut -d" " -f1 | awk '!x[$0]++'
 							fi
 						else
 							echo "$MDSC_SELECT_PROJECTS"
 						fi
 					else
-						echo "$indexColumns"
+						echo "$indexColumns" # << this one grows columns
 					fi \
-					| cat -n \
 					| sort -k 2 \
 				`"
 				
-				local indexFiltered="` \
+				indexFiltered="` \
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
-							echo "$indexOwnDeclares" | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
-						;;
-						*:--add-own|*:--filter-own)
-							echo "$indexOwnDeclares" | grep -e "^\S* $columnMatcher$"
+							DistroSystemContext --index-provides \
+							grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
 						;;
 						*::--add-merged|*::--filter-merged)
-							echo "$indexAllDeclares" | cut -d" " -f1,3 | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
+							DistroSystemContext --index-provides-merged \
+							cut -d" " -f1,3 | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
+						;;
+						*:--add-own|*:--filter-own)
+							DistroSystemContext --index-provides \
+							grep -e "^\S* $columnMatcher$"
 						;;
 						*:--add-merged|*:--filter-merged)
-							echo "$indexAllDeclares" | cut -d" " -f1,3 | grep -e "^\S* $columnMatcher$"
+							DistroSystemContext --index-provides-merged \
+							cut -d" " -f1,3 | grep -e "^\S* $columnMatcher$"
 						;;
 					esac \
 					| awk '$0 && !x[$0]++' \
@@ -147,8 +148,14 @@ ListDistroDeclares(){
 							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
 							local indexVirtual="$( \
 								( \
-									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||' ; \
-									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|' \
+									echo "$indexFiltered" \
+									| tr '\t' ' ' \
+									| sed -E -e 's|^[ ]+||'
+
+									join -v 2 -12 -22 \
+										<( echo "$indexFiltered" ) \
+										<( echo "$indexCurrent" ) \
+									| sed -e 's|$| -|' \
 								) \
 								| sort -k 2 \
 							)"
@@ -170,22 +177,22 @@ ListDistroDeclares(){
 					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
 					set +e ; return 1
 				fi
+				continue
 			;;
 			--filter-and-cut)
 				shift
 				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: project provides filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local filterDeclares="$1"; shift
-				DistroSystemContext --index-declares awk -v f="${filterDeclares}:" '
-				{
-					if (index($2, f) == 1) {
-						out = $1 " " substr($2, length(f) + 1)
-						if (!seen[out]++) print out
-					}
-				}
-				'
+				local filterProvides="$1" projectName projectProvides ; shift
+				DistroSystemContext --index-provides cat \
+				| while read -r projectName projectProvides ; do
+				 	if [ "$projectProvides" != "${projectProvides#${filterProvides}:}" ] ; then
+						echo "$projectName ${projectProvides#${filterProvides}:}"
+					fi
+				done \
+				| awk '!x[$0]++'
 				return 0
 			;;
 			--merge-sequence)
@@ -195,12 +202,13 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 				
-				Require ListProjectDeclares
-		
+				Require ListProjectProvides
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
-				done | awk '!x[$0]++'
+					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" \
+					| sed "s|^|$sequenceProjectName |g"
+				done \
+				| awk '!x[$0]++'
 				return 0
 			;;
 			'')
@@ -210,9 +218,11 @@ ListDistroDeclares(){
 				fi
 				
 				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					DistroSystemContext --index-declares \
-					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b] $0}' \
-						<( echo "$MDSC_SELECT_PROJECTS" )
+					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
+						echo "$MDSC_SELECT_PROJECTS" \
+					) <( \
+						DistroSystemContext --index-provides cat \
+					)
 					return 0
 				fi
 
@@ -229,24 +239,25 @@ ListDistroDeclares(){
 }
 
 case "$0" in
-	*/sh-scripts/ListDistroDeclares.fn.sh)
+	*/sh-scripts/ListDistroProvides.fn.sh)
+
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: ListDistroDeclares.fn.sh [<options>] --all-declares" >&2
-			# echo "📘 syntax: ListDistroDeclares.fn.sh [<options>] --all-declares-merged" >&2
-			echo "📘 syntax: ListDistroDeclares.fn.sh [<options>] <project-selector> [--merge-sequence]" >&2
-			echo "📘 syntax: ListDistroDeclares.fn.sh [--help]" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh --all-provides" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh --all-provides-merged" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh <project-selector> [--merge-sequence] [<options>]" >&2
+			echo "📘 syntax: ListDistroProvides.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroDeclares.include"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListDistroProvides.include"
 			fi
 			exit 1
 		fi
-		
+
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
 		fi
 
-		ListDistroDeclares "$@"
+		ListDistroProvides "$@"
 	;;
 esac

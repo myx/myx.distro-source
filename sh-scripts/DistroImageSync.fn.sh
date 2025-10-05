@@ -17,8 +17,7 @@ DistroImageSync(){
 			[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $MDSC_NO_CACHE $MDSC_NO_INDEX $@" >&2
 
 			local projectName buildStage syncOperation targetSpec sourceSpec extra
-			Require ListDistroDeclares
-			ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --filter-and-cut "distro-image-sync" \
+			Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --filter-and-cut "distro-image-sync" \
 			| sed -e 's/:/ /' -e 's/:/ /' -e 's/:/ /' \
 			| while read -r projectName buildStage syncOperation targetSpec sourceSpec extra ; do
 				echo "$buildStage" "$projectName" "$syncOperation" "$targetSpec" "$sourceSpec" "$extra"

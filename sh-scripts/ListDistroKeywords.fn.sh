@@ -17,7 +17,7 @@ ListDistroKeywords(){
 
 	while true ; do
 		case "$1" in
-			--all-*|--add-*-column)
+			--all-*|--add-*-column|--filter-and-cut)
 				break
 			;;
 			--explicit-noop)
@@ -177,13 +177,15 @@ ListDistroKeywords(){
 					echo "⛔ ERROR: $MDSC_CMD: project keywords filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local filterKeywords="$1" projectName projectKeywords ; shift
-				DistroSystemContext --index-keywords cat \
-				| while read -r projectName projectKeywords ; do
-				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
-						echo "$projectName ${projectKeywords#${filterKeywords}:}"
-					fi
-				done | awk '!x[$0]++'
+				local filterKeywords="$1"; shift
+				DistroSystemContext --index-keywords awk -v f="${filterKeywords}:" '
+				{
+					if (index($2, f) == 1) {
+						out = $1 " " substr($2, length(f) + 1)
+						if (!seen[out]++) print out
+					}
+				}
+				'
 				return 0
 			;;
 			--merge-sequence)

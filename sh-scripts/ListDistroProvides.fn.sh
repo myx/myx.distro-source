@@ -17,7 +17,7 @@ ListDistroProvides(){
 
 	while true ; do
 		case "$1" in
-			--all-*|--add-*-column)
+			--all-*|--add-*-column|--filter-and-cut)
 				break
 			;;
 			--explicit-noop)
@@ -164,11 +164,10 @@ ListDistroProvides(){
 					set +e ; return 1
 				fi
 				local filterProvides="$1" ; shift
-
-				DistroSystemContext --index-provides awk -v f="$filterProvides" '
+				DistroSystemContext --index-provides awk -v f="${filterProvides}:" '
 				{
-					if (index($2, f ":") == 1) {
-						out = $1 " " substr($2, length(f) + 2)
+					if (index($2, f) == 1) {
+						out = $1 " " substr($2, length(f) + 1)
 						if (!seen[out]++) print out
 					}
 				}
