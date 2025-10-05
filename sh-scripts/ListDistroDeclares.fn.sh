@@ -53,8 +53,6 @@ ListDistroDeclares(){
 	done
 
 	local indexFile="$MDSC_CACHED/distro-index.inf"
-	local indexAllDeclares=""
-	local indexOwnDeclares=""
 	local indexColumns=""
 
 	while true ; do
@@ -87,89 +85,70 @@ ListDistroDeclares(){
 					set +e ; return 1
 				fi
 				local columnMatcher="$1" ; shift
-				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
-					if [ -z "${indexOwnDeclares:0:1}" ] ; then
-						local indexOwnDeclares="$( 
-							DistroSystemContext --index-declares cat
-						)"
-					fi
-				else
-					if [ -z "${indexAllDeclares:0:1}" ] ; then
-						local indexAllDeclares="$( 
-							DistroSystemContext --index-declares-merged cat
-						)"
-					fi
-				fi
-				
-				
-				local indexCurrent="` \
-					if [ -z "${indexColumns:0:1}" ] ; then
-						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-							if [ "--add-own" = "lastOperation" ] || [ "--filter-own" = "lastOperation" ] ; then
-								echo "$indexOwnDeclares" | cut -d" " -f1
-							else
-								echo "$indexAllDeclares" | awk '$1 && !seen[$1]++ { print $1; }'
-							fi
-						else
-							echo "$MDSC_SELECT_PROJECTS"
-						fi
-					else
-						echo "$indexColumns"
-					fi \
-					| cat -n \
-					| sort -k 2 \
-				`"
-				
-				local indexFiltered="` \
-					case "$columnMatcher:$lastOperation" in
+				local indexCurrent indexFiltered indexColumns
+
+				# currently selected projects, 1 column, or iterative ++ columns
+				indexCurrent="$(
+					[ -z "${indexColumns:0:1}" ] || { echo "$indexColumns"; return 0; }
+					[ -z "${MDSC_SELECT_PROJECTS:0:1}" ] || { echo "$MDSC_SELECT_PROJECTS"; return 0; }
+					DistroSystemContext --index-projects cat
+				)"
+
+				indexFiltered="`
+					case "${columnMatcher}:${lastOperation}" in
 						*::--add-own|*::--filter-own)
-							echo "$indexOwnDeclares" | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
-						;;
-						*:--add-own|*:--filter-own)
-							echo "$indexOwnDeclares" | grep -e "^\S* $columnMatcher$"
+							DistroSystemContext --index-declares \
+							awk -v m="$columnMatcher" 'index($2,m)==1 { ro=$1 " " substr($2,length(m)+1); if (!x[ro]++) print ro; }'
 						;;
 						*::--add-merged|*::--filter-merged)
-							echo "$indexAllDeclares" | cut -d" " -f1,3 | grep -e "^\S* $columnMatcher.*$" | sed -e "s| $columnMatcher| |"
+							DistroSystemContext --index-declares-merged \
+							awk -v m="$columnMatcher" 'index($3,m)==1 { rm=$1 " " substr($3,length(m)+1); if (!x[rm]++) print rm; }'
+						;;
+						*:--add-own|*:--filter-own)
+							DistroSystemContext --index-declares \
+							awk -v m="$columnMatcher" '$2==m && !x[$0]++ { print; }'
 						;;
 						*:--add-merged|*:--filter-merged)
-							echo "$indexAllDeclares" | cut -d" " -f1,3 | grep -e "^\S* $columnMatcher$"
+							DistroSystemContext --index-declares-merged \
+							awk -v m="$columnMatcher" '$3==m { r= $1 " " $3; if (!x[r]++) print r; }'
 						;;
-					esac \
-					| awk '$0 && !x[$0]++' \
-					| cat -n \
-					| sort -k 2 \
+					esac
 				`"
 
-				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns
-				local indexColumns="` \
-					case "$lastOperation" in
-						--add-own|--add-merged)
-							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
-							local indexVirtual="$( \
-								( \
-									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||' ; \
-									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|' \
-								) \
-								| sort -k 2 \
-							)"
-							join -12 -22 <( echo "$indexVirtual" ) <( echo "$indexCurrent" )
-						;;
-						--filter-own|--filter-merged)
-							join -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
-						;;
-					esac \
-					| sort -n -k 2,4 \
-					| while read -r tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns ; do
-						# | cut -d" " -f 1,5-,3
-						echo $tmpKey $tmpColumns $tmpColumn
-					done \
-					| awk '$0 && !x[$0]++' \
+				case "$lastOperation" in
+					--add-own|--add-merged)
+						indexFiltered="$(
+							awk '
+								NR==FNR {
+									{ print $1, $2; map[$1]=1 }
+									next
+								}
+								!($1 in map) && !map[$1]++ { print $1, "-" }
+							' \
+							<(printf "%s\n" "$indexFiltered") \
+							<(printf "%s\n" "$indexCurrent")
+						)"
+					;;
+				esac
+
+				indexColumns="`
+					awk '
+						NR==FNR { key[$1]=$2; next }
+						$1 in key {
+							out = $0 " " key[$1]
+							if (!seen[out]++) print out
+						}
+					' \
+						<(printf "%s\n" "$indexFiltered") \
+						<(printf "%s\n" "$indexCurrent")
 				`"
 				
 				if [ -z "$indexColumns" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: ${lastOperation}-declares-column $columnMatcher no projects selected!" >&2
 					set +e ; return 1
 				fi
+
+				continue
 			;;
 			--filter-and-cut)
 				shift

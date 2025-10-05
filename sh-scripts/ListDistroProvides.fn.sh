@@ -90,15 +90,9 @@ ListDistroProvides(){
 
 				# currently selected projects, 1 column, or iterative ++ columns
 				indexCurrent="$(
-					if [ -z "${indexColumns:0:1}" ]; then
-						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
-							DistroSystemContext --index-projects cat
-						else
-							echo "$MDSC_SELECT_PROJECTS"
-						fi
-					else
-						echo "$indexColumns"
-					fi
+					[ -z "${indexColumns:0:1}" ] || { echo "$indexColumns"; return 0; }
+					[ -z "${MDSC_SELECT_PROJECTS:0:1}" ] || { echo "$MDSC_SELECT_PROJECTS"; return 0; }
+					DistroSystemContext --index-projects cat
 				)"
 
 				indexFiltered="`
