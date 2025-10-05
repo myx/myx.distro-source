@@ -121,6 +121,7 @@ ListDistroProvides(){
 						;;
 					esac
 				`"
+				
 				case "$lastOperation" in
 					--add-own|--add-merged)
 						indexFiltered="$(
