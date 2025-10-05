@@ -87,9 +87,9 @@ ListDistroProvides(){
 				local columnMatcher="$1" ; shift
 				
 				local indexCurrent="$(
-					if [ -z "${indexColumns:0:1}" ] ; then
-						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-							if [ "--add-own" = "lastOperation" ] || [ "--filter-own" = "lastOperation" ] ; then
+					if [ -z "${indexColumns:0:1}" ]; then
+						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
+							if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ]; then
 								DistroSystemContext --index-provides \
 								cut -d" " -f1
 							else
@@ -107,7 +107,6 @@ ListDistroProvides(){
 				)"
 				
 				local indexFiltered="$(
-					set -x
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
