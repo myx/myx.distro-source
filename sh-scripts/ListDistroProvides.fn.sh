@@ -100,8 +100,6 @@ ListDistroProvides(){
 						echo "$indexColumns"
 					fi
 				)"
-				echo ">>>>>>>> CURRENT" >&2
-				echo "$indexCurrent" >&2
 
 				indexFiltered="`
 					case "${columnMatcher}:${lastOperation}" in
@@ -123,9 +121,6 @@ ListDistroProvides(){
 						;;
 					esac
 				`"
-				echo ">>>>>>>> FILTERED" >&2
-				echo "$indexFiltered" >&2
-
 				case "$lastOperation" in
 					--add-own|--add-merged)
 						indexFiltered="$(
@@ -154,10 +149,6 @@ ListDistroProvides(){
 						<(printf "%s\n" "$indexFiltered") \
 						<(printf "%s\n" "$indexCurrent")
 				`"
-
-				echo ">>>>>>>> COLUMNS" >&2
-				echo "$indexColumns" >&2
-
 				
 				if [ -z "$indexColumns" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
