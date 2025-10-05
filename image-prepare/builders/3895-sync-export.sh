@@ -49,7 +49,8 @@ SyncExportsFromOutput(){
 	echo "⛔ ERROR: export file not found: $SRC" 
 }
 
-Require ListDistroProvides
-ListDistroProvides --select-changed --filter-and-cut "deploy-export" | sed "s|:| |g" | while read -r projectName sourceName targetName ; do
+Distro ListDistroProvides --select-changed --filter-and-cut "deploy-export" \
+| sed "s|:| |g" \
+| while read -r projectName sourceName targetName ; do
 	SyncExportsFromOutput "$projectName" "$sourceName" "$targetName"
 done
