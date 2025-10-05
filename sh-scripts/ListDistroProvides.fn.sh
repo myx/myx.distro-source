@@ -130,12 +130,12 @@ ListDistroProvides(){
 					| sort -k 2
 				)"
 
-				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns
+				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns indexVirtual
 				local indexColumns; indexColumns="$(
 					case "$lastOperation" in
 						--add-own|--add-merged)
 							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
-							local indexVirtual; indexVirtual="$(
+							indexVirtual="$(
 								{
 									echo "$indexFiltered" \
 									| tr '\t' ' ' \
@@ -155,8 +155,7 @@ ListDistroProvides(){
 						;;
 					esac \
 					| sort -n -k 2,4 \
-					| while read -r tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns ; do
-						# | cut -d" " -f 1,5-,3
+					| while read -r tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns; do
 						echo $tmpKey $tmpColumns $tmpColumn
 					done \
 					| awk '$0 && !x[$0]++'
