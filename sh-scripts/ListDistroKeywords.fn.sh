@@ -67,100 +67,7 @@ ListDistroKeywords(){
 					set +e ; return 1
 				fi
 
-				##
-				## check cache ready
-				##
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-					if [ -n "${MDSC_IDOKWD:0:1}" ] ; then
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using env-cached ($MDSC_OPTION)" >&2
-						echo "$MDSC_IDOKWD"
-						return 0
-					fi
-					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using MDSC_IDAKWD_NAME (--all-keywords-merged) ($MDSC_OPTION)" >&2
-						export MDSC_IDOKWD="` cat "$MDSC_IDAKWD_NAME" | cut -d" " -f2,3 | awk '!x[$0]++' `"
-						echo "$MDSC_IDOKWD"
-						return 0
-					fi
-					if [ -n "${MDSC_IDAKWD:0:1}" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using MDSC_IDAKWD (--all-keywords-merged) ($MDSC_OPTION)" >&2
-						export MDSC_IDOKWD="` echo "$MDSC_IDAKWD" | cut -d" " -f2,3 | awk '!x[$0]++' `"
-						echo "$MDSC_IDOKWD"
-						return 0
-					fi
-					if [ -d "$MDSC_CACHED" ] ; then
-						local cacheFile="$MDSC_CACHED/distro-keywords.txt"
-						if [ -f "$cacheFile" ]; then
-							if [ -f "$indexFile" ] && [ ! "$cacheFile" -nt "$indexFile" ] \
-							|| { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ]; } \
-							|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$cacheFile" ] ; then
-
-								[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using cached ($MDSC_OPTION)" >&2
-								cat "$cacheFile"
-								return 0
-
-							fi
-						fi
-			
-						##
-						## Build cache index file, no MDSC_IDxxx variables
-						##
-						echo "| $MDSC_CMD: --all-keywords caching projects ($MDSC_OPTION)" >&2
-						ListDistroKeywords --explicit-noop --no-cache --all-keywords | tee "$cacheFile.$$.tmp"
-						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
-						return 0
-					fi
-				fi
-	
-				if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] && [ -d "$MDSC_CACHED" ] ; then
-					if { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ]; } \
-						|| [ -f "$MDSC_CACHED/build-time-stamp.txt" ] && [ ! "$MDSC_CACHED/build-time-stamp.txt" -nt "$indexFile" ] ; then
-						
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords using index" >&2
-						
-						local projectName extraText
-						grep -e "^PRJ-KWD-" "$indexFile" \
-						| sort \
-						| sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\:|:|g' \
-						| while read -r projectName extraText ; do
-							echo "$extraText" | tr ' ' '\n' | sed -e "s:^:$projectName :"
-						done
-						
-						return 0
-					fi
-				fi
-
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords env-caching projects ($MDSC_OPTION)" >&2
-					export MDSC_IDOKWD="` ListDistroKeywords --explicit-noop --no-cache --all-keywords `"
-					echo "$MDSC_IDOKWD"
-					return 0
-				fi
-
-				if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
-					echo "| $MDSC_CMD: --all-keywords extracting from source (java) ($MDSC_OPTION)" >&2
-			
-					Require DistroSourceCommand
-					
-					DistroSourceCommand \
-						-q \
-						--import-from-source \
-						--print-all-keywords-separate-lines
-
-						# --select-all \
-						# --print-keywords-separate-lines
-						
-					return 0
-				fi
-				
-				echo "| $MDSC_CMD: --all-keywords extracting from source (shell) ($MDSC_OPTION)" >&2
-
-				Require ListRepositoryKeywords
-				local repositoryName
-				Distro ListAllRepositories --all-repositories | while read -r repositoryName ; do
-					ListRepositoryKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX $repositoryName || :
-				done
-	
+				DistroSystemContext --index-keywords cat
 				return 0
 			;;
 			--all-keywords-merged)
@@ -170,112 +77,7 @@ ListDistroKeywords(){
 					set +e ; return 1
 				fi
 
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-					if [ -n "$MDSC_IDAKWD_NAME" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using cache file ($MDSC_OPTION)" >&2
-						cat "$MDSC_IDAKWD_NAME"
-						return 0
-					fi
-					if [ -n "${MDSC_IDAKWD:0:1}" ] ; then 
-						[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using env-cached ($MDSC_OPTION)" >&2
-						echo "$MDSC_IDAKWD"
-						return 0
-					fi
-					if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-						local cacheFile="$MDSC_CACHED/distro-merged-keywords.txt"
-						if [ -f "$cacheFile" ] && [ "$cacheFile" -nt "$indexFile" ] \
-						&& ([ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$cacheFile" "+%Y%m%d%H%M%S"`" ]) ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
-							return 0
-						fi
-			
-						##
-						## Build cache index file, no MDSC_IDxxx variables
-						##
-						echo "| $MDSC_CMD: --all-keywords-merged caching projects ($MDSC_OPTION)" >&2
-						ListDistroKeywords --explicit-noop --no-cache --all-keywords-merged | tee "$cacheFile.$$.tmp"
-						mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
-						return 0
-					fi
-				fi
-
-				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -f "$indexFile" ] ; then
-						if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged using index ($MDSC_OPTION)" >&2
-
-							local indexKeywords="` \
-								grep -e "^PRJ-KWD-" "$indexFile" | sed -e 's:^PRJ-KWD-::' -e 's:=: :g' -e 's|\\\\:|:|g' \
-								| while read -r projectName extraText ; do
-									for extraText in $extraText ; do
-										echo "$projectName" "$extraText"
-									done
-								done | cat -n | sort -k 2
-							`"
-							local indexSequence="` \
-								grep -e "^PRJ-SEQ-" "$indexFile" | sed -e 's:^PRJ-SEQ-::' -e 's:=: :g' \
-								| while read -r projectName extraText ; do
-									for extraText in $extraText ; do
-										echo "$projectName" "$extraText"
-									done
-								done | cat -n | sort -k 3
-							`"
-
-							join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexKeywords" ) <( echo "$indexSequence" ) \
-							| sort -n -k 1,2 | cut -d" " -f 3-
-							
-							return 0 # 2s
-						fi
-					fi
-				fi
-
-				if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: --all-keywords-merged env-caching projects ($MDSC_OPTION)" >&2
-					export MDSC_IDAKWD="` ListDistroKeywords --explicit-noop --no-cache --all-keywords-merged `"
-					echo "$MDSC_IDAKWD"
-					return 0
-				fi
-
-				if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
-					echo "| $MDSC_CMD: --all-keywords-merged extracting from source (java) ($MDSC_OPTION)" >&2
-			
-					Require DistroSourceCommand
-					
-					local indexKeywords="` \
-						DistroSourceCommand \
-							-q \
-							--import-from-source \
-							--select-all \
-							--print-keywords-separate-lines \
-						| cat -n | sort -k 2
-					`"
-
-					local indexSequence="` \
-						DistroSourceCommand \
-							-q \
-							--import-from-source \
-							--select-all \
-							--print-sequence-separate-lines \
-						| cat -n | sort -k 3
-					`"
-					
-					join -o 2.1,1.1,2.2,1.2,1.3 -12 -23 <( echo "$indexKeywords" ) <( echo "$indexSequence" ) \
-					| sort -n -k 1,2 | cut -d" " -f 3-
-					
-					return 0
-				fi
-
-				echo "| $MDSC_CMD: --all-keywords-merged extracting from source (shell) ($MDSC_OPTION)" >&2
-
-				Require ListProjectKeywords
-		
-				local sequenceProjectName
-				DistroSystemContext --index-build-sequence cat \
-				| while read -r sequenceProjectName; do
-					ListProjectKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
-				done | awk '!x[$0]++'
+				DistroSystemContext --index-merged-keywords cat
 				return 0
 			;;
 			--add-own-keywords-column|--filter-own-keywords-column|--add-merged-keywords-column|--filter-merged-keywords-column)
@@ -287,11 +89,15 @@ ListDistroKeywords(){
 				local columnMatcher="$1" ; shift
 				if [ "--add-own" = "$lastOperation" ] || [ "--filter-own" = "$lastOperation" ] ; then
 					if [ -z "${indexOwnKeywords:0:1}" ] ; then
-						local indexOwnKeywords="` ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords `"
+						local indexOwnKeywords="$(
+							DistroSystemContext --index-keywords cat
+						)"
 					fi
 				else
 					if [ -z "${indexAllKeywords:0:1}" ] ; then
-						local indexAllKeywords="` ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged `"
+						local indexAllKeywords="$(
+							DistroSystemContext --index-merged-keywords cat
+						)"
 					fi
 				fi
 				
@@ -372,7 +178,7 @@ ListDistroKeywords(){
 					set +e ; return 1
 				fi
 				local filterKeywords="$1" projectName projectKeywords ; shift
-				ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
+				DistroSystemContext --index-keywords cat \
 				| while read -r projectName projectKeywords ; do
 				 	if [ "$projectKeywords" != "${projectKeywords#${filterKeywords}:}" ] ; then
 						echo "$projectName ${projectKeywords#${filterKeywords}:}"
@@ -400,13 +206,10 @@ ListDistroKeywords(){
 					echo "$indexColumns"
 					return 0
 				fi
-				
 				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b]  $0}' <( \
-						echo "$MDSC_SELECT_PROJECTS" \
-					) <( \
-						ListDistroKeywords --explicit-noop $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
-					)
+					DistroSystemContext --index-keywords \
+					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b] $0}' \
+						<( echo "$MDSC_SELECT_PROJECTS" )
 					return 0
 				fi
 

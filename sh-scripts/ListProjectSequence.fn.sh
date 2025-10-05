@@ -32,6 +32,32 @@ ListProjectSequence(){
 				ListProjectSequence "$projectName" "$@" | sed "s|^|$projectName |g"
 				return 0
 			;;
+			--print-keywords)
+				shift
+				
+				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
+						local cacheFile="$MDSC_CACHED/$projectName/project-keywords-sequence.txt"
+						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
+							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-keywords using cached ($MDSC_OPTION)" >&2
+							cat "$cacheFile"
+							return 0
+						fi
+			
+						echo "$MDSC_CMD: $projectName: --print-keywords caching projects ($MDSC_OPTION)" >&2
+						Require ListProjectProvides
+						for sequenceProjectName in $( ListProjectSequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" ) ; do
+							ListProjectKeywords "$sequenceProjectName" --print-project "$@"
+						done | awk '!x[$2]++' | tee "$cacheFile"
+						return 0
+					fi
+				fi			
+				
+				Distro ListProjectKeywords "$projectName" --merge-sequence --print-project "$@"
+		
+				return 0
+			;;
 			--print-provides)
 				shift
 				

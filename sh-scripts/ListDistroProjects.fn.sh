@@ -142,6 +142,7 @@ ListDistroProjects(){
 				matchingProjects="$( 
 					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--filter}" "$selectArgument" 
 				)"
+
 				if [ -z "$matchingProjects" ] ; then
 					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
 					local selectProjects=
@@ -172,6 +173,7 @@ ListDistroProjects(){
 				matchingProjects="$( 
 					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX "-${selectVariant#--remove}" "$selectArgument" 
 				)"
+				
 				if [ -z "$matchingProjects" ] ; then
 					echo "ListDistroProjects: 🙋 WARNING: No matching projects found (search: $selectVariant $selectArgument)." >&2
 					continue
@@ -267,13 +269,13 @@ ListDistroProjects(){
 
 				case "$providesFilter" in
 					*:)
-						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
-						| awk -v f="$providesFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-provides \
+						awk -v f="$providesFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides \
-						| awk -v f="$providesFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-provides \
+						awk -v f="$providesFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
@@ -298,13 +300,13 @@ ListDistroProjects(){
 
 				case "$providesFilter" in
 					*:)
-						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged \
-						| awk -v f="$providesFilter" 'index($3,f)==1 && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-merged-provides \
+						awk -v f="$providesFilter" 'index($3,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						Distro ListDistroProvides $MDSC_NO_CACHE $MDSC_NO_INDEX --all-provides-merged \
-						| awk -v f="$providesFilter" '$3 == f && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-merged-provides \
+						awk -v f="$providesFilter" '$3 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
@@ -326,13 +328,13 @@ ListDistroProjects(){
 
 				case "$declaresFilter" in
 					*:)
-						Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
-						| awk -v f="$declaresFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-declares \
+						awk -v f="$declaresFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						Distro ListDistroDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX --all-declares \
-						| awk -v f="$declaresFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-declares \
+						awk -v f="$declaresFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
@@ -354,13 +356,13 @@ ListDistroProjects(){
 
 				case "$keywordsFilter" in
 					*:)
-						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
-						| awk -v f="$keywordsFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-keywords \
+						awk -v f="$keywordsFilter" 'index($2,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords \
-						| awk -v f="$keywordsFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-keywords \
+						awk -v f="$keywordsFilter" '$2 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
@@ -382,13 +384,13 @@ ListDistroProjects(){
 
 				case "$keywordsFilter" in
 					*:)
-						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
-						| awk -v f="$keywordsFilter" 'index($3,f)==1 && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-merged-keywords \
+						awk -v f="$keywordsFilter" 'index($3,f)==1 && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 					*)
-						Distro ListDistroKeywords $MDSC_NO_CACHE $MDSC_NO_INDEX --all-keywords-merged \
-						| awk -v f="$keywordsFilter" '$3 == f && $1 && !seen[$1]++ { print $1 }'
+						DistroSystemContext --index-merged-keywords \
+						awk -v f="$keywordsFilter" '$3 == f && $1 && !seen[$1]++ { print $1 }'
 						return 0
 					;;
 				esac
