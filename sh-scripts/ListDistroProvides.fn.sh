@@ -110,9 +110,7 @@ ListDistroProvides(){
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" 'index($2, m)==1 && !seen[$1]++ {
-								rest = substr($2, length(m) + 1) 
-    						print $1, rest }'
+							awk -v m="$columnMatcher" 'index($2, m)==1 && !seen[$1]++ { rest = substr($2, length(m) + 1); print $1, rest }'
 						;;
 						*:--add-own|*:--filter-own)
 							DistroSystemContext --index-provides \
@@ -120,9 +118,7 @@ ListDistroProvides(){
 						;;
 						*::--add-merged|*::--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" 'index($3, m)==1 && !seen[$1]++ { 
-								rest = substr($2, length(m) + 1) 
-    						print $1, rest }'
+							awk -v m="$columnMatcher" 'index($3, m)==1 && !seen[$1]++ { rest = substr($2, length(m) + 1); print $1, rest }'
 						;;
 						*:--add-merged|*:--filter-merged)
 							DistroSystemContext --index-merged-provides \
