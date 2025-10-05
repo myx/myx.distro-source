@@ -106,7 +106,8 @@ ListDistroProvides(){
 					| sort -k 2
 				)"
 				
-				local indexFiltered="$( \
+				local indexFiltered="$(
+					set -x
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
@@ -131,7 +132,7 @@ ListDistroProvides(){
 				)"
 
 				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns
-				local indexColumns="$( \
+				local indexColumns="$(
 					case "$lastOperation" in
 						--add-own|--add-merged)
 							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
