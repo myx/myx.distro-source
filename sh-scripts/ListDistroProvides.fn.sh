@@ -109,8 +109,7 @@ ListDistroProvides(){
 				local indexFiltered="$(
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
-							DistroSystemContext --index-provides \
-							grep -e "^\S* $columnMatcher.*$" \
+							DistroSystemContext --index-provides grep -e "^\S* $columnMatcher.*$" \
 							| sed -e "s| $columnMatcher| |"
 						;;
 						*:--add-own|*:--filter-own)
