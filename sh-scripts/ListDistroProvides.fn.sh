@@ -103,7 +103,7 @@ ListDistroProvides(){
 						echo "$indexColumns"
 					fi \
 					| cat -n \
-					| sort -k 2
+					| sort -k 2 \
 				)"
 				
 				local indexFiltered="$(
@@ -125,9 +125,9 @@ ListDistroProvides(){
 							awk -v m="$columnMatcher" '$3==m { print $1, $3 }'
 						;;
 					esac \
-					| awk '!seen[$0]++' \
+					| awk '$0 && !x[$0]++' \
 					| cat -n \
-					| sort -k 2
+					| sort -k 2 \
 				)"
 
 				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns
