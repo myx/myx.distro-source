@@ -93,7 +93,7 @@ ListDistroProvides(){
 						if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ]; then
 							if [ --add-own = "$lastOperation" ] || [ --filter-own = "$lastOperation" ]; then
 								DistroSystemContext --index-provides \
-								cut -d" " -f1
+								awk '$1 && !seen[$1]++ { print $1; }'
 							else
 								DistroSystemContext --index-merged-provides \
 								awk '$1 && !seen[$1]++ { print $1; }'
@@ -102,29 +102,28 @@ ListDistroProvides(){
 							echo "$MDSC_SELECT_PROJECTS"
 						fi
 					else
-						echo "$indexColumns"
-					fi \
-					| cat -n \
-					| sort -k 2
+						echo "$indexColumns" \
+						| sort -k 2
+					fi
 				)"
-				
+
 				indexFiltered="$(
 					case "$columnMatcher:$lastOperation" in
 						*::--add-own|*::--filter-own)
 							DistroSystemContext --index-provides \
-							awk -v m="$columnMatcher" 'index($2,m)==1 { rest=substr($2, length(m)+1); print $1, rest; }'
+							awk -v m="$columnMatcher" 'index($2,m)==1 { rest=substr($2,length(m)+1); print $1,rest; }'
+						;;
+						*::--add-merged|*::--filter-merged)
+							DistroSystemContext --index-merged-provides \
+							awk -v m="$columnMatcher" 'index($3,m)==1 { rest=substr($3,length(m)+1); print $1,rest; }'
 						;;
 						*:--add-own|*:--filter-own)
 							DistroSystemContext --index-provides \
 							awk -v m="$columnMatcher" '$2==m { print; }'
 						;;
-						*::--add-merged|*::--filter-merged)
-							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" 'index($3,m)==1 { rest=substr($3, length(m)+1); print $1, rest; }'
-						;;
 						*:--add-merged|*:--filter-merged)
 							DistroSystemContext --index-merged-provides \
-							awk -v m="$columnMatcher" '$3==m { print $1, $3; }'
+							awk -v m="$columnMatcher" '$3==m { print $1,$3; }'
 						;;
 					esac \
 					| awk '$0 && !x[$0]++' \
@@ -133,10 +132,9 @@ ListDistroProvides(){
 				)"
 
 				indexColumns="$(
-					local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns indexVirtual
 					case "$lastOperation" in
 						--add-own|--add-merged)
-							indexVirtual="$(
+							local indexVirtual; indexVirtual="$(
 								{
 									echo "$indexFiltered" \
 									| tr '\t' ' ' \
@@ -164,6 +162,8 @@ ListDistroProvides(){
 					echo "⛔ ERROR: $MDSC_CMD: $lastOperation no projects selected!" >&2
 					set +e ; return 1
 				fi
+
+				continue
 			;;
 			--filter-and-cut)
 				shift
