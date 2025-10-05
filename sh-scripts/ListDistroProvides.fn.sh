@@ -103,7 +103,7 @@ ListDistroProvides(){
 						echo "$indexColumns"
 					fi \
 					| cat -n \
-					| sort -k 2 \
+					| sort -k 2
 				)"
 				
 				local indexFiltered="$(
@@ -127,7 +127,7 @@ ListDistroProvides(){
 					esac \
 					| awk '$0 && !x[$0]++' \
 					| cat -n \
-					| sort -k 2 \
+					| sort -k 2
 				)"
 
 				local tmpKey tmpInt1 tmpColumn tmpInt2 tmpColumns
@@ -135,11 +135,11 @@ ListDistroProvides(){
 					case "$lastOperation" in
 						--add-own|--add-merged)
 							# join -e '-' -a 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" )
-							local indexVirtual="$(
-								( \
-									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||' ; \
-									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|' \
-								) \
+							local indexVirtual; indexVirtual="$(
+								{
+									echo "$indexFiltered" | tr '\t' ' ' | sed -E -e 's|^[ ]+||'
+									join -v 2 -12 -22 <( echo "$indexFiltered" ) <( echo "$indexCurrent" ) | sed -e 's|$| -|'
+								}
 								| sort -k 2
 							)"
 							join -12 -22 <( echo "$indexVirtual" ) <( echo "$indexCurrent" )
