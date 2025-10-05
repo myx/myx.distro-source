@@ -193,31 +193,54 @@ ListDistroProjects(){
 				continue
 			;;
 
-			--one-project)
+			--one-project|--project)
 				##
 				## Prints exactly one project (or fails) whose name matches the glob
 				##
-				shift
-				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: ListDistroProjects: --one-project projectName filter is expected!" >&2
+				if [ -z "$2" ] ; then
+					echo "⛔ ERROR: ListDistroProjects: $1 projectName filter is expected!" >&2
 					set +e ; return 1
 				fi
-				if [ -n "$2" ] ; then
-					echo "⛔ ERROR: ListDistroProjects: no options allowed after --one-project option ($MDSC_OPTION)" >&2
+				if [ -n "$3" ] ; then
+					echo "⛔ ERROR: ListDistroProjects: no options allowed after $1 option ($MDSC_OPTION)" >&2
 					set +e ; return 1
 				fi
 
-				if [ -f "$MDSC_SOURCE/$1/project.inf" ] ; then # exact match, beats all
-					echo "$1"
+				if [ -f "$MDSC_SOURCE/$2/project.inf" ] ; then # exact match, beats all
+					echo "$2"
 					return 0
 				fi
 
-				local projectFilter="$1" ; shift
-
-				local matchedProjects
-				matchedProjects="$(
-					DistroSystemContext --index-projects awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
-				)"
+				local projectFilter="$2" matchedProjects=; shift 2
+				
+				case "$projectFilter" in
+				'.')
+					matchedProjects=$(
+						DistroSystemContext --index-projects \
+						awk -v PWD="$(pwd)" -v BASE="$MDSC_SOURCE" '
+						BEGIN {
+							rel = PWD
+							if (BASE != "" && index(rel, BASE) == 1) rel = substr(rel, length(BASE) + 1)
+							if (substr(rel,1,1) == "/") rel = substr(rel,2)
+						}
+						{
+							proj = $0
+							if (proj == "") next
+							if (rel == proj || index(rel, proj "/") == 1) print proj
+						}
+					')
+					if [ -f "$MDSC_SOURCE/$matchedProjects/project.inf" ] ; then # match, beats all
+						echo "$matchedProjects"
+						return 0
+					fi
+				;;
+				*)
+					matchedProjects="$(
+						DistroSystemContext --index-projects \
+						awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
+					)"
+				;;
+				esac
 
 				if [ -z "$matchedProjects" ] ; then
 					echo "ListDistroProjects: ⛔ ERROR: No matching projects found (exactly one requested, --one-project $projectFilter)." >&2
@@ -249,7 +272,9 @@ ListDistroProjects(){
 				fi
 				local projectFilter="$1" ; shift
 
-				DistroSystemContext --index-projects awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
+				DistroSystemContext --index-projects \
+				awk -v f="$projectFilter" 'index($0,f) && $0 && !seen[$0]++ { print; }'
+
 				return 0
 			;;
 			--provides)
