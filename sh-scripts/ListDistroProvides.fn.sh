@@ -125,16 +125,15 @@ ListDistroProvides(){
 				case "$lastOperation" in
 					--add-own|--add-merged)
 						indexFiltered="$(
-							{
-								awk '{ gsub(/\t/, " "); sub(/^[ ]+/, ""); print }' \
-									<<< "$indexFiltered"
-								
-								awk '
-									NR==FNR { exclude[$2]; next }
-									!($2 in exclude) { print $0, "-" }
-								' <(echo "$indexFiltered") <(echo "$indexCurrent")
-							} \
-							| sort -k 2
+							awk '
+								NR==FNR {
+									{ print $1, $2; map[$1]=1 }
+									next
+								}
+								!($1 in map) && !map[$1]++ { print $1, "-" }
+							' \
+							<(printf "%s\n" "$indexFiltered") \
+							<(printf "%s\n" "$indexCurrent")
 						)"
 					;;
 				esac
