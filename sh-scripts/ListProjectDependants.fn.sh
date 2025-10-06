@@ -8,11 +8,35 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListProjectDependants(){
-	local projectName="$1"
-	if [ -z "$projectName" ] ; then
-		echo "⛔ ERROR: ListProjectDependants: 'projectName' argument is required!" >&2
+
+	local MDSC_CMD='ListProjectDependants'
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+
+	local projectName="${1#$MDSC_SOURCE/}"
+	case "$projectName" in
+	'')
+		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
-	fi
+	;;
+	--project-from-env)
+		projectName="$MDSC_PRJ_NAME" ; [ -n "$projectName" ] || {
+			echo "⛔ ERROR: $MDSC_CMD: --project-from-env: MDSC_PRJ_NAME is not set!" >&2
+			set +e ; return 1
+		}
+	;;
+	'.'|--project-from-pwd)
+		projectName="$( Distro ListDistroProjects --project '.' )" ; [ -n "$projectName" ] || {
+			echo "⛔ ERROR: $MDSC_CMD: --project-from-pwd: can't map working directory to project: $(pwd)" >&2
+			set +e ; return 1
+		}
+	;;
+	esac
+	[ -f "$MDSC_SOURCE/$projectName/project.inf" ] || {
+		echo "⛔ ERROR: $MDSC_CMD: project is invalid or unknown: $projectName" >&2
+		set +e ; return 1
+	}
 	shift
 
 	if [ "$1" = "--no-cache" ] ; then
@@ -21,12 +45,12 @@ ListProjectDependants(){
 		local cacheFile="$MDSC_CACHED/$projectName/project-dependants.txt"
 		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-			[ -z "$MDSC_DETAIL" ] || echo "| ListProjectDependants: $projectName: using cached ($MDSC_OPTION)" >&2
+			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
 			cat "$cacheFile"
 			return 0
 		fi
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-			echo "ListProjectDependants: $projectName: caching projects ($MDSC_OPTION)" >&2
+			echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
 			ListProjectDependants "$projectName" --no-cache | tee "$cacheFile"
 			return 0
 		fi
@@ -36,7 +60,7 @@ ListProjectDependants(){
 	if [ "0" = "1" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		
-		echo "ListProjectDependants: $projectName: using index ($MDSC_OPTION)" >&2
+		echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
 	
 		local FILTER="$1"
 		if test -z "$FILTER" ; then
@@ -54,7 +78,7 @@ ListProjectDependants(){
 	fi
 	
 	if [ "0" = "1" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
-		echo "ListProjectDependants: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
+		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand
 		
@@ -67,7 +91,7 @@ ListProjectDependants(){
 		return 0
 	fi
 	
-	echo "⛔ ERROR: ListProjectDependants: $projectName: project.inf file is required (at: $indexFile)" >&2
+	echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
 	set +e ; return 1
 }
 

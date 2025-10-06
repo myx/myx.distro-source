@@ -14,11 +14,29 @@ ListProjectProvides(){
 
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 
-	local projectName="$1"
-	if [ -z "$projectName" ] ; then
+	local projectName="${1#$MDSC_SOURCE/}"
+	case "$projectName" in
+	'')
 		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
 		set +e ; return 1
-	fi
+	;;
+	--project-from-env)
+		projectName="$MDSC_PRJ_NAME" ; [ -n "$projectName" ] || {
+			echo "⛔ ERROR: $MDSC_CMD: --project-from-env: MDSC_PRJ_NAME is not set!" >&2
+			set +e ; return 1
+		}
+	;;
+	'.'|--project-from-pwd)
+		projectName="$( Distro ListDistroProjects --project '.' )" ; [ -n "$projectName" ] || {
+			echo "⛔ ERROR: $MDSC_CMD: --project-from-pwd: can't map working directory to project: $(pwd)" >&2
+			set +e ; return 1
+		}
+	;;
+	esac
+	[ -f "$MDSC_SOURCE/$projectName/project.inf" ] || {
+		echo "⛔ ERROR: $MDSC_CMD: project is invalid or unknown: $projectName" >&2
+		set +e ; return 1
+	}
 	shift
 
 	local filterProjects=""
