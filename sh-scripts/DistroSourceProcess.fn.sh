@@ -161,7 +161,7 @@ DistroSourceProcess(){
 			echo "📘 syntax: DistroSourceProcess.fn.sh --ingest-distro-index-from-source" >&2
 			echo "📘 syntax: DistroSourceProcess.fn.sh <option>" >&2
 			# echo "📘 syntax: DistroSourceProcess.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1"="--help" ] ; then
 				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceProcess.text" >&2
 			fi
 			return 0
@@ -177,7 +177,7 @@ case "$0" in
 	*/sh-scripts/DistroSourceProcess.fn.sh)
 		set -e 
 
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			DistroSourceProcess "${1:-"--help-syntax"}"
 			exit 1
 		fi

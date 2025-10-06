@@ -147,10 +147,10 @@ ListRepositoryKeywords(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryKeywords.fn.sh)
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			echo "📘 syntax: ListRepositoryKeywords.fn.sh <repository_name> [<options>] [--print-keywords-only] [<search>] [--filter filter_by]" >&2
 			echo "📘 syntax: ListRepositoryKeywords.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1"="--help" ] ; then
 				echo "  Search:" >&2
 				echo >&2
 				echo "    --all / --filter-projects <glob> / --filter <keywords-filter>" >&2

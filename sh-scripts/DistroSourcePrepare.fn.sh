@@ -210,7 +210,7 @@ DistroSourcePrepare(){
 			echo "📘 syntax: DistroSourcePrepare.fn.sh --ingest-distro-index-from-source" >&2
 			echo "📘 syntax: DistroSourcePrepare.fn.sh <option>" >&2
 			# echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1"="--help" ] ; then
 				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.text" >&2
 			fi
 			return 0
@@ -226,7 +226,7 @@ case "$0" in
 	*/sh-scripts/DistroSourcePrepare.fn.sh)
 		set -e 
 
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			DistroSourcePrepare "${1:-"--help-syntax"}"
 			exit 1
 		fi

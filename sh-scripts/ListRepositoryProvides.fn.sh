@@ -148,13 +148,13 @@ ListRepositoryProvides(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryProvides.fn.sh)
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			echo "📘 syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>]" >&2
 			echo "📘 syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>] --merge-sequence" >&2
 			echo "📘 syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>] --filter-projects <glob>" >&2
 			echo "📘 syntax: ListRepositoryProvides.fn.sh <repository_name> [<options>] --filter filter_by" >&2
 			echo "📘 syntax: ListRepositoryProvides.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1"="--help" ] ; then
 				echo >&2
 				echo "  Options:" >&2
 				echo >&2

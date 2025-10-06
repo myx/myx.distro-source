@@ -8,7 +8,7 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListDistroScripts(){
-
+set -x
 	case "$1" in
 		--completion)
 			shift
@@ -16,22 +16,22 @@ ListDistroScripts(){
 				ListDistroScripts "$@" ; \
 			) | sort -u | sed 's:\.fn\.sh$::' 
 			return 0
-			;;
+		;;
 		--all)
 			shift
 			local FILTER="$MMDAPP/source/"
 			case "$MDSC_OPTION" in
 				--distro-from-distro)
-					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
+					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts $MDLT_ORIGIN/myx/myx.distro-system/sh-scripts"
 				;;
 				--distro-from-output)
-					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
+					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts $MDLT_ORIGIN/myx/myx.distro-system/sh-scripts"
 				;;
 				*)
-					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts $MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts"
+					local MDPATH="$MDLT_ORIGIN/myx/myx.distro-system/sh-scripts $MDLT_ORIGIN/myx/myx.distro-source/sh-scripts $MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts"
 				;;
 			esac
-			;;
+		;;
 		--type)
 			shift
 			local MDTYPE="$1" ; shift
@@ -40,12 +40,13 @@ ListDistroScripts(){
 				echo "⛔ ERROR: ListDistroScripts: invalid type: $MDTYPE" >&2
 				set +e ; return 1
 			fi
+			[ system="$MDTYPE" ] || MDPATH="$MDPATH $MDLT_ORIGIN/myx/myx.distro-system/sh-scripts"
 			local FILTER="$MDPATH/"
-			;;
+		;;
 		*)
-			local MDPATH="$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts"
-			local FILTER="$MDPATH/"
-			;;
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
+		;;
 	esac
 	find \
 			$MDPATH \
@@ -55,7 +56,7 @@ ListDistroScripts(){
 
 case "$0" in
 	*/sh-scripts/ListDistroScripts.fn.sh) 
-		if [ "$1" = "--help" ] ; then
+		if [ "${1:-'--help'}"="--help" ] ; then
 			echo "📘 syntax: ListDistroScripts.fn.sh [--source]" >&2
 			echo "📘 syntax: ListDistroScripts.fn.sh --all/--completion" >&2
 			echo "📘 syntax: ListDistroScripts.fn.sh --type <source/deploy>" >&2

@@ -148,10 +148,10 @@ ListRepositoryDeclares(){
 
 case "$0" in
 	*/sh-scripts/ListRepositoryDeclares.fn.sh)
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			echo "📘 syntax: ListRepositoryDeclares.fn.sh <repository_name> [--print-declares-only] [<search>] [--no-cache] [--filter filter_by]" >&2
 			echo "📘 syntax: ListRepositoryDeclares.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1"="--help" ] ; then
 				echo "  Search:" >&2
 				echo >&2
 				echo "    --all / --filter-projects <glob> / --filter <declares-filter>" >&2

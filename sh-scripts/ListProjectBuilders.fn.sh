@@ -92,11 +92,11 @@ ListProjectBuilders(){
 
 case "$0" in
 	*/sh-scripts/ListProjectBuilders.fn.sh)
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			echo "📘 syntax: ListProjectBuilders.fn.sh <project> [--print-build-stage] <build-stage>" >&2
 			echo "📘 syntax: ListProjectBuilders.fn.sh <project> --all-build-stages" >&2
 			echo "📘 syntax: ListProjectBuilders.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1"="--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectStage.include"
 				echo >&2
 				echo "  Arguments:" >&2

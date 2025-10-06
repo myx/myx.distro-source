@@ -13,7 +13,7 @@ Help(){
 	echo "	Action <distroCommand>" >&2
 	echo "	Distro <distroCommand>" >&2
 	echo "	Deploy <distroCommand>" >&2
-	if [ "$1" = "--all" ] || [ "$1" = "--help" ] ; then
+	if [ "$1" = "--all" ] || [ "$1"="--help" ] ; then
 		echo "	Require <distroCommandName>" >&2
 		echo "	#SetEnv <exportVariableName> <command>[ <args...>]" >&2
 		echo "	#SetVar <normalVariableName> <command>[ <args...>]" >&2

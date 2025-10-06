@@ -22,7 +22,7 @@ ListRepositorySequence(){
 			--help|--help-syntax)
 				echo "📘 syntax: ListRepositorySequence.fn.sh [--no-cache] <repositoryName>" >&2
 				echo "📘 syntax: ListRepositorySequence.fn.sh --help" >&2
-				if [ "$1" = "--help" ] ; then
+				if [ "$1"="--help" ] ; then
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpListRepositorySequence.include"
 				fi
 				return 0
@@ -106,7 +106,7 @@ ListRepositorySequence(){
 
 case "$0" in
 	*/sh-scripts/ListRepositorySequence.fn.sh) 
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1"="--help" ] ; then
 			ListRepositorySequence ${1:-"--help-syntax"}
 			exit 1
 		fi
