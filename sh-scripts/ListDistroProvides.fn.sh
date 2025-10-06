@@ -205,7 +205,7 @@ ListDistroProvides(){
 					set +e ; return 1
 				fi
 
-				DistroSystemContext --select-index-provides columnMatch
+				DistroSystemContext --select-index-provides cat
 				return 0
 			;;
 			*)
