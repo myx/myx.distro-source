@@ -35,12 +35,12 @@ ListDistroProjects(){
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--select-from-env)
-				shift
-				local selectProjects="${MDSC_SELECT_PROJECTS}"
-				if [ -z "$selectProjects" ] ; then
-					echo "⛔ ERROR: ListDistroProjects: --select-from-env no projects selected!" >&2
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1: no projects selected!" >&2
 					set +e ; return 1
 				fi
+				shift
+				local selectProjects="${MDSC_SELECT_PROJECTS}"
 				continue
 			;;
 			--all-projects)

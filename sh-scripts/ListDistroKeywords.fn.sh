@@ -17,20 +17,18 @@ ListDistroKeywords(){
 
 	while true ; do
 		case "$1" in
-			--all-*|--add-*-column|--filter-and-cut)
+			--all-*|--add-*-column)
 				break
 			;;
 			--explicit-noop)
-				shift
-				break
+				shift; break
 			;;
 			--select-from-env)
-				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: --select-from-env no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $1: no projects selected!" >&2
 					set +e ; return 1
 				fi
-				break
+				shift; break
 			;;
 			--set-env)
 				shift
@@ -59,32 +57,32 @@ ListDistroKeywords(){
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--all-keywords)
-				shift
-				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-keywords option ($MDSC_OPTION, $@)" >&2
+				if [ -n "$2" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1: no extra options allowed ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
+				shift
 
 				DistroSystemContext --index-keywords cat
 				return 0
 			;;
 			--all-keywords-merged)
-				shift
 				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --all-keywords-merged option ($MDSC_OPTION, $@)" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $1: no extra options allowed ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
+				shift
 
 				DistroSystemContext --index-keywords-merged cat
 				return 0
 			;;
 			--add-own-keywords-column|--filter-own-keywords-column|--add-merged-keywords-column|--filter-merged-keywords-column)
-				local columnOp=${1%"-keywords-column"} ; shift
-				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: $columnOp project keywords filter is expected!" >&2
+				if [ -z "$2" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1 project keywords filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local columnMatch="$1" ; shift
+				local columnOp=${1%"-keywords-column"} columnMatch="$2"; shift 2
+
 				local indexCurrent indexFiltered indexColumns
 
 				# currently selected projects, 1 column, or iterative ++ columns
@@ -150,15 +148,29 @@ ListDistroKeywords(){
 
 				continue
 			;;
-			--filter-and-cut)
-				shift
-				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: project keywords filter is expected!" >&2
+			--all-filter-and-cut)
+				if [ -z "$2" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1 project keywords filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local filterKeywords="$1" indexSpec=; shift
-				[ -z "${MDSC_SELECT_PROJECTS:0:1}" ] || indexSpec='--select-index'
-				DistroSystemContext ${indexSpec:-'--index'}-keywords awk -v f="${filterKeywords}:" '
+				local filter="$2"; shift 2
+				DistroSystemContext --index-keywords awk -v f="${filter}:" '
+				{
+					if (index($2, f) == 1) {
+						out = $1 " " substr($2, length(f) + 1)
+						if (!seen[out]++) print out
+					}
+				}
+				'
+				return 0
+			;;
+			--filter-and-cut)
+				if [ -z "$2" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1 project keywords filter is expected!" >&2
+					set +e ; return 1
+				fi
+				local filter="$2"; shift 2
+				DistroSystemContext --filter-index-keywords MDSC_SELECT_PROJECTS awk -v f="${filter}:" '
 				{
 					if (index($2, f) == 1) {
 						out = $1 " " substr($2, length(f) + 1)
@@ -169,11 +181,11 @@ ListDistroKeywords(){
 				return 0
 			;;
 			--merge-sequence)
-				shift
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: --merge-sequence, no projects selected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: $1, no projects selected!" >&2
 					set +e ; return 1
 				fi
+				shift
 				
 				Require ListProjectKeywords
 		
