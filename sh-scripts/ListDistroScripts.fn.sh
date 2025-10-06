@@ -57,10 +57,9 @@ set -x
 case "$0" in
 	*/sh-scripts/ListDistroScripts.fn.sh) 
 		if [ "${1:-'--help'}" = "--help" ] ; then
-			echo "📘 syntax: ListDistroScripts.fn.sh [--source]" >&2
 			echo "📘 syntax: ListDistroScripts.fn.sh --all/--completion" >&2
 			echo "📘 syntax: ListDistroScripts.fn.sh --type <source/deploy>" >&2
-			echo "📘 syntax: ListDistroScripts.fn.sh --help" >&2
+			echo "📘 syntax: ListDistroScripts.fn.sh [--help]" >&2
 			exit 1
 		fi
 		
