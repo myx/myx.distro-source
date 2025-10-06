@@ -50,55 +50,40 @@ ListProjectSequence(){
 				ListProjectSequence "$projectName" "$@" | sed "s|^|$projectName |g"
 				return 0
 			;;
-			--print-keywords)
-				shift
+			--print-declares|--print-keywords|--print-provides)
+				[ -z "$2" ] || {
+					echo "⛔ ERROR: $MDSC_CMD: $1, no extra options allowed:" "$@" >&2
+					set +e ; return 1
+				}
+				local idx="${1#'--print-'}"; shift
 				
-				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-						local cacheFile="$MDSC_CACHED/$projectName/project-keywords-sequence.txt"
+				if [ -n "$MDSC_CACHED" ]; then
+					if [ "$MDSC_NO_CACHE" != "--no-cache" ]; then
+					
+						local cacheFile="$MDSC_CACHED/$projectName/project-${idx}-sequence.txt"
 						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-keywords using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
+						if [ -f "$buildDate" ]; then
+							if [ -f "$cacheFile" ] && [ ! "$cacheFile" -ot "$buildDate" ]; then
+								[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-* using cached, ${idx} ($MDSC_OPTION)" >&2
+								cat "$cacheFile"
+								return 0
+							fi
+				
+							echo "$MDSC_CMD: $projectName: --print-* caching projects, ${idx} ($MDSC_OPTION)" >&2
+							DistroSystemContext --index-${idx}-merged awk -v p="$projectName" '
+								$1==p && !x[$3]++ { print $2, $3; }
+							' | tee "$cacheFile.$$.tmp"
+							mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+
 							return 0
 						fi
-			
-						echo "$MDSC_CMD: $projectName: --print-keywords caching projects ($MDSC_OPTION)" >&2
-						Require ListProjectProvides
-						for sequenceProjectName in $( ListProjectSequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" ) ; do
-							ListProjectKeywords "$sequenceProjectName" --print-project "$@"
-						done | awk '!x[$2]++' | tee "$cacheFile"
-						return 0
+
 					fi
 				fi			
 				
-				Distro ListProjectKeywords "$projectName" --merge-sequence --print-project "$@"
-		
-				return 0
-			;;
-			--print-provides)
-				shift
-				
-				if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-					if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-						local cacheFile="$MDSC_CACHED/$projectName/project-provides-sequence.txt"
-						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-						if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-							[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-provides using cached ($MDSC_OPTION)" >&2
-							cat "$cacheFile"
-							return 0
-						fi
-			
-						echo "$MDSC_CMD: $projectName: --print-provides caching projects ($MDSC_OPTION)" >&2
-						Require ListProjectProvides
-						for sequenceProjectName in $( ListProjectSequence $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" ) ; do
-							ListProjectProvides "$sequenceProjectName" --print-project "$@"
-						done | awk '!x[$2]++' | tee "$cacheFile"
-						return 0
-					fi
-				fi			
-				
-				Distro ListProjectProvides "$projectName" --merge-sequence --print-project "$@"
+				DistroSystemContext --index-${idx}-merged awk -v p="$projectName" '
+					$1==p && !x[$3]++ { print $2, $3; }
+				'
 		
 				return 0
 			;;

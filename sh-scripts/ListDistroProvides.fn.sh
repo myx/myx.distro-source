@@ -191,7 +191,7 @@ ListDistroProvides(){
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
 					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" \
-					| sed "s|^|$sequenceProjectName |g"
+					| awk -v p="$sequenceProjectName" '{ print p, $0; }'
 				done \
 				| awk '!x[$0]++'
 				return 0

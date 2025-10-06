@@ -191,7 +191,8 @@ ListDistroDeclares(){
 		
 				local sequenceProjectName
 				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" | sed "s|^|$sequenceProjectName |g"
+					ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" \
+					| awk -v p="$sequenceProjectName" '{ print p, $0; }'
 				done | awk '!x[$0]++'
 				return 0
 			;;
