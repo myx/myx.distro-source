@@ -435,7 +435,7 @@ ListDistroProjects(){
 			;;
 			--required|--required-projects)
 				shift
-				DistroSystemContext --index-sequence-merged awk -v list="$( echo $selectProjects )" '
+				DistroSystemContext --index-sequence-merged awk -v list=$( echo $selectProjects ) '
 					BEGIN {
 						n = split(list, arr, " ")
 						for (i = 1; i <= n; i++) keys[arr[i]] = 1
@@ -446,7 +446,7 @@ ListDistroProjects(){
 			;;
 			--affected|--affected-projects)
 				shift
-				DistroSystemContext --index-sequence-merged awk -v list="$( echo $selectProjects )" '
+				DistroSystemContext --index-sequence-merged awk -v list=$( echo $selectProjects ) '
 					BEGIN {
 						n = split(list, arr, " ")
 						for (i = 1; i <= n; i++) keys[arr[i]] = 1
