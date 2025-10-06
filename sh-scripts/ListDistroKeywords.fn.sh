@@ -50,7 +50,6 @@ ListDistroKeywords(){
 		esac
 	done
 
-	local indexFile="$MDSC_CACHED/distro-index.inf"
 	local indexColumns=""
 
 	while true ; do
