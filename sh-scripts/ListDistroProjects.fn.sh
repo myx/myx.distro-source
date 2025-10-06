@@ -438,7 +438,7 @@ ListDistroProjects(){
 				DistroSystemContext --index-sequence-merged awk -v list="$( printf '%s ' $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
-						for (i = 1; i <= n; i++) keys[arr[i]] = 1
+						for (i = n; i > 0; i--) keys[arr[i]] = 1
 					}
 					($1 in keys) && !seen[$2]++ { print $2 }
 				'
@@ -449,7 +449,7 @@ ListDistroProjects(){
 				DistroSystemContext --index-sequence-merged awk -v list="$( printf '%s ' $selectProjects )" '
 					BEGIN {
 						n = split(list, arr, " ")
-						for (i = 1; i <= n; i++) keys[arr[i]] = 1
+						for (i = n; i > 0; i--) keys[arr[i]] = 1
 					}
 					($2 in keys) && !seen[$1]++ { print $1 }
 				'
