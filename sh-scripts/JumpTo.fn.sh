@@ -65,11 +65,11 @@ JumpTo(){
 
 case "$0" in
 	*/sh-scripts/JumpTo.fn.sh)
-		if [ -z "$1" ] || [ "$1"="--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "📘 syntax: JumpTo.fn.sh <project> [<ssh arguments>...]" >&2
 			echo "📘 syntax: JumpTo.fn.sh <unique-project-name-part> [<ssh arguments>...]" >&2
 			echo "📘 syntax: JumpTo.fn.sh [--help]" >&2
-			if [ "$1"="--help" ] ; then
+			if [ "$1" = "--help" ] ; then
 				echo "  Examples:" >&2
 				echo "    JumpTo.fn.sh ndss113" >&2
 				echo "    JumpTo.fn.sh ndm/cloud.knt/setup.host-ndss112r3.ndm9.xyz" >&2

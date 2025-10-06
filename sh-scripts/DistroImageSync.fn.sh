@@ -133,7 +133,7 @@ DistroImageSync(){
 				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push}" >&2
 				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
 				echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
-				if [ "$1"="--help" ] ; then
+				if [ "$1" = "--help" ] ; then
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroImageSync.include"
 				fi
@@ -330,7 +330,7 @@ case "$0" in
 			DistroSystemContext --distro-path-auto
 		fi
 
-		if [ -z "$1" ] || [ "$1"="--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			DistroImageSync ${1:-"--help-syntax"}
 			exit 1
 		fi

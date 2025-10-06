@@ -166,10 +166,10 @@ ListProjectDeclares(){
 
 case "$0" in
 	*/sh-scripts/ListProjectDeclares.fn.sh)
-		if [ -z "$1" ] || [ "$1"="--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "📘 syntax: ListProjectDeclares.fn.sh <project_name> [--print-project] [--print-declares-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
 			echo "📘 syntax: ListProjectDeclares.fn.sh [--help]" >&2
-			if [ "$1"="--help" ] ; then
+			if [ "$1" = "--help" ] ; then
 				echo "  Examples:" >&2
 				echo "    ListProjectDeclares.fn.sh myx/myx.common/os-myx.common" >&2
 				echo "    ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --print-project" >&2

@@ -56,10 +56,10 @@ ListProjectKnownHosts(){
 
 case "$0" in
 	*/sh-scripts/ListProjectKnownHosts.fn.sh) 
-		if [ -z "$1" ] || [ "$1"="--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "📘 syntax: ListProjectKnownHosts.fn.sh <project>" >&2
 			echo "📘 syntax: ListProjectKnownHosts.fn.sh [--help]" >&2
-			if [ "$1"="--help" ] ; then
+			if [ "$1" = "--help" ] ; then
 				echo "examples:" >&2
 				echo "	ListProjectKnownHosts.fn.sh --distro-from-source myx/myx.distro-source 2> /dev/null" >&2
 				echo "	ListProjectKnownHosts.fn.sh --distro-source-only myx/myx.distro-source 2> /dev/null" >&2

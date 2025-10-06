@@ -170,10 +170,10 @@ case "$0" in
 		# ListProjectSequence.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		# ListProjectSequence.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
 		
-		if [ -z "$1" ] || [ "$1"="--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "📘 syntax: ListProjectSequence.fn.sh [--no-cache] <project_name> [--print-project] [--print-provides]" >&2
 			echo "📘 syntax: ListProjectSequence.fn.sh [--help]" >&2
-			if [ "$1"="--help" ] ; then
+			if [ "$1" = "--help" ] ; then
 				echo "  Examples:" >&2
 				echo "    ListProjectSequence.fn.sh myx/myx.common/os-myx.common" >&2
 				echo "    ListProjectSequence.fn.sh myx/myx.common/os-myx.common --print-project" >&2

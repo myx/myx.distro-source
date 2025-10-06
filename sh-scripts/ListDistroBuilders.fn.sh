@@ -87,11 +87,11 @@ ListDistroBuilders(){
 case "$0" in
 	*/sh-scripts/ListDistroBuilders.fn.sh) 
 
-		if [ -z "$1" ] || [ "$1"="--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "📘 syntax: ListDistroBuilders.fn.sh [--print-build-stage] <build-stage>" >&2
 			echo "📘 syntax: ListDistroBuilders.fn.sh --all-build-stages" >&2
 			echo "📘 syntax: ListDistroBuilders.fn.sh [--help]" >&2
-			if [ "$1"="--help" ] ; then
+			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectStage.include"
 				echo >&2
 				echo "  Arguments:" >&2
