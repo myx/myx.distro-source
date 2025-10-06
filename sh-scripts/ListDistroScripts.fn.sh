@@ -44,8 +44,8 @@ set -x
 			local FILTER="$MDPATH/"
 		;;
 		*)
-				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
-				set +e ; return 1
+			echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+			set +e ; return 1
 		;;
 	esac
 	find \
