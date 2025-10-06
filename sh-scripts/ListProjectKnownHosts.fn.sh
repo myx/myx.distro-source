@@ -25,11 +25,8 @@ ListProjectKnownHosts(){
 		*) break ;;
 	esac done
 
-	local projectName="${1#$MDSC_SOURCE/}"
-	if [ -z "$projectName" ] ; then
-		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
-		set +e ; return 1
-	fi
+	local projectName=
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
 	[ ! -f "$MDSC_SOURCE/$projectName/ssh/known_hosts" ] || {
 		[ -z "$addComment" ] || printf '\n\n## Source: %s\n\n' "$projectName"

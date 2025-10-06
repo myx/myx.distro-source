@@ -26,11 +26,10 @@ ListProjectActions(){
 		esac
 	done
 
-	local projectName="${1#$MDSC_SOURCE/}"
-	if [ -z "$projectName" ] ; then
-		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
-		set +e ; return 1
-	fi
+	set -e
+
+	local projectName=
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
 	local findLocation sedEx
 	

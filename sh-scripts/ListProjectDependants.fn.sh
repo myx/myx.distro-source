@@ -12,36 +12,10 @@ ListProjectDependants(){
 	local MDSC_CMD='ListProjectDependants'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
+	local projectName=
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
-	local projectName="${1#$MDSC_SOURCE/}"
-	case "$projectName" in
-	'')
-		echo "⛔ ERROR: $MDSC_CMD: 'projectName' argument is required!" >&2
-		set +e ; return 1
-	;;
-	--project-from-env)
-		projectName="$MDSC_PRJ_NAME" ; [ -n "$projectName" ] || {
-			echo "⛔ ERROR: $MDSC_CMD: --project-from-env: MDSC_PRJ_NAME is not set!" >&2
-			set +e ; return 1
-		}
-	;;
-	'.'|--project-from-pwd)
-		projectName="$( Distro ListDistroProjects --project '.' )" ; [ -n "$projectName" ] || {
-			echo "⛔ ERROR: $MDSC_CMD: --project-from-pwd: can't map working directory to project: $(pwd)" >&2
-			set +e ; return 1
-		}
-	;;
-	esac
-	[ -f "$MDSC_SOURCE/$projectName/project.inf" ] || {
-		echo "⛔ ERROR: $MDSC_CMD: project is invalid or unknown: $projectName" >&2
-		set +e ; return 1
-	}
-	shift
-
-	if [ "$1" = "--no-cache" ] ; then
-		shift
-	else
+	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
 		local cacheFile="$MDSC_CACHED/$projectName/project-dependants.txt"
 		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
