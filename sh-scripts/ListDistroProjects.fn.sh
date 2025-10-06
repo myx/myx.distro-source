@@ -428,8 +428,7 @@ ListDistroProjects(){
 				local selectVariant="--${1#--select-}" ; shift
 
 				selectProjects="$( 
-					export MDSC_SELECT_PROJECTS="$selectProjects"
-					ListDistroProjects $MDSC_NO_CACHE $MDSC_NO_INDEX --select-from-env $selectVariant 
+					MDSC_SELECT_PROJECTS="$selectProjects" ListDistroProjects --select-from-env $selectVariant 
 				)"
 				continue
 			;;
