@@ -181,19 +181,19 @@ ListDistroProvides(){
 				return 0
 			;;
 			--merge-sequence)
+				if [ -n "$2" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1: no extra options allowed ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
 				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: $1, no projects selected!" >&2
 					set +e ; return 1
 				fi
 				shift
 				
-				Require ListProjectProvides
-				local sequenceProjectName
-				for sequenceProjectName in $MDSC_SELECT_PROJECTS ; do
-					ListProjectProvides $MDSC_NO_CACHE $MDSC_NO_INDEX "$sequenceProjectName" --merge-sequence "$@" \
-					| awk -v p="$sequenceProjectName" '{ print p, $0; }'
-				done \
-				| awk '!x[$0]++'
+				DistroSystemContext --select-index-provides-merged awk '
+					!x[$3]++ { print $0; }
+				'
 				return 0
 			;;
 			'')
@@ -201,16 +201,13 @@ ListDistroProvides(){
 					echo "$indexColumns"
 					return 0
 				fi
-				
-				if [ -n "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
-					DistroSystemContext --index-provides \
-					awk 'NR==FNR{a[$1]=$0;next} ($1 in a){b=$1;$1="";print a[b] $0}' \
-						<( echo "$MDSC_SELECT_PROJECTS" )
-					return 0
+				if [ -z "${MDSC_SELECT_PROJECTS:0:1}" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: no projects selected!" >&2
+					set +e ; return 1
 				fi
 
-				echo "⛔ ERROR: $MDSC_CMD: no projects selected!" >&2
-				set +e ; return 1
+				DistroSystemContext --select-index-provides columnMatch
+				return 0
 			;;
 			*)
 				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
