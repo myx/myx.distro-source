@@ -59,7 +59,7 @@ BuildOutputFromCached(){
 			set +e ; return 1
 		fi
 		
-		Prefix "IngestCachedChanges" \
+		Prefix "ingest-cached" \
 		Distro DistroSourceProcess --ingest-distro-output-from-cached
 
 		export MDSC_CACHED="$MMDAPP/.local/output-cache/prepared"
@@ -79,7 +79,7 @@ BuildOutputFromCached(){
 
 		echo "BuildOutputFromCached: All Builders passed." >&2
 
-		Prefix "PopulateSystemIndex" \
+		Prefix "populate-processed" \
 		Distro DistroSourceProcess --ingest-distro-index-from-processed
 
 		echo "BuildOutputFromCached: done." >&2

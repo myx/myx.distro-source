@@ -59,7 +59,7 @@ BuildCachedFromSource(){
 			return 1
 		fi
 
-		Prefix "IngestSourceChanges" \
+		Prefix "ingest-source" \
 		Distro DistroSourcePrepare --ingest-distro-index-from-source
 
 		export MDSC_CACHED="$MMDAPP/.local/source-cache/prepare"
@@ -79,7 +79,7 @@ BuildCachedFromSource(){
 
 		echo "BuildCachedFromSource: All Builders passed." >&2
 
-		Prefix "PopulateSystemIndex" \
+		Prefix "populate-prepared" \
 		Distro DistroSourcePrepare --ingest-distro-index-from-prepared
 
 		echo "BuildCachedFromSource: done." >&2

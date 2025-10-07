@@ -99,7 +99,7 @@ DistroSourcePrepare(){
 
 			(
 				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ScanSyncSystemIndexChanges.fn.include"
-				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/prepare" "$INDEX_ROOT"
+				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/prepare" "$INDEX_ROOT" || exit 1
 			)
 
 			DistroSystemContext --uncache-index
