@@ -26,7 +26,7 @@ BuildOutputFromCached(){
 			local BUILDER="$1"
 			echo "BuildOutputFromCached: $( basename $BUILDER ) builder started" >&2
 			#### want to run in separate process anyways
-			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" | tee /dev/stderr >/dev/null ) ; then
+			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
 				echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
 				return 0
 			fi
@@ -84,7 +84,7 @@ BuildOutputFromCached(){
 
 		echo "BuildOutputFromCached: done." >&2
 
-	) | tee /dev/stderr >/dev/null
+	) 1>&2
 	wait || :
 }
 

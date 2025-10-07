@@ -21,7 +21,7 @@ RebuildDistroFromOutputBuilderRaw(){
 	local BUILDER="$1"
 	echo "BuildDistroFromSource: $( basename $BUILDER ) builder started" >&2
 	#### want to run in separate process anyways
-	if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" | tee /dev/stderr >/dev/null ) ; then
+	if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
 		echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
 	else
 		echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
@@ -73,7 +73,7 @@ BuildDistroFromSource(){
 	BuildOutputFromCached "$@"
 	
 	#### want to run in separate process anyways
-	BuildDistroFromOutputRunner "$@" | tee /dev/stderr >/dev/null
+	BuildDistroFromOutputRunner "$@" 1>&2
 }
 
 case "$0" in
