@@ -38,10 +38,10 @@ CompileCachedJavaProject(){
 	( \
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
 		RunJavaClassSource \
-			myx/myx.distro-source \
+			myx/myx.distro-system \
 			ru.myx.distro.prepare.MakeCompileSources \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
-			--output-root "$MMDAPP/output" \
+			--output-root "$MMDAPP/.local/output-cache/process" \
 			--import-from-source \
 			--project "$projectName" \
 	)
@@ -54,7 +54,7 @@ CompileCachedJavaProject(){
 	( \
 		. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/RunJavaClassSource.include" ;
 		RunJavaClassSource \
-			myx/myx.distro-source \
+			myx/myx.distro-system \
 			ru.myx.distro.prepare.MakeCompileSources \
 			--source-root "$MMDAPP/source" \
 			--output-root "$MMDAPP/output" \
