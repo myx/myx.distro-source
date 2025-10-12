@@ -60,7 +60,6 @@ App Folders:
 	/
 	/source - source codes, all repositories and projects
 	/source/repo[/group]/project - project tree structure
-	/output - output products (generated)
 	/export - export resources (generated or cloned)
 	/distro - distro structure (alternative to /source, BTW)
 	/distro/distro-namespaces.txt - repository names db file (prepared)
@@ -72,6 +71,7 @@ App Folders:
 	/.local/source-cache - build system cache space (generated), before source-prepare
 	/.local/source-cache/sources - synched source for source->distro builders
 	/.local/source-cache/changed - package names that are changed and need to be built
+	/.local/output-cache - output products (generated)
 	/cached/built - package names that are built
 
 
