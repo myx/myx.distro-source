@@ -17,7 +17,7 @@ SyncExportsFromOutput(){
 	local SOURCE_DIR="$MDSC_SOURCE/$projectName"
 	local CACHED_DIR="$MDSC_CACHED/$projectName"
 
-	local EXPORT_DST="$MMDAPP/output/export/$DST"
+	local EXPORT_DST="$MMDAPP/.local/output-cache/export/$DST"
 
 	if [ "0" = "1" ] && [ -f "$EXPORT_DST" ] ; then
 		if [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$EXPORT_DST" "+%Y%m%d%H%M%S"`" ] ; then

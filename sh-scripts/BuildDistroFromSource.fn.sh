@@ -15,65 +15,90 @@ Require BuildCachedFromSource
 Require BuildOutputFromCached
 Require ListDistroBuilders
 
-RebuildDistroFromOutputBuilderRaw(){
-	set -e
-	
-	local BUILDER="$1"
-	echo "BuildDistroFromSource: $( basename $BUILDER ) builder started" >&2
-	#### want to run in separate process anyways
-	if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
-		echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
-	else
-		echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
-		set +e ; return 1
-	fi
-}
-
-BuildDistroFromOutputRunner(){
-	set -e
-	
-	export OUTPUT_PATH="$MMDAPP/output/distro"
-	export DISTRO_PATH="$MMDAPP/output/distro"
-	export EXPORT_PATH="$MMDAPP/output/export"
-	
-	export BUILD_STAMP
-	BUILD_STAMP="$( 
-		[ -z "$MDSC_CACHED/build-time-stamp.txt" ] \
-		&& date -u -r "$MDSC_CACHED/build-time-stamp.txt" "+%Y%m%d%H%M%S" \
-		|| date -u "+%Y%m%d%H%M%S" 
-	)"
-	
-	type Prefix >/dev/null 2>&1 || \
-		. "$( myx.common which lib/prefix )"
-	
-	type Parallel >/dev/null 2>&1 || \
-		. "$( myx.common which lib/parallel )"
-	
-	type Async >/dev/null 2>&1 || \
-		. "$( myx.common which lib/async )"
-	
-	DistroSystemContext --distro-from-output
-	
-	local BUILDERS="$( ListDistroBuilders image-prepare --3 )"
-	echo 'BuildDistroFromSource: Builders list:' >&2
-	printf '\t%s\n' $BUILDERS >&2
-	
-	for BUILDER in $BUILDERS ; do
-		Prefix "s $( basename $BUILDER )" RebuildDistroFromOutputBuilderRaw "$BUILDER"
-		wait
-	done
-
-	echo "BuildDistroFromSource: All Builders passed." >&2
-}
-
 BuildDistroFromSource(){
 	set -e
-
-	BuildCachedFromSource "$@"
-	BuildOutputFromCached "$@"
-	
+	echo "BuildDistroFromSource: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
 	#### want to run in separate process anyways
-	BuildDistroFromOutputRunner "$@" 1>&2
+
+	[ --only="$1" ] || {
+		shift
+		BuildCachedFromSource "$@"
+		BuildOutputFromCached "$@"
+	}
+
+	#### want to run in separate process anyways
+	(
+
+
+		RebuildDistroFromOutputBuilderRaw(){
+			set -e
+			
+			local BUILDER="$1"
+			echo "BuildDistroFromSource: $( basename $BUILDER ) builder started" >&2
+			#### want to run in separate process anyways
+			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
+				echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
+			else
+				echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
+				set +e ; return 1
+			fi
+		}
+
+		set -e
+		
+		export BUILD_STAMP
+		BUILD_STAMP="$( 
+			[ -z "$MDSC_CACHED/build-time-stamp.txt" ] \
+			&& date -u -r "$MDSC_CACHED/build-time-stamp.txt" "+%Y%m%d%H%M%S" \
+			|| date -u "+%Y%m%d%H%M%S" 
+		)"
+		
+		type Prefix >/dev/null 2>&1 || \
+			. "$( myx.common which lib/prefix )"
+		
+		type Parallel >/dev/null 2>&1 || \
+			. "$( myx.common which lib/parallel )"
+		
+		type Async >/dev/null 2>&1 || \
+			. "$( myx.common which lib/async )"
+		
+		DistroSystemContext --distro-from-output
+
+		if [ ! -d "$MDSC_SOURCE" ] ; then
+			echo "⛔ ERROR: source path does not exist!" >&2
+			set +e ; return 1
+		fi
+		
+		Prefix "ingest-output" \
+		Distro DistroImagePrepare --ingest-distro-image-from-output
+
+		export MDSC_CACHED="$MMDAPP/.local/output-cache/process"
+		export MDSC_SOURCE="$MMDAPP/.local/source-cache/sources"
+		export MDSC_OUTPUT="$MMDAPP/.local/output-cache/distro"
+		export OUTPUT_PATH="$MMDAPP/.local/output-cache/distro"
+		export DISTRO_PATH="$MMDAPP/.local/output-cache/distro"
+		export EXPORT_PATH="$MMDAPP/.local/output-cache/export"
+		
+		
+		local BUILDERS="$( ListDistroBuilders image-prepare --3 )"
+		echo 'BuildDistroFromSource: Builders list:' >&2
+		printf '\t%s\n' $BUILDERS >&2
+		
+		for BUILDER in $BUILDERS ; do
+			Prefix "s $( basename $BUILDER )" RebuildDistroFromOutputBuilderRaw "$BUILDER"
+			wait
+		done
+
+		echo "BuildDistroFromSource: All Builders passed." >&2
+
+
+		Prefix "populate-distro" \
+		Distro DistroImagePrepare --ingest-distro-index-from-image
+
+		echo "BuildDistroFromSource: done." >&2
+
+	) 1>&2
+	wait || :
 }
 
 case "$0" in

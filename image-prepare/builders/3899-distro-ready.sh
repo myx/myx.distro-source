@@ -10,8 +10,8 @@ echo "DISTRO_PATH: $DISTRO_PATH" >&2
 echo "EXPORT_PATH: $EXPORT_PATH" >&2
 echo "OUTPUT_PATH: $OUTPUT_PATH" >&2
 
-Prefix "sync-distro" rsync -ai --delete "$MMDAPP/output/distro/" "$MMDAPP/distro" </dev/null & # parallel
-Prefix "sync-export" rsync -ai --delete "$MMDAPP/output/export/" "$MMDAPP/export" </dev/null & # parallel
+Prefix "sync-distro" rsync -ai --delete "$MMDAPP/.local/output-cache/distro/" "$MMDAPP/distro" </dev/null & # parallel
+Prefix "sync-export" rsync -ai --delete "$MMDAPP/.local/output-cache/export/" "$MMDAPP/export" </dev/null & # parallel
 
 wait
 
