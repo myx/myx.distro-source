@@ -20,11 +20,13 @@ BuildDistroFromSource(){
 	echo "BuildDistroFromSource: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
 	#### want to run in separate process anyways
 
-	[ --only="$1" ] || {
-		shift
+	[ '--only' = "$1" ] || (
+		shift || :
+		DistroSystemContext --distro-from-source
 		BuildCachedFromSource "$@"
 		BuildOutputFromCached "$@"
-	}
+		exit
+	)
 
 	#### want to run in separate process anyways
 	(
@@ -72,9 +74,9 @@ BuildDistroFromSource(){
 		Prefix "ingest-output" \
 		Distro DistroImagePrepare --ingest-distro-image-from-output
 
-		export MDSC_CACHED="$MMDAPP/.local/output-cache/process"
+		export MDSC_CACHED="$MMDAPP/.local/output-cache/distro"
 		export MDSC_SOURCE="$MMDAPP/.local/source-cache/sources"
-		export MDSC_OUTPUT="$MMDAPP/.local/output-cache/distro"
+		export MDSC_OUTPUT="$MMDAPP/.local/output-cache"
 		export OUTPUT_PATH="$MMDAPP/.local/output-cache/distro"
 		export DISTRO_PATH="$MMDAPP/.local/output-cache/distro"
 		export EXPORT_PATH="$MMDAPP/.local/output-cache/export"
@@ -93,7 +95,7 @@ BuildDistroFromSource(){
 
 
 		Prefix "populate-distro" \
-		Distro DistroImagePrepare --ingest-distro-index-from-image
+		Distro DistroImagePrepare --ingest-distro-index-from-processed
 
 		echo "BuildDistroFromSource: done." >&2
 

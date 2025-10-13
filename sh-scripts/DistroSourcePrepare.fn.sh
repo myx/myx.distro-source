@@ -92,7 +92,7 @@ DistroSourcePrepare(){
 				set +e ; return 1
 			}
 
-			local INDEX_DATE="$INDEX_ROOT/source-ingest.timestamp.txt"
+			local INDEX_DATE="$INDEX_ROOT/index-ingest.timestamp.txt"
 			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
 				cp -f "$CACHE_DATE" "$INDEX_DATE"
 			fi

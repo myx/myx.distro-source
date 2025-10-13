@@ -10,7 +10,7 @@ fi
 . "$MDLT_ORIGIN/myx/myx.distro-system/sh-scripts/DistroSourceCommand.fn.sh"
 
 DistroSourceCommand \
-	--output-root "$MMDAPP/output" \
+	--output-root "${MDSC_OUTPUT:-$MMDAPP/.local/output-cache}" \
 	--source-root "${MDSC_SOURCE:-$MMDAPP/source}" \
 	--cached-root "${MDSC_CACHED:-$MMDAPP/.local/system-index}" \
 	"$@" \

@@ -23,7 +23,7 @@ MergeScripts(){
 		echo "⛔ ERROR: MergeScripts: 'targetName' argument is required!" >&2 ; return 1
 	fi
 	
-	local OUTPUT_DST="$MDSC_OUTPUT/$projectName/$targetName"
+	local OUTPUT_DST="$MDSC_OUTPUT/distro/$projectName/$targetName"
 	echo "merge: $sourceName to $targetName" >&2
 
 	echo "# merged by myx.distro at `date` @ `hostname`" > "$OUTPUT_DST"
@@ -37,7 +37,7 @@ MergeScripts(){
 			cat "$SRC_FILE" >> "$OUTPUT_DST"
 			continue
 		fi
-		local SRC_FILE="$MDSC_OUTPUT/$SEQUENCE/$sourceName"
+		local SRC_FILE="$MDSC_OUTPUT/distro/$SEQUENCE/$sourceName"
 		if [ -f "$SRC_FILE" ] ; then
 			echo "merging: $SEQUENCE/$sourceName (output)" >&2
 			echo "# merged from $SEQUENCE/$sourceName (output)" >> "$OUTPUT_DST"

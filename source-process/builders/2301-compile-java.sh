@@ -18,9 +18,9 @@ CompileJavaSources(){
 			-v$( 
 				[ -z "$MDSC_DETAIL" ] || printf 'v' 
 			) \
-			--output-root "$MMDAPP/output" \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
-			--cached-root "$MMDAPP/.local/output-cache/distro-index" \
+			--output-root "$MMDAPP/.local/output-cache" \
+			--cached-root "$MMDAPP/.local/output-cache/distro" \
 			--import-from-source --select-all-from-source \
 			--prepare-build-roots --prepare-build-distro-index --prepare-build-compile-index \
 			--print '' \

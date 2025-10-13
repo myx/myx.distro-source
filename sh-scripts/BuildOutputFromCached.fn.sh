@@ -62,9 +62,9 @@ BuildOutputFromCached(){
 		Prefix "ingest-cached" \
 		Distro DistroSourceProcess --ingest-distro-output-from-cached
 
-		export MDSC_CACHED="$MMDAPP/.local/output-cache/prepared"
 		export MDSC_SOURCE="$MMDAPP/.local/source-cache/sources"
-		export MDSC_OUTPUT="$MMDAPP/.local/output-cache/process"
+		export MDSC_CACHED="$MMDAPP/.local/output-cache/prepared"
+		export MDSC_OUTPUT="$MMDAPP/.local/output-cache"
 		export OUTPUT_PATH="$MMDAPP/.local/output-cache/output"
 
 		local BUILDERS

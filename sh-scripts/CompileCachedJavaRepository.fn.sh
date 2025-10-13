@@ -15,8 +15,9 @@ CompileCachedJavaRepository(){
 		RunJavaClassSource \
 			myx/myx.distro-source \
 			ru.myx.distro.prepare.MakeCompileSources \
-			--source-root "$MMDAPP/source" \
-			--output-root "$MMDAPP/output" \
+			--cached-root "$MMDAPP/.local/source-cache/prepare" \
+			--source-root "$MMDAPP/.local/source-cache/sources" \
+			--output-root "$MMDAPP/.local/output-cache" \
 			--repository "$REPO_NAME" \
 	)
 }

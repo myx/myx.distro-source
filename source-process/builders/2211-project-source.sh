@@ -36,7 +36,7 @@ MakeProjectSourceArchive(){
 	[ -z "$projectName" ] && echo "⛔ ERROR: MakeProjectSourceArchive: 'projectName' argument is required!" >&2 && return 1
 	
 	local CHECK_DIR="$MDSC_SOURCE/$projectName"
-	local BUILT_DIR="$MDSC_OUTPUT/$projectName"
+	local BUILT_DIR="$MDSC_OUTPUT/distro/$projectName"
 	local BASE_ROOT="`dirname "$CHECK_DIR"`"
 	local PACK_ROOT="`basename "$CHECK_DIR"`"
 	mkdir -p "$BUILT_DIR"

@@ -35,7 +35,7 @@ CheckMakeProjectDataFolder(){
 	local PKG="$1"
 	local CHECK_DIR="$MDSC_SOURCE/$PKG/data"
 	if [ -d "$CHECK_DIR" ] ; then
-		local BUILT_DIR="$MDSC_OUTPUT/$PKG"
+		local BUILT_DIR="$MDSC_OUTPUT/distro/$PKG"
 		mkdir -p "$BUILT_DIR"
 		tar -cvjf "$BUILT_DIR/data.tbz" \
 			${TAR_ARGS_GENERIC-} \

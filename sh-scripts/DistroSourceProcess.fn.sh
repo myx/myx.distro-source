@@ -28,8 +28,8 @@ DistroSourceProcess(){
 
 			local CACHE_ROOT="$MMDAPP/.local/output-cache"
 
-			local NEW_CHANGED="$CACHE_ROOT/new-changed.index.txt"
-			if [ ! -s "$NEW_CHANGED" ]; then
+			local NEW_CHANGED="$CACHE_ROOT/new-content.index.txt"
+			if [ ! -s "$NEW_CONTENT" ]; then
 				echo "< $MDSC_CMD IngestOutputFromCached.include: 🫙 no new index changes." >&2
 				return 0
 			fi
@@ -41,10 +41,10 @@ DistroSourceProcess(){
 				set +e ; return 1
 			}
 
-			local BUILT_ROOT="$CACHE_ROOT/process"; mkdir -p "$BUILT_ROOT"
+			local BUILT_ROOT="$CACHE_ROOT/distro"; mkdir -p "$BUILT_ROOT"
 
 			date -u "+%Y%m%d%H%M%S" > "$CACHE_ROOT/process-output.timestamp.txt"
-			# cp -f "$CACHE_DATE" "$BUILT_ROOT/build-time-stamp.txt"
+			cp -f "$CACHE_DATE" "$BUILT_ROOT/build-time-stamp.txt"
 
 			# local ALL_CHANGED="$CACHE_ROOT/all-changed.index.txt"
 			# local ALL_PROJECTS="$CACHE_ROOT/all-projects.index.txt"
@@ -69,14 +69,14 @@ DistroSourceProcess(){
 				set +e ; return 1
 			}
 
-			local INDEX_DATE="$INDEX_ROOT/source-ingest.timestamp.txt"
+			local INDEX_DATE="$INDEX_ROOT/index-ingest.timestamp.txt"
 			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
 				cp -f "$CACHE_DATE" "$INDEX_DATE"
 			fi
 
 			(
 				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ScanSyncSystemIndexChanges.fn.include"
-				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/process" "$INDEX_ROOT" || exit 1
+				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/distro" "$INDEX_ROOT" || exit 1
 			)
 
 			DistroSystemContext --uncache-index
@@ -136,10 +136,10 @@ DistroSourceProcess(){
 		;;
 		--clone-prepared-metadata)
 			shift
-			local TGT_PROCESS="$MMDAPP/.local/output-cache/process"
+			local TGT_PROCESS="$MMDAPP/.local/output-cache/distro"
 
-			local CACHE_ROOT="$MMDAPP/.local/output-cache"
-			local CACHE_DATE="$CACHE_ROOT/process-ingest.timestamp.txt"
+			local CACHE_ROOT="$MMDAPP/.local/output-cache/prepared"
+			local CACHE_DATE="$CACHE_ROOT/../process-ingest.timestamp.txt"
 
 			[ -f "$CACHE_DATE" ] || {
 				echo "⛔ ERROR: $MDSC_CMD: output cache timestamp expected: $CACHE_DATE" >&2
@@ -150,7 +150,7 @@ DistroSourceProcess(){
 
 			(
 				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ScanSyncSystemIndexChanges.fn.include"
-				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/prepared" "$CACHE_ROOT/process"
+				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT" "$TGT_PROCESS"
 			)
 
 			[ -z "$MDSC_DETAIL" ] || echo "< $MDSC_CMD: cache-output metadata cloned." >&2

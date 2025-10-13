@@ -97,7 +97,7 @@ ListProjectSequence(){
 	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
 
 	if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] ; then
-		if [ "$MDSC_INMODE" = "distro" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
+		if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
 			echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
 			
 			local FILTER="$1"

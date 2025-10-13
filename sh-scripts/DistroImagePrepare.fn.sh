@@ -30,27 +30,27 @@ DistroImagePrepare(){
 			shift
 			return 0
 		;;
-		--ingest-distro-index-from-prepared)
+		--ingest-distro-index-from-processed)
 			shift
 
-			local CACHE_ROOT="$MMDAPP/.local/source-cache"
+			local CACHE_ROOT="$MMDAPP/.local/output-cache"
 			local INDEX_ROOT="$MMDAPP/.local/system-index"
 			mkdir -p "$INDEX_ROOT"
 
-			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
+			local CACHE_DATE="$CACHE_ROOT/process-ingest.timestamp.txt"
 			[ -f "$CACHE_DATE" ] || {
 				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
 				set +e ; return 1
 			}
 
-			local INDEX_DATE="$INDEX_ROOT/source-ingest.timestamp.txt"
+			local INDEX_DATE="$INDEX_ROOT/index-ingest.timestamp.txt"
 			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
 				cp -f "$CACHE_DATE" "$INDEX_DATE"
 			fi
 
 			(
 				. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/ScanSyncSystemIndexChanges.fn.include"
-				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/prepare" "$INDEX_ROOT" || exit 1
+				ScanSyncSystemIndexChanges --execute-sync "$CACHE_ROOT/distro" "$INDEX_ROOT" || exit 1
 			)
 
 			DistroSystemContext --uncache-index
@@ -103,7 +103,7 @@ DistroImagePrepare(){
 			return 0
 		;;
 		--help|--help-syntax)
-			echo "📘 syntax: DistroImagePrepare.fn.sh --ingest-distro-index-from-image" >&2
+			echo "📘 syntax: DistroImagePrepare.fn.sh --ingest-distro-index-from-processed" >&2
 			echo "📘 syntax: DistroImagePrepare.fn.sh <option>" >&2
 			# echo "📘 syntax: DistroImagePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
