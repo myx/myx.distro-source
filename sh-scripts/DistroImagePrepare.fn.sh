@@ -14,12 +14,12 @@ fi
 
 DistroImagePrepare(){
 
+	set -e
+
 	local MDSC_CMD='DistroImagePrepare'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
 
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
-
-	set -e
 
 	case "$1" in
 		--ingest-distro-image-from-git)
