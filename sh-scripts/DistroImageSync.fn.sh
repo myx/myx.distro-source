@@ -134,7 +134,7 @@ DistroImageSync(){
 				echo "📘 syntax: DistroImageSync.fn.sh [<options>] --all-tasks <operation>" >&2
 				echo "📘 syntax: DistroImageSync.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
-					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectProjects.include"
+					. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/help/HelpSelectProjects.include"
 					. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroImageSync.include"
 				fi
 				return 1
