@@ -188,16 +188,6 @@ DistroImageSync(){
 
 				break
 			;;
-			--set-env)
-				shift
-				if [ -z "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: --set-env argument expected!" >&2
-					set +e ; return 1
-				fi
-				local envName="$1" ; shift
-				eval "$envName='` $MDSC_CMD --explicit-noop "$@" `'"
-				return 0
-			;;
 			--print-all-tasks)
 				shift
 				if [ -n "$1" ] ; then
