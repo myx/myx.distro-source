@@ -10,9 +10,9 @@ echo >&2
 echo "    --no-cache" >&2
 echo "                Use no cache." >&2
 echo >&2
-# echo "    --merge-sequence" >&2
-# echo "                Include all inherited declares for each project selected." >&2
-# echo >&2
+echo "    --merge-sequence" >&2
+echo "                Include all inherited declares for each project selected." >&2
+echo >&2
 echo "    --filter-and-cut <prefix>" >&2
 echo "                Filters only matching declares with matched prefix and following ':' cut." >&2
 echo >&2
