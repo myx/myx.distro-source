@@ -10,7 +10,7 @@ fi
 ListProjectSequence(){
 
 	local MDSC_CMD='ListProjectSequence'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	set -e
 

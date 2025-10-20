@@ -34,7 +34,7 @@ ListRepositoryProjectsInternalRecursionEchoProjects(){
 ListRepositoryProjects(){
 	
 	local MDSC_CMD='ListRepositoryProjects'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local repositoryName=""
 

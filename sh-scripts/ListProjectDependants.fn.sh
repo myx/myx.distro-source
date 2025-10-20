@@ -10,7 +10,7 @@ fi
 ListProjectDependants(){
 
 	local MDSC_CMD='ListProjectDependants'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local projectName=
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?

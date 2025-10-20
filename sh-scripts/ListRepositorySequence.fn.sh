@@ -10,7 +10,7 @@ fi
 ListRepositorySequence(){
 	
 	local MDSC_CMD='ListRepositorySequence'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local repositoryName=""
 

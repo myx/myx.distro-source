@@ -6,7 +6,7 @@
 CompileCachedJavaProject(){
 
 	local MDSC_CMD='CompileCachedJavaProject'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 	
 	local projectName="${1#$MDSC_SOURCE/}"
 	case "$projectName" in

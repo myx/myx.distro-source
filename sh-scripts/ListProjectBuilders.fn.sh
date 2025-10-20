@@ -10,7 +10,7 @@ fi
 ListProjectBuilders(){
 
 	local MDSC_CMD='ListProjectBuilders'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	set -e
 

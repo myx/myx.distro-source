@@ -17,7 +17,7 @@ fi
 
 SyncGitSource(){
 	local MDSC_CMD='SyncGitSource'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 	
 	local projectPath="$MDSC_SOURCE/${1#"$MDSC_SOURCE/"}" ; shift
 	if [ -z "$projectPath" ] ; then

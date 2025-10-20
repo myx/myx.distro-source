@@ -9,7 +9,7 @@ fi
 
 ListDistroBuilders(){
 	local MDSC_CMD='ListDistroBuilders'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local printBuildStage
 	while true ; do

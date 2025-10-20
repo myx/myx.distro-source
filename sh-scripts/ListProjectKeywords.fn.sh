@@ -10,7 +10,7 @@ fi
 ListProjectKeywords(){
 
 	local MDSC_CMD='ListProjectKeywords'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	set -e
 

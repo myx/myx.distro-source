@@ -10,7 +10,7 @@ fi
 ListProjectActions(){
 
 	local MDSC_CMD='ListProjectActions'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 	local forCompletion=""

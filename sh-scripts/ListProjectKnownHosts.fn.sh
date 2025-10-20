@@ -10,7 +10,7 @@ fi
 ListProjectKnownHosts(){
 
 	local MDSC_CMD='ListProjectKnownHosts'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local MDSC_SOURCE="${MDSC_SOURCE:-$MMDAPP/source}"
 

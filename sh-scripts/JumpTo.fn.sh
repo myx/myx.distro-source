@@ -15,7 +15,7 @@ JumpTo(){
 		. "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-lib/lib.distro-image.include"
 
 	local MDSC_CMD='JumpTo'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local baseDirectory="$MDSC_SOURCE"
 

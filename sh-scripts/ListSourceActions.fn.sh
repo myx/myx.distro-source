@@ -10,7 +10,7 @@ fi
 ListSourceActions(){
 	set +x	
 	local MDSC_CMD='ListSourceActions'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 
 	# override to source, explicit

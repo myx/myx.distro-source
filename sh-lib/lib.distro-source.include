@@ -7,7 +7,7 @@
 # $3 is empty or 'local' or 'export'
 DistroSelectProject(){
 	local MDSC_CMD='DistroSelectProject'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	if [ "$1" != "MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: env name required to be MDSC_PRJ_NAME!" >&2
@@ -58,7 +58,7 @@ DistroSelectProject(){
 # prints project merged provides
 DistroSourceProjectProvidesMerged(){
 	local MDSC_CMD='DistroSourceProjectProvidesMerged'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	if [ -z "$MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
@@ -92,7 +92,7 @@ DistroSourceProjectProvidesMerged(){
 ##
 DistroSourceProjectSequenceFile(){
 	local MDSC_CMD='DistroSourceProjectSequenceFile'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local MDSC_PRJ_NAME="${MDSC_PRJ_NAME:-}"
 
@@ -151,7 +151,7 @@ DistroSourceEnsureProvidesMergedFile(){
 		return 0
 	fi
 
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local checkFile="$MDSC_CACHED/distro-provides.txt"
 	local cacheFile="$MDSC_CACHED/distro-merged-provides.txt"
@@ -191,7 +191,7 @@ DistroSourceEnsureProvidesOwnedFile(){
 		return 0
 	fi
 
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local checkFile="$MDSC_CACHED/distro-index.inf"
 	local cacheFile="$MDSC_CACHED/distro-provides.txt"
@@ -228,7 +228,7 @@ DistroSourceEnsureProvidesOwnedFile(){
 # call with --install|--prepare [--export|--local] argument
 DistroSourceProjectContextVariables(){
 	local MDSC_CMD='DistroSourceProjectContextVariables'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 	if [ -z "$MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
 		set +e ; return 1
@@ -400,7 +400,7 @@ DistroSourceProjectContextVariables(){
 # output: declaredAt sourceName sourcePath <extraArguments>
 DistroSourceCheckSourcePath(){
 	local MDSC_CMD='DistroSourceCheckSourcePath'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local MDSC_PRJ_NAME="${MDSC_PRJ_NAME:-}"
 
@@ -488,7 +488,7 @@ DistroSourceCheckSourcePath(){
 
 DistroSourceEmbedScript(){ # "1-scriptFileName" "2-changeDir"
 	local MDSC_CMD='DistroSourceEmbedScript'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $@" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	if [ -z "$1" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: script file name argument is expected!" >&2
