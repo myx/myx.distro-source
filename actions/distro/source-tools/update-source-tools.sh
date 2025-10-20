@@ -4,6 +4,4 @@
 
 cd "$MMDAPP"
 export MMDAPP
-
-echo "Not yet!"
-exit 1
+bash "$MMDAPP/.local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh" --upgrade-source-tools
