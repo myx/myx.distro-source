@@ -71,8 +71,8 @@ ListProjectDependants(){
 
 case "$0" in
 	*/sh-scripts/ListProjectDependants.fn.sh) 
-		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
+		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.example.org
+		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.example.org
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
 
 		echo "⛔ ERROR: ListProjectDependants: not implemented?" >&2 ; exit 1

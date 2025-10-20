@@ -142,9 +142,9 @@ ListProjectSequence(){
 
 case "$0" in
 	*/sh-scripts/ListProjectSequence.fn.sh) 
-		# ListProjectSequence.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectSequence.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
-		# ListProjectSequence.fn.sh ndm/cloud.knt/setup.host-ndss111r3.ndm9.xyz
+		# ListProjectSequence.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.example.org
+		# ListProjectSequence.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.example.org
+		# ListProjectSequence.fn.sh ndm/cloud.knt/setup.host-ndss111r3.example.org
 		
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			echo "📘 syntax: ListProjectSequence.fn.sh [--no-cache] <project_name> [--print-project] [--print-provides]" >&2
