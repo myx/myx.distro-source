@@ -18,14 +18,29 @@ Require ListDistroBuilders
 BuildDistroFromSource(){
 	set -e
 	echo "BuildDistroFromSource: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
+
+	local MDSC_BUILD_CONTINUE= buildOnlyLastStage=
+
+	while true ; do
+		case "$1" in
+			--continue)
+				MDSC_BUILD_CONTINUE=y; shift; continue
+			;;
+			--only|--build-distro-from-output)
+				buildOnlyLastStage=y; shift; continue
+			;;
+			*)
+				break
+			;;
+		esac
+	done
+
 	#### want to run in separate process anyways
 
-	[ '--only' = "$1" ] || (
-		shift || :
+	[ -n "$buildOnlyLastStage" ] || (
 		DistroSystemContext --distro-from-source
 		BuildCachedFromSource "$@"
 		BuildOutputFromCached "$@"
-		exit
 	)
 
 	#### want to run in separate process anyways
@@ -40,10 +55,13 @@ BuildDistroFromSource(){
 			#### want to run in separate process anyways
 			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
 				echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
-			else
-				echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
+				return 0
+			fi
+			echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
+			if [ -z "$MDSC_BUILD_CONTINUE" ]; then
 				set +e ; return 1
 			fi
+			echo "⛔ ERROR: BuildDistroFromSource: --continue used, continuing after error!" >&2
 		}
 
 		set -e

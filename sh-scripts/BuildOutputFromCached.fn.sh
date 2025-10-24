@@ -17,6 +17,20 @@ Require ListDistroBuilders
 BuildOutputFromCached(){
 	set -e
 	echo "BuildOutputFromCached: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
+
+	local MDSC_BUILD_CONTINUE=
+
+	while true ; do
+		case "$1" in
+			--continue)
+				MDSC_BUILD_CONTINUE=y; shift 2; continue
+			;;
+			*)
+				break
+			;;
+		esac
+	done
+
 	#### want to run in separate process anyways
 	(
 		
@@ -31,7 +45,10 @@ BuildOutputFromCached(){
 				return 0
 			fi
 			echo "⛔ ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
-			set +e ; return 1
+			if [ -z "$MDSC_BUILD_CONTINUE" ]; then
+				set +e ; return 1
+			fi
+			echo "⛔ ERROR: BuildOutputFromCached: --continue used, continuing after error!" >&2
 		}
 
 		set -e
