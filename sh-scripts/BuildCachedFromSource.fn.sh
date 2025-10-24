@@ -23,7 +23,7 @@ BuildCachedFromSource(){
 	while true ; do
 		case "$1" in
 			--continue)
-				MDSC_BUILD_CONTINUE=y; shift 2; continue
+				MDSC_BUILD_CONTINUE=y; shift; continue
 			;;
 			*)
 				break
