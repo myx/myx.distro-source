@@ -7,16 +7,16 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-fi
-
 Require ListDistroProjects
 Require ListDistroBuilders
 
 BuildOutputFromCached(){
 	set -e
 	echo "BuildOutputFromCached: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
+
+	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+	fi
 
 	local MDSC_BUILD_CONTINUE=
 
@@ -33,7 +33,7 @@ BuildOutputFromCached(){
 
 	#### want to run in separate process anyways
 	(
-		
+
 		RebuildOutputFromCachedBuilderRaw(){
 			set -e
 			
@@ -52,7 +52,7 @@ BuildOutputFromCached(){
 		}
 
 		set -e
-		
+
 		export BUILD_STAMP
 		BUILD_STAMP="$( 
 			[ -z "$MDSC_CACHED/build-time-stamp.txt" ] \
@@ -75,7 +75,7 @@ BuildOutputFromCached(){
 			echo "⛔ ERROR: source path does not exist!" >&2
 			set +e ; return 1
 		fi
-		
+
 		Prefix "ingest-cached" \
 		Distro DistroSourceProcess --ingest-distro-output-from-cached
 

@@ -7,16 +7,16 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-fi
-
 Require ListDistroProjects
 Require ListDistroBuilders
 
 BuildCachedFromSource(){
 	set -e
 	echo "BuildCachedFromSource: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
+
+	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+	fi
 
 	local MDSC_BUILD_CONTINUE=
 
@@ -50,7 +50,7 @@ BuildCachedFromSource(){
 			fi
 			echo "⛔ ERROR: BuildCachedFromSource: --continue used, continuing after error!" >&2
 		}
-		
+
 		set -e
 
 		export BUILD_STAMP
@@ -79,11 +79,11 @@ BuildCachedFromSource(){
 		Prefix "ingest-source" \
 		Distro DistroSourcePrepare --ingest-distro-index-from-source
 
-		export MDSC_CACHED="$MMDAPP/.local/source-cache/prepare"
 		export MDSC_SOURCE="$MMDAPP/.local/source-cache/sources"
+		export MDSC_CACHED="$MMDAPP/.local/source-cache/prepare"
 		export MDSC_OUTPUT="$MMDAPP/.local/source-cache"
+		export OUTPUT_PATH="$MMDAPP/.local/source-cache/prepare"
 
-		
 		local BUILDERS
 		BUILDERS="$( ListDistroBuilders source-prepare --1 )"
 		echo 'BuildCachedFromSource: Builders list:' >&2
