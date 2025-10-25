@@ -45,7 +45,8 @@ ListDistroBuilders(){
 				local buildStage
 				DistroSystemContext --index-projects cat \
 				| while read -r projectName; do
-					ListProjectBuilders "$projectName" $printBuildStage "$stageType" "$@" | while read -r buildStage builderName ; do
+					ListProjectBuilders "$projectName" $printBuildStage "$stageType" "$@" \
+					| while read -r buildStage builderName ; do
 						echo "$buildStage" "$builderName" "` basename "$builderName" `" 
 					done
 				done | sort -k3 | cut -d" " -f1,2 \
@@ -60,7 +61,8 @@ ListDistroBuilders(){
 
 			DistroSystemContext --index-projects cat \
 			| while read -r projectName; do
-				ListProjectBuilders "$projectName" "$stageType" "$@" | while read -r builderName ; do
+				ListProjectBuilders "$projectName" "$stageType" "$@" \
+				| while read -r builderName ; do
 					echo "$builderName" "` basename "$builderName" `" 
 				done
 			done | sort -k2 | cut -d" " -f1 \
