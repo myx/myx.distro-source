@@ -7,8 +7,8 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-ListDistroBuilders(){
-	local MDSC_CMD='ListDistroBuilders'
+ListAllBuilders(){
+	local MDSC_CMD='ListAllBuilders'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
 	local printBuildStage
@@ -87,12 +87,12 @@ ListDistroBuilders(){
 }
 
 case "$0" in
-	*/sh-scripts/ListDistroBuilders.fn.sh) 
+	*/sh-scripts/ListAllBuilders.fn.sh) 
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: ListDistroBuilders.fn.sh [--print-build-stage] <build-stage>" >&2
-			echo "📘 syntax: ListDistroBuilders.fn.sh --all-build-stages" >&2
-			echo "📘 syntax: ListDistroBuilders.fn.sh [--help]" >&2
+			echo "📘 syntax: ListAllBuilders.fn.sh [--print-build-stage] <build-stage>" >&2
+			echo "📘 syntax: ListAllBuilders.fn.sh --all-build-stages" >&2
+			echo "📘 syntax: ListAllBuilders.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/HelpSelectStage.include"
 				echo >&2
@@ -106,14 +106,14 @@ case "$0" in
 				echo >&2
 				echo "  Examples:" >&2
 				echo >&2
-				echo "    ListDistroBuilders.fn.sh --distro-from-source source-prepare 2> /dev/null | sort" >&2
-				echo "    ListDistroBuilders.fn.sh --distro-from-cached source-prepare | sort" >&2
-				echo "    ListDistroBuilders.fn.sh --distro-source-only source-prepare | sort" >&2
-				echo "    ListDistroBuilders.fn.sh source-prepare --1" >&2
-				echo "    ListDistroBuilders.fn.sh source-process --2" >&2
-				echo "    ListDistroBuilders.fn.sh image-prepare --3" >&2
-				echo "    ListDistroBuilders.fn.sh image-process --4" >&2
-				echo "    ListDistroBuilders.fn.sh image-install --5" >&2
+				echo "    ListAllBuilders.fn.sh --distro-from-source source-prepare 2> /dev/null | sort" >&2
+				echo "    ListAllBuilders.fn.sh --distro-from-cached source-prepare | sort" >&2
+				echo "    ListAllBuilders.fn.sh --distro-source-only source-prepare | sort" >&2
+				echo "    ListAllBuilders.fn.sh source-prepare --1" >&2
+				echo "    ListAllBuilders.fn.sh source-process --2" >&2
+				echo "    ListAllBuilders.fn.sh image-prepare --3" >&2
+				echo "    ListAllBuilders.fn.sh image-process --4" >&2
+				echo "    ListAllBuilders.fn.sh image-install --5" >&2
 			fi
 			exit 1
 		fi
@@ -123,6 +123,6 @@ case "$0" in
 			DistroSystemContext --distro-from-source
 		fi
 
-		ListDistroBuilders "$@"
+		ListAllBuilders "$@"
 	;;
 esac

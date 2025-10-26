@@ -8,7 +8,7 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 Require ListDistroProjects
-Require ListDistroBuilders
+Require ListAllBuilders
 
 BuildCachedFromSource(){
 	set -e
@@ -85,7 +85,7 @@ BuildCachedFromSource(){
 		export OUTPUT_PATH="$MMDAPP/.local/source-cache/prepare"
 
 		local BUILDERS
-		BUILDERS="$( ListDistroBuilders source-prepare --1 )"
+		BUILDERS="$( ListAllBuilders source-prepare --1 )"
 		echo 'BuildCachedFromSource: Builders list:' >&2
 		printf '\t%s\n' $BUILDERS >&2
 		

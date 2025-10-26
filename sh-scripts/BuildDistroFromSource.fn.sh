@@ -13,7 +13,7 @@ fi
 
 Require BuildCachedFromSource
 Require BuildOutputFromCached
-Require ListDistroBuilders
+Require ListAllBuilders
 
 BuildDistroFromSource(){
 	set -e
@@ -100,7 +100,7 @@ BuildDistroFromSource(){
 		export EXPORT_PATH="$MMDAPP/.local/output-cache/export"
 		
 		
-		local BUILDERS="$( ListDistroBuilders image-prepare --3 )"
+		local BUILDERS="$( ListAllBuilders image-prepare --3 )"
 		echo 'BuildDistroFromSource: Builders list:' >&2
 		printf '\t%s\n' $BUILDERS >&2
 		

@@ -26,7 +26,7 @@ DistroSourceTools(){
 				return 0
 			;;
 			## List all repository roots by listing root configuration files directory
-			--list-repository-roots|--list-namespace-roots)
+			--all-namespaces|--list-namespace-roots|--list-namespaces|--list-repository-roots)
 				shift
 				local REPO_ROOTS="$MMDAPP/.local/roots"
 				[ -d "$REPO_ROOTS" ] || return 0
@@ -38,6 +38,11 @@ DistroSourceTools(){
 					repositoryName="${repositoryName%.distro-namespace}"
 					echo "$repositoryName"
 				done
+				return 0
+			;;
+			--all-source-namespaces)
+				shift
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include"
 				return 0
 			;;
 			--register-repository-roots|--register-namespace-roots)
