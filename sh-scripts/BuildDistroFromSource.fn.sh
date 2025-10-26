@@ -15,10 +15,6 @@ BuildDistroFromSource(){
 		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	fi
 
-	Require BuildCachedFromSource
-	Require BuildOutputFromCached
-	Require ListAllBuilders
-
 	local MDSC_BUILD_CONTINUE= buildOnlyLastStage=
 
 	while true ; do
@@ -39,8 +35,8 @@ BuildDistroFromSource(){
 
 	[ -n "$buildOnlyLastStage" ] || (
 		DistroSystemContext --distro-from-source
-		BuildCachedFromSource "$@"
-		BuildOutputFromCached "$@"
+		Distro BuildCachedFromSource "$@"
+		Distro BuildOutputFromCached "$@"
 	)
 
 	#### want to run in separate process anyways
@@ -100,7 +96,7 @@ BuildDistroFromSource(){
 		export EXPORT_PATH="$MMDAPP/.local/output-cache/export"
 		
 		
-		local BUILDERS="$( ListAllBuilders image-prepare --3 )"
+		local BUILDERS="$( Distro ListAllBuilders image-prepare --3 )"
 		echo 'BuildDistroFromSource: Builders list:' >&2
 		printf '\t%s\n' $BUILDERS >&2
 		

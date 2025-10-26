@@ -15,9 +15,6 @@ BuildOutputFromCached(){
 		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	fi
 
-	Require ListDistroProjects
-	Require ListAllBuilders
-
 	local MDSC_BUILD_CONTINUE=
 
 	while true ; do
@@ -85,7 +82,7 @@ BuildOutputFromCached(){
 		export OUTPUT_PATH="$MMDAPP/.local/output-cache/output"
 
 		local BUILDERS
-		BUILDERS="$( ListAllBuilders source-process --2 )"
+		BUILDERS="$( Distro ListAllBuilders source-process --2 )"
 		echo 'BuildOutputFromCached: Builders list:' >&2
 		printf '\t%s\n' $BUILDERS >&2
 		
