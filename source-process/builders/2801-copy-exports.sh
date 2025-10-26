@@ -49,7 +49,9 @@ SyncExportsFromCached(){
 	echo "⛔ ERROR: export file not found: $SRC" 
 }
 
-Require ListDistroProvides
-ListDistroProvides --select-changed --filter-and-cut "deploy-export" | sed "s|:| |g" | while read -r projectName sourceName targetName ; do
-	SyncExportsFromCached "$projectName" "$sourceName" "$targetName"
-done
+type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
+type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+
+Distro ListDistroProvides --select-changed --filter-and-cut "deploy-export" \
+| sed "s|:| |g" \
+| Parallel Prefix -2 SyncExportsFromCached # "$projectName" "$sourceName" "$targetName"
