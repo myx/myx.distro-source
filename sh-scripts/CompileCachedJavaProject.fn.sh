@@ -41,6 +41,7 @@ CompileCachedJavaProject(){
 			myx/myx.distro-system \
 			ru.myx.distro.prepare.MakeCompileSources \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
+			--cached-root "$MMDAPP/.local/output-cache/distro" \
 			--output-root "$MMDAPP/.local/output-cache" \
 			--import-from-source \
 			--project "$projectName" \
@@ -57,6 +58,7 @@ CompileCachedJavaProject(){
 			myx/myx.distro-system \
 			ru.myx.distro.prepare.MakeCompileSources \
 			--source-root "$MMDAPP/.local/source-cache/sources" \
+			--cached-root "$MMDAPP/.local/output-cache/distro" \
 			--output-root "$MMDAPP/.local/output-cache" \
 			--from-output \
 			--project "$projectName" \
