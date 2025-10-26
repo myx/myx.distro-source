@@ -7,17 +7,17 @@ if [ -z "$MMDAPP" ] ; then
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-fi
-
-Require BuildCachedFromSource
-Require BuildOutputFromCached
-Require ListAllBuilders
-
 BuildDistroFromSource(){
 	set -e
 	echo "BuildDistroFromSource: started: builders base directory, $MMDAPP/source $MDSC_SOURCE" >&2
+
+	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+	fi
+
+	Require BuildCachedFromSource
+	Require BuildOutputFromCached
+	Require ListAllBuilders
 
 	local MDSC_BUILD_CONTINUE= buildOnlyLastStage=
 
