@@ -37,6 +37,7 @@ BuildDistroFromSource(){
 		DistroSystemContext --distro-from-source
 		Distro BuildCachedFromSource "$@"
 		Distro BuildOutputFromCached "$@"
+		set -e
 	)
 
 	#### want to run in separate process anyways
