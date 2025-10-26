@@ -12,7 +12,7 @@ RunJavaClassSource(){
 		shift 2
 	fi
 	
-	local DST_PATH="$MMDAPP/.local/output-cache/$SRC_NAME/java"
+	local DST_PATH="$MMDAPP/.local/output-cache/distro/$SRC_NAME/java"
 
 	local SRC_PATH="${MDSC_SOURCE:-$MMDAPP/source}/$SRC_NAME/java"
 

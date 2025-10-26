@@ -7,13 +7,15 @@ CompileJavaSources(){
 		echo "⛔ ERROR: MakeProjectSourceArchive: 'projectName' argument is required!" >&2 ; return 1
 	fi
 
-	( \
-		Distro CompileCachedJavaProject $projectName \
+	(
+		set -e
+		Distro CompileCachedJavaProject $projectName
 	)
 	
 	return 0
 	
 	(
+		set -e
 		Distro DistroSourceCommand \
 			-v$( 
 				[ -z "$MDSC_DETAIL" ] || printf 'v' 
@@ -30,7 +32,7 @@ CompileJavaSources(){
 type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
 type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
 
-Distro ListDistroProvides --select-changed --filter-and-cut "source-process" \
+Distro ListDistroProvides --select-changed --filter-and-cut "source-process:" \
 | { grep -e " compile-java$" || [ $? -eq 1 ] ; } \
 | cut -d" " -f1 \
 | sort -u \
