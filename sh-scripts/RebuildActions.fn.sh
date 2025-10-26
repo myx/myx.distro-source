@@ -117,14 +117,14 @@ RebuildActions(){
 					
 					echo 'ActionExecutionWrap "$@"'
 				} > "$actionLocation"
-				chmod ug=rx,o=r "$actionLocation" &
+				chmod ug=rwx,o=r "$actionLocation" &
 				continue
-				;;
+			;;
 			*.url)
 				if grep -q '\[InternetShortcut\]' "$actionSourceFile" || [ "$( wc -l < "$actionSourceFile" )" -gt 1 ] ; then
 					## sym-link is being created:
 					ln -fs "$actionSourceFile" "$actionLocation"
-					chmod -h ug=rx,o=r "$actionLocation"  &
+					chmod -h ug=rwx,o=r "$actionLocation"  &
 					continue
 				fi
 				local SRCCODE="`cat "$actionSourceFile"`"
@@ -143,19 +143,20 @@ RebuildActions(){
 					echo "URL=$SRCCODE"
 					echo "WorkingDirectory=$WRKPATH" 
 				} > "$actionLocation"
-				chmod ug=rx,o=r "$actionLocation" &
+				chmod ug=rwx,o=r "$actionLocation" &
 				continue
-				;;
+			;;
 			*)
 				## sym-link is being created:
 				ln -fsv "$actionSourceFile" "$actionLocation"
-				chmod -h ug=rx,o=r "$actionLocation" &
+				chmod -h ug=rwx,o=r "$actionLocation" &
 				continue
-				;;
+			;;
 		esac
 	done
 	
 	wait
+	
 	rsync -irltoODC $( [ "--no-delete" = "$1" ] || echo "--delete" ) \
 		--chmod=ug+rwx \
 		"$TMP_DIR/" \
