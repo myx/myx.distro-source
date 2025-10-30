@@ -74,7 +74,7 @@ DistroSourcePrepare(){
 			local ALL_NAMESPACES="$CACHE_ROOT/all-namespaces.index.txt"
 
 			cat "$ALL_NAMESPACES" > "$BUILT_ROOT/distro-namespaces.txt"
-			cat "$ALL_PROJECTS" > "$BUILT_ROOT/all-project-names.txt" # <<< this is not needed and not used, sequence is better
+			cat "$ALL_PROJECTS" > "$BUILT_ROOT/distro-projects.txt" # <<< this is not needed and not used, sequence is better
 			cat "$ALL_CHANGED" > "$BUILT_ROOT/changed-project-names.txt"
 
 			return 0

@@ -51,7 +51,7 @@ DistroSourceProcess(){
 			# local ALL_NAMESPACES="$CACHE_ROOT/all-namespaces.index.txt"
 
 			# cat "$ALL_NAMESPACES" > "$INDEX_ROOT/distro-namespaces.txt"
-			# cat "$ALL_PROJECTS" > "$INDEX_ROOT/all-project-names.txt" # <<< this is not needed and not used, sequence is better
+			# cat "$ALL_PROJECTS" > "$INDEX_ROOT/distro-projects.txt" # <<< this is not needed and not used, sequence is better
 			# cat "$ALL_CHANGED" > "$INDEX_ROOT/changed-project-names.txt"
 
 			return 0
