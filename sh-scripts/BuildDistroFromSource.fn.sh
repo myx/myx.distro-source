@@ -65,9 +65,11 @@ BuildDistroFromSource(){
 		
 		export BUILD_STAMP
 		BUILD_STAMP="$( 
-			[ -z "$MDSC_CACHED/build-time-stamp.txt" ] \
-			&& date -u -r "$MDSC_CACHED/build-time-stamp.txt" "+%Y%m%d%H%M%S" \
-			|| date -u "+%Y%m%d%H%M%S" 
+			if [ -f "$MDSC_CACHED/build-time-stamp.txt" ]; then
+				date -u -r "$MDSC_CACHED/build-time-stamp.txt" "+%Y%m%d%H%M%S"
+			else
+				date -u "+%Y%m%d%H%M%S" 
+			fi
 		)"
 		
 		type Prefix >/dev/null 2>&1 || \
