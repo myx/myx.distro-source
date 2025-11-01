@@ -11,7 +11,7 @@ set -e
 	mkdir -p "$T"
 	echo "$3" "$3" | tee "$T/project-requires.txt.$S" "$T/project-provides.txt.$S" "$T/project-declares.txt.$S" >/dev/null
 	echo "$3" "${3#*/}" | tee -a "$T/project-provides.txt.$S" "$T/project-keywords.txt.$S" >/dev/null
-	printf > "$T/project.inf"
+	printf '' > "$T/project.inf"
 	# echo "$3" "${3#*/}" | tee -a "$T/project-provides.txt" "$T/project-declares.txt" "$T/project-keywords.txt" >/dev/null
 else
 	echo "⛔ ERROR: ParseSourceProjectInfToCached.fn.include: srcFile tgtBase projectName: srcFile and tgtBase must exist when in 'prepare' mode!" >&2
