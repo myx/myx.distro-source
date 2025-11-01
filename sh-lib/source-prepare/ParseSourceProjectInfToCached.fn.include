@@ -9,12 +9,11 @@ set -e
 	exec < "$1/$3/project.inf"
 	local T="$2/$3" S="$$.tmp"
 	mkdir -p "$T"
+	printf '' > "$T/project.inf.$S"
 	echo "$3" "$3" > "$T/project-requires.txt.$S"
 	echo "$3" "$3" > "$T/project-provides.txt.$S"
 	echo "$3" "$3" > "$T/project-declares.txt.$S"
 	echo "$3" "$3" > "$T/project-keywords.txt.$S"
-	printf '' > "$T/project.inf.$S"
-	# echo "$3" "${3#*/}" | tee -a "$T/project-provides.txt" "$T/project-declares.txt" "$T/project-keywords.txt" >/dev/null
 else
 	echo "⛔ ERROR: ParseSourceProjectInfToCached.fn.include: srcFile tgtBase projectName: srcFile and tgtBase must exist when in 'prepare' mode!" >&2
 	set +e ; return 1
