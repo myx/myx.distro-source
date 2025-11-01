@@ -123,7 +123,7 @@ ListProjectDeclares(){
 		set +e ; return 1
 	fi
 	
-	if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
+	if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
 			Require DistroSourceCommand

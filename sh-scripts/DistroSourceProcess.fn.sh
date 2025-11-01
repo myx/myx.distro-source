@@ -93,12 +93,11 @@ DistroSourceProcess(){
 		--rebuild-output-index)
 			shift
 
-			if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
+			if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
 				[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
 				local indexFile="$MDSC_CACHED/distro-index.inf"
 				local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-				#[ full != "$MDSC_DETAIL" ] || set -x
 
 				Distro DistroSourceCommand \
 					-v$( 

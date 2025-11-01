@@ -1,0 +1,78 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+ParseSourceProjectInfToStdout(){
+
+set -e
+
+[ -z "$1" ] || if [ -f "$1/$2/project.inf" ] && [ -n "$2" ]; then
+	exec < "$1/$2/project.inf"
+	printf "%s $2 $2\n" REQ PRV DCL
+	printf "%s $2 ${2#*/}\n" PRV KWD
+	# printf "%s $2 ${2#*/}" PRV DCL KWD
+else
+	echo "⛔ ERROR: ParseSourceProjectInfToStdout.fn.include: srcFile tgtBase projectName: srcFile and tgtBase must exist when in 'prepare' mode!" >&2
+	set +e ; return 1
+fi
+
+[ -z "$MDSC_DETAIL" ] || echo "| 📜 ParseSourceProjectInfToStdout.fn.include: projectName: $2" >&2
+
+local idx item line cont key value name
+
+while IFS= read -r line || [ -n "$line" ]; do
+	case "$line" in
+		\#*|\!*) continue; ;; # skip comments
+		*\\) cont="${cont}${line%\\}"; continue; ;; # append continuiation
+		*) [ -z "${cont}" ] || { line="${cont}${line}"; cont=""; } ;; # flush
+	esac
+
+	key=${line%%[:=]*}
+	key=${key#"${key%%[![:space:]]*}"}   # remove leading space
+	key=${key%"${key##*[![:space:]]}"}   # remove trailing space
+	#key="$(
+	#	printf '%s' "${line%%[:=]*}" \
+	#	| sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+	#)"
+
+	case "$key" in
+	Name|Requires|Provides|Declares|Keywords)
+		value=$(
+			printf '%s' "${line#*[:=]}" \
+			| sed 's/^[[:space:]]*//; s/[[:space:]][[:space:]]*/ /g; s/[[:space:]]*$//; s/\\\\/\\/g; s/\\:/\:/g; s/\\=/\=/g' \
+			| tr -s ' '
+		)
+
+		case "$key" in
+			Requires) key=REQ; ;;
+			Provides) key=PRV; ;;
+			Declares) key=DCL; ;;
+			Keywords) key=KWD; ;;
+			Name)
+				if [ "$value" != "${2#*/}" ]; then
+					echo "PRV" "$2" "$value"
+					echo "DCL" "$2" "$value"
+					# echo "KWD" "$2" "$value"
+				fi
+				continue
+			;;
+			*) continue; ;;
+		esac
+
+		for item in $value ; do
+			printf '%s %s %s\n' "$key" "$2" "$item"
+		done 
+	;;
+	esac
+
+done | awk '!seen[$0]++'
+
+printf 'PRJ %s\n' "$2"
+return 0
+
+}
+
+# Used like:
+# 				while IFS= read -r projectName; do
+#					ParseSourceProjectInfToStdout < "sources/$projectName/project.inf" > "prepare/$projectName/project.inf"
+#				done
+#

@@ -122,7 +122,7 @@ ListProjectSequence(){
 		set +e ; return 1
 	fi
 	
-	if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
+	if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 
 		Require DistroSourceCommand

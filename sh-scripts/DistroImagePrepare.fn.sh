@@ -61,12 +61,13 @@ DistroImagePrepare(){
 		--rebuild-cached-index)
 			shift
 
-			if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
+			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+			date -u "+%Y%m%d%H%M%S" > "$buildDate"
+
+			if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
 				[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
 				local indexFile="$MDSC_CACHED/distro-index.inf"
-				local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-				#[ full != "$MDSC_DETAIL" ] || set -x
 
 				Distro DistroSourceCommand \
 					-v$( 
@@ -83,6 +84,7 @@ DistroImagePrepare(){
 					set +e ; return 1
 				}
 				
+				# java version doesn't change date when there are no changes, need to roll back timestamp
 				touch -r "$indexFile" "$buildDate"
 			else
 				DistroImagePrepare.fn.sh --build-project-metadata

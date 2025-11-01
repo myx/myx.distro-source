@@ -116,12 +116,11 @@ DistroSourcePrepare(){
 		--rebuild-cached-index)
 			shift
 
-			if [ -z "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
+			if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
 				[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
 				local indexFile="$MDSC_CACHED/distro-index.inf"
 				local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-				#[ full != "$MDSC_DETAIL" ] || set -x
 
 				Distro DistroSourceCommand \
 					-v$( 
@@ -161,7 +160,7 @@ DistroSourcePrepare(){
 			shift
 			type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
 			type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
-			local TGT_PREPARE="$MMDAPP/.local/source-cache/prepare"
+			local TGT_PREPARE="${MDSC_CACHED:-$MMDAPP/.local/source-cache/prepare}"
 
 			local CACHE_ROOT="$MMDAPP/.local/source-cache"
 			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
@@ -174,19 +173,19 @@ DistroSourcePrepare(){
 			mkdir -p "$TGT_PREPARE"
 
 			(
-				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ParseSourceProjectInfMetadata.fn.include"
-				Parallel ParseSourceProjectInfMetadata "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
-				# Parallel Prefix -4 ParseSourceProjectInfMetadata "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ParseSourceProjectInfToCached.fn.include"
+				Parallel ParseSourceProjectInfToCached "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
+				# Parallel Prefix -4 ParseSourceProjectInfToCached "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
 			) < "$MMDAPP/.local/source-cache/all-projects.index.txt" \
 			| (
 				local TMP_SUFFIX="$$.tmp"
-				local NEW_INDEX="$MMDAPP/.local/source-cache/prepare/distro"
 				local ALL_DECLARES="$TGT_PREPARE/distro-declares.txt"
 				local ALL_KEYWORDS="$TGT_PREPARE/distro-keywords.txt"
 				local ALL_PROVIDES="$TGT_PREPARE/distro-provides.txt"
 				local ALL_REQUIRES="$TGT_PREPARE/distro-requires.txt"
 				touch "$ALL_DECLARES.$TMP_SUFFIX" "$ALL_KEYWORDS.$TMP_SUFFIX" "$ALL_PROVIDES.$TMP_SUFFIX" "$ALL_REQUIRES.$TMP_SUFFIX"
 				local projectName
+
 				while IFS= read -r projectName; do
 					[ full != "$MDSC_DETAIL" ] || echo "| 📑 CollectDistoMetadataFromProjects.include: project: $projectName" >&2
 					cat "$TGT_PREPARE/$projectName/project-declares.txt" >> "$ALL_DECLARES.$TMP_SUFFIX"
@@ -195,6 +194,7 @@ DistroSourcePrepare(){
 					cat "$TGT_PREPARE/$projectName/project-requires.txt" >> "$ALL_REQUIRES.$TMP_SUFFIX"
 					# ( echo "BUILD" "$MMDAPP/.local/source-cache/sources" "$MMDAPP/.local/source-cache/prepare" "$projectName" )
 				done
+
 				mv -f "$ALL_DECLARES.$TMP_SUFFIX" "$ALL_DECLARES"
 				mv -f "$ALL_KEYWORDS.$TMP_SUFFIX" "$ALL_KEYWORDS"
 				mv -f "$ALL_PROVIDES.$TMP_SUFFIX" "$ALL_PROVIDES"

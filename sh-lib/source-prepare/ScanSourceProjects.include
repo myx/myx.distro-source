@@ -1,7 +1,7 @@
 #!/bin/sh
 # ^^^ for syntax checking in the editor only
 
-[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD: ScanSourceProjects.include: scanning local source projects ($MDSC_OPTION)" >&2
+[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD: ScanSourceProjects.include: scanning local source projects" >&2
 
 set -e
 
