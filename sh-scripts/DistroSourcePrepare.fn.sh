@@ -176,8 +176,10 @@ DistroSourcePrepare(){
 				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ParseSourceProjectInfToCached.fn.include"
 				Parallel ParseSourceProjectInfToCached "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
 				# Parallel Prefix -4 ParseSourceProjectInfToCached "$MMDAPP/.local/source-cache/sources" "$TGT_PREPARE"
+				cat "$MMDAPP/.local/source-cache/all-projects.index.txt"
 			#) < "$MMDAPP/.local/source-cache/all-projects.index.txt" \
 			) < "$MMDAPP/.local/source-cache/new-changed.index.txt" \
+			| awk '!seen[$0]++ { print }' \
 			| (
 				local TMP_SUFFIX="$$.tmp"
 				local ALL_DECLARES="$TGT_PREPARE/distro-declares.txt"
