@@ -47,7 +47,8 @@ while IFS= read -r line || [ -n "$line" ]; do
 		printf '%s=%s\n' "$key" "$value" > "$T/project.inf"
 		if [ "$key" = "Name" ]; then
 			if [ "$value" != "${3#*/}" ]; then
-				echo "$3" "$value" >> "$T/project-provides.txt.$S" "$T/project-declares.txt.$S"
+				echo "$3" "$value" >> "$T/project-provides.txt.$S" 
+				echo "$3" "$value" >> "$T/project-declares.txt.$S"
 				# echo "$3" "$value" | tee -a "$T/project-provides.txt.$S" "$T/project-declares.txt.$S" "$T/project-keywords.txt.$S" >/dev/null
 			fi
 			continue
