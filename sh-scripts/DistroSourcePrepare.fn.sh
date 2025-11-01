@@ -193,8 +193,9 @@ DistroSourcePrepare(){
 					cat "$TGT_PREPARE/$projectName/project-requires.txt" >> "$ALL_REQUIRES.$TMP_SUFFIX"
 					# ( echo "BUILD" "$MMDAPP/.local/source-cache/sources" "$MMDAPP/.local/source-cache/prepare" "$projectName" )
 				done < <(
-					{ </dev/stdin ; <"$MMDAPP/.local/source-cache/all-projects.index.txt" ; } \
-					| awk '!seen[$0]++ { print }'
+					awk '
+						!seen[$0]++ { print }
+					' /dev/stdin "$MMDAPP/.local/source-cache/all-projects.index.txt"
 				)
 
 				mv -f "$ALL_DECLARES.$TMP_SUFFIX" "$ALL_DECLARES"
