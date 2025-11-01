@@ -191,7 +191,6 @@ DistroSourcePrepare(){
 					cat "$TGT_PREPARE/$projectName/project-keywords.txt" >> "$ALL_KEYWORDS.$TMP_SUFFIX"
 					cat "$TGT_PREPARE/$projectName/project-provides.txt" >> "$ALL_PROVIDES.$TMP_SUFFIX"
 					cat "$TGT_PREPARE/$projectName/project-requires.txt" >> "$ALL_REQUIRES.$TMP_SUFFIX"
-					# ( echo "BUILD" "$MMDAPP/.local/source-cache/sources" "$MMDAPP/.local/source-cache/prepare" "$projectName" )
 				done < <(
 					awk '
 						!seen[$0]++ { print }
