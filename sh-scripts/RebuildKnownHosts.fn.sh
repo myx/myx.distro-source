@@ -15,8 +15,6 @@ if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
 	DistroSystemContext --distro-path-auto
 fi
 
-Require ListProjectKnownHosts
-
 RebuildKnownHosts() {
 	if [ -z "$MDSC_SOURCE" ]; then
 		echo "⛔ ERROR: DistroContext is not set!" >&2
@@ -25,28 +23,35 @@ RebuildKnownHosts() {
 
 	mkdir -p "$MMDAPP/ssh"
 
-	local TEMP
-	TEMP="$MMDAPP/ssh/known_hosts-$$.$RANDOM"
-	if ! touch "$TEMP"; then
-		echo "⛔ ERROR: Can't make temporary file $TEMP, exiting..." >&2
+	local DEST="$MMDAPP/ssh/known_hosts"
+
+	if ! touch "$DEST.$$.tmp"; then
+		echo "⛔ ERROR: Can't make temporary file $DEST.$$.tmp, exiting..." >&2
 		set +e ; return 1
 	fi
 
-	local DEST="$MMDAPP/ssh/known_hosts"
-
-	[ -z "$MDSC_DETAIL" ]  || echo "RebuildKnownHosts: Using temporary file: $TEMP" >&2
+	[ -z "$MDSC_DETAIL" ]  || echo "RebuildKnownHosts: Using temporary file: $DEST.$$.tmp" >&2
 
 
-	local projectName
-	local knownHostsProject
-	local knownHostsFile
+	local projectName fileName knownHostsProject knownHostsFile
 
 	{
 
 		# all known hosts
 		DistroSystemContext --index-projects cat \
 		| while read -r projectName; do
-			ListProjectKnownHosts --add-comment "$projectName"
+				if [ -f "$MDSC_SOURCE/$projectName/ssh/known_hosts" ]; then
+					fileName="$MDSC_SOURCE/$projectName/ssh/known_hosts"
+				elif [ -f "$MMDAPP/source/$projectName/ssh/known_hosts" ]; then
+					fileName="$MMDAPP/source/$projectName/ssh/known_hosts"
+				else
+					return 0
+				fi
+
+				[ -z "$addComment" ] || printf '\n\n## Source: %s\n\n' "$projectName"
+				sort -t' ' -k1,1  "$fileName" \
+				| sed 's/[[:space:]]\{1,\}/\t/g' \
+				| column -t -s $'\t'
 		done 
 
 		# previous known hosts
@@ -59,10 +64,10 @@ RebuildKnownHosts() {
 	} \
 	| awk '!$0 || $0 ~ /^#/ || !seen[$1]++' \
 	| uniq \
-	>> "$TEMP"
+	>> "$DEST.$$.tmp"
 	
-	chmod 664 "$TEMP"
-	mv -f "$TEMP" "$DEST"
+	chmod 664 "$DEST.$$.tmp"
+	mv -f -- "$DEST.$$.tmp" "$DEST"
 }
 
 case "$0" in
