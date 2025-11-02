@@ -67,7 +67,7 @@ DistroImagePrepare(){
 			if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
 				[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
-				local indexFile="$MDSC_CACHED/distro-index.inf"
+				local indexFile="$MDSC_CACHED/distro-index.env.inf.txt"
 
 				Distro DistroSourceCommand \
 					-v$( 
@@ -80,7 +80,7 @@ DistroImagePrepare(){
 					--fail-if-errors \
 
 				[ -f "$indexFile" ] || {
-					echo "⛔ ERROR: $MDSC_CMD: distro-index.inf is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: distro-index.env.inf.txt is expected!" >&2
 					set +e ; return 1
 				}
 				

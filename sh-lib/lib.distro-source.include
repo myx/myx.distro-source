@@ -193,7 +193,7 @@ DistroSourceEnsureProvidesOwnedFile(){
 
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 
-	local checkFile="$MDSC_CACHED/distro-index.inf"
+	local checkFile="$MDSC_CACHED/distro-index.env.inf.txt"
 	local cacheFile="$MDSC_CACHED/distro-provides.txt"
 	if [ -f "$checkFile" ] ; then
 		if [ -f "$cacheFile" ] ; then
