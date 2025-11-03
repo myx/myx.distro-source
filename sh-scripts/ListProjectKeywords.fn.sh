@@ -81,7 +81,7 @@ ListProjectKeywords(){
 
 			[ -f "$buildDate" ] || date -u "+%Y%m%d%H%M%S" > "$buildDate"
 
-			if [ -f "$cacheFile" ]
+			if [ -f "$cacheFile" ]; then
 				if { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ]; } \
 				|| { [ ! "$buildDate" -nt "$cacheFile" ]; } \
 				; then
