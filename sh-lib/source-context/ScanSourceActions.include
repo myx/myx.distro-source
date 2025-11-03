@@ -1,0 +1,38 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD: ScanSourceActions.include: scanning local source actions ($MDSC_OPTION)" >&2
+
+set -e
+
+local projectName findLocations
+
+{
+
+for projectName in ".local" "system" "deploy" "source" "remote" ; do
+	projectName="myx/myx.distro-$projectName"
+
+	[ ! -d "$MDLT_ORIGIN/$projectName/actions" ] \
+	|| echo "$MDLT_ORIGIN/$projectName/actions"
+	
+	[ "$MDLT_ORIGIN" = "$MMDAPP/source" ] \
+	|| [ ! -d "$MMDAPP/source/$projectName/actions" ] \
+	|| echo "$MMDAPP/source/$projectName/actions"
+	
+done
+
+DistroSystemContext --index-projects cat \
+| while IFS= read -r projectName; do
+
+	[ ! -d "$MDSC_SOURCE/$projectName/actions" ] \
+	|| echo "$MDSC_SOURCE/$projectName/actions"
+	
+	[ "$MDSC_SOURCE" = "$MMDAPP/source" ] \
+	|| [ ! -d "$MMDAPP/source/$projectName/actions" ] \
+	|| echo "$MMDAPP/source/$projectName/actions"
+
+done
+
+} \
+| xargs -n99 -P2 -x  sh -c 'find "$@" -mindepth 1 -type f -not -name ".*"' sh \
+| sort -u
