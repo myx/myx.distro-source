@@ -98,6 +98,7 @@ ListProjectDeclares(){
 			
 			echo "$MDSC_CMD: $projectName: caching project index ($MDSC_OPTION)" >&2
 
+			mkdir -p "${cacheFile%/*}"
 			DistroSystemContext --project-index-declares "$projectName" \
 			tee "$cacheFile.$$.tmp"
 			mv -f -- "$cacheFile.$$.tmp" "$cacheFile"
