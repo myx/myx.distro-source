@@ -49,12 +49,14 @@ RebuildActions(){
 
 		actionLocation="$TMP_DIR/${actionFullName#$projectName/actions/}"
 		
-		if [ -f "$MDSC_SOURCE/$actionFullName" ] ; then
-			if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$actionFullName" ] ; then
+		if [ -f "$MDSC_SOURCE/$actionFullName" ]; then
+			if [ "$MDSC_SOURCE" != "$MMDAPP/source" ] && [ -f "$MMDAPP/source/$actionFullName" ]; then
 				actionSourceFile="$MMDAPP/source/$actionFullName"
 			else
 				actionSourceFile="$MDSC_SOURCE/$actionFullName"
 			fi
+		elif [ -f "$MDLT_ORIGIN/$actionFullName" ]; then
+			actionSourceFile="$MDLT_ORIGIN/$actionFullName"
 		else
 			actionSourceFile="$MMDAPP/source/$actionFullName"
 		fi
