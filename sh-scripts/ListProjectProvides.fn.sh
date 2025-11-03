@@ -91,6 +91,11 @@ ListProjectProvides(){
 				fi
 			fi
 	
+			if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+				echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+				set +e ; return 1
+			fi
+			
 			echo "$MDSC_CMD: $projectName: caching project index ($MDSC_OPTION)" >&2
 
 			DistroSystemContext --project-index-provides "$projectName" \
@@ -104,6 +109,11 @@ ListProjectProvides(){
 			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 			local indexFile=
 
+			if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+				echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+				set +e ; return 1
+			fi
+			
 			for indexFile in "$projectName/project-index.inf" "${projectName%%/*}/repository-index.inf" "distro-index.env.inf.txt"; do
 				local indexFile="$MDSC_CACHED/$indexFile"
 
@@ -130,11 +140,6 @@ ListProjectProvides(){
 		fi
 	fi
 	
-	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
-		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
-		set +e ; return 1
-	fi
-	
 	if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
@@ -148,6 +153,11 @@ ListProjectProvides(){
 		return 0
 	fi
 	
+	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		set +e ; return 1
+	fi
+
 	DistroSystemContext --project-index-provides "$projectName" "${1:-cat}" "${@:2}"
 	return 0
 }

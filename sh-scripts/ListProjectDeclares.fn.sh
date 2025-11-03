@@ -91,6 +91,11 @@ ListProjectDeclares(){
 				fi
 			fi
 	
+			if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+				echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+				set +e ; return 1
+			fi
+			
 			echo "$MDSC_CMD: $projectName: caching project index ($MDSC_OPTION)" >&2
 
 			DistroSystemContext --project-index-declares "$projectName" \
@@ -104,6 +109,11 @@ ListProjectDeclares(){
 			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 			local indexFile=
 
+			if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+				echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+				set +e ; return 1
+			fi
+			
 			for indexFile in "$projectName/project-index.inf" "${projectName%%/*}/repository-index.inf" "distro-index.env.inf.txt"; do
 				local indexFile="$MDSC_CACHED/$indexFile"
 
@@ -130,11 +140,6 @@ ListProjectDeclares(){
 		fi
 	fi
 	
-	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
-		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
-		set +e ; return 1
-	fi
-	
 	if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
@@ -147,6 +152,11 @@ ListProjectDeclares(){
 		)
 		return 0
 	fi
+	
+	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
+		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		set +e ; return 1
+	fi
 
 	DistroSystemContext --project-index-declares "$projectName" "${1:-cat}" "${@:2}"
 	return 0
@@ -158,6 +168,14 @@ case "$0" in
 			echo "📘 syntax: ListProjectDeclares.fn.sh <project_name> [--print-project] [--print-declares-only] [--merge-sequence] [--filter-and-cut filter_by]" >&2
 			echo "📘 syntax: ListProjectDeclares.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
+				echo "  Options:" >&2
+				echo >&2
+				echo "    --no-cache" >&2
+				echo "                Use no cache." >&2
+				echo >&2
+				echo "    --no-index" >&2
+				echo "                Use no index." >&2
+				echo >&2
 				echo "  Examples:" >&2
 				echo "    ListProjectDeclares.fn.sh myx/myx.common/os-myx.common" >&2
 				echo "    ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --print-project" >&2
