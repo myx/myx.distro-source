@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-if [ -z "$MMDAPP" ] ; then
+if [ -z "$MMDAPP" ]; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP"  >&2
 	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
 fi
 
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1; then
 	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	DistroSystemContext --distro-path-auto
 fi
@@ -93,7 +93,7 @@ DistroSourcePrepare(){
 			}
 
 			local INDEX_DATE="$INDEX_ROOT/index-ingest.timestamp.txt"
-			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ] ; then
+			if [ ! -f "$INDEX_DATE" ] || [ "$INDEX_DATE" -ot "$CACHE_DATE" ]; then
 				cp -f "$CACHE_DATE" "$INDEX_DATE"
 			fi
 
@@ -221,7 +221,7 @@ DistroSourcePrepare(){
 			echo "📘 syntax: DistroSourcePrepare.fn.sh --ingest-distro-index-from-source" >&2
 			echo "📘 syntax: DistroSourcePrepare.fn.sh <option>" >&2
 			# echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
+			if [ "$1" = "--help" ]; then
 				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.text" >&2
 			fi
 			return 0
@@ -237,7 +237,7 @@ case "$0" in
 	*/sh-scripts/DistroSourcePrepare.fn.sh)
 		set -e 
 
-		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
+		if [ -z "$1" ] || [ "$1" = "--help" ]; then
 			DistroSourcePrepare "${1:-"--help-syntax"}"
 			exit 1
 		fi
