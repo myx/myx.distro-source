@@ -114,7 +114,11 @@ RebuildActions(){
 					echo 		'DistroSourceContext --distro-path-auto'
 					echo 	'}'
 
-					echo 	'. "$MMDAPP/source/$actionFullName"' 
+					echo 	'if [ -f "$MDLT_ORIGIN/$actionFullName"; then'
+					echo 		'. "$MMDAPP/source/$actionFullName"' 
+					echo 	'else'
+					echo 		'. "$MMDAPP/source/$actionFullName"' 
+					echo 	'fi'
 					echo '}'
 					
 					echo 'ActionExecutionWrap "$@"'
