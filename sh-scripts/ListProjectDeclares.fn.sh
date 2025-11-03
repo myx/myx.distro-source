@@ -28,7 +28,7 @@ ListProjectDeclares(){
 			;;
 			--print-project)
 				shift
-				break;
+				break
 				#ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" # | sed "s|^|$projectName |g"
 				#return 0
 			;;
@@ -74,47 +74,59 @@ ListProjectDeclares(){
 		esac
 	done
 
-	if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
+	if [ -d "$MDSC_CACHED" ] ; then
 		if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-			local cacheFile="$MDSC_CACHED/$projectName/project-declares.txt"
 			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-			if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-				[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
-				cat "$cacheFile"
-				return 0
+			local cacheFile="$MDSC_CACHED/$projectName/project-declares.txt"
+
+			[ -f "$buildDate" ] || date -u "+%Y%m%d%H%M%S" > "$buildDate"
+
+			if [ -f "$cacheFile" ]
+				if { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ]; } \
+				|| { [ ! "$buildDate" -nt "$cacheFile" ]; } \
+				; then
+					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
+					cat "$cacheFile"
+					return 0
+				fi
 			fi
 	
-			local repositoryName="$(echo "$projectName" | sed 's/\/.*$//')"
-			local repositoryIndexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
-	
-			if [ -f "$repositoryIndexFile" ] ; then
-				echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
-				Require ListRepositoryDeclares
-				ListRepositoryDeclares "$repositoryName" | grep -e "^$projectName " | tee "$cacheFile"
-				# ListRepositoryDeclares "$repositoryName" | grep -e "^$projectName " | sed 's/^.* //' | tee "$cacheFile"
-				return 0
-			fi
-	
-			mkdir -p "$MDSC_CACHED/$projectName"
-			echo "$MDSC_CMD: $projectName: caching project declares ($MDSC_OPTION)" >&2
-			ListProjectDeclares "$projectName" --no-cache "$@" | tee "$cacheFile"
+			echo "$MDSC_CMD: $projectName: caching project index ($MDSC_OPTION)" >&2
+
+			DistroSystemContext --project-index-declares "$projectName" \
+			tee "$cacheFile.$$.tmp"
+			mv -f -- "$cacheFile.$$.tmp" "$cacheFile"
+
 			return 0
 		fi
 		
 		if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
-			local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
-			if [ -f "$indexFile" ] && \
-				( [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] )
-			then
-				
-				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
-				
-				for LINE in $( grep "PRJ-DCL-$projectName=" "$indexFile" | sed -e 's:^.*=::g' -e 's|\\:|:|g' ) ; do
-					echo $projectName $LINE
-				done
-				
-				return 0
-			fi
+			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+			local indexFile=
+
+			for indexFile in "$projectName/project-index.inf" "${projectName%%/*}/repository-index.inf" "distro-index.env.inf.txt"; do
+				local indexFile="$MDSC_CACHED/$indexFile"
+
+				[ -f "$indexFile" ] || continue
+				if { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$indexFile" "+%Y%m%d%H%M%S" )" ]; } \
+				|| { [ -f "$buildDate" ] && [ ! "$buildDate" -nt "$indexFile" ]; } \
+				; then
+
+					echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
+					
+					awk -v projectName="$projectName" '
+						BEGIN { prefix = "PRJ-DCL-" projectName "=" }
+						index($0, prefix)==1 {
+							rhs = substr($0, length(prefix)+1)
+							gsub(/\\:/, ":", rhs)
+							n = split(rhs, a, /[[:space:]]+/)
+							for (i=1;i<=n;i++) if (a[i]!="") print projectName, a[i]
+						}
+					' "$indexFile"
+
+					return 0
+				fi
+			done
 		fi
 	fi
 	
@@ -135,9 +147,9 @@ ListProjectDeclares(){
 		)
 		return 0
 	fi
-	
-	echo "⛔ ERROR: $MDSC_CMD: $projectName: can't produce index, needs build." >&2
-	set +e ; return 1
+
+	DistroSystemContext --project-index-declares "$projectName" "${1:-cat}" "${@:2}"
+	return 0
 }
 
 case "$0" in
