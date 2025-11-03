@@ -78,7 +78,7 @@ RebuildActions(){
 					echo 	"local actionScript='${actionFullName#"$projectName/actions/"}'"
 					echo 	"local actionFullName='$actionFullName'"
 					
-					echo 	"set -e"
+					echo 	"set -ex"
 
 					echo 	'local actionPath="$( realpath "$0" )"'
 
@@ -106,7 +106,7 @@ RebuildActions(){
 					echo 	'fi'
 					
 					echo 	'[ -d "$MMDAPP/source" ] || {'
-					echo 		'echo "! Action $actionFullName: ⛔ ERROR: source directory does not exist!" >&2';
+					echo 		'echo "! Action $actionFullName: ⛔ ERROR: source directory does not exist!" >&2'
 					echo		'set +e ; return 1'
 					echo 	'}'
 					
