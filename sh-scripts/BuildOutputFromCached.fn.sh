@@ -37,7 +37,7 @@ BuildOutputFromCached(){
 			local BUILDER="$1"
 			echo "BuildOutputFromCached: $( basename $BUILDER ) builder started" >&2
 			#### want to run in separate process anyways
-			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
+			if ( set -e -o pipefail ; . "$BUILDER" ) 1>&2 ; then
 				echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
 				return 0
 			fi
@@ -84,7 +84,7 @@ BuildOutputFromCached(){
 		export OUTPUT_PATH="$MMDAPP/.local/output-cache/output"
 
 		local BUILDERS
-		BUILDERS="$( Distro ListAllBuilders source-process --2 )"
+		BUILDERS="$( Distro AllBuilders --executables source-process )"
 		echo 'BuildOutputFromCached: Builders list:' >&2
 		printf '\t%s\n' $BUILDERS >&2
 		

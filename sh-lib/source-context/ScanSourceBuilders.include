@@ -1,0 +1,47 @@
+#!/bin/sh
+# ^^^ for syntax checking in the editor only
+
+[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD: ScanSourceBuilders.include: scanning local source actions ($MDSC_OPTION)" >&2
+
+set -e
+
+local projectName findLocations
+
+{
+
+for projectName in "system" "deploy" "source" "remote" ; do
+	projectName="myx/myx.distro-$projectName"
+
+	[ ! -d "$MDLT_ORIGIN/$projectName/builders" ] \
+	|| echo "$MDLT_ORIGIN/$projectName/builders"
+	
+	[ "$MDLT_ORIGIN" = "$MMDAPP/source" ] \
+	|| [ ! -d "$MMDAPP/source/$projectName/builders" ] \
+	|| echo "$MMDAPP/source/$projectName/builders"
+	
+done
+
+DistroSystemContext --index-projects cat \
+| while IFS= read -r projectName; do
+
+	[ ! -d "$MDSC_SOURCE/$projectName/builders" ] \
+	|| echo "$MDSC_SOURCE/$projectName/builders"
+	
+	[ "$MDSC_SOURCE" = "$MMDAPP/source" ] \
+	|| [ ! -d "$MMDAPP/source/$projectName/builders" ] \
+	|| echo "$MMDAPP/source/$projectName/builders"
+
+done
+
+} \
+| xargs -n199 -P2 -x  sh -c 'find "$@" -mindepth 2 -maxdepth 2 -type f \( \
+		-path "*/source-prepare/1???-*.sh" \
+	-o	-path "*/source-process/2???-*.sh" \
+	-o	-path "*/source-publish/3???-*.sh" \
+	-o	-path "*/image-prepare/3???-*.sh" \
+	-o	-path "*/image-process/4???-*.sh" \
+	-o	-path "*/image-install/5???-*.sh" \
+	\)
+' sh \
+| awk -F/ '{ rep[$NF] = $0 } END { for (b in rep) print b "\t" rep[b] }' | sort -k1,1 | cut -f2-
+

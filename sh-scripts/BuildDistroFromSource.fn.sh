@@ -50,7 +50,7 @@ BuildDistroFromSource(){
 			local BUILDER="$1"
 			echo "BuildDistroFromSource: $( basename $BUILDER ) builder started" >&2
 			#### want to run in separate process anyways
-			if ( set -e -o pipefail ; . "$MMDAPP/source/$BUILDER" ) 1>&2 ; then
+			if ( set -e -o pipefail ; . "$BUILDER" ) 1>&2 ; then
 				echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
 				return 0
 			fi
@@ -99,7 +99,7 @@ BuildDistroFromSource(){
 		export EXPORT_PATH="$MMDAPP/.local/output-cache/export"
 		
 		
-		local BUILDERS="$( Distro ListAllBuilders image-prepare --3 )"
+		local BUILDERS="$( Distro AllBuilders --executables image-prepare )"
 		echo 'BuildDistroFromSource: Builders list:' >&2
 		printf '\t%s\n' $BUILDERS >&2
 		

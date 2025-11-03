@@ -34,5 +34,5 @@ DistroSystemContext --index-projects cat \
 done
 
 } \
-| xargs -n99 -P2 -x  sh -c 'find "$@" -mindepth 1 -type f -not -name ".*"' sh \
+| xargs -n199 -P2 -x  sh -c 'find "$@" -mindepth 1 -type f -not -name ".*"' sh \
 | sort -u
