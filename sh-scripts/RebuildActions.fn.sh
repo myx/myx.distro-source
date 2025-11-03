@@ -114,11 +114,25 @@ RebuildActions(){
 					echo 		'DistroSourceContext --distro-path-auto'
 					echo 	'}'
 
-					echo 	'if [ -f "${MDLT_ORIGIN:-$MMDAPP/.local}/$actionFullName"; then'
-					echo 		'. "${MDLT_ORIGIN:-$MMDAPP/.local}/$actionFullName"' 
-					echo 	'else'
+					echo 	'if [ -f "$MMDAPP/source/$actionFullName"; then'
+
 					echo 		'. "$MMDAPP/source/$actionFullName"' 
+
+					echo 	'elif [ -f "${MDLT_SOURCE:-$MMDAPP/source}/$actionFullName"; then'
+
+					echo 		'. "${MDLT_SOURCE:-$MMDAPP/source}/$actionFullName"' 
+
+					echo 	'elif [ -f "${MDLT_ORIGIN:-$MMDAPP/.local}/$actionFullName"; then'
+
+					echo 		'. "${MDLT_ORIGIN:-$MMDAPP/.local}/$actionFullName"' 
+
+					echo 	'else'
+
+					echo 		'echo "! Action $actionFullName: ⛔ ERROR: cant locate action executable!" >&2'
+					echo		'set +e ; return 1'
+
 					echo 	'fi'
+
 					echo '}'
 					
 					echo 'ActionExecutionWrap "$@"'
