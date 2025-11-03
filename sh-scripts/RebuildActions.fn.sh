@@ -112,7 +112,7 @@ RebuildActions(){
 					echo 	'if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1; then'
 					echo 		'. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"'
 					echo 		'DistroSystemContext --distro-path-auto'
-					echo 	'if'
+					echo 	'fi'
 
 					echo 	'if [ -f "$MMDAPP/source/$actionFullName" ]; then'
 					echo 		'. "$MMDAPP/source/$actionFullName"' 
