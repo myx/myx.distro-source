@@ -77,7 +77,7 @@ RebuildActions(){
 					echo 	"local actionScript='${actionFullName#"$projectName/actions/"}'"
 					echo 	"local actionFullName='$actionFullName'"
 					
-					echo 	"set -ex"
+					echo 	"set -e"
 
 					echo 	'local actionPath="$( realpath "$0" )"'
 
