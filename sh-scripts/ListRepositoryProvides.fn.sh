@@ -24,7 +24,7 @@ ListRepositoryProvides(){
 	set -e
 
 	case "$1" in
-		--print-provides-only)
+		--print-no-project|--print-provides-only)
 			shift
 			ListRepositoryProvides "$repositoryName" "$@" | awk '{print $2}' | awk '!x[$0]++'
 			return 0
@@ -105,7 +105,7 @@ ListRepositoryProvides(){
 			echo "ListRepositoryProvides: caching projects ($MDSC_OPTION)" >&2
 			mkdir -p "$MDSC_CACHED/$repositoryName"
 			ListRepositoryProvides --no-cache $repositoryName | tee "$cacheFile.$$.tmp"
-			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+			mv -f -- "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 		
@@ -158,6 +158,7 @@ case "$0" in
 				echo >&2
 				echo "  Options:" >&2
 				echo >&2
+				echo "    --print-no-project" >&2
 				echo "    --print-provides-only" >&2
 				echo "                Print only provides value column." >&2
 				echo >&2

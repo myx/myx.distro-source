@@ -2,9 +2,6 @@
 
 # 	source-process-merge-scripts:sh-scripts/extra/install-freebsd.sh:install-freebsd-instance.sh \
 
-Require ListProjectSequence
-Require ListDistroProvides
-
 MergeScripts(){
 	local projectName="$1"
 	if [ -z "$projectName" ] ; then
@@ -26,7 +23,7 @@ MergeScripts(){
 
 	echo "# merged by myx.distro at `date` @ `hostname`" > "$OUTPUT_DST"
 	
-	for SEQUENCE in $( ListProjectSequence "$projectName" ) ; do
+	for SEQUENCE in $( Distro ListProjectSequence --project "$projectName" ) ; do
 		echo "sequence: $SEQUENCE" >&2
 		local SRC_FILE="$MDSC_CACHED/$SEQUENCE/$sourceName"
 		if [ -f "$SRC_FILE" ] ; then
@@ -59,6 +56,6 @@ MergeScripts(){
 type Prefix >/dev/null 2>&1 || . "$( myx.common which lib/prefix )"
 type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
 
-ListDistroProvides --select-changed --filter-and-cut "source-process-merge-scripts" \
+Distro ListDistroProvides --select-changed --filter-and-cut "source-process-merge-scripts" \
 | sed "s|:| |g" \
 | Parallel Prefix -2 MergeScripts # "$projectName" "$sourceName" "$targetName"

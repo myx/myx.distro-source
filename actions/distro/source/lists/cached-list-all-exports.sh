@@ -8,7 +8,7 @@ Require ListProjectProvides
 local projectName
 ListDistroProjects --all-projects \
 | while read -r projectName; do
-	for ITEM in $( ListProjectProvides "$projectName" --print-provides-only --filter-and-cut deploy-export ) ; do
+	for ITEM in $( ListProjectProvides "$projectName" --print-no-project --filter-and-cut deploy-export ) ; do
 		echo "$projectName: $( echo $ITEM | tr '\\' ' ' | sed "s|:| |g" )"
 	done
 done

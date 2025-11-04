@@ -212,7 +212,7 @@ DistroSourcePrepare(){
 				mv -f "$ALL_REQUIRES.$TMP_SUFFIX" "$ALL_REQUIRES"
 
 				awk -f "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/BuildSequencesFromProvidesAndRequires.awk" \
-					"$ALL_REQUIRES" "$ALL_PROVIDES" > "$TGT_PREPARE/distro-sequence-merged.txt"
+					"$ALL_REQUIRES" "$ALL_PROVIDES" > "$TGT_PREPARE/distro-sequence.txt"
 			)
 
 			return 0

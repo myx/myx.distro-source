@@ -23,7 +23,7 @@ ListRepositoryKeywords(){
 	set -e
 
 	case "$1" in
-		--print-keywords-only)
+		--print-no-project|--print-keywords-only)
 			shift
 			ListRepositoryKeywords "$repositoryName" "$@" | awk '{print $2}'
 			return 0
@@ -104,7 +104,7 @@ ListRepositoryKeywords(){
 			echo "ListRepositoryKeywords: caching projects ($MDSC_OPTION)" >&2
 			mkdir -p "$MDSC_CACHED/$repositoryName"
 			ListRepositoryKeywords --no-cache $repositoryName | tee "$cacheFile.$$.tmp"
-			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+			mv -f -- "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 		

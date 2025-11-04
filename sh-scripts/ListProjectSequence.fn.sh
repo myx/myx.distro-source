@@ -23,7 +23,7 @@ ListProjectSequence(){
 			--print-project)
 				shift
 				
-				ListProjectSequence "$projectName" "$@" | sed "s|^|$projectName |g"
+				ListProjectSequence --project "$projectName" "$@" | sed "s|^|$projectName |g"
 				return 0
 			;;
 			--print-declares|--print-keywords|--print-provides)
@@ -36,8 +36,8 @@ ListProjectSequence(){
 				if [ -n "$MDSC_CACHED" ]; then
 					if [ "$MDSC_NO_CACHE" != "--no-cache" ]; then
 					
-						local cacheFile="$MDSC_CACHED/$projectName/project-${idx}-sequence.txt"
 						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
+						local cacheFile="$MDSC_CACHED/$projectName/project-${idx}-sequence.txt"
 						if [ -f "$buildDate" ]; then
 							if [ -f "$cacheFile" ] && [ ! "$cacheFile" -ot "$buildDate" ]; then
 								[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-* using cached, ${idx} ($MDSC_OPTION)" >&2
@@ -46,10 +46,10 @@ ListProjectSequence(){
 							fi
 				
 							echo "$MDSC_CMD: $projectName: --print-* caching projects, ${idx} ($MDSC_OPTION)" >&2
-							DistroSystemContext --index-${idx}-merged awk -v p="$projectName" '
-								$1==p && !x[$3]++ { print $2, $3; }
+							DistroSystemContext --index-${idx}-merged awk -v prj="$projectName" '
+								$1 == prj && !x[$3]++ { print $2, $3; }
 							' | tee "$cacheFile.$$.tmp"
-							mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+							mv -f -- "$cacheFile.$$.tmp" "$cacheFile" || :
 
 							return 0
 						fi
@@ -57,8 +57,8 @@ ListProjectSequence(){
 					fi
 				fi			
 				
-				DistroSystemContext --index-${idx}-merged awk -v p="$projectName" '
-					$1==p && !x[$3]++ { print $2, $3; }
+				DistroSystemContext --index-${idx}-merged awk -v prj="$projectName" '
+					$1 == prj && !x[$3]++ { print $2, $3; }
 				'
 		
 				return 0
@@ -73,79 +73,12 @@ ListProjectSequence(){
 		esac
 	done
 
-
-	if [ -d "$MDSC_CACHED" ]; then
-		if [ "$MDSC_NO_CACHE" != "--no-cache" ]; then
-			local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-			local cacheFile="$MDSC_CACHED/$projectName/project-sequence.txt"
-
-			[ -f "$buildDate" ] || date -u "+%Y%m%d%H%M%S" > "$buildDate"
-
-			if [ -f "$cacheFile" ]; then
-				if { [ -n "$BUILD_STAMP" ] && [ ! "$BUILD_STAMP" -gt "$( date -u -r "$cacheFile" "+%Y%m%d%H%M%S" )" ]; } \
-				|| { [ ! "$buildDate" -nt "$cacheFile" ]; } \
-				; then
-					[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
-					cat "$cacheFile"
-					return 0
-				fi
-			fi
-	
-			if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
-				echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
-				set +e ; return 1
-			fi
-
-			echo "$MDSC_CMD: $projectName: caching project index ($MDSC_OPTION)" >&2
-
-			ListProjectSequence --no-cache "$projectName" | tee "$cacheFile"
-			return 0
-		fi
-
-		local indexFile="$MDSC_CACHED/$projectName/project-index.env.inf"
-
-		if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] ; then
-			if [ "$MDSC_INMODE" = "deploy" ] || [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ; then
-				echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
-				
-				local FILTER="$1"
-				local currentProject
-				if [ -z "$FILTER" ] ; then
-					for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
-						echo $currentProject
-					done
-				else
-					for currentProject in ` grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed 's|^.*=||g' ` ; do
-						if [ "$currentProject" != "${currentProject#${FILTER}:}" ] ; then
-							echo ${currentProject#${FILTER}:} | tr "|" "\n"
-						fi
-					done
-				fi
-				return 0
-			fi
-		fi
-	fi
-	
-	if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
-		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
-		(
-			Distro DistroSourceCommand \
-				-q \
-				--import-from-source \
-				--select-project "$projectName" \
-				--select-required \
-				--print-sequence
-		)
-		return 0
-	fi
-	
 	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
 		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
 		set +e ; return 1
 	fi
 
-	echo "⛔ ERROR: $MDSC_CMD: $projectName: can't produce index, needs build." >&2
-	set +e ; return 1
+	DistroSystemContext --project-index-sequence "$projectName" awk '!x[$2] { print $2 }'
 }
 
 case "$0" in

@@ -24,7 +24,7 @@ ListChangedSourceProjects(){
 		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
 			echo "ListChangedSourceProjects: caching projects ($MDSC_OPTION)" >&2
 			ListChangedSourceProjects --no-cache | tee "$cacheFile.$$.tmp"
-			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+			mv -f -- "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 	fi

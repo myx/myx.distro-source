@@ -24,7 +24,7 @@ ListRepositoryDeclares(){
 	set -e
 
 	case "$1" in
-		--print-declares-only)
+		--print-no-project|--print-declares-only)
 			shift
 			ListRepositoryDeclares "$repositoryName" "$@" | awk '{print $2}'
 			return 0
@@ -105,7 +105,7 @@ ListRepositoryDeclares(){
 			echo "ListRepositoryDeclares: caching projects ($MDSC_OPTION)" >&2
 			mkdir -p "$MDSC_CACHED/$repositoryName"
 			ListRepositoryDeclares --no-cache $repositoryName | tee "$cacheFile.$$.tmp"
-			mv -f "$cacheFile.$$.tmp" "$cacheFile" || :
+			mv -f -- "$cacheFile.$$.tmp" "$cacheFile" || :
 			return 0
 		fi
 		
