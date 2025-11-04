@@ -90,7 +90,7 @@ ListRepositoryProjects(){
 	
 
 	if [ "$MDSC_NO_INDEX" != "--no-index" ] && [ -n "$MDSC_CACHED" ] ; then
-		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
+		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.env.inf"
 		if [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			echo "$MDSC_CMD: $repositoryName: using image ($MDSC_OPTION)" >&2

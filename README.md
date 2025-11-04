@@ -64,7 +64,7 @@ App Folders:
 	/distro - distro structure (alternative to /source, BTW)
 	/distro/distro-namespaces.txt - repository names db file (prepared)
 	/distro/build-time-stamp.txt - distro timestamp file (prepared)
-	/distro/distro-index.env.inf.txt - distro index shell-env file (prepared)
+	/distro/distro-index.env.inf - distro index shell-env file (prepared)
 	/actions - workspace actions - non-editable (generated)
 	/.local - system tools, utilities and system integrations
 	/.local/distro-index - system index space (generated)

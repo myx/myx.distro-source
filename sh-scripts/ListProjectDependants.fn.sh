@@ -30,7 +30,7 @@ ListProjectDependants(){
 		fi
 	fi
 	
-	local indexFile="$MDSC_CACHED/$projectName/project-index.inf"
+	local indexFile="$MDSC_CACHED/$projectName/project-index.env.inf"
 	if [ "0" = "1" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 		( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 		

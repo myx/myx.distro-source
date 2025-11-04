@@ -62,11 +62,11 @@ DistroSourceProjectProvidesMerged(){
 
 	if [ -z "$MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	local checkFile="$MDSC_CACHED/distro-provides.txt"
-	local cacheFile="$MDSC_CACHED/$MDSC_PRJ_NAME/project-provides-merged.txt"
 	if [ -f "$checkFile" ] ; then
+		local cacheFile="$MDSC_CACHED/$MDSC_PRJ_NAME/project-provides-merged.txt"
 		if [ -f "$cacheFile" ] ; then
 			# remake if it is too young (re: one second precision of -nt)
 			if [ "$cacheFile" -nt "$checkFile" ] ; then
@@ -79,15 +79,15 @@ DistroSourceProjectProvidesMerged(){
 		fi
 	
 		set -e
-		DistroSystemContext --index-provides-merged grep -e "^$MDSC_PRJ_NAME " \
-		| cut -d" " -f2,3 \
-		| awk '!x[$0]++' \
+		DistroSystemContext --project-index-provides-merged "$MDSC_PRJ_NAME" \
+		| awk '{ out = $2 " " $3; if (!seen[out]++) print out }' \
 		| tee "$cacheFile"
 		return 0
 	fi
 	
-	echo "$MDSC_CMD: ⛔ ERROR: can't come up with a name" >&2
-	return 1
+	DistroSystemContext --project-index-provides-merged "$MDSC_PRJ_NAME" \
+	| awk '{ out = $2 " " $3; if (!seen[out]++) print out }'
+	return 0
 }
 
 ## echoes specified or selected project sequence index file name
@@ -101,7 +101,7 @@ DistroSourceProjectSequenceFile(){
 	while true ; do	
 		case "$1" in
 			--project)
-				shift ; local MDSC_PRJ_NAME="$1" ; shift ; continue ;;
+				shift ; MDSC_PRJ_NAME="$1" ; shift ; continue ;;
 			*)
 				break ;;
 		esac
@@ -109,7 +109,7 @@ DistroSourceProjectSequenceFile(){
 
 	if [ -z "$MDSC_PRJ_NAME" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
-		return 1
+		set +e ; return 1
 	fi
 	local checkFile="$MDSC_CACHED/distro-provides.txt"
 	local cacheFile="$MDSC_CACHED/$MDSC_PRJ_NAME/project-sequence.txt"
@@ -127,19 +127,20 @@ DistroSourceProjectSequenceFile(){
 	
 		set -e
 
-		DistroSystemContext --index-provides-merged	grep -e "^$MDSC_PRJ_NAME " \
-		| awk '$2 && !seen[$2]++ { print $2; }' \
+		DistroSystemContext --project-index-sequence-merged "$MDSC_PRJ_NAME" \
+		| awk '!seen[$2]' \
 		> "$cacheFile"
 
 		echo "$cacheFile"
 		return 0
 	fi
 	
-	# Require ListProjectSequence
-	# ListProjectSequence "$MDSC_PRJ_NAME"
-	
 	echo "$MDSC_CMD: ⛔ ERROR: can't come up with a name" >&2
-	return 1
+	set +e ; return 1
+
+	DistroSystemContext --project-index-sequence-merged "$MDSC_PRJ_NAME" \
+	| awk '!seen[$2]'
+	return 0
 }
 
 #

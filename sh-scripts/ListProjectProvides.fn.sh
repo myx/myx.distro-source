@@ -95,7 +95,7 @@ ListProjectProvides(){
 				echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
 				set +e ; return 1
 			fi
-			
+
 			echo "$MDSC_CMD: $projectName: caching project index ($MDSC_OPTION)" >&2
 
 			mkdir -p "${cacheFile%/*}"
@@ -115,7 +115,7 @@ ListProjectProvides(){
 				set +e ; return 1
 			fi
 			
-			for indexFile in "$projectName/project-index.inf" "${projectName%%/*}/repository-index.inf" "distro-index.env.inf.txt"; do
+			for indexFile in "$projectName/project-index.env.inf" "${projectName%%/*}/repository-index.env.inf" "distro-index.env.inf"; do
 				local indexFile="$MDSC_CACHED/$indexFile"
 
 				[ -f "$indexFile" ] || continue
@@ -144,8 +144,7 @@ ListProjectProvides(){
 	if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 && [ "$MDSC_INMODE" = "source" ] ; then
 		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
 		(
-			Require DistroSourceCommand
-			DistroSourceCommand \
+			Distro DistroSourceCommand \
 				-q \
 				--import-from-source \
 				--select-project "$projectName" \

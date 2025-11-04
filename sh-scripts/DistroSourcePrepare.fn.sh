@@ -119,7 +119,7 @@ DistroSourcePrepare(){
 			if [ javac = "$MDSC_JAVAC" ] && command -v javac >/dev/null 2>&1 ; then
 				[ -z "${ENV_DISTRO_SOURCE_JAVA-}" ] || ( echo "⛔ ERROR: DistroSourceCommand." >&2 && exit 1 )
 
-				local indexFile="$MDSC_CACHED/distro-index.env.inf.txt"
+				local indexFile="$MDSC_CACHED/distro-index.env.inf"
 				local buildDate="$MDSC_CACHED/build-time-stamp.txt"
 
 				Distro DistroSourceCommand \
@@ -133,14 +133,14 @@ DistroSourcePrepare(){
 					--fail-if-errors \
 
 				[ -f "$indexFile" ] || {
-					echo "⛔ ERROR: $MDSC_CMD: distro-index.env.inf.txt is expected!" >&2
+					echo "⛔ ERROR: $MDSC_CMD: distro-index.env.inf is expected!" >&2
 					set +e ; return 1
 				}
 				
 				touch -r "$indexFile" "$buildDate"
 			else
 				local TGT_PREPARE="${MDSC_CACHED:-$MMDAPP/.local/source-cache/prepare}"
-				local IDX_PREPARE="$TGT_PREPARE/distro-index.env.inf.txt"
+				local IDX_PREPARE="$TGT_PREPARE/distro-index.env.inf"
 				awk -v source="$MDSC_SOURCE" \
 					-f "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/system-context/BuildSingleIndex.awk" \
 					<"$MMDAPP/.local/source-cache/all-projects.index.txt" \

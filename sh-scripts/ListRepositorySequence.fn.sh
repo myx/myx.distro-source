@@ -63,7 +63,7 @@ ListRepositorySequence(){
 	fi
 	
 	if [ "$MDSC_NO_INDEX" != "--no-index" ] ; then
-		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.inf"
+		local indexFile="$MDSC_CACHED/$repositoryName/repository-index.env.inf"
 		if [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
 			( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
 			
