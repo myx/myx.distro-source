@@ -33,12 +33,27 @@ BuildDistroFromSource(){
 
 	#### want to run in separate process anyways
 
-	[ -n "$buildOnlyLastStage" ] || (
-		DistroSystemContext --distro-from-source
-		Distro BuildCachedFromSource "$@"
-		Distro BuildOutputFromCached "$@"
-		set -e
-	)
+	if [ -z "$buildOnlyLastStage" ]; then 
+		(
+			DistroSystemContext --distro-from-source
+			Distro BuildCachedFromSource "$@"
+			DistroSystemContext --uncache
+			set -e
+		)
+		(
+			DistroSystemContext --distro-from-cached
+			Distro BuildOutputFromCached "$@"
+			DistroSystemContext --uncache
+			set -e
+		)
+		(
+			DistroSystemContext --distro-from-output
+			Distro BuildDistroFromSource --only "$@"
+			DistroSystemContext --uncache
+			set -e
+		)
+		return 0
+	fi
 
 	#### want to run in separate process anyways
 	(
