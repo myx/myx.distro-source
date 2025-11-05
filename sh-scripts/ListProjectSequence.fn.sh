@@ -78,7 +78,9 @@ ListProjectSequence(){
 		set +e ; return 1
 	fi
 
-	DistroSystemContext --project-index-sequence "$projectName" awk '!x[$2] { print $2 }'
+	DistroSystemContext --project-index-sequence "$projectName" \
+	awk '!x[$2] { print $2 }'
+
 }
 
 case "$0" in
