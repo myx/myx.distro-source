@@ -14,6 +14,17 @@ ListProjectSequence(){
 
 	set -e
 
+	case $1 in
+		--help|--help-syntax)
+			echo "📘 syntax: ListProjectSequence.fn.sh [--no-cache] <project_name> [--print-project] [--print-{provides|declares|keywords}]" >&2
+			echo "📘 syntax: ListProjectSequence.fn.sh [--help]" >&2
+			if [ "$1" = "--help" ] ; then
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListProjectSequence.include" >&2
+			fi
+			return 0
+		;;
+	esac
+
 	local projectName=
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
@@ -61,15 +72,7 @@ ListProjectSequence(){
 case "$0" in
 	*/sh-scripts/ListProjectSequence.fn.sh) 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: ListProjectSequence.fn.sh [--no-cache] <project_name> [--print-project] [--print-provides]" >&2
-			echo "📘 syntax: ListProjectSequence.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				echo "  Examples:" >&2
-				echo "    ListProjectSequence.fn.sh myx/myx.common/os-myx.common" >&2
-				echo "    ListProjectSequence.fn.sh myx/myx.common/os-myx.common --print-project" >&2
-				echo "    ListProjectSequence.fn.sh myx/myx.common/os-myx.common-freebsd --print-project" >&2
-				echo "    ListProjectSequence.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-provides" >&2
-			fi
+			ListProjectSequence ${1:-"--help-syntax"}
 			exit 1
 		fi
 

@@ -27,33 +27,32 @@ DistroSelectProject(){
 			return 0
 		fi
 		[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: reset project (previous selection: $MDSC_PRJ_NAME)" >&2
-		export MDSC_PRJ_NAME=""
-		# export MDSC_PRJ_MPRV=""
-		# export MDSC_PRJ_BSEQ=""
+		export MDSC_PRJ_NAME=
+		# export MDSC_PRJ_MPRV=
+		# export MDSC_PRJ_BSEQ=
 		return 0
 	fi
 	case "$3" in
 		export)
 			export MDSC_PRJ_NAME="$2"
-			# export MDSC_PRJ_MPRV=""
-			# export MDSC_PRJ_BSEQ=""
+			# export MDSC_PRJ_MPRV=
+			# export MDSC_PRJ_BSEQ=
 			[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: project selected and exported ($2)" >&2
 			return 0
 		;;
 		'')
 			MDSC_PRJ_NAME="$2"
-			# MDSC_PRJ_MPRV=""
-			# MDSC_PRJ_BSEQ=""
+			# MDSC_PRJ_MPRV=
+			# MDSC_PRJ_BSEQ=
 			[ -z "$MDSC_DETAIL" ] || echo "* $MDSC_CMD: project selected ($2)" >&2
 			return 0
 		;;
 		*)
 			echo "$MDSC_CMD: ⛔ ERROR: invalid extra option: $3" >&2
-			return 1
+			set +e ; return 1
 		;;
 	esac
 }
-
 
 # prints project merged provides
 DistroSourceProjectProvidesMerged(){
@@ -64,59 +63,12 @@ DistroSourceProjectProvidesMerged(){
 		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
 		set +e ; return 1
 	fi
-	local checkFile="$MDSC_CACHED/distro-provides.txt"
-	if [ -f "$checkFile" ] ; then
-		local cacheFile="$MDSC_CACHED/$MDSC_PRJ_NAME/project-provides-merged.txt"
-		if [ -f "$cacheFile" ] ; then
-			# remake if it is too young (re: one second precision of -nt)
-			if [ "$cacheFile" -nt "$checkFile" ] ; then
-				cat "$cacheFile"
-				return 0
-			fi
-			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: stale index, making index file ($MDSC_OPTION)" >&2
-		else
-			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: making index file ($MDSC_OPTION)" >&2
-		fi
-	
-		set -e
-		DistroSystemContext --project-index-provides-merged "$MDSC_PRJ_NAME" \
-		awk '{ out = $2 " " $3; if (!seen[out]++) print out }' \
-		| tee "$cacheFile"
-		return 0
-	fi
-	
+
+	set -e
 	DistroSystemContext --project-index-provides-merged "$MDSC_PRJ_NAME" \
 	awk '{ out = $2 " " $3; if (!seen[out]++) print out }'
-	return 0
 }
 
-## echoes specified or selected project sequence index file name
-##
-DistroSourceProjectSequenceFile(){
-	local MDSC_CMD='DistroSourceProjectSequenceFile'
-	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
-
-	local MDSC_PRJ_NAME="${MDSC_PRJ_NAME:-}"
-
-	while true ; do	
-		case "$1" in
-			--project)
-				shift ; MDSC_PRJ_NAME="$1" ; shift ; continue ;;
-			*)
-				break ;;
-		esac
-	done
-
-	if [ -z "$MDSC_PRJ_NAME" ] ; then
-		echo "$MDSC_CMD: ⛔ ERROR: project is not selected!" >&2
-		set +e ; return 1
-	fi
-
-	DistroSystemContext --project-index-sequence "$MDSC_PRJ_NAME" \
-	awk '!x[$2]++ { print $2 }'
-	
-	return 0
-}
 
 #
 # call with --install|--prepare [--export|--local] argument
@@ -128,17 +80,17 @@ DistroSourceProjectContextVariables(){
 		set +e ; return 1
 	fi
 
-	local prefix="" filter=""
+	local prefix= filter=
 
 	while true ; do 
 		case "$1" in
 			--install)
 				shift
-				filter="grep -e \" image-install:context-variable:\""
+				filter="grep -e ' image-install:context-variable:'"
 			;;
 			--prepare)
 				shift
-				filter="grep -e \" image-prepare:context-variable:\""
+				filter="grep -e ' image-prepare:context-variable:'"
 			;;
 			--export)
 				prefix="export " ; shift
@@ -157,8 +109,10 @@ DistroSourceProjectContextVariables(){
 	done
 
 	local variableName operationType variableValue
+	local buildBuffer variableNames
 
-	local buildBuffer="`
+	buildBuffer="`
+
 		DistroSourceProjectProvidesMerged \
 		| eval $filter \
 		| sed 's/:/ /; s/:/ /; s/:/ /; s/:/ /' | cut -d" " -f1,4- \
@@ -169,7 +123,7 @@ DistroSourceProjectContextVariables(){
 			
 				# if variable is not defined - creates variable/array with given value 
 				create)
-					printf	'[ -n "$VAR_%s" ] || VAR_%s=%q\n' \
+					printf '[ -n "$VAR_%s" ] || VAR_%s=%q\n' \
 						"$variableName" \
 						"$variableName" "$variableValue"
 				;;
@@ -215,7 +169,8 @@ DistroSourceProjectContextVariables(){
 				# if variable is defined - removes given value from array. Un-defines variable if no value given.
 				remove)
 					if [ -z "$variableValue" ] ; then
-						printf 'VAR_%s=""\n' 									"$variableName"
+						printf 'VAR_%s=\n' \
+							"$variableName"
 					else
 						printf	'[ -z "$VAR_%s" ] || VAR_%s="$( echo "$VAR_%s" | grep -x -v %q )"\n' \
 							"$variableName" \
@@ -249,10 +204,10 @@ DistroSourceProjectContextVariables(){
 				# Un-defines variable. Only when variable value matches, if variableValue specified.
 				delete)
 					if [ -z "$variableValue" ] ; then
-						printf 'VAR_%s=""\n' \
+						printf 'VAR_%s=\n' \
 							"$variableName"
 					else
-						printf '[ "%s" != "$VAR_%s" ] || VAR_%s=""\n' \
+						printf '[ "%s" != "$VAR_%s" ] || VAR_%s=\n' \
 							"$variableValue" "$variableName" \
 							"$variableName"
 					fi
@@ -263,28 +218,29 @@ DistroSourceProjectContextVariables(){
 				;;
 			esac
 		done
+
 	`"
 	
 	if [ -z "${buildBuffer:0:1}" ] ; then
 		return 0
 	fi
 	
-	local variableNames="$( echo "$buildBuffer" | grep -e '^## ## ' | sed -e 's|^## ## ||g' | sort -u )"
+	variableNames="$( 
+		echo "$buildBuffer" | grep -e '^## ## ' | sed -e 's|^## ## ||g' | sort -u 
+	)"
 	
-	local buildBuffer="`
+	buildBuffer="`
 		for variableName in $variableNames ; do
 			printf 'local VAR_%s\n' "$variableName"
 		done
 		echo "$buildBuffer"
 		for variableName in $variableNames ; do
-			#printf 'printf %s %q "%s"\n' "'$prefix%s=\\"%q\\"\n'" "$variableName" "\\\$VAR_$variableName"
-			#printf 'printf %s %q "%s"\n' "'$prefix%s=\\"%s\\"\n'" "$variableName" "\\\$VAR_$variableName"
 			printf 'printf %q %s "\$VAR_%s"\n' "$prefix%s=\\"%s\\"\n" "$variableName" "$variableName"
 		done
 	`"
 	
 	# hope for a new process
-	echo | ( eval "$buildBuffer" )
+	( eval "$buildBuffer" ) </dev/null
 	
 	return 0
 }
@@ -301,7 +257,7 @@ DistroSourceCheckSourcePath(){
 	while true ; do	
 		case "$1" in
 			--project)
-				shift ; MDSC_PRJ_NAME="$1" ; shift ; continue ;;
+				MDSC_PRJ_NAME="$2" ; shift 2 ; continue ;;
 			--path)
 				shift ;	local check="-d" ; continue ;;
 			--file)
@@ -316,10 +272,8 @@ DistroSourceCheckSourcePath(){
 		set +e ; return 1
 	fi
 	
-	local declaredAt="$1" ; shift
-	local sourceName="$1" ; shift
-	local sourcePath="$1" ; shift
-	local checkProject commandOutput
+	local declaredAt="$1" sourceName="$2" sourcePath="$3"
+	shift 3
 
 	if [ -z "$sourceName" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: arguments missing" >&2
@@ -328,16 +282,20 @@ DistroSourceCheckSourcePath(){
 
 	set -e
 
+	local checkProject commandOutput
+
 	if [ "$sourceName" = "*" -o "$sourceName" = "**" ] ; then
-		commandOutput="$( \
+		commandOutput="$(
 			while read -r checkProject ; do
 				[ full != "$MDSC_DETAIL" ] || echo ">> $MDSC_CMD check wildcard path: " $check "$MDSC_SOURCE/$checkProject/$sourcePath" >&2
 				if [ $check "$MDSC_SOURCE/$checkProject/$sourcePath" ] ; then
-					if [ "$sourceName" = "**" ] || grep -q -x "$declaredAt" "$( DistroSourceProjectSequenceFile --project "$checkProject" )" ; then
+					if [ "$sourceName" = "**" ] || grep -q -x "$declaredAt" <( 
+						DistroSystemContext --project-index-sequence "$checkProject"  awk '!x[$2]++ { print $2 }' 
+					) ; then
 						echo "$declaredAt" "$checkProject" "$sourcePath" "$@"
 					fi
 				fi
-			done < "$( DistroSourceProjectSequenceFile )" \
+			done < <( DistroSystemContext --project-index-sequence "$MDSC_PRJ_NAME" awk '!x[$2]++ { print $2 }' )
 		)"
 	
 		if [ -n "${commandOutput:0:1}" ] ; then
@@ -360,7 +318,9 @@ DistroSourceCheckSourcePath(){
 	fi
 
 	commandOutput="$(
-		DistroSystemContext --index-provides | grep " $sourceName$" | awk '$1 && !seen[$1]++ { print $1; }' \
+		DistroSystemContext --index-provides \
+		grep " $sourceName$" \
+		| awk '$1 && !seen[$1]++ { print $1; }' \
 		| while read -r checkProject ; do
 			[ full != "$MDSC_DETAIL" ] || echo ">> $MDSC_CMD check exact path: " $check "$MDSC_SOURCE/$checkProject/$sourcePath" >&2
 			if [ $check "$MDSC_SOURCE/$checkProject/$sourcePath" ] ; then
