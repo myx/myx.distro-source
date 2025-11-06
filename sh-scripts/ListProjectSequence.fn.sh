@@ -32,31 +32,6 @@ ListProjectSequence(){
 					set +e ; return 1
 				}
 				local idx="${1#'--print-'}"; shift
-				
-				if [ -n "$MDSC_CACHED" ]; then
-					if [ "$MDSC_NO_CACHE" != "--no-cache" ]; then
-					
-						local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-						local cacheFile="$MDSC_CACHED/$projectName/project-${idx}-sequence.txt"
-						if [ -f "$buildDate" ]; then
-							if [ -f "$cacheFile" ] && [ ! "$cacheFile" -ot "$buildDate" ]; then
-								[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: --print-* using cached, ${idx} ($MDSC_OPTION)" >&2
-								cat "$cacheFile"
-								return 0
-							fi
-				
-							echo "$MDSC_CMD: $projectName: --print-* caching projects, ${idx} ($MDSC_OPTION)" >&2
-							DistroSystemContext --index-${idx}-merged awk -v prj="$projectName" '
-								$1 == prj && !x[$3]++ { print $2, $3; }
-							' | tee "$cacheFile.$$.tmp"
-							mv -f -- "$cacheFile.$$.tmp" "$cacheFile" || :
-
-							return 0
-						fi
-
-					fi
-				fi			
-				
 				DistroSystemContext --index-${idx}-merged awk -v prj="$projectName" '
 					$1 == prj && !x[$3]++ { print $2, $3; }
 				'

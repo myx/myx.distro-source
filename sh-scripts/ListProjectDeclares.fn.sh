@@ -23,42 +23,54 @@ ListProjectDeclares(){
 		case "$1" in
 			--print-no-project|--print-declares-only)
 				shift
-				ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectDeclares "$projectName" "$@" | awk '!x[$2]++ {print $2}'
 				return 0
 			;;
 			--print-project)
-				shift
-				break
-				#ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" # | sed "s|^|$projectName |g"
-				#return 0
+				shift; [ -n "$1" ] || break
+				ListProjectDeclares "$projectName" "$@" # | sed "s|^|$projectName |g"
+				return 0
 			;;
 			--filter-and-cut)
-				shift
-				if [ -z "$1" ] ; then
+				if [ -z "$2" ] ; then
 					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
-				local filterDeclares="$1" projectDeclares ; shift
+				local filter="$2" output ; shift 2
 
-				ListProjectDeclares $MDSC_NO_CACHE $MDSC_NO_INDEX "$projectName" "$@" --print-no-project \
-				| while read -r projectDeclares ; do
-				 	if [ "$projectDeclares" != "${projectDeclares#${filterDeclares}:}" ] ; then
-						echo "$projectName ${projectDeclares#${filterDeclares}:}"
+				if [ -z "$1" ] ; then
+					DistroSystemContext --project-index-declares "$projectName" \
+					awk -v filter="${filter%:}" '
+						BEGIN { pref = filter ":"; plen = length(pref) }
+						substr($2, 1, plen) == pref && !seen[$0]++ { print $1 " " substr($2, plen + 1) }
+					'
+					return 0
+				fi
+
+				ListProjectDeclares "$projectName" --print-no-project "$@" \
+				| while read -r output ; do
+				 	if [ "$output" != "${output#${filter}:}" ] ; then
+						echo "$projectName ${output#${filter}:}"
 					fi
 				done | awk '!x[$0]++'
 				return 0
 			;;
 			--merge-sequence)
 				shift
-				Require ListProjectSequence
 
 				if [ -z "$1" ] ; then
-					ListProjectSequence "$projectName" --print-declares
+					DistroSystemContext --project-index-declares-merged "$projectName" \
+					awk '
+						{
+							out = $2 " " substr($3, plen + 1)
+							if (!seen[out]++) { print out }
+						}
+					'
 					return 0
 				fi
 
 				local sequenceProjectName
-				ListProjectSequence "$projectName" \
+				Distro ListProjectSequence "$projectName" \
 				| while read -r sequenceProjectName ; do
 					ListProjectDeclares "$sequenceProjectName" "$@"
 				done | awk '!x[$0]++'	
