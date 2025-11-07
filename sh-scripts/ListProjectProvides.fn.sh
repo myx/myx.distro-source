@@ -62,7 +62,7 @@ ListProjectProvides(){
 					DistroSystemContext --project-index-provides-merged "$projectName" \
 					awk '
 						{
-							out = $2 " " substr($3, plen + 1)
+							out = $2 " " $3
 							if (!seen[out]++) { print out }
 						}
 					'
