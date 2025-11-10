@@ -30,29 +30,30 @@ RebuildKnownHosts() {
 		set +e ; return 1
 	fi
 
-	[ -z "$MDSC_DETAIL" ]  || echo "RebuildKnownHosts: Using temporary file: $DEST.$$.tmp" >&2
+	[ -z "$MDSC_DETAIL" ] || echo "RebuildKnownHosts: Using temporary file: $DEST.$$.tmp" >&2
 
 
-	local projectName fileName knownHostsProject knownHostsFile
+	local projectName fileName
 
 	{
 
 		# all known hosts
 		DistroSystemContext --index-projects cat \
 		| while read -r projectName; do
+				[ full != "$MDSC_DETAIL" ] || echo "RebuildKnownHosts: projectName=${projectName}" >&2
 				if [ -f "$MDSC_SOURCE/$projectName/ssh/known_hosts" ]; then
 					fileName="$MDSC_SOURCE/$projectName/ssh/known_hosts"
 				elif [ -f "$MMDAPP/source/$projectName/ssh/known_hosts" ]; then
 					fileName="$MMDAPP/source/$projectName/ssh/known_hosts"
 				else
-					return 0
+					continue
 				fi
 
 				[ -z "$addComment" ] || printf '\n\n## Source: %s\n\n' "$projectName"
 				sort -t' ' -k1,1  "$fileName" \
 				| sed 's/[[:space:]]\{1,\}/\t/g' \
 				| column -t -s $'\t'
-		done 
+		done
 
 		# previous known hosts
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
