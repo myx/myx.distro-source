@@ -1,4 +1,5 @@
 #!/bin/sh
+# ^^^ for syntax highlight
 
 [ full != "$MDSC_DETAIL" ] || set -x
 
@@ -45,4 +46,4 @@ CheckMakeProjectDataFolder(){
 }
 
 ListChangedSourceProjects \
-| Parallel Prefix -2 CheckMakeProjectDataFolder # "$projectName" 
+| Parallel -v Prefix -2 CheckMakeProjectDataFolder # "$projectName" 
