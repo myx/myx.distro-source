@@ -36,4 +36,4 @@ Distro ListDistroProvides --select-changed --filter-and-cut "source-process:" \
 | { grep -e " compile-java$" || [ $? -eq 1 ] ; } \
 | cut -d" " -f1 \
 | sort -u \
-| Parallel Prefix -2 CompileJavaSources # "$projectName"
+| Parallel -v Prefix -2 CompileJavaSources # "$projectName"
