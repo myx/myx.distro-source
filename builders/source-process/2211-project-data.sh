@@ -46,4 +46,4 @@ CheckMakeProjectDataFolder(){
 }
 
 ListChangedSourceProjects \
-| Parallel -v Prefix -2 CheckMakeProjectDataFolder # "$projectName" 
+| Parallel Prefix -2 CheckMakeProjectDataFolder # "$projectName" 
