@@ -14,6 +14,8 @@ DistroSystemContext --distro-from-source
 # DistroSourceContext --distro-from-source
 # DistroSourceContext --distro-path-auto
 
+[ "$(ulimit -n)" -lt 10240 ] && ulimit -n 10240
+
 # export BASH_ENV="$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/console-source-bashrc.rc"
 
 if [ -x "$MDLT_ORIGIN/myx/myx.common/os-myx.common/host/tarball/bin/myx.common" ] ; then
