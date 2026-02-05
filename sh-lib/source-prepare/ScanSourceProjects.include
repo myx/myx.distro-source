@@ -12,6 +12,18 @@
 
 	# Recursion function scoped to this subshell
 	ScanNamespace() {
+		[ -z "$MDSC_DETAIL" ] || echo "> namespace: $1" >&2
+		
+		# descend one level into each child directory
+		local sub
+		for sub in "$1"/*; do
+			[ -d "$sub" ] || continue
+			ScanDirectory "$sub"
+		done
+	}
+
+	# Recursion function scoped to this subshell
+	ScanDirectory() {
 		# If this dir has project.inf, emit and stop
 		if [ -f "$1/project.inf" ]; then
 			printf '%s\n' "$1"
@@ -22,7 +34,7 @@
 		local sub
 		for sub in "$1"/*; do
 			[ -d "$sub" ] || continue
-			ScanNamespace "$sub"
+			ScanDirectory "$sub"
 		done
 	}
 

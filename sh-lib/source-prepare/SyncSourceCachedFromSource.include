@@ -27,7 +27,9 @@ exec 3<> "$FIFO"   # fd 3 is now the pipe
 {
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
 	| tee "$NEW_PROJECTS" "$FIFO" || : # to awk
-	echo >&3 # end-of-stream for awk
+	
+	printf '\n' > "$FIFO" # end-of-stream for awk
+	# echo >&3 # end-of-stream for awk
 
 	local repositoryName
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
@@ -35,10 +37,10 @@ exec 3<> "$FIFO"   # fd 3 is now the pipe
 		printf '%s/repository.inf\n' "$repositoryName"
 	done
 } \
-| {
+| (
 	set -- --execute-sync
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSyncSourceChanges.include"
-} \
+) \
 | if [ -n "$MDSC_DETAIL" ]; then
 	if [ "full" = "$MDSC_DETAIL" ]; then
 		tee "$NEW_CONTENT" /dev/fd/2 || : 
@@ -49,7 +51,6 @@ exec 3<> "$FIFO"   # fd 3 is now the pipe
 else
 	tee "$NEW_CONTENT" || : 
 fi \
-| cut -d' ' -f2 \
 | awk -v projectList="$FIFO" '
 	BEGIN {
 		while ((getline proj < projectList) > 0) {
@@ -59,6 +60,7 @@ fi \
 		close(projectList)
 	}
 	{
+		sub(/^[^ ]+ /, "")
 		for (p in projects)
 			if (index($0, p"/") == 1)
 			changed[p] = 1
