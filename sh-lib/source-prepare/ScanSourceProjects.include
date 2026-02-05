@@ -3,21 +3,15 @@
 
 [ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD: ScanSourceProjects.include: scanning local source projects" >&2
 
-set -e
-
-local NAMESPACES
-NAMESPACES=$( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" )
-
-[ -n "$NAMESPACES" ] ||	return 0
-
 ( 
+	set -e
 	cd "$MDSC_SOURCE" || {
 		echo "⛔ ERROR: $MDSC_CMD: ScanSourceProjects.include: no source folder!" >&2
 		set +e ; return 1
 	}
 
 	# Recursion function scoped to this subshell
-	scan() {
+	ScanNamespace() {
 		# If this dir has project.inf, emit and stop
 		if [ -f "$1/project.inf" ]; then
 			printf '%s\n' "$1"
@@ -32,10 +26,8 @@ NAMESPACES=$( . "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSo
 		done
 	}
 
-	# Kick off scanning, splitting $NAMESPACES on whitespace
-	local ns
-	for ns in $NAMESPACES; do
-		scan "$ns" &
-	done
-	wait
+	type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
+	
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
+	| Parallel --workers-x2 ScanNamespace
 )

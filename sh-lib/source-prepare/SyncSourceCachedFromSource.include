@@ -24,8 +24,6 @@ local FIFO="$MMDAPP/.local/temp/scan-source-changes.fifo.$TMP_SUFFIX"
 mkfifo "$FIFO"
 exec 3<> "$FIFO"   # fd 3 is now the pipe
 
-local projectName
-
 {
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceProjects.include" \
 	| tee "$NEW_PROJECTS" "$FIFO" || : # to awk
@@ -33,7 +31,7 @@ local projectName
 
 	local repositoryName
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
-	| tee "$NEW_NAMESPACES" | while IFS= read -r repositoryName; do
+	| tee "$NEW_NAMESPACES" || : | while IFS= read -r repositoryName; do
 		printf '%s/repository.inf\n' "$repositoryName"
 	done
 } \
@@ -43,13 +41,13 @@ local projectName
 } \
 | if [ -n "$MDSC_DETAIL" ]; then
 	if [ "full" = "$MDSC_DETAIL" ]; then
-		tee "$NEW_CONTENT" /dev/fd/2
+		tee "$NEW_CONTENT" /dev/fd/2 || : 
 	else
 		{ fgrep -v '>f..t.' || [ $? -eq 1 ] ; } \
-		| tee "$NEW_CONTENT" /dev/fd/2
+		| tee "$NEW_CONTENT" /dev/fd/2 || : 
 	fi
 else
-	tee "$NEW_CONTENT"
+	tee "$NEW_CONTENT" || : 
 fi \
 | cut -d' ' -f2 \
 | awk -v projectList="$FIFO" '
@@ -76,6 +74,7 @@ fi \
 
 	cd "$MMDAPP/.local/source-cache/changed"
 
+	local projectName
 	while IFS= read -r projectName; do
 		printf '%s\n' "$projectName" >> "$NEW_CHANGED"
 		if [ -f "$projectName" ]; then
