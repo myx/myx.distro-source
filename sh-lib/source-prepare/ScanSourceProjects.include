@@ -22,12 +22,12 @@
 		local sub
 		for sub in "$1"/*; do
 			[ -d "$sub" ] || continue
-			scan "$sub"
+			ScanNamespace "$sub"
 		done
 	}
 
 	type Parallel >/dev/null 2>&1 || . "$( myx.common which lib/parallel )"
-	
+
 	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/source-prepare/ScanSourceNamespaces.include" \
 	| Parallel --workers-x2 ScanNamespace
 )
