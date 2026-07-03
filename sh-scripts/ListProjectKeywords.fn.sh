@@ -98,31 +98,7 @@ ListProjectKeywords(){
 case "$0" in
 	*/sh-scripts/ListProjectKeywords.fn.sh)
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: ListProjectKeywords.fn.sh <project_name> [--print-project|--print-no-project] [--merge-sequence] [--filter-and-cut filter_by]" >&2
-			echo "📘 syntax: ListProjectKeywords.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				echo "  Options:" >&2
-				echo >&2
-				echo "    --no-cache" >&2
-				echo "                Use no cache." >&2
-				echo >&2
-				echo "    --no-index" >&2
-				echo "                Use no index." >&2
-				echo >&2
-				echo "  Examples:" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common --print-project" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common-freebsd --print-project" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common-freebsd --merge-sequence" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --merge-sequence" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common --filter-and-cut deploy-export" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common --print-no-project --filter-and-cut deploy-export" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --filter-and-cut deploy-export --merge-sequence" >&2
-				echo "    ListProjectKeywords.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-no-project --filter-and-cut deploy-export --merge-sequence" >&2
-				echo "	  ListProjectKeywords.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project" >&2
-				echo "	  ListProjectKeywords.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence" >&2
-				echo "	  ListProjectKeywords.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project " >&2
-			fi
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListProjectKeywords.include"
 			exit 1
 		fi
 		

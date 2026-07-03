@@ -1,5 +1,5 @@
 echo >&2
-echo "  Build stage <build-stage> syntax:" >&2
+echo "  📘 syntax: Build stage <build-stage>" >&2
 echo >&2
 echo "    source-prepare|source-process|image-prepare|image-process|image-install" >&2
 echo "                Five sequential stages for each project, from source updates to install and deploy." >&2

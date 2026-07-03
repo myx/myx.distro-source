@@ -1,7 +1,24 @@
-# CleanSourceToCached
+📘 syntax: CleanSourceToCached.fn.sh
+📘 syntax: CleanSourceToCached.fn.sh [--help|--help-syntax]
 
-Removes cached source directories (legacy cached and .local/source-cache).
+##  Summary:
 
-## Syntax
+		Cleans source-cache artifacts so source ingest/prepare stages can run from a fresh
+		state.
 
-- CleanSourceToCached.fn.sh
+##  Arguments:
+
+		None. This command accepts no positional arguments.
+
+##  Options:
+
+		--help
+			Prints command help and exits.
+
+		--help-syntax
+			Prints syntax summary and exits.
+
+##  Examples:
+
+		# Clean source-stage cache artifacts
+		`CleanSourceToCached.fn.sh`

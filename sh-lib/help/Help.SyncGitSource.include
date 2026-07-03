@@ -1,0 +1,5 @@
+echo "📘 syntax: SyncGitSource.fn.sh <project_name> <git-repository-spec>" >&2
+echo "📘 syntax: SyncGitSource.fn.sh [--help]" >&2
+if [ "$1" = "--help" ]; then
+	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.SyncGitSource.help.md" >&2
+fi

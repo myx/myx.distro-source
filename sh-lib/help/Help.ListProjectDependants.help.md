@@ -1,11 +1,46 @@
-# ListProjectDependants
+📘 syntax: ListProjectDependants.fn.sh <project-name> [--no-cache]
+📘 syntax: ListProjectDependants.fn.sh [--help]
 
-Lists dependant projects for selected project using cached project index.
+##  Summary:
 
-## Syntax
+		Lists projects that depend on selected project, using cached dependency/index
+		metadata.
 
-- ListProjectDependants.fn.sh <project-name> [--no-cache]
+##  Arguments:
 
-## Notes
+		project-name
+			Project to query reverse dependencies for.
 
-- Direct script execution currently contains an existing not-implemented guard for non-help paths.
+##  Options:
+
+		--no-cache
+			Bypasses cached dependant list and rebuilds from current index metadata.
+
+		--help
+			Prints command help and exits.
+
+		--help-syntax
+			Prints command syntax summary and exits.
+
+##  Notes:
+
+		Direct script execution currently contains an existing not-implemented guard for
+		non-help paths.
+
+		Command parsing also accepts standard context/project selector options from
+		SystemContext.UseStandardOptionsRequireProject.include.
+
+##  Examples:
+
+                # List dependants of a host-setup project using distro-source index
+                `ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.example.org`
+
+                # List dependants using full distro-from-source resolution
+                `ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.example.org`
+
+                # List dependants for an infrastructure project, suppress errors if none found
+                `ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null`
+
+
+		# Typical function-level usage via dispatcher
+		`Distro ListProjectDependants myx/myx.distro-system --no-cache`

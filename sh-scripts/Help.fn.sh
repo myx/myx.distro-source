@@ -9,14 +9,7 @@ fi
 
 
 Help(){
-	echo "Syntax:" >&2
-	echo "	Action <distroCommand>" >&2
-	echo "	Distro <distroCommand>" >&2
-	echo "	Deploy <distroCommand>" >&2
-	echo "	Source <distroCommand>" >&2
-	if [ "$1" = "--all" ] || [ "$1" = "--help" ] ; then
-		echo "	Require <distroCommandName>" >&2
-	fi
+	. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.Help.include"
 }
 
 case "$0" in

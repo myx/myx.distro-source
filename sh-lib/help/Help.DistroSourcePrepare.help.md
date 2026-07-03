@@ -1,6 +1,10 @@
 📘 syntax: DistroSourcePrepare.fn.sh --ingest-distro-index-from-source
 📘 syntax: DistroSourcePrepare.fn.sh <option>
 
+##  Arguments:
+
+		None. This command is option-driven.
+
 ##  Options:
 
 		--scan-source-projects
@@ -28,8 +32,10 @@
 			Builds project-level metadata (declares/keywords/provides/requires/sequence).
 
 		--help
+			Prints command help and exits.
+
 		--help-syntax
-			Prints command help and syntax information.
+			Prints syntax summary and exits.
 
 ##  Examples (in Local Console, within workspace context):
 

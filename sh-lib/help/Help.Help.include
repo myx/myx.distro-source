@@ -1,0 +1,4 @@
+echo "📘 syntax: Help.fn.sh [--all|--help]" >&2
+if [ "$1" = "--help" ]; then
+	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.Help.help.md" >&2
+fi

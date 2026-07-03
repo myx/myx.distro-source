@@ -1,5 +1,5 @@
-echo "syntax: CleanCachedToOutput.fn.sh" >&2
-echo "syntax: CleanCachedToOutput.fn.sh [--help]" >&2
+echo "📘 syntax: CleanCachedToOutput.fn.sh" >&2
+echo "📘 syntax: CleanCachedToOutput.fn.sh [--help]" >&2
 if [ "$1" = "--help" ]; then
 	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanCachedToOutput.help.md" >&2
 fi

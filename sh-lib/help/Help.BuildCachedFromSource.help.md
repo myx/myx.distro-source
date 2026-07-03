@@ -1,7 +1,31 @@
-# BuildCachedFromSource
+📘 syntax: BuildCachedFromSource.fn.sh [--continue]
+📘 syntax: BuildCachedFromSource.fn.sh [--help|--help-syntax]
 
-Runs source-prepare builders from source into source-cache/prepare.
+##  Summary:
 
-## Syntax
+		Build stage 1: ingests source projects and runs source-prepare builders to produce
+		.local/source-cache/prepare for downstream stages.
 
-- BuildCachedFromSource.fn.sh [--continue]
+##  Arguments:
+
+		None. This command accepts no positional arguments.
+
+##  Options:
+
+		--continue
+			Continues processing remaining builders after a
+			builder failure.
+
+		--help
+			Prints command help and exits before running stage 1.
+
+		--help-syntax
+			Prints syntax summary and exits.
+
+##  Examples:
+
+		# Run source->prepared stage with fail-fast behavior
+		`BuildCachedFromSource.fn.sh`
+
+		# Continue running builders after individual failures
+		`BuildCachedFromSource.fn.sh --continue`

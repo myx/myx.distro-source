@@ -43,12 +43,7 @@ SyncGitSource(){
 case "$0" in
 	*/sh-scripts/SyncGitSource.fn.sh) 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			echo "📘 syntax: SyncGitSource.fn.sh <project_name> <git-repository-spec> [<branch>]" >&2
-			if [ "$1" = "--help" ] ; then
-				echo "  Examples:" >&2
-				echo "    SyncGitSource.fn.sh myx/myx.common/os-myx.common git@github.com:myx/os-myx.common.git" >&2
-				echo "    SyncGitSource.fn.sh myx/myx.common/os-myx.common git@github.com:myx/os-myx.common.git main" >&2
-			fi
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.SyncGitSource.include"
 			exit 1
 		fi
 		

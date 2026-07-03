@@ -1,7 +1,24 @@
-# CleanOutputToDistro
+📘 syntax: CleanOutputToDistro.fn.sh
+📘 syntax: CleanOutputToDistro.fn.sh [--help|--help-syntax]
 
-Removes export and distro directories.
+##  Summary:
 
-## Syntax
+		Cleans final packaging artifacts (export and distro) without touching earlier build
+		stages.
 
-- CleanOutputToDistro.fn.sh
+##  Arguments:
+
+		None. This command accepts no positional arguments.
+
+##  Options:
+
+		--help
+			Prints command help and exits.
+
+		--help-syntax
+			Prints syntax summary and exits.
+
+##  Examples:
+
+		# Clean only final packaging outputs
+		`CleanOutputToDistro.fn.sh`

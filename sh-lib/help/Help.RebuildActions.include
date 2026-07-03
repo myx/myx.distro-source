@@ -1,6 +1,6 @@
-echo "syntax: RebuildActions.fn.sh [--no-delete]" >&2
-echo "syntax: RebuildActions.fn.sh [--test1|--test2|--test3]" >&2
-echo "syntax: RebuildActions.fn.sh [--help]" >&2
+echo "📘 syntax: RebuildActions.fn.sh [--no-delete]" >&2
+echo "📘 syntax: RebuildActions.fn.sh [--test1|--test2|--test3]" >&2
+echo "📘 syntax: RebuildActions.fn.sh [--help]" >&2
 if [ "$1" = "--help" ]; then
 	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.RebuildActions.help.md" >&2
 fi

@@ -1,0 +1,5 @@
+echo "📘 syntax: ListProjectKeywords.fn.sh <project_name> [--print-project|--print-no-project] [--merge-sequence] [--filter-and-cut <filter_by>]" >&2
+echo "📘 syntax: ListProjectKeywords.fn.sh [--help]" >&2
+if [ "$1" = "--help" ]; then
+	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListProjectKeywords.help.md" >&2
+fi

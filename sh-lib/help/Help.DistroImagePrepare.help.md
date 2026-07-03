@@ -1,6 +1,10 @@
 📘 syntax: DistroImagePrepare.fn.sh --ingest-distro-index-from-processed
 📘 syntax: DistroImagePrepare.fn.sh <option>
 
+##  Arguments:
+
+		None. This command is option-driven.
+
 ##  Options:
 
 		--ingest-distro-image-from-git
@@ -16,8 +20,10 @@
 			Rebuilds cached distro index and refreshes derived index files.
 
 		--help
+			Prints command help and exits.
+
 		--help-syntax
-			Prints command help and syntax information.
+			Prints syntax summary and exits.
 
 ##  Examples (in Local Console, within workspace context):
 
