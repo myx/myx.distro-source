@@ -1,7 +1,7 @@
 📘 syntax: DistroSourcePrepare.fn.sh --ingest-distro-index-from-source
 📘 syntax: DistroSourcePrepare.fn.sh <option>
 
-	Options:
+##  Options:
 
 		--scan-source-projects
 			Lists/collects projects from source roots.
@@ -31,11 +31,14 @@
 		--help-syntax
 			Prints command help and syntax information.
 
-	Examples (in Local Console, within workspace context):
+##  Examples (in Local Console, within workspace context):
 
-		DistroSourcePrepare.fn.sh --scan-source-changes
-		DistroSourcePrepare.fn.sh --ingest-distro-index-from-source
+		# Scan source repositories and print changed inputs
+		`DistroSourcePrepare.fn.sh --scan-source-changes`
+		# Run full source ingest pipeline (sync + publish)
+		`DistroSourcePrepare.fn.sh --ingest-distro-index-from-source`
 
-	Examples (in OS default shell):
+##  Examples (in OS default shell):
 
-		bash .local/myx/myx.distro-source/sh-scripts/DistroSourcePrepare.fn.sh --help
+		# Show DistroSourcePrepare help from the OS shell
+		`bash .local/myx/myx.distro-source/sh-scripts/DistroSourcePrepare.fn.sh --help`

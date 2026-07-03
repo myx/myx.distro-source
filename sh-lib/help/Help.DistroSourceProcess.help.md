@@ -1,7 +1,7 @@
 📘 syntax: DistroSourceProcess.fn.sh --ingest-distro-index-from-cached
 📘 syntax: DistroSourceProcess.fn.sh <option>
 
-	Options:
+##  Options:
 
 		--ingest-distro-output-from-cached
 			Syncs cached prepared output into output-cache distro state.
@@ -22,11 +22,14 @@
 		--help-syntax
 			Prints command help and syntax information.
 
-	Examples (in Local Console, within workspace context):
+##  Examples (in Local Console, within workspace context):
 
-		DistroSourceProcess.fn.sh --ingest-distro-index-from-cached
-		DistroSourceProcess.fn.sh --clone-prepared-metadata
+		# Run cached output ingest and publish system index
+		`DistroSourceProcess.fn.sh --ingest-distro-index-from-cached`
+		# Clone prepared metadata into output-cache distro state
+		`DistroSourceProcess.fn.sh --clone-prepared-metadata`
 
-	Examples (in OS default shell):
+##  Examples (in OS default shell):
 
-		bash .local/myx/myx.distro-source/sh-scripts/DistroSourceProcess.fn.sh --help
+		# Show DistroSourceProcess help from the OS shell
+		`bash .local/myx/myx.distro-source/sh-scripts/DistroSourceProcess.fn.sh --help`

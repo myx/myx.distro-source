@@ -1,7 +1,7 @@
 📘 syntax: DistroImagePrepare.fn.sh --ingest-distro-index-from-processed
 📘 syntax: DistroImagePrepare.fn.sh <option>
 
-	Options:
+##  Options:
 
 		--ingest-distro-image-from-git
 			Reserved/placeholder option for git-based image ingest.
@@ -15,11 +15,14 @@
 		--rebuild-cached-index
 			Rebuilds cached distro index and refreshes derived index files.
 
-	Examples (in Local Console, within workspace context):
+##  Examples (in Local Console, within workspace context):
 
-		DistroImagePrepare.fn.sh --ingest-distro-index-from-processed
-		DistroImagePrepare.fn.sh --rebuild-cached-index
+		# Ingest processed output-cache index into system index
+		`DistroImagePrepare.fn.sh --ingest-distro-index-from-processed`
+		# Rebuild cached image/source index artifacts
+		`DistroImagePrepare.fn.sh --rebuild-cached-index`
 
-	Examples (in OS default shell):
+##  Examples (in OS default shell):
 
-		bash .local/myx/myx.distro-source/sh-scripts/DistroImagePrepare.fn.sh --help
+		# Show DistroImagePrepare help from the OS shell
+		`bash .local/myx/myx.distro-source/sh-scripts/DistroImagePrepare.fn.sh --help`

@@ -1,6 +1,6 @@
 📘 syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>
 
-	Options:
+##  Options:
 
 		--all-namespaces
 		--list-namespaces
@@ -108,16 +108,21 @@
 			Won't output helpful information on files created and how to use those files, when 
 			`--quiet` option specified.
 
-	Examples (in Local Console, within workspace context):
+##  Examples (in Local Console, within workspace context):
 
-		DistroSourceTools.fn.sh --upgrade-source-tools
+		# Upgrade source tooling from local installer scripts
+		`DistroSourceTools.fn.sh --upgrade-source-tools`
 
-		DistroSourceTools.fn.sh --register-namespace-root myx
+		# Register namespace root myx in workspace metadata
+		`DistroSourceTools.fn.sh --register-namespace-root myx`
 
-		DistroSourceTools.fn.sh --register-namespace-roots lib myx dev pub
+		# Register multiple namespace roots in one command
+		`DistroSourceTools.fn.sh --register-namespace-roots lib myx dev pub`
 
-	Examples (in OS default shell):
+##  Examples (in OS default shell):
 
-		bash .local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --help
+		# Show DistroSourceTools help from the OS shell
+		`bash .local/myx/myx.distro-source/sh-scripts/DistroSourceTools.fn.sh --help`
 
-		bash .local/myx/myx.distro-.local/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools
+		# Upgrade source tooling by invoking the local wrapper script path
+		`bash .local/myx/myx.distro-.local/sh-scripts/DistroSourceTools.fn.sh --upgrade-source-tools`
