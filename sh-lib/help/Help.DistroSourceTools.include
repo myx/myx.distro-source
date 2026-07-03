@@ -1,3 +1,4 @@
+echo "📘 syntax: DistroSourceTools.fn.sh --{system|custom}-config-option <operation>" >&2
 echo "📘 syntax: DistroSourceTools.fn.sh <option>" >&2
 echo "📘 syntax: DistroSourceTools.fn.sh --register-namespace-root <namespace-root-name>" >&2
 echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2

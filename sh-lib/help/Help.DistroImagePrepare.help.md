@@ -15,10 +15,16 @@
 		--rebuild-cached-index
 			Rebuilds cached distro index and refreshes derived index files.
 
+		--help
+		--help-syntax
+			Prints command help and syntax information.
+
 ##  Examples (in Local Console, within workspace context):
 
 		# Ingest processed output-cache index into system index
 		`DistroImagePrepare.fn.sh --ingest-distro-index-from-processed`
+		# Ingest distro image metadata from output cache/state
+		`DistroImagePrepare.fn.sh --ingest-distro-image-from-output`
 		# Rebuild cached image/source index artifacts
 		`DistroImagePrepare.fn.sh --rebuild-cached-index`
 
