@@ -29,7 +29,7 @@ DistroSourceProcess(){
 			local CACHE_ROOT="$MMDAPP/.local/output-cache"
 
 			local NEW_CHANGED="$CACHE_ROOT/new-content.index.txt"
-			if [ ! -s "$NEW_CONTENT" ]; then
+			if [ ! -s "$NEW_CHANGED" ]; then
 				echo "< $MDSC_CMD IngestOutputFromCached.include: 🫙 no new index changes." >&2
 				return 0
 			fi
@@ -86,7 +86,7 @@ DistroSourceProcess(){
 		;;
 		--ingest-distro-index-from-cached)
 			shift
-			DistroSourcePrepare --ingest-distro-output-from-cached
+			DistroSourceProcess --ingest-distro-output-from-cached
 			DistroSourceProcess --ingest-distro-index-from-processed
 			return 0
 		;;
@@ -157,7 +157,7 @@ DistroSourceProcess(){
 			return 0
 		;;
 		--help|--help-syntax)
-			echo "📘 syntax: DistroSourceProcess.fn.sh --ingest-distro-index-from-source" >&2
+			echo "📘 syntax: DistroSourceProcess.fn.sh --ingest-distro-index-from-cached" >&2
 			echo "📘 syntax: DistroSourceProcess.fn.sh <option>" >&2
 			# echo "📘 syntax: DistroSourceProcess.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ] ; then
