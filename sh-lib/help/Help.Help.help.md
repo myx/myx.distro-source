@@ -18,11 +18,11 @@
 
 ##  Examples:
 
-				# Show command summary or full list depending on selected option
+		# Show command summary or full list depending on selected option
 		`Help.fn.sh [--all|--help]`
 
-				# Use the same entry point to request the complete generated help set
+		# Use the same entry point to request the complete generated help set
 		`Help.fn.sh [--all|--help]`
 
-				# Print command help and exit
+		# Print command help and exit
 		`Help.fn.sh --help`

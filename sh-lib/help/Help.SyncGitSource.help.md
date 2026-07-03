@@ -25,9 +25,11 @@
 
 ##  Examples:
 
-					# Sync a project source from its upstream GitHub repository (default branch)
-				`SyncGitSource.fn.sh myx/myx.common/os-myx.common git@github.com:myx/os-myx.common.git`
+		# Sync a project source from its upstream GitHub repository (default branch)
+		`SyncGitSource.fn.sh myx/myx.common/os-myx.common git@github.com:myx/os-myx.common.git`
 
-					# Sync a project source from a specific branch
-				`SyncGitSource.fn.sh myx/myx.common/os-myx.common git@github.com:myx/os-myx.common.git main`
+		# Sync a project source from a specific branch
+		`SyncGitSource.fn.sh myx/myx.common/os-myx.common git@github.com:myx/os-myx.common.git main`
+
+		# Print command help and exit
 		`SyncGitSource.fn.sh --help`

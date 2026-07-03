@@ -31,39 +31,39 @@
 
 ##  Examples:
 
-					# List all declares entries for a project (plain output)
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common`
+		# List all declares entries for a project (plain output)
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common`
 
-					# List declares with project name column
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --print-project`
+		# List declares with project name column
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --print-project`
 
-					# List declares for a platform variant with project name column
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project`
+		# List declares for a platform variant with project name column
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project`
 
-					# List declares for a project using merged sequence view
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --merge-sequence`
+		# List declares for a project using merged sequence view
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --merge-sequence`
 
-					# List merged-sequence declares with project name column
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --merge-sequence`
+		# List merged-sequence declares with project name column
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --merge-sequence`
 
-					# Filter declares by prefix and strip the prefix from output
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --filter-and-cut deploy-export`
+		# Filter declares by prefix and strip the prefix from output
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --filter-and-cut deploy-export`
 
-					# Filter declares by prefix, values only (no project column)
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --print-no-project --filter-and-cut deploy-export`
+		# Filter declares by prefix, values only (no project column)
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common --print-no-project --filter-and-cut deploy-export`
 
-					# Filter merged-sequence declares by prefix with project column
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --filter-and-cut deploy-export --merge-sequence`
+		# Filter merged-sequence declares by prefix with project column
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --filter-and-cut deploy-export --merge-sequence`
 
-					# Filter merged-sequence declares, print-project and print-no-project combined
-				`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-no-project --filter-and-cut deploy-export --merge-sequence`
+		# Filter merged-sequence declares, print-project and print-no-project combined
+		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-no-project --filter-and-cut deploy-export --merge-sequence`
 
-					# List declares for a host-specific project with project name column
-				`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project`
+		# List declares for a host-specific project with project name column
+		`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project`
 
-					# List merged-sequence declares for a host project with project name column
-				`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence`
+		# List merged-sequence declares for a host project with project name column
+		`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence`
 
-					# Same as above with flags in different order
-				`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project`
+		# Same as above with flags in different order
+		`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project`
 		`ListProjectDeclares.fn.sh --help`
