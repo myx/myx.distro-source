@@ -11,11 +11,18 @@ if [ -z "$MMDAPP" ]; then
 fi
 
 if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include"
 	DistroSystemContext --distro-path-auto
 fi
 
 RebuildKnownHosts() {
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.RebuildKnownHosts.include"
+			return 0
+		;;
+	esac
+
 	if [ -z "$MDSC_SOURCE" ]; then
 		echo "⛔ ERROR: DistroContext is not set!" >&2
 		set +e ; return 1

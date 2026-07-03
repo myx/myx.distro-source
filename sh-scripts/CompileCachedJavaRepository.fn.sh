@@ -4,6 +4,13 @@
 : "${MMDAPP:?⛔ ERROR: MMDAPP is not set}"
 
 CompileCachedJavaRepository(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CompileCachedJavaRepository.include"
+			return 0
+		;;
+	esac
+
 	REPO_NAME=$1; shift
 	REPO_JAVA="$MMDAPP/.local/output-cache/$REPO_NAME"
 

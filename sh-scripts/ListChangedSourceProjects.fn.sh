@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListChangedSourceProjects(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListChangedSourceProjects.include"
+			return 0
+		;;
+	esac
 
 	set -e
 
@@ -53,7 +59,7 @@ case "$0" in
 	*/sh-scripts/ListChangedSourceProjects.fn.sh) 
 
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
 		fi
 

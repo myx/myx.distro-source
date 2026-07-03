@@ -5,6 +5,13 @@
 
 CompileCachedJavaProject(){
 
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CompileCachedJavaProject.include"
+			return 0
+		;;
+	esac
+
 	local MDSC_CMD='CompileCachedJavaProject'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
 	

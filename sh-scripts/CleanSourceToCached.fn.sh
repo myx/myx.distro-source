@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 CleanSourceToCached(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanSourceToCached.include"
+			return 0
+		;;
+	esac
 
 	echo "CleanSourceToCached: 🧻 Cleaning Output directory" >&2
 	rm -rf "$MMDAPP/cached" # << old location

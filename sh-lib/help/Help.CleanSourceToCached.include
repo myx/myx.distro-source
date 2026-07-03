@@ -1,0 +1,5 @@
+echo "syntax: CleanSourceToCached.fn.sh" >&2
+echo "syntax: CleanSourceToCached.fn.sh [--help]" >&2
+if [ "$1" = "--help" ]; then
+	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanSourceToCached.help.md" >&2
+fi

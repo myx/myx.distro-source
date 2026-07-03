@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 CleanCachedToOutput(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanCachedToOutput.include"
+			return 0
+		;;
+	esac
 
 	echo "CleanCachedToOutput: 🧻 Cleaning Output directory" >&2
 	rm -rf "$MMDAPP/output" "$MMDAPP/.local/output-cache"

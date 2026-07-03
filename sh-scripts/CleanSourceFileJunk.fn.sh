@@ -12,6 +12,13 @@ fi
 
 # delete macOS junk files & dirs, and only remove unwanted xattrs
 CleanSourceFileJunk(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanSourceFileJunk.include"
+			return 0
+		;;
+	esac
+
 	# myx.common remove/fileJunk --verbose "${1:-$MMDAPP/}"
 
 	local ROOTPATH="${1:-"$MMDAPP/source"}"

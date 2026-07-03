@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 ListProjectDependants(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListProjectDependants.include"
+			return 0
+		;;
+	esac
 
 	local MDSC_CMD='ListProjectDependants'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
@@ -71,6 +77,13 @@ ListProjectDependants(){
 
 case "$0" in
 	*/sh-scripts/ListProjectDependants.fn.sh) 
+		case "$1" in
+			--help|--help-syntax)
+				ListProjectDependants "$@"
+				exit $?
+			;;
+		esac
+
 		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.example.org
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.example.org
 		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
@@ -78,7 +91,7 @@ case "$0" in
 		echo "⛔ ERROR: ListProjectDependants: not implemented?" >&2 ; exit 1
 
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
 		fi
 

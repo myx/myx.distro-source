@@ -1,0 +1,5 @@
+echo "syntax: BuildCachedFromSource.fn.sh [--continue]" >&2
+echo "syntax: BuildCachedFromSource.fn.sh [--help]" >&2
+if [ "$1" = "--help" ]; then
+	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.BuildCachedFromSource.help.md" >&2
+fi

@@ -1,0 +1,6 @@
+echo "syntax: BuildDistroFromSource.fn.sh [--continue]" >&2
+echo "syntax: BuildDistroFromSource.fn.sh [--only|--build-distro-from-output] [--continue]" >&2
+echo "syntax: BuildDistroFromSource.fn.sh [--help]" >&2
+if [ "$1" = "--help" ]; then
+	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.BuildDistroFromSource.help.md" >&2
+fi

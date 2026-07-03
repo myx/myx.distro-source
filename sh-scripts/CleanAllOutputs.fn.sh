@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 CleanAllOutputs(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanAllOutputs.include"
+			return 0
+		;;
+	esac
 
 	echo "CleanAllOutputs: 🧻 Cleaning Output directories" >&2
 	rm -rf \

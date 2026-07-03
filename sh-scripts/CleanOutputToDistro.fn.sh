@@ -8,6 +8,12 @@ if [ -z "$MMDAPP" ] ; then
 fi
 
 CleanOutputToDistro(){
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.CleanOutputToDistro.include"
+			return 0
+		;;
+	esac
 
 	echo "CleanOutputToDistro: 🧻 Cleaning Output directory" >&2
 	rm -rf "$MMDAPP/export" "$MMDAPP/distro"
