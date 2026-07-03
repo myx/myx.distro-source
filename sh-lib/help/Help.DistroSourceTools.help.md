@@ -2,21 +2,31 @@
 
 	Options:
 
+		--all-namespaces
+		--list-namespaces
+		--list-repository-roots
 		--list-namespace-roots
 			Lists names of currently registered root namespaces.
 
+		--all-source-namespaces
+			Lists source namespaces discovered directly from current source tree scan.
+
+		--register-repository-root <namespace-root-name> <distro-fetch-url>|--not-set
 		--register-namespace-root <namespace-root-name> <distro-fetch-url>|--not-set
 			Registers the distro root namespace by (re-)creating corresponding directory
 			in sources root and (re-)creating the `repository.inf` file. This is required
 			for projects being pulled into that root to be treated as projects.
 
+		--unregister-repository-root <namespace-root-name>
 		--unregister-namespace-root <namespace-root-name>
 			Drops root namespace registration, removing root config from internal store 
 			and removing `repository.inf` file from source tree. After that, source directories
 			that are not under any registered namespace roots are ignored in source build 
 			processes.
 
+		--register-repository-roots <namespace-root-name> [<namespace-root-name>...]
 		--register-namespace-roots <namespace-root-name> [<namespace-root-name>...]
+		--unregister-repository-roots <namespace-root-name> [<namespace-root-name>...]
 		--unregister-namespace-roots <namespace-root-name> [<namespace-root-name>...]
 			Registers and unregisters multiple namespace roots at ones. Uses '--not-set' as 
 			namespace public distro fetch url.

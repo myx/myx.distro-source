@@ -27,6 +27,10 @@
 		--build-project-metadata
 			Builds project-level metadata (declares/keywords/provides/requires/sequence).
 
+		--help
+		--help-syntax
+			Prints command help and syntax information.
+
 	Examples (in Local Console, within workspace context):
 
 		DistroSourcePrepare.fn.sh --scan-source-changes

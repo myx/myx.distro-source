@@ -18,6 +18,10 @@
 		--clone-prepared-metadata
 			Clones prepared metadata into output-cache distro state.
 
+		--help
+		--help-syntax
+			Prints command help and syntax information.
+
 	Examples (in Local Console, within workspace context):
 
 		DistroSourceProcess.fn.sh --ingest-distro-index-from-cached

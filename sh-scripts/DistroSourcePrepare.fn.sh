@@ -222,7 +222,7 @@ DistroSourcePrepare(){
 			echo "📘 syntax: DistroSourcePrepare.fn.sh <option>" >&2
 			# echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
 			if [ "$1" = "--help" ]; then
-				cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.text" >&2
+				myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.help.md" >&2
 			fi
 			return 0
 		;;

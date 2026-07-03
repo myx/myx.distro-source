@@ -176,7 +176,7 @@ DistroSourceTools(){
 				echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
 				echo "📘 syntax: DistroSourceTools.fn.sh [--help]" >&2
 				if [ "$1" = "--help" ] ; then
-					cat "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.text" >&2
+					myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.help.md" >&2
 				fi
 				return 0
 			;;
@@ -198,7 +198,7 @@ case "$0" in
 		DistroSystemContext --distro-path-auto
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
-			if [ -z "$1" ] || [ ! -f "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.text" ] ; then
+			if [ -z "$1" ] || [ ! -f "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.help.md" ] ; then
 				echo "📘 syntax: DistroSourceTools.fn.sh --register-namespace-root <namespace-root-name>" >&2
 				echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
 			else
