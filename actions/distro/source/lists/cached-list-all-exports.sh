@@ -5,10 +5,10 @@
 Require ListDistroProjects
 Require ListProjectProvides
 
-local projectName
+projectName=
 ListDistroProjects --all-projects \
 | while read -r projectName; do
 	for ITEM in $( ListProjectProvides "$projectName" --print-no-project --filter-and-cut deploy-export ) ; do
-		echo "$projectName: $( echo $ITEM | tr '\\' ' ' | sed "s|:| |g" )"
+		echo "$projectName: $( printf '%s' "$ITEM" | tr '\\' ' ' | sed "s|:| |g" )"
 	done
 done
