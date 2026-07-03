@@ -171,13 +171,7 @@ DistroSourceTools(){
 				return 0
 			;;
 			--help|--help-syntax)
-				echo "📘 syntax: DistroSourceTools.fn.sh <option>" >&2
-				echo "📘 syntax: DistroSourceTools.fn.sh --register-namespace-root <namespace-root-name>" >&2
-				echo "📘 syntax: DistroSourceTools.fn.sh --upgrade-source-tools" >&2
-				echo "📘 syntax: DistroSourceTools.fn.sh [--help]" >&2
-				if [ "$1" = "--help" ] ; then
-					myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.help.md" >&2
-				fi
+				. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceTools.include"
 				return 0
 			;;
 			*)

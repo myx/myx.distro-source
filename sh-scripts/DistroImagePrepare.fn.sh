@@ -105,12 +105,7 @@ DistroImagePrepare(){
 			return 0
 		;;
 		--help|--help-syntax)
-			echo "📘 syntax: DistroImagePrepare.fn.sh --ingest-distro-index-from-processed" >&2
-			echo "📘 syntax: DistroImagePrepare.fn.sh <option>" >&2
-			# echo "📘 syntax: DistroImagePrepare.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroImagePrepare.help.md" >&2
-			fi
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroImagePrepare.include"
 			return 0
 		;;
 		*)

@@ -157,12 +157,7 @@ DistroSourceProcess(){
 			return 0
 		;;
 		--help|--help-syntax)
-			echo "📘 syntax: DistroSourceProcess.fn.sh --ingest-distro-index-from-cached" >&2
-			echo "📘 syntax: DistroSourceProcess.fn.sh <option>" >&2
-			# echo "📘 syntax: DistroSourceProcess.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ] ; then
-				myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceProcess.help.md" >&2
-			fi
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourceProcess.include"
 			return 0
 		;;
 		*)

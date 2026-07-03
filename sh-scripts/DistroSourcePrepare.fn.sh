@@ -218,12 +218,7 @@ DistroSourcePrepare(){
 			return 0
 		;;
 		--help|--help-syntax)
-			echo "📘 syntax: DistroSourcePrepare.fn.sh --ingest-distro-index-from-source" >&2
-			echo "📘 syntax: DistroSourcePrepare.fn.sh <option>" >&2
-			# echo "📘 syntax: DistroSourcePrepare.fn.sh [--help]" >&2
-			if [ "$1" = "--help" ]; then
-				myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.help.md" >&2
-			fi
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.DistroSourcePrepare.include"
 			return 0
 		;;
 		*)
