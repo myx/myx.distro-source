@@ -10,6 +10,7 @@ Default build steps (order in which operations are performed. Source: 1..3, Dist
 				output contains all actual meta-data.
 	3xxx - image-prepare, output to distro (mode: image, prepare | util)
 				distro contains indices and exported items (in their project's locations)
+				(reserved alt name: source-publish - not yet wired to a runner)
 	4xxx - image-process, distro to deploy (mode: image, process | util)
 				share repositories
 	5xxx - image-install, distro to deploy (mode: image, install | util)
@@ -27,6 +28,41 @@ Project Files & Folders (following masks have fixed meaning in the root folder o
 	builders/image-install/5???-* - builders to work on project sets while building image-install
 	sh-libs/**
 	sh-scripts/**
+
+Project Properties (`project.inf`; full file-format grammar - escaping, line
+continuation, encoding - documented in
+`myx.distro-.local/sh-lib/help/Man.Project.Inf.file.help.md`):
+
+	Name       - project name; matches the folder name (may include path/group).
+	Title      - one-line human description.
+	Requires   - other projects/Provides values this project depends on.
+	Provides   - values inherited by every project that Requires this one.
+	Declares   - values that apply to this project only, never inherited.
+	Keywords   - search terms for --select-keywords selectors.
+	Augments   - soft dependency hint (e.g. developer-sdk:recommended); doesn't gate builds.
+	Suggests   - optional related projects; informational only.
+	Replaces   - projects this one supersedes.
+
+Example (myx.distro-source/project.inf):
+
+	Name: myx.distro-source
+	Title: Distro builder package, prepare distro indices
+	Augments: developer-sdk:recommended
+	Provides: myx/myx.distro-source distro-source
+	Declares: \
+		distro-image-sync:source-prepare-pull:repo:myx/myx.distro-source::git@github.com:myx/myx.distro-source.git \
+
+Example with Requires and a multi-value Provides (myx.distro-deploy/project.inf):
+
+	Name: myx.distro-deploy
+	Title: Basic distro package management tools
+	Requires: \
+		myx/myx.distro-source \
+		lib/lib.apache-commons-compress \
+	Provides: \
+		myx/myx.distro-deploy \
+		build-tool:pack.jar \
+		build-tool:pack.tbz \
 
 Builders Examples (actual builders, relative to the root of the workspace):
 
