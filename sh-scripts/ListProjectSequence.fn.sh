@@ -28,14 +28,15 @@ ListProjectSequence(){
 	local projectName=
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
+	local MDSC_LP=
+
 	while true ; do
 		. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptions.include"
 		case "$1" in
 			--print-project)
 				shift
-				
-				ListProjectSequence --project "$projectName" "$@" | sed "s|^|$projectName |g"
-				return 0
+				MDSC_LP="$projectName "
+				continue
 			;;
 			--print-declares|--print-keywords|--print-provides)
 				[ -z "$2" ] || {
@@ -43,10 +44,10 @@ ListProjectSequence(){
 					set +e ; return 1
 				}
 				local idx="${1#'--print-'}"; shift
-				DistroSystemContext --index-${idx}-merged awk -v prj="$projectName" '
-					$1 == prj && !x[$3]++ { print $2, $3; }
+				DistroSystemContext --index-${idx}-merged awk -v prj="$projectName" -v lp="$MDSC_LP" '
+					$1 == prj && !x[$3]++ { print lp $2, $3; }
 				'
-		
+
 				return 0
 			;;
 			'')
@@ -65,7 +66,7 @@ ListProjectSequence(){
 	fi
 
 	DistroSystemContext --project-index-sequence "$projectName" \
-	awk '!x[$2] { print $2 }'
+	awk -v lp="$MDSC_LP" '!x[$2] { print lp $2; }'
 
 }
 

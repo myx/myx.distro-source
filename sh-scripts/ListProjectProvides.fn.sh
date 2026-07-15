@@ -17,19 +17,19 @@ ListProjectProvides(){
 	local projectName=
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
-	local filterProjects=""
+	local filterProjects="" MDSC_LP=
 
 	while true ; do
 		case "$1" in
 			--print-no-project|--print-provides-only)
 				shift
-				ListProjectProvides "$projectName" "$@" | awk '!x[$2]++ {print $2}'
+				ListProjectProvides "$projectName" --print-project "$@" | awk '!x[$2]++ { print $2; }'
 				return 0
 			;;
 			--print-project)
-				shift; [ -n "$1" ] || break
-				ListProjectProvides "$projectName" "$@" # | sed "s|^|$projectName |g"
-				return 0
+				shift
+				MDSC_LP="$projectName "
+				continue
 			;;
 			--filter-and-cut)
 				if [ -z "$2" ] ; then
@@ -42,7 +42,7 @@ ListProjectProvides(){
 					DistroSystemContext --project-index-provides "$projectName" \
 					awk -v filter="${filter%:}" '
 						BEGIN { pref = filter ":"; plen = length(pref) }
-						substr($2, 1, plen) == pref && !seen[$0]++ { print $1 " " substr($2, plen + 1) }
+						substr($2, 1, plen) == pref && !seen[$0]++ { print $1 " " substr($2, plen + 1); }
 					'
 					return 0
 				fi
@@ -63,7 +63,7 @@ ListProjectProvides(){
 					awk '
 						{
 							out = $2 " " $3
-							if (!seen[out]++) { print out }
+							if (!seen[out]++) { print out; }
 						}
 					'
 					return 0
@@ -91,7 +91,12 @@ ListProjectProvides(){
 		set +e ; return 1
 	fi
 
-	DistroSystemContext --project-index-provides "$projectName" "${1:-cat}" "${@:2}"
+	if [ -n "$MDSC_LP" ] ; then
+		DistroSystemContext --project-index-provides "$projectName" cat
+		return 0
+	fi
+
+	DistroSystemContext --project-index-provides "$projectName" awk '!x[$2]++ { print $2; }'
 	return 0
 }
 

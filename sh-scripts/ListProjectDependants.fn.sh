@@ -26,58 +26,40 @@ ListProjectDependants(){
 	local projectName=
 	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.UseStandardOptionsRequireProject.include" || return $?
 
-	if [ "$MDSC_NO_CACHE" != "--no-cache" ] ; then
-		local cacheFile="$MDSC_CACHED/$projectName/project-dependants.txt"
-		local buildDate="$MDSC_CACHED/build-time-stamp.txt"
-		if [ -f "$cacheFile" ] && [ -f "$buildDate" ] && [ ! "$cacheFile" -ot "$buildDate" ] ; then
-			[ -z "$MDSC_DETAIL" ] || echo "| $MDSC_CMD: $projectName: using cached ($MDSC_OPTION)" >&2
-			cat "$cacheFile"
-			return 0
-		fi
-		if [ -n "$MDSC_CACHED" ] && [ -d "$MDSC_CACHED" ] ; then
-			echo "$MDSC_CMD: $projectName: caching projects ($MDSC_OPTION)" >&2
-			ListProjectDependants "$projectName" --no-cache | tee "$cacheFile"
-			return 0
-		fi
-	fi
-	
-	local indexFile="$MDSC_CACHED/$projectName/project-index.env.inf"
-	if [ "0" = "1" ] && [ -n "$MDSC_CACHED" ] && [ -f "$indexFile" ] && \
-		( [ -z "$BUILD_STAMP" ] || [ ! "$BUILD_STAMP" -gt "`date -u -r "$indexFile" "+%Y%m%d%H%M%S"`" ] ) ; then
-		
-		echo "$MDSC_CMD: $projectName: using index ($MDSC_OPTION)" >&2
-	
-		local FILTER="$1"
-		if test -z "$FILTER" ; then
-			for ITEM in `grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
-				echo $ITEM
-			done
-		else
-			for ITEM in `grep "^PRJ-SEQ-$projectName=" "$indexFile" | sed "s,^.*=,,g" | sort` ; do
-				if test "$ITEM" != "${ITEM#${FILTER}:}" ; then
-					echo ${ITEM#${FILTER}:} | tr "|" "\n"
-				fi
-			done
-		fi
-		return 0
-	fi
-	
-	if [ "0" = "1" ] && [ -f "$MDSC_SOURCE/$projectName/project.inf" ] ; then
-		echo "$MDSC_CMD: $projectName: extracting from source (java) ($MDSC_OPTION)" >&2
+	local MDSC_LP=
 
-		Require DistroSourceCommand
-		
-		DistroSourceCommand \
-			-q \
-			--import-from-source \
-			--select-project "$projectName" \
-			--select-dependants \
-			--print-sequence
-		return 0
-	fi
-	
-	echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
-	set +e ; return 1
+	while true ; do
+		case "$1" in
+			--print-project)
+				shift
+				MDSC_LP="$projectName "
+				continue
+			;;
+			--line-prefix)
+				if [ -z "$2" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: $1: prefix value is expected!" >&2
+					set +e ; return 1
+				fi
+				MDSC_LP="$2"; shift 2
+				continue
+			;;
+			'')
+				break
+			;;
+			*)
+				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				set +e ; return 1
+			;;
+		esac
+	done
+
+	# distro-wide sequence index holds "<project> <transitively-required-project>" pairs
+	# (built from Requires/Provides); a dependant of $projectName is any project whose
+	# pair's second column is $projectName - i.e. this is that column's inverse.
+	DistroSystemContext --index-sequence awk -v prj="$projectName" -v lp="$MDSC_LP" '
+		$2 == prj && $1 != prj && !seen[$1]++ { print lp $1; }
+	'
+	return 0
 }
 
 case "$0" in

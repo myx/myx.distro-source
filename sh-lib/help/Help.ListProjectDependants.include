@@ -1,4 +1,4 @@
-echo "📘 syntax: ListProjectDependants.fn.sh <project-name> [--no-cache]" >&2
+echo "📘 syntax: ListProjectDependants.fn.sh [--no-cache] <project-name> [--print-project]" >&2
 echo "📘 syntax: ListProjectDependants.fn.sh [--help]" >&2
 if [ "$1" = "--help" ]; then
 	myx.common lib/catMarkdown "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.ListProjectDependants.help.md" >&2

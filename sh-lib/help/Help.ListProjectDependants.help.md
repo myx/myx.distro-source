@@ -1,4 +1,4 @@
-📘 syntax: ListProjectDependants.fn.sh <project-name> [--no-cache]
+📘 syntax: ListProjectDependants.fn.sh [--no-cache] <project-name> [--print-project]
 📘 syntax: ListProjectDependants.fn.sh [--help]
 
 ##  Summary:
@@ -12,6 +12,9 @@
 			Project to query reverse dependencies for.
 
 ##  Options:
+
+		--print-project
+			Prefixes each output row with original project name.
 
 		--no-cache
 			Bypasses cached dependant list and rebuilds from current index metadata.
@@ -40,4 +43,4 @@
 
 
 		# Typical function-level usage via dispatcher
-		`Distro ListProjectDependants myx/myx.distro-system --no-cache`
+		`Distro ListProjectDependants --no-cache myx/myx.distro-system`
