@@ -24,9 +24,6 @@
 
 ##  Notes:
 
-		Direct script execution currently contains an existing not-implemented guard for
-		non-help paths.
-
 		Command parsing also accepts standard context/project selector options from
 		SystemContext.UseStandardOptionsRequireProject.include.
 
