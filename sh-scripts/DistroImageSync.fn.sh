@@ -218,9 +218,18 @@ DistroImageSync(){
 					| sort -u \
 				)"
 
-				Distro ListDistroProjects --all-projects \
-				| sort -u \
-				| grep -Fvx -f <( printf '%s\n' "$knownProjects" )
+				awk '
+					NR==FNR { if ($0 != "") covered[$0]=1; next }
+					{
+						proj = $0
+						for (t in covered) {
+							if (proj == t || index(proj, t "/") == 1) next
+						}
+						print proj
+					}
+				' \
+					<( printf '%s\n' "$knownProjects" ) \
+					<( Distro ListDistroProjects --all-projects | sort -u )
 
 				return 0
 			;;
