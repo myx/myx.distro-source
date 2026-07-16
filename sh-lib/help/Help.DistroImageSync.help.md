@@ -2,6 +2,8 @@
 📘 syntax: DistroImageSync.fn.sh [<selector-options>] <project-selector> <operation>
 📘 syntax: DistroImageSync.fn.sh [<selector-options>] --all-tasks --{print|execute}-source-{prepare-pull|process-push}
 📘 syntax: DistroImageSync.fn.sh [<selector-options>] --all-tasks --{print|execute}-image-{prepare-pull|process-push|install-pull}
+📘 syntax: DistroImageSync.fn.sh --list-orphaned-projects
+📘 syntax: DistroImageSync.fn.sh --script-prune-orphaned-projects
 📘 syntax: DistroImageSync.fn.sh [--help]
 
 ##  Summary:
@@ -36,6 +38,17 @@
 
 		--print-repo-list
 			Prints repository triplets derived from task list.
+
+		--list-orphaned-projects
+			Prints projects present in the source tree (per ListDistroProjects --all-projects)
+			that are covered by no repo:/list: distro-image-sync directive across any project.inf
+			(any stage). Pure existence/coverage check, no git status involved. Needs no project
+			selector.
+
+		--script-prune-orphaned-projects
+			Runs --list-orphaned-projects, then for each orphaned path prints an executable
+			'rm -rf <path>' line if it's a clean git checkout, or a '# skip (dirty|no-git): <path>'
+			comment line otherwise. Only prints — never deletes anything itself.
 
 		--script-from-stdin-repo-list [syncMode]
 			Reads stdin repo triplets and prints generated sync script.

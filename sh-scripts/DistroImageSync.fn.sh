@@ -201,6 +201,51 @@ DistroImageSync(){
 
 				return 0
 			;;
+			--list-orphaned-projects)
+				shift
+				if [ -n "$1" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --list-orphaned-projects option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+
+				local knownProjects
+
+				knownProjects="$( \
+					DistroImageSync --intern-print-all-tasks \
+					| DistroImageSync --intern-print-unroll-tasks-from-stdin \
+					| DistroImageSync --intern-print-repo-list-from-stdin \
+					| awk '{ print $1 }' \
+					| sort -u \
+				)"
+
+				Distro ListDistroProjects --all-projects \
+				| sort -u \
+				| grep -Fvx -f <( printf '%s\n' "$knownProjects" )
+
+				return 0
+			;;
+			--script-prune-orphaned-projects)
+				shift
+				if [ -n "$1" ] ; then
+					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --script-prune-orphaned-projects option ($MDSC_OPTION, $@)" >&2
+					set +e ; return 1
+				fi
+
+				local orphanPath
+
+				DistroImageSync --list-orphaned-projects \
+				| while read -r orphanPath ; do
+					if [ ! -d "$MDSC_SOURCE/$orphanPath/.git" ] ; then
+						printf '# skip (no-git): %q\n' "$MDSC_SOURCE/$orphanPath"
+					elif [ -z "$( git -C "$MDSC_SOURCE/$orphanPath" status --porcelain 2>/dev/null )" ] ; then
+						printf 'rm -rf %q\n' "$MDSC_SOURCE/$orphanPath"
+					else
+						printf '# skip (dirty): %q\n' "$MDSC_SOURCE/$orphanPath"
+					fi
+				done
+
+				return 0
+			;;
 			--script-from-stdin-repo-list)
 				shift
 				(
