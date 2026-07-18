@@ -219,7 +219,7 @@ See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file
 The 'distro-deploy' could be updated/cloned from compiled version without pulling and processing source files.
 
 (todo) During this stage one of the following actions available:
-- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-deploy')
+- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-system')
 - `DistroImagePublish` -- export images pre-built locally (command provided by 'distro-source')
 
 The 'distro-source' is:
