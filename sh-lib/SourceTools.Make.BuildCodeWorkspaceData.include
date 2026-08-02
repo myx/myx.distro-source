@@ -119,6 +119,11 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-remote/sh-lib/RemoteTools.Make.VSCodeTasksFragment.include"
 				}
 			)
+			$(
+				[ ! -x "$MMDAPP/DistroAgentsConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeTasksFragment.include" ] || {
+					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeTasksFragment.include"
+				}
+			)
 			{
 				"label": "⬇️ Pull/Sync All Known Sources...",
 				"type": "shell",
