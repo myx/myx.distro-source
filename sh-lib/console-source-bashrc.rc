@@ -31,6 +31,7 @@ PATH=$(
     "$MDLT_ORIGIN/myx/myx.distro-source/sh-scripts" \
     "$MDLT_ORIGIN/myx/myx.distro-system/sh-scripts" \
     "$MDLT_ORIGIN/myx/myx.distro-deploy/sh-scripts" \
+    "$MDLT_ORIGIN/myx/myx.distro-agents/sh-scripts" \
     "$MDLT_ORIGIN/myx/myx.distro-.local/sh-scripts"
 )
 
