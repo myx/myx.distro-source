@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ^^^ for syntax checking in the editor only
 
-local WS_NAME="$( basename "$MMDAPP" ).code-workspace"
+local WS_NAME="${MMDAPP##*/}.code-workspace"
 local WS_FILE="$MMDAPP/$WS_NAME"
 
 local REPOS="$( 

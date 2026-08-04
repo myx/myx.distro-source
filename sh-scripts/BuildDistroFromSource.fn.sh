@@ -70,13 +70,13 @@ BuildDistroFromSource(){
 			set -e
 			
 			local BUILDER="$1"
-			echo "BuildDistroFromSource: $( basename $BUILDER ) builder started" >&2
+			echo "BuildDistroFromSource: ${BUILDER##*/} builder started" >&2
 			#### want to run in separate process anyways
 			if ( set -e -o pipefail ; . "$BUILDER" ) 1>&2 ; then
-				echo "BuildDistroFromSource: $( basename $BUILDER ) builder done." >&2
+				echo "BuildDistroFromSource: ${BUILDER##*/} builder done." >&2
 				return 0
 			fi
-			echo "⛔ ERROR: BuildDistroFromSource: $( basename $BUILDER ) failed!" >&2
+			echo "⛔ ERROR: BuildDistroFromSource: ${BUILDER##*/} failed!" >&2
 			if [ -z "$MDSC_BUILD_CONTINUE" ]; then
 				set +e ; return 1
 			fi
@@ -126,7 +126,7 @@ BuildDistroFromSource(){
 		printf '\t%s\n' $BUILDERS >&2
 		
 		for BUILDER in $BUILDERS ; do
-			Prefix "s $( basename $BUILDER )" RebuildDistroFromOutputBuilderRaw "$BUILDER"
+			Prefix "s ${BUILDER##*/}" RebuildDistroFromOutputBuilderRaw "$BUILDER"
 			wait
 		done
 

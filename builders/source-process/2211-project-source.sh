@@ -37,8 +37,8 @@ MakeProjectSourceArchive(){
 	
 	local CHECK_DIR="$MDSC_SOURCE/$projectName"
 	local BUILT_DIR="$MDSC_OUTPUT/distro/$projectName"
-	local BASE_ROOT="`dirname "$CHECK_DIR"`"
-	local PACK_ROOT="`basename "$CHECK_DIR"`"
+	local BASE_ROOT="${CHECK_DIR%/*}"
+	local PACK_ROOT="${CHECK_DIR##*/}"
 	mkdir -p "$BUILT_DIR"
 	tar -czvf "$BUILT_DIR/project-source.tgz" \
 		${TAR_ARGS_GENERIC-} \

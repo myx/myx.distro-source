@@ -42,13 +42,13 @@ BuildOutputFromCached(){
 			set -e
 			
 			local BUILDER="$1"
-			echo "BuildOutputFromCached: $( basename $BUILDER ) builder started" >&2
+			echo "BuildOutputFromCached: ${BUILDER##*/} builder started" >&2
 			#### want to run in separate process anyways
 			if ( set -e -o pipefail ; . "$BUILDER" ) 1>&2 ; then
-				echo "BuildOutputFromCached: $( basename $BUILDER ) builder done." >&2
+				echo "BuildOutputFromCached: ${BUILDER##*/} builder done." >&2
 				return 0
 			fi
-			echo "⛔ ERROR: BuildOutputFromCached: $( basename $BUILDER ) failed!" >&2
+			echo "⛔ ERROR: BuildOutputFromCached: ${BUILDER##*/} failed!" >&2
 			if [ -z "$MDSC_BUILD_CONTINUE" ]; then
 				set +e ; return 1
 			fi
@@ -96,7 +96,7 @@ BuildOutputFromCached(){
 		printf '\t%s\n' $BUILDERS >&2
 		
 		for BUILDER in $BUILDERS ; do
-			Prefix "c $( basename $BUILDER )" RebuildOutputFromCachedBuilderRaw "$BUILDER"
+			Prefix "c ${BUILDER##*/}" RebuildOutputFromCachedBuilderRaw "$BUILDER"
 			wait
 		done
 

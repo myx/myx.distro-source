@@ -70,7 +70,7 @@ RebuildActions(){
 		
 		printf "Processing: %s \n \t \t ^ %s\n" "${actionLocation#$TMP_DIR/}" "${actionFullName}" >&2
 
-		mkdir -p "$( dirname "$actionLocation" )"
+		mkdir -p "${actionLocation%/*}"
 
 		case "$actionFullName" in
 			*.sh)

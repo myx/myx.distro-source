@@ -37,7 +37,7 @@ CheckMakeProjectHostTarball(){
 	
 	if [ -d "$SRC/host/tarball" ] ; then
 		local BUILT_DIR="$MDSC_OUTPUT/distro/$projectName"
-		local PACK_ROOT="`basename "$projectName"`"
+		local PACK_ROOT="${projectName##*/}"
 		mkdir -p "$BUILT_DIR"
 		
 		( \
