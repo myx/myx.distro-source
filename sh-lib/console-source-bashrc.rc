@@ -156,7 +156,7 @@ complete -F Distro \
 
 export LANG=en_US.UTF-8
 
-PROMPT_COMMAND='set +ex ; history -w; history -r ; PS1="$( Source --shell-prompt ): '"$PS1"'"'
+PROMPT_COMMAND='set +e ; history -w; history -r ; PS1="$( Source --shell-prompt ): '"$PS1"'"'
 
 export PATH
 
