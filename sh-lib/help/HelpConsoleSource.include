@@ -1,11 +1,9 @@
 echo "'Source' command runs source-stage distro commands in current Source context." >&2
 echo "📘 syntax: Source <distro-source-command-name> [<arguments>...]" >&2
 echo "📘 syntax: Source --help" >&2
-echo "📘 syntax: Source --info" >&2
 echo >&2
 echo "	Options:" >&2
 echo "		--help  Print this help text." >&2
-echo "		--info  Print current Source context variables." >&2
 echo >&2
 echo "	Info:" >&2
 echo "		MMDAPP ROOT: $MMDAPP" >&2

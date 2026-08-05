@@ -4,7 +4,7 @@
 [ -z "$MDLT_ORIGIN" ] && echo "SourceConsole: Working in $MMDAPP" >&2
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" 
 
-[ -z "MDSC_ARGUMENTS" ] || {
+[ -z "$MDSC_ARGUMENTS" ] || {
 	set -- $MDSC_ARGUMENTS
 	export MDSC_ARGUMENTS=""
 }
@@ -145,7 +145,7 @@ complete -W "Help Require" \
          -o default -o filenames \
          "*"
 
-for f in "$MDLT_ORIGIN"/myx/myx.distro-{source,deploy,remote,system,.local}/sh-scripts/*.fn.sh; do
+for f in "$MDLT_ORIGIN"/myx/myx.distro-{source,deploy,remote,system,agents,.local}/sh-scripts/*.fn.sh; do
   [ -x "$f" ] || continue
 	complete -F Distro "${f##*/}"
 done
