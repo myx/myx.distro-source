@@ -1,9 +1,18 @@
 echo "'Source' command runs source-stage distro commands in current Source context." >&2
 echo "📘 syntax: Source <distro-source-command-name> [<arguments>...]" >&2
 echo "📘 syntax: Source --help" >&2
+echo "📘 syntax: Source --start-console [args...]" >&2
+echo "📘 syntax: Source --start-<subsystem>-tools-console [args...]" >&2
+echo "📘 syntax: Source --shell-prompt" >&2
 echo >&2
 echo "	Options:" >&2
 echo "		--help  Print this help text." >&2
+echo "		--help-syntax  Alias for --help." >&2
+echo "		--start-console  Start source interactive tools console." >&2
+echo "		--start-source-tools-console  Alias for --start-console." >&2
+echo "		--start-local-tools-console  Start local tools console from source context." >&2
+echo "		--start-<subsystem>-tools-console  Start another installed subsystem console." >&2
+echo "		--shell-prompt  Print prompt template for interactive console rendering." >&2
 echo >&2
 echo "	Info:" >&2
 echo "		MMDAPP ROOT: $MMDAPP" >&2
