@@ -100,15 +100,11 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 	"tasks" : {
 		"version": "2.0.0",
 		"tasks": [
-			{
-				"label": "🖥️ Start Source Console...",
-				"type": "shell",
-				"command": "bash '$MMDAPP/DistroSourceConsole.sh'",
-				"group": { 
-					"kind": "build", 
-					"isDefault": true 
+			$(
+				[ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/SourceTools.Make.VSCodeTasksFragment.include" ] || {
+					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-source/sh-lib/SourceTools.Make.VSCodeTasksFragment.include"
 				}
-			},
+			)
 			$(
 				[ ! -x "$MMDAPP/DistroDeployConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeTasksFragment.include" ] || {
 					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeTasksFragment.include"
@@ -124,42 +120,6 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeTasksFragment.include"
 				}
 			)
-			{
-				"label": "⬇️ Pull/Sync All Known Sources...",
-				"type": "shell",
-				"command": "bash -c 'echo \"Distro DistroImageSync --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
-				"group": { 
-					"kind": "build", 
-					"isDefault": true 
-				}
-			},
-			{
-				"label": "📥 Re-Build Source Index Snapshot (cached from source)...",
-				"type": "shell",
-				"command": "bash -c 'echo \"BuildCachedFromSource.fn.sh\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
-				"group": { 
-					"kind": "build", 
-					"isDefault": true 
-				}
-			},
-			{
-				"label": "🛫 Ingest Source Changes...",
-				"type": "shell",
-				"command": "bash -c 'echo \"Distro DistroSourcePrepare --ingest-distro-index-from-source\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
-				"group": { 
-					"kind": "build", 
-					"isDefault": true 
-				}
-			},
-			{
-				"label": "🛠️ Update Local Tools...",
-				"type": "shell",
-				"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --upgrade-installed-tools",
-				"group": { 
-					"kind": "build", 
-					"isDefault": true 
-				}
-			}
 		]
 	}
 }

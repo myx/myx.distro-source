@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+cat <<CODEWORKSPACE
+			{
+				"label": "🖥️ Start Source Console...",
+				"type": "shell",
+				"command": "bash '$MMDAPP/DistroSourceConsole.sh'",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				}
+			},
+			{
+				"label": "⬇️ Pull/Sync All Known Sources...",
+				"type": "shell",
+				"command": "bash -c 'echo \"Distro DistroImageSync --all-tasks --execute-source-prepare-pull\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				}
+			},
+			{
+				"label": "📥 Re-Build Source Index Snapshot (cached from source)...",
+				"type": "shell",
+				"command": "bash -c 'echo \"BuildCachedFromSource.fn.sh\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				}
+			},
+			{
+				"label": "🛫 Ingest Source Changes...",
+				"type": "shell",
+				"command": "bash -c 'echo \"Distro DistroSourcePrepare --ingest-distro-index-from-source\" | $MMDAPP/DistroSourceConsole.sh --non-interactive'",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				}
+			},
+			{
+				"label": "🛠️ Update Local Tools...",
+				"type": "shell",
+				"command": "bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --upgrade-installed-tools",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				}
+			},
+CODEWORKSPACE
