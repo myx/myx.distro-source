@@ -20,6 +20,8 @@ local NEW_PROJECTS="$MMDAPP/.local/source-cache/new-projects.index.txt.$TMP_SUFF
 local ALL_NAMESPACES="$MMDAPP/.local/source-cache/all-namespaces.index.txt"
 local NEW_NAMESPACES="$MMDAPP/.local/source-cache/new-namespaces.index.txt.$TMP_SUFFIX"
 
+mkdir -p "$MMDAPP/.local/temp"
+
 local FIFO="$MMDAPP/.local/temp/scan-source-changes.fifo.$TMP_SUFFIX"
 mkfifo "$FIFO"
 exec 3<> "$FIFO"   # fd 3 is now the pipe

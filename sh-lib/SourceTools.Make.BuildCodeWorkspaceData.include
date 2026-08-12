@@ -82,6 +82,11 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeSettingsFragment.include"
 			}
 		)
+		$(
+			[ ! -x "$MMDAPP/DistroAgentsConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeSettingsFragment.include" ] || {
+				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeSettingsFragment.include"
+			}
+		)
 		"files.exclude": {
 			"📦 Browse: output/**": true,
 			"📝 Browse: source/**": true,
