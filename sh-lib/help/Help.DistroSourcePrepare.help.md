@@ -41,10 +41,15 @@
 
 		# Scan source repositories and print changed inputs
 		`DistroSourcePrepare.fn.sh --scan-source-changes`
-		# Run full source ingest pipeline (sync + publish)
+		# Ingest source changes into the distro index
 		`DistroSourcePrepare.fn.sh --ingest-distro-index-from-source`
 
 ##  Examples (in OS default shell):
 
 		# Show DistroSourcePrepare help from the OS shell
 		`bash .local/myx/myx.distro-source/sh-scripts/DistroSourcePrepare.fn.sh --help`
+
+##  Notes:
+
+		Ingesting source changes is not building the distro repository. See
+		BuildDistroFromSource, which prepares deploy output without sources.

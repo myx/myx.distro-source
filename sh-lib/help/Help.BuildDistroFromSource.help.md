@@ -4,8 +4,14 @@
 
 ##  Summary:
 
-		Orchestrates the full build pipeline from source ingest to final distro/export
+		Orchestrates the full build pipeline through to the final distro/export
 		artifacts.
+
+##  Notes:
+
+		Builds the distro repository, preparing all output for deploy without sources.
+		This is not the same operation as ingesting source changes — for that, see
+		DistroSourcePrepare.
 
 ##  Arguments:
 
