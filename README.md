@@ -1,49 +1,127 @@
 # myx.distro-source
 
-Default build steps (order in which operations are performed. Source: 1..3, Distro: 4..5):
+Builds a distro image from a workspace source tree. It scans projects, resolves
+what each one requires and provides, runs their builders stage by stage, and
+produces the indices and export packages that `myx.distro-deploy` installs.
 
-	1xxx - source-prepare, source to cached (mode: source, stage: prepare) 
-				cached contains all sources required to build changed 
-				projects and actual meta-data (distro indices: pre-parsed names, 
-				requires, etc...).
-	2xxx - source-process, cached to output (mode: source, stage: process)
-				output contains all actual meta-data.
-	3xxx - image-prepare, output to distro (mode: image, prepare | util)
-				distro contains indices and exported items (in their project's locations)
-				(reserved alt name: source-publish - not yet wired to a runner)
-	4xxx - image-process, distro to deploy (mode: image, process | util)
-				share repositories
-	5xxx - image-install, distro to deploy (mode: image, install | util)
-				deploy tasks are executed upon
+## Getting started
 
+Install the source toolset into a workspace, then open the source console:
 
-Project Files & Folders (following masks have fixed meaning in the root folder of each project):
+	bash .local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh --install-distro-source
+	./DistroSourceConsole.sh
 
-	project.inf - project description file
-	actions/** - usable actions (predefined parameters for other scripts)
-	builders/source-prepare/1???-* - builders to work on project sets while building source-prepare
-	builders/source-process/2???-* - builders to work on project sets while building source-process
-	builders/image-prepare/3???-* - builders to work on project sets while building image-prepare
-	builders/image-process/4???-* - builders to work on project sets while building image-process
-	builders/image-install/5???-* - builders to work on project sets while building image-install
-	sh-libs/**
-	sh-scripts/**
+Inside the console, call a tool by its full name (`.fn.sh` included), or through
+the `Source` or `Distro` dispatcher:
 
-Project Properties (`project.inf`; full file-format grammar - escaping, line
-continuation, encoding - documented in
-`myx.distro-.local/sh-lib/help/Man.Project.Inf.file.help.md`):
+	DistroSourcePrepare.fn.sh --ingest-distro-index-from-source
+	Distro DistroSourcePrepare --ingest-distro-index-from-source
 
-	Name       - project name; matches the folder name (may include path/group).
-	Title      - one-line human description.
-	Requires   - other projects/Provides values this project depends on.
-	Provides   - values inherited by every project that Requires this one.
-	Declares   - values that apply to this project only, never inherited.
-	Keywords   - search terms for --select-keywords selectors.
-	Augments   - soft dependency hint (e.g. developer-sdk:recommended); doesn't gate builds.
-	Suggests   - optional related projects; informational only.
-	Replaces   - projects this one supersedes.
+Run one command without an interactive session:
 
-Example (myx.distro-source/project.inf):
+	echo "Distro DistroImageSync --all-tasks --execute-source-prepare-pull" \
+		| ./DistroSourceConsole.sh --non-interactive
+
+## Common tasks
+
+Pull every configured source repository:
+
+	Distro DistroImageSync --all-tasks --execute-source-prepare-pull
+
+Pick up a local source edit — the narrow, everyday command. It syncs the changed
+projects into the cache and republishes the index, naming each project it
+touched:
+
+	DistroSourcePrepare.fn.sh --ingest-distro-index-from-source
+
+See what the build considers changed before running anything:
+
+	DistroSourcePrepare.fn.sh --scan-source-changes
+	ListChangedSourceProjects.fn.sh
+
+Build the whole pipeline, source through distro:
+
+	BuildDistroFromSource.fn.sh
+
+Rebuild only the final output-to-distro stage:
+
+	BuildDistroFromSource.fn.sh --only
+
+Keep going after a builder fails, instead of stopping at the first error:
+
+	BuildDistroFromSource.fn.sh --continue
+
+Regenerate the workspace `actions/` directory from per-project actions:
+
+	RebuildActions.fn.sh
+
+Clone or update one project from git:
+
+	SyncGitSource.fn.sh <project-name> <git-repository-spec>
+
+Start over from a clean tree:
+
+	CleanAllOutputs.fn.sh
+
+Ingesting source changes is not the same as building the distro. Use
+`DistroSourcePrepare` to refresh the index after an edit, and
+`BuildDistroFromSource` to produce deploy-ready output.
+
+## Build stages
+
+Five stages run in order. Stages 1–3 belong to source, 4–5 to deploy.
+
+| Stage | Builders | Reads | Writes |
+| --- | --- | --- | --- |
+| `source-prepare` | `1???-*` | `source` | `cached` — sources and metadata for changed projects |
+| `source-process` | `2???-*` | `cached` | `output` — current metadata and built packages |
+| `image-prepare` | `3???-*` | `output` | `distro` — indices and exported items |
+| `image-process` | `4???-*` | `distro` | deploy — shared repositories |
+| `image-install` | `5???-*` | `distro` | deploy — deploy tasks executed |
+
+`myx.distro-deploy` documents the last two stages.
+
+## Project layout
+
+These names have fixed meaning in a project's root folder:
+
+	project.inf                     project description file
+	actions/**                      workspace actions this project contributes
+	builders/source-prepare/1???-*  builders run during source-prepare
+	builders/source-process/2???-*  builders run during source-process
+	builders/image-prepare/3???-*   builders run during image-prepare
+	builders/image-process/4???-*   builders run during image-process
+	builders/image-install/5???-*   builders run during image-install
+	sh-libs/**                      shell includes
+	sh-scripts/**                   shell commands added to the console PATH
+
+Workspace folders:
+
+	/source                         source code, all repositories and projects
+	/source/repo[/group]/project    project tree structure
+	/export                         export resources, generated or cloned
+	/distro                         distro structure: indices and exported items
+	/actions                        generated workspace actions, not editable
+	/.local                         installed tools and system integrations
+	/.local/distro-index            generated system index
+	/.local/source-cache            build cache, written before source-prepare
+	/.local/source-cache/sources    synced sources for source-to-distro builders
+	/.local/source-cache/changed    names of projects that need rebuilding
+	/.local/output-cache            generated output products
+
+## project.inf properties
+
+	Name        project name; matches the folder name, path/group included
+	Title       one-line human description
+	Requires    other projects or Provides values this project depends on
+	Provides    values inherited by every project that Requires this one
+	Declares    values that apply to this project only, never inherited
+	Keywords    search terms for --select-keywords selectors
+	Augments    soft dependency hint; does not gate builds
+	Suggests    optional related projects, informational only
+	Replaces    projects this one supersedes
+
+Example:
 
 	Name: myx.distro-source
 	Title: Distro builder package, prepare distro indices
@@ -52,189 +130,100 @@ Example (myx.distro-source/project.inf):
 	Declares: \
 		distro-image-sync:source-prepare-pull:repo:myx/myx.distro-source::git@github.com:myx/myx.distro-source.git \
 
-Example with Requires and a multi-value Provides (myx.distro-deploy/project.inf):
+Backslashes continue a value across lines. For the full file grammar — escaping,
+continuation, encoding — read
+`.local/myx/myx.distro-.local/sh-lib/help/Man.Project.Inf.file.help.md`.
 
-	Name: myx.distro-deploy
-	Title: Basic distro package management tools
-	Requires: \
-		myx/myx.distro-source \
-		lib/lib.apache-commons-compress \
-	Provides: \
-		myx/myx.distro-deploy \
-		build-tool:pack.jar \
-		build-tool:pack.tbz \
+## image-prepare directives
 
-Builders Examples (actual builders, relative to the root of the workspace):
+Put these in a project's `Declares` to shape what image-prepare produces.
 
-	source/myx/myx.distro-source/builders/source-prepare/1000-env-from-source.sh
-	source/myx/myx.distro-source/builders/source-process/2000-env-from-cached.sh
-	source/myx/myx.distro-source/builders/source-process/2899-output-ready.sh
-	source/myx/myx.distro-source/builders/image-prepare/3899-distro-ready.sh
-	source/myx/myx.distro-deploy/builders/image-process/4911-deploy-apply.sh
-	source/myx/myx.distro-deploy/builders/image-install/5911-deploy-apply.sh
+Set a context variable:
 
-Variables (context environment) available in: actions, build-step scripts and console (source mode):
+	image-prepare:context-variable:<name>:{create|change|ensure|insert|append|update|remove|re-set|define|delete}[:<value>...]
+	image-prepare:context-variable:<name>:{import|source}:{.|<projectName>}:<scriptPath>
 
-	MMDAPP - workspace root (something like: "/Volumes/ws-2017/myx-work")
-	MDLT_ORIGIN - source of System (Source or Deploy) Console commands (something like: "/Volumes/ws-2017/myx-work/.local/")
-	MDSC_INMODE - console mode ("source")
-	MDSC_OPTION - console mode settings (something like: "--distro-from-source")
-	MDSC_SOURCE - current source root (something like: "/Volumes/ws-2017/myx-work/source")
-	MDSC_CACHED - current index cache root (something like: "/Volumes/ws-2017/myx-work/.local/system-index")
-	MDSC_OUTPUT - current target root (something like: "/Volumes/ws-2017/myx-work/.local/source-cache/sources")
-	MDSC_DETAIL - debug settings, values: <empty>, "true", "full"
-	useSshUser - override from ssh user calculated from project sequence variables
-	useSshHome - override from ssh home calculated from project sequence variables
-	useSshArgs - extra arguments for ssh connection (something like: "-o ForwardAgent=yes -o AddKeysToAgent=yes")
+	image-prepare:context-variable:HOST_TYPE:re-set:standalone
+	image-prepare:context-variable:LANGUAGES:insert:en
+	image-prepare:context-variable:LANGUAGES:remove:lv
+	image-prepare:context-variable:LANGUAGES:import:.:ssh/rsa.pub
 
-Variables (context environment) specific to build-step scripts:
+Copy source files into the image:
 
-	BUILD_STAMP - current build timestamp (build steps only)
+	image-prepare:sync-source-files:<sourceName>:<directoryPath>:<targetLocation>[:<filterGlob>]
 
-App Folders:
+	image-prepare:sync-source-files:.:src/webapp:data/settings/web
+	image-prepare:sync-source-files:.:src/webapp:data/settings/web:*.html
+	image-prepare:sync-source-files:example/web-app:src/webapp:data/settings/web
 
-	/
-	/source - source codes, all repositories and projects
-	/source/repo[/group]/project - project tree structure
-	/export - export resources (generated or cloned)
-	/distro - distro structure (alternative to /source, BTW)
-	/distro/distro-namespaces.txt - repository names db file (prepared)
-	/distro/build-time-stamp.txt - distro timestamp file (prepared)
-	/distro/distro-index.env.inf - distro index shell-env file (prepared)
-	/actions - workspace actions - non-editable (generated)
-	/.local - system tools, utilities and system integrations
-	/.local/distro-index - system index space (generated)
-	/.local/source-cache - build system cache space (generated), before source-prepare
-	/.local/source-cache/sources - synced source for source->distro builders
-	/.local/source-cache/changed - package names that are changed and need to be built
-	/.local/output-cache - output products (generated)
-	/cached/built - package names that are built
+Clone one source file into many, substituting a placeholder:
 
+	image-prepare:clone-source-file:<sourceName>:<directoryPath>:<sourceFileName>:<targetNamePattern>:<variableName>:<value>...
 
-source-prepare, source-process, image-prepare directives:
+	image-prepare:clone-source-file:.:src/webapp:page-default.html:page-$$$.html:$$$:200:201:204
 
-	image-prepare:context-variable:
-		image-prepare:context-variable:<variableName>:{create|change|ensure|insert|update|remove|re-set|delete}[:<valueNoSpaces>...]
-		image-prepare:context-variable:<variableName>:{create|change|ensure|append|update|remove|define|delete}[:<valueNoSpaces>...]
-		image-prepare:context-variable:<variableName>:{import|source}:{.|<projectName>}:<scriptPath>
+Run a patch script over prepared content:
 
-		image-prepare:context-variable:DPL_HOST_TYPE:re-set:standalone
-		image-prepare:context-variable:DPL_HOST_TYPE:change:guest
-		image-prepare:context-variable:DPL_HOST_TYPE:delete
-		image-prepare:context-variable:DPL_LANGUAGES:re-set:en
-		image-prepare:context-variable:DPL_LANGUAGES:insert:ru
-		image-prepare:context-variable:DPL_LANGUAGES:insert:lv
-		image-prepare:context-variable:DPL_LANGUAGES:update:en
-		image-prepare:context-variable:DPL_LANGUAGES:remove:lv
-		image-prepare:context-variable:DPL_LANGUAGES:import:.:ssh/rsa.pub
-		image-prepare:context-variable:DPL_LANGUAGES:source:.:ssh/rsa.pub
+	image-prepare:source-patch-script:<sourceName>:<sourcePathBase>:<scriptSourceName>:host/scripts/<scriptName>
+	image-prepare:target-patch-script:<scriptSourceName>:host/scripts/<scriptName>:<targetDeployPath>[/*]
 
-		^^^ <sourceName> '.' - this (declarant) project's source
+	image-prepare:source-patch-script:example/web-app:webapp:.:host/scripts/patch-on-deploy.txt
+	image-prepare:target-patch-script:.:host/scripts/patch-on-deploy.txt:/data/settings/web
 
+`<sourceName>` selects whose sources a directive reads:
 
-	image-prepare:sync-source-files:
-		image-prepare:sync-source-files:<sourceName>:<directoryPath>:<targetLocation>[:<filterGlob>]
+	.    this project's own source
+	*    this project and projects derived from it
+	**   every project in the sequence, derived or not
 
-		image-prepare:sync-source-files:cloud-xdxs/web-mp-js-webapp:src/mpa193:data/settings/web/mp.mcafe.ru
-		image-prepare:sync-source-files:cloud-xdxs/web-mp-js-webapp:src/mpa193:data/settings/web/mp.mcafe.ru:*.html
-		image-prepare:sync-source-files:.:src/mpa193:data/settings/web/mp.mcafe.ru
-		image-prepare:sync-source-files:*:src/mpa193:data/settings/web/mp.mcafe.ru
-		image-prepare:sync-source-files:**:src/mpa193:data/settings/web/mp.mcafe.ru
+## Commands
 
-		^^^ <sourceName> '.' - this (declarant) project's source, '*' - this (declarant) and derived projects' sources, '**' - all sequence projects' sources regardless of being derived from declarant
+Pipeline:
 
-	image-prepare:clone-source-file:
-		image-prepare:clone-source-file:<sourceName>:<directoryPath>:<sourceFileName>:<targetNamePattern>:<variableName>:<valueX...>
+- `BuildDistroFromSource.fn.sh` — run the full pipeline through to distro and export artifacts.
+- `BuildCachedFromSource.fn.sh` — stage 1 only: source into `.local/source-cache/prepare`.
+- `BuildOutputFromCached.fn.sh` — stage 2 only: prepared cache into `.local/output-cache`.
+- `DistroSourcePrepare.fn.sh` — scan, sync and ingest source changes into the index.
+- `DistroSourceProcess.fn.sh` — ingest processed output into the index.
+- `DistroImagePrepare.fn.sh` — ingest image metadata and publish the processed index.
 
-		image-prepare:clone-source-file:cloud-xdxs/web-mp-js-webapp:src/ndmpa192:page-default.html:page-$$$.html:$$$:200:201:204
-		image-prepare:clone-source-file:.:src/mpa192:page-default.html:page-$$$.html:$$$:200:201:204
-		image-prepare:clone-source-file:*:src/mpa192:page-default.html:page-$$$.html:$$$:200:201:204
+Inspect:
 
-	image-prepare:source-patch-script:
-		image-prepare:source-patch-script:<sourceName>:<sourcePathBase>:<scriptSourceName>:host/scripts/<scriptName>
+- `ListChangedSourceProjects.fn.sh` — projects marked changed for the next build.
+- `ListProjectSequence.fn.sh` — build sequence for one project.
+- `ListProjectDependants.fn.sh` — projects that depend on one project.
+- `ListProjectProvides.fn.sh` — `Provides` values for one project.
+- `ListProjectDeclares.fn.sh` — `Declares` values for one project.
+- `ListProjectKeywords.fn.sh` — `Keywords` values for one project.
 
-		image-prepare:source-patch-script:cloud-files/web-mp-jswebapp:mpa193:.:host/scripts/nmp-patch-on-deploy.txt
+Maintain:
 
-	image-prepare:target-patch-script:
-		image-prepare:target-patch-script:<scriptSourceName>:host/scripts/<scriptName>:<targetDeployPath>
-		image-prepare:target-patch-script:<scriptSourceName>:host/scripts/<scriptName>:<targetDeployPath>/*
+- `DistroSourceTools.fn.sh` — register namespace roots, set workspace options, upgrade source tools.
+- `SyncGitSource.fn.sh` — clone or update one project from git.
+- `RebuildActions.fn.sh` — regenerate the workspace `actions/` directory.
+- `RebuildKnownHosts.fn.sh` — regenerate workspace `ssh/known_hosts` from project entries.
+- `CompileCachedJavaProject.fn.sh` — compile Java sources for one cached project.
+- `CompileCachedJavaRepository.fn.sh` — compile Java sources for a whole cached repository.
 
-		image-prepare:target-patch-script:.:host/scripts/patch-on-deploy.txt:/data/settings/web
-		image-prepare:target-patch-script:.:host/scripts/patch-on-deploy.txt:/data/www/*
-	
+Clean:
 
+- `CleanAllOutputs.fn.sh` — remove every generated artifact and cache.
+- `CleanSourceToCached.fn.sh` — remove source-cache artifacts.
+- `CleanCachedToOutput.fn.sh` — remove output-stage artifacts, keep source caches.
+- `CleanOutputToDistro.fn.sh` — remove `export` and `distro`, keep earlier stages.
+- `CleanSourceFileJunk.fn.sh` — remove OS junk files and extended attributes from the source tree.
 
-Some Commands:
+## Getting help
 
-	list all provides (features and deploy data):{
-		distro-source.sh --quiet --import-from-source --select-all --print-provides-separate-lines --print ""
-		distro-source.sh --quiet --import-from-cached --select-all --print-provides-separate-lines --print ""
-		distro-source.sh --quiet --import-from-distro --select-all --print-provides-separate-lines --print ""
-		distro-image.sh --output-root ./output --import-from-cached --select-all --print-provides-separate-lines --print ""
-		ListDistroProvides.fn.sh --all-provides
-	}
+- `<Tool>.fn.sh --help` prints full syntax, options and examples for any command above.
+- `Help.fn.sh --all` lists every source command.
+- `Source --help` prints the source-context dispatcher syntax.
+- Press TAB after a command name and a space for shell completion.
 
+## Related packages
 
-
-### Stage: source-prepare:
-
-The 'distro-source' is:
-1. working from 'source' folder
-2. builds indices and syncs data to 'cached' folder
-
-At the start of this stage:
-1. 'source' folder exists
-2. some repositories were configured
-
-At the end of this stage:
-1. 'cached' folder exists and updated with changes in 'source' folder
-2. shell script (sh, bash) readable basic indices created
-3. changed project list updated for '--select-changed' selector
-4. source preprocessing directives executed (like source hash or version increment)
-5. distro actions updated (without cleaning old ones)
-
-
-### Stage: source-process:
-
-The 'distro-source' is:
-1. working from 'cached' folder
-2. builds all data to 'output' folder
-
-At the start of this stage:
-1. 'cached' folder exists
-2. changed project list updated for '--select-changed' selector
-
-At the end of this stage:
-1. 'output' folder exists
-2. distro-image indices created
-3. packages preprocessed and build
-4. export packages and repository contents updated
-5. distro actions updated (without cleaning old ones)
-
-
-### Stage: image-prepare:
-
-See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
-
-The 'distro-deploy' could be updated/cloned from compiled version without pulling and processing source files.
-
-(todo) During this stage one of the following actions available:
-- `DistroImageDownload` -- fetch published pre-built images (command provided by 'distro-system')
-- `DistroImagePublish` -- export images pre-built locally (command provided by 'distro-source')
-
-The 'distro-source' is:
-1. working from 'output' folder
-2. exporting (pushing and syncing) all export packages built from sources
-3. replaces distro actions with new ones (clearing stale actions)
-
-
-### Stage: image-process:
-
-See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
-
-
-### Stage: image-install:
-
-See: [distro-deploy](https://github.com/myx/myx.distro-deploy?tab=readme-ov-file#myxdistro-deploy)
-
-
+- [myx.distro](https://github.com/myx/myx.distro) — the distro system overview.
+- [myx.distro-.local](https://github.com/myx/myx.distro-.local) — install and launch the toolsets.
+- [myx.distro-system](https://github.com/myx/myx.distro-system) — shared indexing and query tools.
+- [myx.distro-deploy](https://github.com/myx/myx.distro-deploy) — deploy a distro image to hosts.
+- [myx.distro-remote](https://github.com/myx/myx.distro-remote) — drive a workspace on another machine.
