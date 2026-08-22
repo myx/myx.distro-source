@@ -132,9 +132,9 @@ Example:
 	Declares: \
 		distro-image-sync:source-prepare-pull:repo:myx/myx.distro-source::git@github.com:myx/myx.distro-source.git \
 
-Backslashes continue a value across lines. For the full file grammar — escaping,
-continuation, encoding — read
-`.local/myx/myx.distro-.local/sh-lib/help/Man.Project.Inf.file.help.md`.
+Backslashes continue a value across lines. The full file grammar — escaping,
+continuation, encoding — is in the
+[project.inf file format manual](https://github.com/myx/myx.distro-.local/blob/main/sh-lib/help/Man.Project.Inf.file.help.md).
 
 ## image-prepare directives
 
