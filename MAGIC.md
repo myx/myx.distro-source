@@ -15,6 +15,16 @@ Team-owned notes for the magic-* team.
 - The cumulative list in `all-changed.index.txt` can still show a change while the recomputed delta is empty. The cumulative list is not the gate.
 - Exit status does not distinguish "nothing needed doing" from "the thing you wanted did not happen". Check the artifact the ingest regenerates.
 
+## `MDSC_SOURCE`/`MDSC_CACHED`/`MDSC_OUTPUT` are stage-scoped
+
+Each stage script reassigns them to its own input and output directories. They are not fixed constants, and a value read in one stage does not describe another.
+
+- Stage 1, `BuildCachedFromSource` — `MDSC_CACHED=.local/source-cache/prepare`.
+- Stage 2, `BuildOutputFromCached` — `MDSC_CACHED=.local/output-cache/prepared`, `MDSC_OUTPUT=.local/output-cache`.
+- Outside an active stage, which is where ad-hoc commands run, `MDSC_CACHED` defaults to `.local/system-index` — the published steady-state index, and what most day-to-day commands see.
+
+The stage table, folder meanings and variable definitions are in `README.md`.
+
 ## Builders
 
 - Only `myx.distro-source` and `myx.distro-deploy` carry pipeline builders. The system, remote, agents and `.local` packages carry none.
