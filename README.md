@@ -203,9 +203,9 @@ Put these in a project's `Declares` to shape what image-prepare produces.
 ## Getting help
 
 - `<Tool>.fn.sh --help` — full syntax, options and examples for any command above.
-- `Help.fn.sh --all` — list every source command.
 - `Source --help` — source-context dispatcher syntax.
-- Press TAB after a command name and a space for shell completion.
+- Press TAB after a command name and a space for shell completion — this is how to see
+  every command the console offers.
 
 ## Related packages
 
