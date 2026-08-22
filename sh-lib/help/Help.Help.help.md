@@ -1,4 +1,4 @@
-📘 syntax: Help.fn.sh [--all|--help]
+📘 syntax: Help.fn.sh [--help]
 
 ##  Summary:
 
@@ -10,19 +10,13 @@
 
 ##  Options:
 
-		--all
-			Prints extended synopsis including Require command line.
-
 		--help
 			Prints extended synopsis including Require command line.
 
 ##  Examples:
 
-		# Show command summary or full list depending on selected option
-		`Help.fn.sh [--all|--help]`
-
-		# Use the same entry point to request the complete generated help set
-		`Help.fn.sh [--all|--help]`
+		# Show the command entrypoint synopsis
+		`Help.fn.sh`
 
 		# Print command help and exit
 		`Help.fn.sh --help`

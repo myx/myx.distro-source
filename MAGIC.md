@@ -29,4 +29,14 @@ The stage table, folder meanings and variable definitions are in `README.md`.
 
 - Only `myx.distro-source` and `myx.distro-deploy` carry pipeline builders. The system, remote, agents and `.local` packages carry none.
 - Builder discovery is not limited to these packages: any project in the distro index may declare its own `builders/<stage>/<NNNN>-*.sh` and it is picked up.
-- `source-publish` is matched by the builder-discovery glob as a stage-3 alternative name but has no runner behind it. Leave it in place; do not repurpose it.
+- `source-publish` is a selectable build stage, discovered at `builders/source-publish/3???-*.sh`.
+- `source-publish` shares the `3???` range with `image-prepare`. Discovery sorts by builder basename across stages, so builders of the two run interleaved in numeric order, not as separate blocks.
+
+## `build.number`
+
+- `builders/source-prepare/1201-increment.sh` maintains `source/<project>/build.number` for changed projects whose `Provides` carry `source-prepare:increment` and ` build.number`.
+- The file holds a decimal integer and a trailing newline, nothing else. An absent file initialises to `1`.
+- Any other content — empty, non-digit, padded or multi-line — is an error: the existing file is left untouched and the builder exits non-zero.
+- A new value goes to a temp file beside the target and is `mv`-ed into place, so a failed write never truncates the existing value.
+- The counter lives in `source/`, not in the cache, and needs no commit or push: the source tree is picked up by ingest, not by a git round-trip.
+- The pipeline's job ends at maintaining the number. The file sits in the project's own source, and what the project does with it is the project's own business — its code may read it, embed it, or ignore it entirely. The absence of a pipeline-side consumer is not a gap to close.

@@ -1,14 +1,17 @@
 echo >&2
 echo "  📘 syntax: Build stage <build-stage>" >&2
 echo >&2
-echo "    source-prepare|source-process|image-prepare|image-process|image-install" >&2
-echo "                Five sequential stages for each project, from source updates to install and deploy." >&2
+echo "    source-prepare|source-process|source-publish|image-prepare|image-process|image-install" >&2
+echo "                Six sequential stages for each project, from source updates to install and deploy." >&2
 echo >&2
 echo "    source-prepare" >&2
 echo "                Collect and cache all required sources." >&2
 echo >&2
 echo "    source-process" >&2
 echo "                Pre-process and build sources." >&2
+echo >&2
+echo "    source-publish" >&2
+echo "                Publish built sources. Shares the 3??? builder range with image-prepare." >&2
 echo >&2
 echo "    image-prepare" >&2
 echo "                Post-process what is build, push or pull output distro." >&2

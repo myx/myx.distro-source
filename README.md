@@ -69,12 +69,14 @@ Ingesting source changes is not the same as building the distro. Use
 
 ## Build stages
 
-Five stages run in order. Stages 1–3 belong to source, 4–5 to deploy.
+Six stages run in order. Stages 1–3 belong to source, 4–6 to deploy.
 
 - `source-prepare` — builders `1???-*`. Reads `source`, writes `cached`: the sources
   and metadata needed to build the changed projects.
 - `source-process` — builders `2???-*`. Reads `cached`, writes `output`: current
   metadata and built packages.
+- `source-publish` — builders `3???-*`. Publishes built sources. Shares the `3???`
+  range with `image-prepare`; builders from both run interleaved, in numeric order.
 - `image-prepare` — builders `3???-*`. Reads `output`, writes `distro`: indices and
   exported items, in their projects' locations.
 - `image-process` — builders `4???-*`. Reads `distro`, shares repositories to deploy.
@@ -91,6 +93,7 @@ These names have fixed meaning in a project's root folder:
 - `builders/<stage>/<NNNN>-*` — builders run during that stage, in numeric order.
 	- `builders/source-prepare/1???-*`
 	- `builders/source-process/2???-*`
+	- `builders/source-publish/3???-*`
 	- `builders/image-prepare/3???-*`
 	- `builders/image-process/4???-*`
 	- `builders/image-install/5???-*`
