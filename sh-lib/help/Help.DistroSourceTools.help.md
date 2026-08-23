@@ -113,7 +113,7 @@
 			Won't output helpful information on files created and how to use those files, when 
 			`--quiet` option specified.
 
-		--make-workspace-integration-files [--quiet]
+		--make-workspace-integrations [--quiet]
 			Runs all `--make-*` commands (--make-console-command, --make-code-workspace), thus 
 			(re-)creating all SourceConsole the user executable workspace commands and files and exits.
 			
