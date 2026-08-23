@@ -8,7 +8,7 @@ if [ -z "$MMDAPP" ]; then
 fi
 
 if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include"
+	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 	DistroSystemContext --distro-path-auto
 fi
 
@@ -25,9 +25,9 @@ RebuildActions(){
 		set +e ; return 1
 	fi
 
-	local TMP_DIR="$( mktemp -d -t "rebuild-actions-XXXXXXXX" )"
-	if [ $? -ne 0 ]; then
-		echo "⛔ ERROR: Can't make temporary actions directory $TMP_DIR, exiting..." >&2
+	local TMP_DIR
+	if ! TMP_DIR="$( mktemp -d -t "rebuild-actions-XXXXXXXX" )" ; then
+		echo "⛔ ERROR: Can't make temporary actions directory, exiting..." >&2
 		set +e ; return 1
 	fi
 	echo "RebuildActions: Using temporary actions directory: $TMP_DIR"
