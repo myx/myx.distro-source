@@ -6,7 +6,7 @@
 ( 
 	set -e
 	cd "$MDSC_SOURCE" || {
-		echo "⛔ ERROR: $MDSC_CMD: ScanSourceProjects.include: no source folder!" >&2
+		echo "$MDSC_CMD: ⛔ ERROR: ScanSourceProjects.include: no source folder!" >&2
 		set +e ; return 1
 	}
 

@@ -40,7 +40,7 @@ ListProjectSequence(){
 			;;
 			--print-declares|--print-keywords|--print-provides)
 				[ -z "$2" ] || {
-					echo "⛔ ERROR: $MDSC_CMD: $1, no extra options allowed:" "$@" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: $1, no extra options allowed:" "$@" >&2
 					set +e ; return 1
 				}
 				local idx="${1#'--print-'}"; shift
@@ -54,14 +54,14 @@ ListProjectSequence(){
 				break;
 			;;
 			*)
-				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac
 	done
 
 	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
-		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		echo "$MDSC_CMD: ⛔ ERROR: $projectName: project.inf file is required (at: $indexFile)" >&2
 		set +e ; return 1
 	fi
 

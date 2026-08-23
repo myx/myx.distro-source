@@ -59,7 +59,7 @@ case "$0" in
 	*/sh-scripts/ListChangedSourceProjects.fn.sh) 
 
 		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-			. "$MDLT_ORIGIN/myx/myx.distro-system/sh-lib/SystemContext.include"
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
 			DistroSystemContext --distro-path-auto
 		fi
 

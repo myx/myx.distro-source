@@ -67,11 +67,11 @@ DistroSourceTools(){
 				local repositoryName="$2"
 				local repositoryHref="$3"
 				if [ -z "$repositoryName" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: repository root name expected: $@" >&2
 					set +e ; return 1
 				fi
 				if [ -z "$repositoryHref" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: repository root href expected: $@" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: repository root href expected: $@" >&2
 					set +e ; return 1
 				fi
 
@@ -82,7 +82,7 @@ DistroSourceTools(){
 					local partOfBatch="false"
 				fi
 				if [ -n "$1" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: no options allowed after --register-namespace-root <namespace-root-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: no options allowed after --register-namespace-root <namespace-root-name> <repo-href> option ($MDSC_OPTION, $@)" >&2
 					set +e ; return 1
 				fi
 
@@ -101,7 +101,7 @@ DistroSourceTools(){
 
 				local repositoryRoot="$MMDAPP/.local/roots/$repositoryName.distro-namespace"
 
-				if [ ! -f "$repositoryRoot" ] || [ "$( cat "$repositoryRoot" 2>/dev/null )" = "$repositoryInf" ] ; then
+				if [ ! -f "$repositoryRoot" ] || [ "$( cat "$repositoryRoot" 2>/dev/null )" != "$repositoryInf" ] ; then
 					echo -n "$repositoryInf" > "$repositoryRoot"
 					echo "> $MDSC_CMD: --register-namespace-root: ${repositoryRoot#$MMDAPP/} (re-)created." >&2
 					changed=true
@@ -110,7 +110,7 @@ DistroSourceTools(){
 
 				local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
 
-				if [ ! -f "$repositoryFile" ] || [ "$( cat "$repositoryFile" 2>/dev/null )" = "$repositoryInf" ] ; then
+				if [ ! -f "$repositoryFile" ] || [ "$( cat "$repositoryFile" 2>/dev/null )" != "$repositoryInf" ] ; then
 					echo -n "$repositoryInf" > "$repositoryFile"
 					echo "> $MDSC_CMD: --register-namespace-root: ${repositoryFile#$MMDAPP/} (re-)created." >&2
 					changed=true
@@ -123,7 +123,7 @@ DistroSourceTools(){
 			--unregister-repository-root|--unregister-namespace-root)
 				local repositoryName="$2"
 				if [ -z "$repositoryName" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: repository root name expected: $@" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: repository root name expected: $@" >&2
 					set +e ; return 1
 				fi
 
@@ -139,10 +139,10 @@ DistroSourceTools(){
 				local repositoryRoot="$MMDAPP/.local/roots/$repositoryName.distro-namespace"
 				local repositoryFile="$MMDAPP/source/$repositoryName/repository.inf"
 
-				[ -f "$repositoryRoot" || -f "$repositoryFile" ] || {
+				[ -f "$repositoryRoot" ] || [ -f "$repositoryFile" ] || {
 					echo "🙋 WARNING: $MDSC_CMD: repository root $repositoryName is unknown." >&2
 					continue
-					# echo "⛔ ERROR: $MDSC_CMD: repository root $repositoryName is unknown." >&2
+					# echo "$MDSC_CMD: ⛔ ERROR: repository root $repositoryName is unknown." >&2
 					# set +e ; return 1
 				}
 
@@ -175,7 +175,7 @@ DistroSourceTools(){
 				return 0
 			;;
 			*)
-				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac

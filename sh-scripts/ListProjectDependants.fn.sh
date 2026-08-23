@@ -37,7 +37,7 @@ ListProjectDependants(){
 			;;
 			--line-prefix)
 				if [ -z "$2" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: $1: prefix value is expected!" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: $1: prefix value is expected!" >&2
 					set +e ; return 1
 				fi
 				MDSC_LP="$2"; shift 2
@@ -47,7 +47,7 @@ ListProjectDependants(){
 				break
 			;;
 			*)
-				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac

@@ -60,7 +60,7 @@ DistroSourcePrepare(){
 			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
 
 			[ -f "$CACHE_DATE" ] || {
-				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: source cache timestamp expected: $CACHE_DATE" >&2
 				set +e ; return 1
 			}
 
@@ -88,7 +88,7 @@ DistroSourcePrepare(){
 
 			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
 			[ -f "$CACHE_DATE" ] || {
-				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: source cache timestamp expected: $CACHE_DATE" >&2
 				set +e ; return 1
 			}
 
@@ -133,7 +133,7 @@ DistroSourcePrepare(){
 					--fail-if-errors \
 
 				[ -f "$indexFile" ] || {
-					echo "⛔ ERROR: $MDSC_CMD: distro-index.env.inf is expected!" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: distro-index.env.inf is expected!" >&2
 					set +e ; return 1
 				}
 				
@@ -175,7 +175,7 @@ DistroSourcePrepare(){
 			local CACHE_DATE="$CACHE_ROOT/prepare-ingest.timestamp.txt"
 
 			[ -f "$CACHE_DATE" ] || {
-				echo "⛔ ERROR: $MDSC_CMD: source cache timestamp expected: $CACHE_DATE" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: source cache timestamp expected: $CACHE_DATE" >&2
 				set +e ; return 1
 			}
 
@@ -222,7 +222,7 @@ DistroSourcePrepare(){
 			return 0
 		;;
 		*)
-			echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+			echo "$MDSC_CMD: ⛔ ERROR: invalid option: $1" >&2
 			set +e ; return 1
 		;;
 	esac

@@ -11,7 +11,7 @@ fi
 set -e
 
 [ ! -t 0 ] || {
-	echo "⛔ ERROR: $MDSC_CMD: ScanSyncCachedChanges.include: needs list on stdin pipe!" >&2
+	echo "$MDSC_CMD: ⛔ ERROR: ScanSyncCachedChanges.include: needs list on stdin pipe!" >&2
 	set +e ; return 1
 }
 

@@ -33,7 +33,7 @@ ListProjectDeclares(){
 			;;
 			--filter-and-cut)
 				if [ -z "$2" ] ; then
-					echo "⛔ ERROR: $MDSC_CMD: project declares filter is expected!" >&2
+					echo "$MDSC_CMD: ⛔ ERROR: project declares filter is expected!" >&2
 					set +e ; return 1
 				fi
 				local filter="$2" output ; shift 2
@@ -80,14 +80,14 @@ ListProjectDeclares(){
 				break;
 			;;
 			*)
-				echo "⛔ ERROR: $MDSC_CMD: invalid option: $1" >&2
+				echo "$MDSC_CMD: ⛔ ERROR: invalid option: $1" >&2
 				set +e ; return 1
 			;;
 		esac
 	done
 
 	if [ ! -f "$MDSC_SOURCE/$projectName/project.inf" ]; then
-		echo "⛔ ERROR: $MDSC_CMD: $projectName: project.inf file is required (at: $indexFile)" >&2
+		echo "$MDSC_CMD: ⛔ ERROR: $projectName: project.inf file is required (at: $indexFile)" >&2
 		set +e ; return 1
 	fi
 
