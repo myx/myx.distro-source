@@ -56,7 +56,10 @@ echo "Hello! This is generated folder. Here you may find build logs and inventor
 echo "Hello! This is generated folder. Here you may find commands and handy information to fix, reinstall or export your workspace." \
 | DistroSourceTools --make-static-non-editable "$VSSR_PATH/🩺 README.md"
 
-cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
+local WS_TMP
+WS_TMP="$( mktemp "$WS_FILE.XXXXXX" )" || { echo "$MDSC_CMD: ⛔ ERROR: --make-code-workspace: cannot create temp file beside $WS_NAME" >&2 ; set +e ; return 1 ; }
+
+cat > "$WS_TMP" <<CODEWORKSPACE
 {
 	"folders": [ 
 		$REPOS
@@ -130,7 +133,12 @@ cat > "$MMDAPP/$WS_NAME" <<CODEWORKSPACE
 }
 CODEWORKSPACE
 
-chmod 640 "$MMDAPP/$WS_NAME"
+chmod 640 "$WS_TMP"
+if [ -f "$WS_FILE" ] && cmp -s "$WS_TMP" "$WS_FILE" ; then
+	rm -f "$WS_TMP"
+else
+	mv -f "$WS_TMP" "$WS_FILE"
+fi
 
 mkdir -p "$MMDAPP/.vscode/"{extensions,user-data}
 
