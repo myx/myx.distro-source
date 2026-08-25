@@ -6,7 +6,19 @@ Distro ListDistroProvides --select-changed --filter-and-cut "source-prepare:incr
 | { grep -e " build.number$" || [ $? -eq 1 ] ; } \
 | cut -d" " -f1 \
 | while read -r projectName ; do
-	CHECK_FILE="$MMDAPP/source/${projectName#$MMDAPP/source/}/build.number"
+	PROJECT_DIR="$MMDAPP/source/${projectName#$MMDAPP/source/}"
+	GIT_CLEAN=no
+	GIT_ROOT="$( git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null )"
+	if [ -n "$GIT_ROOT" ] ; then
+		GIT_DIRTY="$( git -C "$GIT_ROOT" status --porcelain -- "$PROJECT_DIR" 2>/dev/null )"
+		[ -n "$GIT_DIRTY" ] || GIT_CLEAN=yes
+	fi
+	if [ yes = "$GIT_CLEAN" ] ; then
+		echo "build.number: $projectName: SKIP (no uncommitted changes)" >&2
+		continue
+	fi
+
+	CHECK_FILE="$PROJECT_DIR/build.number"
 	if [ -f "$CHECK_FILE" ] ; then
 		CHECK_VALUE="$( cat "$CHECK_FILE" )"
 		case "$CHECK_VALUE" in
@@ -20,10 +32,10 @@ Distro ListDistroProvides --select-changed --filter-and-cut "source-prepare:incr
 			* ) break ;;
 		esac done
 		BUILD_VALUE="$(( CHECK_VALUE + 1 ))"
-		echo "build.number: $projectName: INCREMENT!" >&2
+		echo "build.number: $projectName: INCREMENT! -> $BUILD_VALUE" >&2
 	else
 		BUILD_VALUE=1
-		echo "build.number: $projectName: INIT!" >&2
+		echo "build.number: $projectName: INIT! -> $BUILD_VALUE" >&2
 	fi
 
 	WRITE_FILE="$CHECK_FILE.$$.tmp"
