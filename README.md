@@ -135,7 +135,13 @@ Example:
 	Declares: \
 		distro-image-sync:source-prepare-pull:repo:myx/myx.distro-source::git@github.com:myx/myx.distro-source.git \
 
-Backslashes continue a value across lines. The full file grammar — escaping,
+Backslashes continue a value across lines. Carry the backslash on **every**
+entry, including the last, and end the list with a blank line — as the example
+above does. A list whose last entry has no backslash forces an edit to that line
+whenever an entry is added after it, so a one-line addition shows up as a
+two-line change and every diff reads as touching a neighbour it did not mean to.
+
+The full file grammar — escaping,
 continuation, encoding — is in the
 [project.inf file format manual](https://github.com/myx/myx.distro-.local/blob/main/sh-lib/help/Man.Project.Inf.file.help.md).
 
