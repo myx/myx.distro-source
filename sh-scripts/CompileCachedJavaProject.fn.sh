@@ -52,7 +52,10 @@ CompileCachedJavaProject(){
 			--output-root "$MMDAPP/.local/output-cache" \
 			--import-from-source \
 			--project "$projectName" \
-	)
+	) || {
+		echo "$MDSC_CMD: ⛔ ERROR: java compilation failed: $projectName" >&2
+		set +e ; return 1
+	}
 
 	return 0
 

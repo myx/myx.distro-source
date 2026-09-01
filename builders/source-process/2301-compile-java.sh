@@ -10,7 +10,10 @@ CompileJavaSources(){
 	(
 		set -e
 		Distro CompileCachedJavaProject $projectName
-	)
+	) || {
+		echo "⛔ ERROR: CompileJavaSources: compilation failed: $projectName" >&2
+		return 1
+	}
 	
 	return 0
 	
