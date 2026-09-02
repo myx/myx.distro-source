@@ -40,3 +40,9 @@ The stage table, folder meanings and variable definitions are in `README.md`.
 - A new value goes to a temp file beside the target and is `mv`-ed into place, so a failed write never truncates the existing value.
 - The counter lives in `source/`, not in the cache, and needs no commit or push: the source tree is picked up by ingest, not by a git round-trip.
 - The pipeline's job ends at maintaining the number. The file sits in the project's own source, and what the project does with it is the project's own business — its code may read it, embed it, or ignore it entirely. The absence of a pipeline-side consumer is not a gap to close.
+
+## The generated `.code-workspace` lists the workspace root
+
+- `SourceTools.Make.BuildCodeWorkspaceData.include` lists the workspace root itself as a workspace folder, alongside the namespace roots, `output` and the two generated `.vscode` folders.
+- It is listed because a VS Code chat client resolves its workspace-local locations — agent skills among them — against each listed folder and never against the workspace directory. Without the root listed, everything installed at the workspace root is invisible to those clients, and no setting can name it: the settings that would are relative-only, so a value correct at one folder depth is wrong at every other. Details: `myx.distro-agents/MAGIC.md`, "VS Code skill discovery".
+- The root contains every other listed folder, so VS Code indexes those files twice and search reports each hit twice. Measured on `ws-myx-devops`: 3,148 files in the listed folders, 8,768 under the root, of which 5,577 are `.local`. `files.exclude`/`search.exclude` patterns are matched against each folder separately, so an exclude aimed at the root's copy does not affect the nested folders' own listings.
