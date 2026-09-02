@@ -30,7 +30,7 @@ The stage table, folder meanings and variable definitions are in `README.md`.
 - Only `myx.distro-source` and `myx.distro-deploy` carry pipeline builders. The system, remote, agents and `.local` packages carry none.
 - Builder discovery is not limited to these packages: any project in the distro index may declare its own `builders/<stage>/<NNNN>-*.sh` and it is picked up.
 - `source-publish` is a selectable build stage, discovered at `builders/source-publish/3???-*.sh`.
-- `source-publish` shares the `3???` range with `image-prepare`. Discovery sorts by builder basename across stages, so builders of the two run interleaved in numeric order, not as separate blocks.
+- `source-publish` shares the `3???` range with `image-prepare`. Discovery sorts by builder basename across stages, but a stage selection compiles to `grep '/builders/<stage>/'` and every runner selects exactly one stage, so the two never interleave at execution — only in the unfiltered listing. What basename keying does cost is discovery: `ScanSourceBuilders.include` keys its result map on the basename alone across every project and stage, so two builders sharing a basename collapse to one and the loser is never listed.
 
 ## `build.number`
 
