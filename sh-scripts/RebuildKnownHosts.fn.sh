@@ -32,7 +32,7 @@ RebuildKnownHosts() {
 
 	local DEST="$MMDAPP/ssh/known_hosts"
 
-	if ! touch "$DEST.$$.tmp"; then
+	if ! : > "$DEST.$$.tmp"; then
 		echo "⛔ ERROR: Can't make temporary file $DEST.$$.tmp, exiting..." >&2
 		set +e ; return 1
 	fi
@@ -56,7 +56,7 @@ RebuildKnownHosts() {
 					continue
 				fi
 
-				[ -z "$addComment" ] || printf '\n\n## Source: %s\n\n' "$projectName"
+				printf '\n\n## Source: %s\n\n' "$projectName"
 				sort -t' ' -k1,1  "$fileName" \
 				| sed 's/[[:space:]]\{1,\}/\t/g' \
 				| column -t -s $'\t'
@@ -66,7 +66,7 @@ RebuildKnownHosts() {
 		if [ "--no-delete" != "$1" ] && [ -s "$DEST" ]; then
 			printf "\n\n## Stale, non-removed records:\n\n"
 			cat "$DEST" \
-			| awk '!$0 && $0 !~ /^#/ && !seen[$0]++'
+			| awk 'NF && $0 !~ /^#/ && !seen[$0]++'
 		fi
 
 	} \

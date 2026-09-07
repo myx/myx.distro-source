@@ -61,7 +61,7 @@ while IFS= read -r line || [ -n "${line:0:1}" ] || [ -n "${cont:0:1}" ]; do
 			printf '%s\n' "$item"
 			for item in $value ; do
 				echo "$3" "$item"
-			done 
+			done
 		} | awk '!seen[$0]++' > "$idx"
 	;;
 	esac
