@@ -93,6 +93,7 @@ cat > "$WS_TMP" <<CODEWORKSPACE
 		"files.exclude": {
 			"📦 Browse: output/**": true,
 			"📝 Browse: source/**": true,
+			"**/.claude": true,
 			"**/.git": true
 		},
 		"search.exclude": {
