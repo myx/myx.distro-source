@@ -53,4 +53,13 @@ The stage table, folder meanings and variable definitions are in `README.md`.
 - The trap is a name that is both a project name and a provide-name. It resolves, so the argument kind is never questioned, and the next call against a name that is only a provide-name then reads as a defect in that project rather than as the wrong kind of argument.
 - Run it through the console, never as a bare script. The bare `ListProjectSequence.fn.sh` resolves `--distro-from-cached` where the console resolves `--distro-from-source`, and it under-reports without saying so. From the workspace root: `echo "Distro ListProjectSequence --no-cache <project>" | ./DistroSourceConsole.sh --non-interactive`, with `--no-cache` ahead of the project name.
 - An empty source-mode index, and a call answering exit 0 with an empty sequence, were both observed on `ws-myx.prv-farm`. Neither reproduced on `ws-myx-devops`, where every call answered with real data. Treat them as a workspace state to check for, never as a property of the tool.
+- An unindexed project answers exactly as a project with no dependencies does — exit 0, empty sequence — so nothing in the result separates the two. Assert on a non-empty sequence for a project known to carry one.
+- `image-prepare:sync-source-files:<sourceName>:…` takes three source forms. `.` is the declaring project's own files; `*` and `**` both walk the selected project's build sequence, `**` taking every project in it that holds the path and `*` only those whose own sequence contains the declaring project. `README.md` documents the directive and none of the three.
 - Severing a project from the graph is two conditions, not one: a `Requires:` line removed, **and** the project out of the build sequence. While it remains in the sequence its `data/` files still arrive through any `image-prepare:sync-source-files:**:…` harvest.
+
+## `Augments:` and `Suggests:` gate nothing
+
+- `README.md` states it for both: `Augments:` is a soft dependency hint that does not gate builds, `Suggests:` is informational only.
+- The shell parser, `sh-lib/source-prepare/ParseSourceProjectInfToCached.fn.include`, drops both silently and emits no file for either. The awk and Java parsers index `Augments` and nothing reads that index back.
+- There is no non-forking specialisation mechanism behind either key. A project that needs to vary a base is forked or sequenced, never augmented.
+- `Includes:` and `Builders:` are not keys of this schema at all — neither appears in the `README.md` property list, and neither occurs in any `project.inf` in the tree. A pipeline builder is discovered by path, per "Builders" above, never declared by a key.
