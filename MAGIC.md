@@ -63,3 +63,9 @@ The stage table, folder meanings and variable definitions are in `README.md`.
 - The shell parser, `sh-lib/source-prepare/ParseSourceProjectInfToCached.fn.include`, drops both silently and emits no file for either. The awk and Java parsers index `Augments` and nothing reads that index back.
 - There is no non-forking specialisation mechanism behind either key. A project that needs to vary a base is forked or sequenced, never augmented.
 - `Includes:` and `Builders:` are not keys of this schema at all — neither appears in the `README.md` property list, and neither occurs in any `project.inf` in the tree. A pipeline builder is discovered by path, per "Builders" above, never declared by a key.
+
+## `CleanAllOutputs.fn.sh` clears the deploy tier along with the build outputs
+
+- It removes `$MMDAPP/{output,cached,export,distro}`, `.local/{source-cache,output-cache,system-index}` and `.local/temp/javac`. `source/` is untouched, and the script requires it to exist before doing anything.
+- **`$MMDAPP/output` is deploy staging, not a rebuildable cache.** Deploy hard-errors without it — `myx.distro-deploy/sh-scripts/DeployProjectSsh.fn.sh:364` and `:495`, `InstallPrepareFiles.fn.sh:344` and `:352`. Clearing outputs therefore clears the deploy tier, which the name does not suggest. That is the consequence to know before running it.
+- It takes no confirmation and no `--force`, and its tail runs on a bare invocation. Appropriate for a tool named for exactly what it clears, and recorded as behaviour rather than as a defect: this family states no confirmation convention for destructive operations anywhere.
