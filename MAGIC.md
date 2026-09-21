@@ -64,6 +64,11 @@ The stage table, folder meanings and variable definitions are in `README.md`.
 - There is no non-forking specialisation mechanism behind either key. A project that needs to vary a base is forked or sequenced, never augmented.
 - `Includes:` and `Builders:` are not keys of this schema at all — neither appears in the `README.md` property list, and neither occurs in any `project.inf` in the tree. A pipeline builder is discovered by path, per "Builders" above, never declared by a key.
 
+## `SourceConsole.include`'s prompt hook applies nothing
+
+- The `--shell-prompt` arm reads `MDSC_INT_CD`, `cd`s to it and clears it, and cannot change the console's working directory: the `Source()` wrapper sources this include inside `( … )` and `PROMPT_COMMAND` calls that wrapper inside `$( … )`, so both statements run two subshells below the interactive shell. The arm announces the change on stderr before applying nothing, which is why it reads as working.
+- Full finding, with both controls and the boundary of what was measured: `myx.distro-.local/MAGIC.md`, "The prompt hook announces a change it cannot apply" — read there, not duplicated here.
+
 ## `CleanAllOutputs.fn.sh` clears the deploy tier along with the build outputs
 
 - It removes `$MMDAPP/{output,cached,export,distro}`, `.local/{source-cache,output-cache,system-index}` and `.local/temp/javac`. `source/` is untouched, and the script requires it to exist before doing anything.
