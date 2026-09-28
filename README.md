@@ -200,8 +200,6 @@ Put these in a project's `Declares` to shape what image-prepare produces.
 	- `SyncGitSource.fn.sh` — clone or update one project from git.
 	- `RebuildActions.fn.sh` — regenerate the workspace `actions/` directory.
 	- `RebuildKnownHosts.fn.sh` — regenerate workspace `ssh/known_hosts` from project entries.
-	- `CompileCachedJavaProject.fn.sh` — compile Java sources for one cached project.
-	- `CompileCachedJavaRepository.fn.sh` — compile Java sources for a whole cached repository.
 - Clean up:
 	- `CleanAllOutputs.fn.sh` — remove every generated artifact and cache.
 	- `CleanSourceToCached.fn.sh` — remove source-cache artifacts.
