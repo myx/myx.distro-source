@@ -144,12 +144,12 @@ fi
 mkdir -p "$MMDAPP/.vscode/"{extensions,user-data}
 
 {
-	echo '#!/usr/bin/env bash'
-	echo 'cd "\$(dirname "\$0")"'
-	echo 'code \'
-	echo '--extensions-dir "\$PWD/.vscode/extensions" \'
-	echo '--user-data-dir   "\$PWD/.vscode/user-data" \'
-	echo '"\$PWD/project.code-workspace"'
+	printf '%s\n' '#!/usr/bin/env bash'
+	printf '%s\n' 'cd "$(dirname "$0")" || { printf "⛔ ERROR: start.sh: cannot enter %s\n" "$(dirname "$0")" >&2 ; exit 1 ; }'
+	printf '%s\n' 'code \'
+	printf '%s\n' '--extensions-dir "$PWD/.vscode/extensions" \'
+	printf '%s\n' '--user-data-dir   "$PWD/.vscode/user-data" \'
+	printf '%s\n' '"$PWD/${PWD##*/}.code-workspace"'
 } > "$MMDAPP/start.sh"
 
 chmod +x "$MMDAPP/start.sh"
