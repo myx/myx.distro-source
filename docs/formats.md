@@ -11,7 +11,8 @@ Six stages run in order. Stages 1–3 belong to source, 4–6 to deploy.
 - `source-process` — builders `2???-*`. Reads `cached`, writes `output`: current
   metadata and built packages.
 - `source-publish` — builders `3???-*`. Publishes built sources. Shares the `3???`
-  range with `image-prepare`; builders from both run interleaved, in numeric order.
+  range with `image-prepare`. Each builder runs in its own stage, in step-number order.
+  Builders with the same step number run in parallel.
 - `image-prepare` — builders `3???-*`. Reads `output`, writes `distro`: indices and
   exported items, in their projects' locations.
 - `image-process` — builders `4???-*`. Reads `distro`, shares repositories to deploy.
@@ -110,6 +111,38 @@ Put these in a project's `Declares` to shape what image-prepare produces.
 
 `<sourceName>` selects whose sources a directive reads:
 
-- `.` — this project's own source.
-- `*` — this project, and projects derived from it.
-- `**` — every project in the sequence, derived or not.
+- `.` — the declaring project's own source.
+- `*` and `**` — both walk the build sequence of the selected project.
+	- `**` takes every project in that sequence that holds the path.
+	- `*` takes only the projects whose own sequence contains the declaring project.
+
+
+## Stage variables
+
+Each stage script sets `MDSC_SOURCE`, `MDSC_CACHED` and `MDSC_OUTPUT` to its own input and output directories. They are not fixed values. A value read in one stage does not describe another.
+
+- Stage 1, `BuildCachedFromSource`: `MDSC_CACHED` is `.local/source-cache/prepare`.
+- Stage 2, `BuildOutputFromCached`: `MDSC_CACHED` is `.local/output-cache/prepared` and `MDSC_OUTPUT` is `.local/output-cache`.
+- Outside a stage, where ad-hoc commands run, `MDSC_CACHED` is `.local/system-index`. This is the published index that most everyday commands read.
+
+## Builder files
+
+A builder is found by its path. No `project.inf` key declares it.
+
+- Any project in the index may carry `builders/<stage>/<NNNN>-*.sh`. The tools pick it up.
+- Each runner selects exactly one stage.
+- Builder file names must be unique across all projects and stages. When two share a name, the listing keeps one and omits the other.
+- `Includes:` and `Builders:` are not `project.inf` keys.
+
+## build.number
+
+The builder `1201-increment.sh` keeps a counter in `source/<project>/build.number`. It acts on changed projects whose `Provides` carry both `source-prepare:increment` and `build.number`.
+
+- The file holds one decimal integer and a trailing newline, and nothing else.
+- When the file is absent, the builder starts it at `1`.
+- Any other content is an error. The builder leaves the file untouched and exits non-zero.
+- A project with no uncommitted changes is skipped.
+- The builder writes the new value to a temporary file and moves it into place. A failed write never truncates the old value.
+- The counter lives in `source/`. It needs no commit or push, because ingest reads the source tree.
+
+What the project does with the number is the project's own business. The pipeline only maintains it.
