@@ -4,6 +4,23 @@ Builds a distro image from a workspace source tree. It scans projects, resolves
 what each one requires and provides, runs their builders stage by stage, and
 produces the indices and export packages that `myx.distro-deploy` installs.
 
+Use it in a workspace where you edit project sources and keep the index current.
+
+## First command
+
+Open the source console, then pull every configured source repository:
+
+	./DistroSourceConsole.sh
+	Distro DistroImageSync --all-tasks --execute-source-prepare-pull
+
+## Ingest, not build
+
+Day to day, pick up a source edit with an ingest:
+
+	DistroSourcePrepare.fn.sh --ingest-distro-index-from-source
+
+A full build, `BuildDistroFromSource.fn.sh`, prepares deploy output and is not the everyday step. An ingest that exits 0 may have changed nothing. [Troubleshooting](docs/troubleshooting.md) explains why.
+
 ## Documentation
 
 - [Installation](docs/installation.md) — requirements, install, upgrade and uninstall.

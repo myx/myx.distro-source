@@ -33,7 +33,7 @@ These names have fixed meaning in a project's root folder:
 	- `builders/image-prepare/3???-*`
 	- `builders/image-process/4???-*`
 	- `builders/image-install/5???-*`
-- `sh-libs/**` — shell includes.
+- `sh-lib/**` — shell includes.
 - `sh-scripts/**` — shell commands added to the console `PATH`.
 
 ## Workspace folders
@@ -44,7 +44,7 @@ These names have fixed meaning in a project's root folder:
 - `/distro` — distro structure: indices and exported items.
 - `/actions` — generated workspace actions. Not editable.
 - `/.local` — installed tools and system integrations.
-	- `/.local/distro-index` — generated system index.
+	- `/.local/system-index` — generated system index.
 	- `/.local/source-cache` — build cache, written before source-prepare.
 	- `/.local/source-cache/sources` — synced sources for source-to-distro builders.
 	- `/.local/source-cache/changed` — names of projects that need rebuilding.
