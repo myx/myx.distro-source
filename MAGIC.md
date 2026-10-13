@@ -23,7 +23,7 @@ Each stage script reassigns them. The per-stage values are in [Formats](docs/for
 
 ## Builders
 
-- Pipeline builders are carried by `myx.distro-source`, `myx.distro-deploy` and `myx.distro-agents` (`builders/source-prepare/1201-agents-indices.sh`, `1202-harness-indices.sh`). The system, remote and `.local` packages carry none.
+- Pipeline builders are carried by `myx.distro-source`, `myx.distro-deploy` and `myx.distro-agents` (`builders/source-prepare/1201-agents-indices.sh`, which now makes every harness index at stage 1201; `1202-harness-indices.sh` stays in place but builds nothing, saying in one line where the build is). The system, remote and `.local` packages carry none.
 - Builder discovery is not limited to these packages: any project in the distro index may declare its own `builders/<stage>/<NNNN>-*.sh` and it is picked up.
 - `source-publish` is a selectable build stage, discovered at `builders/source-publish/3???-*.sh`.
 - `source-publish` shares the `3???` range with `image-prepare`. Discovery sorts by builder basename across stages, but a stage selection compiles to `grep '/builders/<stage>/'` and every runner selects exactly one stage, so each builder runs in its own stage, in step-number order, and builders with the same step number run in parallel. The two stages mix only in the unfiltered listing. What basename keying does cost is discovery: `ScanSourceBuilders.include` keys its result map on the basename alone across every project and stage, so two builders sharing a basename collapse to one and the loser is never listed.
