@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# ^^^ for syntax checking in the editor only
+
+##
+## SourceTools.Make.VSCodeTasksFromWorkspaceCommands.include -- the `.code-workspace` "tasks" entries of one
+## package, made from its declaration of its workspace commands: the file the one argument names, a package's
+## sh-lib/workspace-commands.list. Sourced by each package's *Tools.Make.VSCodeTasksFragment.include, which
+## SourceTools.Make.BuildCodeWorkspaceData.include sources from inside the tasks array, so each entry carries its
+## own trailing comma. A command is a line of the file: its name, how it runs, and the command, a TAB between them;
+## a line that starts with `#`, and one with fewer fields, is none. The label is the name and "...", the command
+## the declared one with the root of the workspace put for `$MMDAPP` and `${MMDAPP}`, each set out as a JSON
+## string. How a command runs is the console's to know, and changes nothing here. A file that is not there gives
+## no entry.
+##
+
+[ ! -f "${1:-}" ] || tasksRoot="$MMDAPP" LC_ALL=C awk -F '\t' '
+	function rooted(text, word,    done, at) {
+		done = ""
+		while ( ( at = index( text, word ) ) > 0 ) {
+			done = done substr( text, 1, at - 1 ) root
+			text = substr( text, at + length( word ) )
+		}
+		return done text
+	}
+	function jsonText(text,    done, at, one) {
+		done = ""
+		for ( at = 1 ; at <= length( text ) ; at++ ) {
+			one = substr( text, at, 1 )
+			if ( one == "\\" || one == "\"" ) {
+				done = done "\\"
+			}
+			done = done one
+		}
+		return done
+	}
+	BEGIN { root = ENVIRON["tasksRoot"] }
+	/^#/ || NF < 3 { next }
+	{
+		command = $3
+		for ( field = 4 ; field <= NF ; field++ ) {
+			command = command "\t" $field
+		}
+		command = rooted( rooted( command, "${MMDAPP}" ), "$MMDAPP" )
+		printf "\t\t\t{\n\t\t\t\t\"label\": \"%s...\",\n\t\t\t\t\"type\": \"shell\",\n\t\t\t\t\"command\": \"%s\",\n\t\t\t\t\"group\": {\n\t\t\t\t\t\"kind\": \"build\",\n\t\t\t\t\t\"isDefault\": true\n\t\t\t\t}\n\t\t\t},\n", jsonText( $1 ), jsonText( command )
+	}
+' "$1"
