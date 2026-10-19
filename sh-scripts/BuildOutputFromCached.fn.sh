@@ -113,7 +113,7 @@ BuildOutputFromCached(){
 
 case "$0" in
 	*/sh-scripts/BuildOutputFromCached.fn.sh) 
-		. "$( dirname $0 )/../../myx.distro-system/sh-lib/SystemContext.include"
+		. "${MDLT_ORIGIN:-$( dirname $0 )/../../..}/myx/myx.distro-system/sh-lib/SystemContext.include"
 		DistroSystemContext --distro-from-cached
 		
 		BuildOutputFromCached "$@"
