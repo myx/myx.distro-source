@@ -86,8 +86,8 @@ cat > "$WS_TMP" <<CODEWORKSPACE
 			}
 		)
 		$(
-			[ ! -x "$MMDAPP/DistroAgentsConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeSettingsFragment.include" ] || {
-				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeSettingsFragment.include"
+			[ ! -x "$MMDAPP/DistroAgentsConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/config/AgentsTools.Make.VSCodeSettingsFragment.include" ] || {
+				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/config/AgentsTools.Make.VSCodeSettingsFragment.include"
 			}
 		)
 		"files.exclude": {
@@ -125,8 +125,8 @@ cat > "$WS_TMP" <<CODEWORKSPACE
 				}
 			)
 			$(
-				[ ! -x "$MMDAPP/DistroAgentsConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeTasksFragment.include" ] || {
-					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/AgentsTools.Make.VSCodeTasksFragment.include"
+				[ ! -x "$MMDAPP/DistroAgentsConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/config/AgentsTools.Make.VSCodeTasksFragment.include" ] || {
+					. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-agents/sh-lib/config/AgentsTools.Make.VSCodeTasksFragment.include"
 				}
 			)
 		]

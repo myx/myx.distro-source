@@ -93,7 +93,7 @@ if ! type Agents >/dev/null 2>&1 ; then
 Agents(){
 	case "$1" in
 		''|--*)
-			( set -e ; . "$MDLT_ORIGIN/myx/myx.distro-agents/sh-lib/AgentsConsole.include" )
+			( set -e ; . "$MDLT_ORIGIN/myx/myx.distro-agents/sh-lib/manager/AgentsConsole.include" )
 			return 0
 		;;
 	esac
