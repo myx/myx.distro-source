@@ -26,7 +26,7 @@ RebuildActions(){
 	fi
 
 	local TMP_DIR
-	if ! TMP_DIR="$( mktemp -d -t "rebuild-actions-XXXXXXXX" )" ; then
+	if ! TMP_DIR="$( mkdir -p "${MMDAPP:?⛔ ERROR: MMDAPP is not set}/.local/temp" && mktemp -d "$MMDAPP/.local/temp/rebuild-actions-XXXXXXXX" )" ; then
 		echo "⛔ ERROR: Can't make temporary actions directory, exiting..." >&2
 		set +e ; return 1
 	fi
