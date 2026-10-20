@@ -4,7 +4,7 @@
 ##
 ## SourceTools.Make.VSCodeTasksFromWorkspaceCommands.include -- the `.code-workspace` "tasks" entries of one
 ## package, made from its declaration of its workspace commands: the file the one argument names, a package's
-## sh-lib/config/workspace-commands.list. Sourced by each package's *Tools.Make.VSCodeTasksFragment.include, which
+## sh-lib/workspace-commands.list. Sourced by each package's *Tools.Make.VSCodeTasksFragment.include, which
 ## SourceTools.Make.BuildCodeWorkspaceData.include sources from inside the tasks array, so each entry carries its
 ## own trailing comma. A command is a line of the file: its name, how it runs, and the command, a TAB between them;
 ## a line that starts with `#`, and one with fewer fields, is none. The label is the name and "...", the command
