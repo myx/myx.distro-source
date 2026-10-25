@@ -59,11 +59,11 @@
 		`ListProjectDeclares.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-no-project --filter-and-cut deploy-export --merge-sequence`
 
 		# List declares for a host-specific project with project name column
-		`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project`
+		`ListProjectDeclares.fn.sh prv/cloud.example/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project`
 
 		# List merged-sequence declares for a host project with project name column
-		`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence`
+		`ListProjectDeclares.fn.sh prv/cloud.example/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence`
 
 		# Same as above with flags in different order
-		`ListProjectDeclares.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project`
+		`ListProjectDeclares.fn.sh prv/cloud.example/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project`
 		`ListProjectDeclares.fn.sh --help`

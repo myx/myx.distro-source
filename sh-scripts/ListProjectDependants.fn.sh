@@ -66,9 +66,9 @@ case "$0" in
 	*/sh-scripts/ListProjectDependants.fn.sh)
 		set -e
 
-		# ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.example.org
-		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.example.org
-		# ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
+		# ListProjectDependants.fn.sh --distro-from-source prv/cloud.fleet4/setup.host-ndss111r3.example.org
+		# ListProjectDependants.fn.sh --distro-source-only prv/cloud.fleet4/setup.host-ndss111r3.example.org
+		# ListProjectDependants.fn.sh --distro-source-only prv/cloud-infra/setup.assets-infra/location-r4 2> /dev/null
 
 		if [ -z "$1" ] || [ "$1" = "--help" ] ; then
 			ListProjectDependants "${1:-"--help-syntax"}"

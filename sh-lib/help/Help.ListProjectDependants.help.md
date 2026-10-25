@@ -33,13 +33,13 @@
 ##  Examples:
 
                 # List dependants of a host-setup project using distro-source index
-                `ListProjectDependants.fn.sh --distro-source-only ndm/cloud.knt/setup.host-ndss111r3.example.org`
+                `ListProjectDependants.fn.sh --distro-source-only prv/cloud.fleet4/setup.host-ndss111r3.example.org`
 
                 # List dependants using full distro-from-source resolution
-                `ListProjectDependants.fn.sh --distro-from-source ndm/cloud.knt/setup.host-ndss111r3.example.org`
+                `ListProjectDependants.fn.sh --distro-from-source prv/cloud.fleet4/setup.host-ndss111r3.example.org`
 
                 # List dependants for an infrastructure project, suppress errors if none found
-                `ListProjectDependants.fn.sh --distro-source-only ndm/cloud-infra/setup.assets-infra/location-r4 2> /dev/null`
+                `ListProjectDependants.fn.sh --distro-source-only prv/cloud-infra/setup.assets-infra/location-r4 2> /dev/null`
 
 
 		# Typical function-level usage via dispatcher

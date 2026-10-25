@@ -59,11 +59,11 @@
 		`ListProjectKeywords.fn.sh myx/myx.common/os-myx.common-freebsd --print-project --print-no-project --filter-and-cut deploy-export --merge-sequence`
 
 		# List keywords for a host-specific project with project name column
-		`ListProjectKeywords.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project`
+		`ListProjectKeywords.fn.sh prv/cloud.example/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project`
 
 		# List merged-sequence keywords for a host project with project name column
-		`ListProjectKeywords.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence`
+		`ListProjectKeywords.fn.sh prv/cloud.example/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --print-project --merge-sequence`
 
 		# Same as above with flags in different order
-		`ListProjectKeywords.fn.sh prv/cloud.mel/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project`
+		`ListProjectKeywords.fn.sh prv/cloud.example/setup.host-l6b2h1.myx.co.nz --no-cache --no-index --merge-sequence --print-project`
 		`ListProjectKeywords.fn.sh --help`
