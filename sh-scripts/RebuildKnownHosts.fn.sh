@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
 
-if [ -z "$MMDAPP" ]; then
+if [ -z "$MMDAPP" ] ; then
 	set -e
-	export MMDAPP="$(
-		cd $(dirname "$0")/../../../..
-		pwd
-	)"
+	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
 	echo "$0: Working in: $MMDAPP" >&2
-	[ -d "$MMDAPP/source" ] || (echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1)
-fi
-
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
+	[ -d "$MMDAPP/.local" ] || ( echo "⛔ ERROR: expecting '.local' directory." >&2 && exit 1 )
 fi
 
 RebuildKnownHosts() {
@@ -80,6 +72,11 @@ RebuildKnownHosts() {
 
 case "$0" in
 */sh-scripts/RebuildKnownHosts.fn.sh)
+	if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+		. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+		DistroSystemContext --distro-path-auto
+	fi
+
 	RebuildKnownHosts "$@"
 	;;
 esac

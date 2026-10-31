@@ -3,13 +3,8 @@
 if [ -z "$MMDAPP" ] ; then
 	set -e
 	export MMDAPP="$( cd $(dirname "$0")/../../../.. ; pwd )"
-	echo "$0: Working in: $MMDAPP"  >&2
-	[ -d "$MMDAPP/source" ] || ( echo "⛔ ERROR: expecting 'source' directory." >&2 && exit 1 )
-fi
-
-if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
-	. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
-	DistroSystemContext --distro-path-auto
+	echo "$0: Working in: $MMDAPP" >&2
+	[ -d "$MMDAPP/.local" ] || ( echo "⛔ ERROR: expecting '.local' directory." >&2 && exit 1 )
 fi
 
 # Gives: GitClonePull
@@ -18,7 +13,14 @@ fi
 SyncGitSource(){
 	local MDSC_CMD='SyncGitSource'
 	[ -z "$MDSC_DETAIL" ] || echo "> $MDSC_CMD $(printf '%q ' "$@")" >&2
-	
+
+	case "$1" in
+		--help|--help-syntax)
+			. "$MDLT_ORIGIN/myx/myx.distro-source/sh-lib/help/Help.SyncGitSource.include"
+			return 0
+		;;
+	esac
+
 	local projectPath="$MDSC_SOURCE/${1#"$MDSC_SOURCE/"}" ; shift
 	if [ -z "$projectPath" ] ; then
 		echo "$MDSC_CMD: ⛔ ERROR: project path is expected!" >&2
@@ -47,6 +49,11 @@ case "$0" in
 			exit 1
 		fi
 		
+		if [ -z "$MDLT_ORIGIN" ] || ! type DistroSystemContext >/dev/null 2>&1 ; then
+			. "${MDLT_ORIGIN:=$MMDAPP/.local}/myx/myx.distro-system/sh-lib/SystemContext.include"
+			DistroSystemContext --distro-path-auto
+		fi
+
 		SyncGitSource "$@"
 	;;
 esac

@@ -68,6 +68,11 @@ cat > "$WS_TMP" <<CODEWORKSPACE
 				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-deploy/sh-lib/DeployTools.Make.VSCodeFoldersFragment.include"
 			}
 		)
+		$(
+			[ ! -x "$MMDAPP/DistroRemoteConsole.sh" ] || [ ! -f "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-remote/sh-lib/RemoteTools.Make.VSCodeFoldersFragment.include" ] || {
+				. "${MDLT_ORIGIN:-$MMDAPP/.local}/myx/myx.distro-remote/sh-lib/RemoteTools.Make.VSCodeFoldersFragment.include"
+			}
+		)
 		{ 
 			"path": "$MMDAPP/.local/.vscode/browse",
 			"name": "🔍 Browse"

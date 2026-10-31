@@ -64,3 +64,9 @@ Each stage script reassigns them. The per-stage values are in [Formats](docs/for
 - What it removes: [Troubleshooting](docs/troubleshooting.md), "A clean removed more than expected".
 - **`$MMDAPP/output` is deploy staging, not a rebuildable cache.** Deploy hard-errors without it — `myx.distro-deploy/sh-scripts/DeployProjectSsh.fn.sh:364` and `:495`, `InstallPrepareFiles.fn.sh:344` and `:352`. Clearing outputs therefore clears the deploy tier, which the name does not suggest.
 - It takes no confirmation and no `--force`, and its tail runs on a bare invocation. Appropriate for a tool named for exactly what it clears, and recorded as behaviour rather than as a defect. This family states no confirmation convention for destructive operations anywhere.
+
+## Palette tasks call a `.fn.sh` by name (owner, 2026-10-31)
+
+- `sh-lib/workspace-commands.list` feeds every workspace palette. Each task calls its tool as `<Tool>.fn.sh`, by name, through the source console. Never as `Distro <Tool>`.
+- "Ingest Source Changes" is `DistroSourcePrepare.fn.sh --ingest-distro-index-from-source`. "Pull/Sync All Known Sources" is `DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull`.
+- A changed list reaches a workspace only after `DistroSourceTools.fn.sh --make-code-workspace` there.

@@ -6,7 +6,7 @@
 ## workspace (DistroAgentsTools.fn.sh --manager-place-command-list and --manager-place-command-run).
 
 🖥️ Start Source Console	terminal	bash '$MMDAPP/DistroSourceConsole.sh'
-⬇️ Pull/Sync All Known Sources	output	bash -c 'echo "Distro DistroImageSync --all-tasks --execute-source-prepare-pull" | $MMDAPP/DistroSourceConsole.sh --non-interactive'
+⬇️ Pull/Sync All Known Sources	output	bash -c 'echo "DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull" | $MMDAPP/DistroSourceConsole.sh --non-interactive'
 📥 Re-Build Source Index Snapshot (cached from source)	output	bash -c 'echo "BuildCachedFromSource.fn.sh" | $MMDAPP/DistroSourceConsole.sh --non-interactive'
-🛫 Ingest Source Changes	output	bash -c 'echo "Distro DistroSourcePrepare --ingest-distro-index-from-source" | $MMDAPP/DistroSourceConsole.sh --non-interactive'
+🛫 Ingest Source Changes	output	bash -c 'echo "DistroSourcePrepare.fn.sh --ingest-distro-index-from-source" | $MMDAPP/DistroSourceConsole.sh --non-interactive'
 🛠️ Update Local Tools	output	bash '${MMDAPP}/.local/myx/myx.distro-.local/sh-scripts/DistroLocalTools.fn.sh' --upgrade-installed-tools
