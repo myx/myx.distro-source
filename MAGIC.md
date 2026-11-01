@@ -70,3 +70,8 @@ Each stage script reassigns them. The per-stage values are in [Formats](docs/for
 - `sh-lib/workspace-commands.list` feeds every workspace palette. Each task calls its tool as `<Tool>.fn.sh`, by name, through the source console. Never as `Distro <Tool>`.
 - "Ingest Source Changes" is `DistroSourcePrepare.fn.sh --ingest-distro-index-from-source`. "Pull/Sync All Known Sources" is `DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull`.
 - A changed list reaches a workspace only after `DistroSourceTools.fn.sh --make-code-workspace` there.
+
+## Source-stage commands that look generic (owner, 2026-11-01)
+
+- `RebuildActions` and `RebuildKnownHosts` are the source stage of the pipeline. `myx.distro-deploy`'s `…FromDistro` commands run the same job on the built distro. Both stay where they are.
+- `ListProjectDeclares`, `ListProjectKeywords`, `ListProjectProvides` and `ListProjectSequence` answer for one project what `myx.distro-system`'s `ListDistro*` commands answer for all. Their only tie to source is an existence check of `$MDSC_SOURCE/<project>/project.inf`. They stay in this package.
