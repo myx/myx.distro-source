@@ -30,6 +30,11 @@ DistroSourceTools(){
 				. "$MDLT_ORIGIN/myx/myx.distro-.local/sh-lib/manager/LocalTools.InternManager.include"
 				return $?
 			;;
+			--manager-*)
+				## The manager operations of the screen this console starts, answered by .local (LocalTools.Manager.include).
+				. "$MDLT_ORIGIN/myx/myx.distro-.local/sh-lib/manager/LocalTools.Manager.include"
+				return $?
+			;;
 			## List all repository roots by listing root configuration files directory
 			--all-namespaces|--list-namespace-roots|--list-namespaces|--list-repository-roots)
 				shift
