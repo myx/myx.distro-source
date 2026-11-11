@@ -23,3 +23,8 @@ Distro ListDistroDeclares --all-filter-and-cut custom-commands-path \
 done > "$INDEX_COMMANDS.$$.tmp"
 
 mv -f "$INDEX_COMMANDS.$$.tmp" "$INDEX_COMMANDS"
+
+### the derived line the consoles read on every call instead of walking the index: the distinct sh-scripts folders, colon-joined,
+### written beside the index with it (myx.distro-.local/sh-lib/console-.local-path.include, myx.distro-system SystemConsole.include)
+awk '!seenScriptsDir[$3]++ && $3 != "" { printf "%s%s", sep, $3 ; sep = ":" } END { print "" }' "$INDEX_COMMANDS" > "${INDEX_COMMANDS%/*}/distro-command-path.txt.$$.tmp" \
+	&& mv -f "${INDEX_COMMANDS%/*}/distro-command-path.txt.$$.tmp" "${INDEX_COMMANDS%/*}/distro-command-path.txt"
