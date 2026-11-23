@@ -56,7 +56,7 @@ Each stage script reassigns them. The per-stage values are in [Formats](docs/for
 
 ## `SourceConsole.include`'s prompt hook applies nothing
 
-- The `--shell-prompt` arm reads `MDSC_INT_CD`, `cd`s to it and clears it, and cannot change the console's working directory. The `Source()` wrapper sources this include inside `( … )`, and `PROMPT_COMMAND` calls that wrapper inside `$( … )`. Both statements therefore run two subshells below the interactive shell. The arm announces the change on stderr before applying nothing, which is why it reads as working.
+- The `--shell-prompt` arm reads `MDSC_INT_CD`, `cd`s to it and clears it, and cannot change the console's working directory. The `Source` wrapper sources this include inside `(…)`, and `PROMPT_COMMAND` calls that wrapper inside `$(…)`. Both statements therefore run two subshells below the interactive shell. The arm announces the change on stderr before applying nothing, which is why it reads as working.
 - Full entry: `myx.distro-.local/MAGIC.md`, "The prompt hook announces a change it cannot apply" — read there, not duplicated here.
 
 ## `CleanAllOutputs.fn.sh` clears the deploy tier along with the build outputs
@@ -65,13 +65,15 @@ Each stage script reassigns them. The per-stage values are in [Formats](docs/for
 - **`$MMDAPP/output` is deploy staging, not a rebuildable cache.** Deploy hard-errors without it — `myx.distro-deploy/sh-scripts/DeployProjectSsh.fn.sh:364` and `:495`, `InstallPrepareFiles.fn.sh:344` and `:352`. Clearing outputs therefore clears the deploy tier, which the name does not suggest.
 - It takes no confirmation and no `--force`, and its tail runs on a bare invocation. Appropriate for a tool named for exactly what it clears, and recorded as behaviour rather than as a defect. This family states no confirmation convention for destructive operations anywhere.
 
-## Palette tasks call a `.fn.sh` by name (owner, 2026-10-31)
+## Palette tasks call a `.fn.sh` by name ()
+
 
 - `sh-lib/workspace-commands.list` feeds every workspace palette. Each task calls its tool as `<Tool>.fn.sh`, by name, through the source console. Never as `Distro <Tool>`.
 - "Ingest Source Changes" is `DistroSourcePrepare.fn.sh --ingest-distro-index-from-source`. "Pull/Sync All Known Sources" is `DistroImageSync.fn.sh --all-tasks --execute-source-prepare-pull`.
 - A changed list reaches a workspace only after `DistroSourceTools.fn.sh --make-code-workspace` there.
 
-## Source-stage commands that look generic (owner, 2026-11-01)
+## Source-stage commands that look generic ()
+
 
 - `RebuildActions` and `RebuildKnownHosts` are the source stage of the pipeline. `myx.distro-deploy`'s `…FromDistro` commands run the same job on the built distro. Both stay where they are.
 - `ListProjectDeclares`, `ListProjectKeywords`, `ListProjectProvides` and `ListProjectSequence` answer for one project what `myx.distro-system`'s `ListDistro*` commands answer for all. Their only tie to source is an existence check of `$MDSC_SOURCE/<project>/project.inf`. They stay in this package.
