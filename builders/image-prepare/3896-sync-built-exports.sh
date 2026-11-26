@@ -44,26 +44,34 @@ SyncBuiltExportsFromOutput(){
 	local BUILT_DIR="$MDSC_OUTPUT/$projectName"
 	local EXPORT_DST="$MMDAPP/.local/output-cache/export/$DST"
 
+	# An absent artefact is one row's data condition, not a stage failure: its sibling 3895-sync-export.sh returns 0 here too.
 	if [ ! -e "$BUILT_DIR/$SRC" ] ; then
-		echo "⛔ ERROR: built export not found: $BUILT_DIR/$SRC"
-		return 1
+		echo "⛔ ERROR: built export not found: $BUILT_DIR/$SRC" >&2
+		return 0
 	fi
 
 	printf 'sync-built-export: %s %s \n \t \t <= %s\n' "$projectName" "$SRC" "$DST" >&2
 
-	local rsyncOutput
+	local rsyncOutput rsyncStatus=0
 
 	if [ -d "$BUILT_DIR/$SRC" ] ; then
 		mkdir -p "$EXPORT_DST"
-		rsyncOutput="$( rsync -ai --checksum --delete "$BUILT_DIR/$SRC"/ "$EXPORT_DST"/ 2>&1 )"
+		rsyncOutput="$( rsync -ai --checksum --delete "$BUILT_DIR/$SRC"/ "$EXPORT_DST"/ 2>&1 )" || rsyncStatus=$?
 	else
 		mkdir -p "${EXPORT_DST%/*}"
-		rsyncOutput="$( rsync -ai --checksum "$BUILT_DIR/$SRC" "$EXPORT_DST" 2>&1 )"
+		rsyncOutput="$( rsync -ai --checksum "$BUILT_DIR/$SRC" "$EXPORT_DST" 2>&1 )" || rsyncStatus=$?
 	fi
 
 	# A `>f` line is a file this run copied. Everything else rsync said is passed on as
 	# it came, so a refusal or a warning is never swallowed.
 	printf '%s\n' "$rsyncOutput" | grep -v -E '^\.f' | grep -v '^$' >&2 || :
+
+	# rsync's own status decides failure, never its transfer line: a run that copied
+	# one file and could not read another prints `>f` and still exits non-zero.
+	if [ 0 -ne "$rsyncStatus" ] ; then
+		printf '⛔ ERROR: sync-built-export: %s %s not copied, rsync answered %s\n' "$projectName" "$DST" "$rsyncStatus" >&2
+		return 1
+	fi
 
 	if printf '%s\n' "$rsyncOutput" | grep -q -E '^>f' ; then
 		printf 'sync-built-export: %s %s published\n' "$projectName" "$DST" >&2
