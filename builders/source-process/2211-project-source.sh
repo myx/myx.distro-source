@@ -47,7 +47,7 @@ MakeProjectSourceArchive(){
 }
 
 ListDistroProvides --select-changed --filter-and-cut "source-process" \
-| grep -e " project-source.tgz$" \
+| { grep -e " project-source.tgz$" || : ; } \
 | cut -d" " -f1 \
 | sort -u \
 | Parallel Prefix -2 MakeProjectSourceArchive # "$projectName"
